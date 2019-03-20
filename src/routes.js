@@ -1,6 +1,7 @@
 import Home from './assets/vue/pages/home.vue';
 import AboutPage from './assets/vue/pages/about.vue';
 import FormPage from './assets/vue/pages/form.vue';
+import LoginPage from './assets/vue/pages/login.vue';
 import DynamicRoutePage from './assets/vue/pages/dynamic-route.vue';
 
 import PanelLeftPage from './assets/vue/pages/panel-left.vue';
@@ -16,6 +17,10 @@ export default [
   {
     path: '/about/',
     component: AboutPage
+  },
+  {
+    path: '/login/',
+    component: LoginPage
   },
   {
     path: '/form/',

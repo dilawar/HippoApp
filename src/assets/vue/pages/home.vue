@@ -10,12 +10,7 @@
             </f7-nav-right>
             <f7-searchbar class="searchbar-components" search-container=".components-list" search-in="a" expandable></f7-searchbar>
         </f7-navbar>
-        <!--
-        <f7-block-title>Introduction</f7-block-title>
-        <f7-block inner>
-        </f7-block>
-        -->
-        <f7-block-title class="searchbar-found">Links</f7-block-title>
+
         <f7-list class="components-list searchbar-found">
             <f7-list-item link="/booking/" title="Booking" panel-close>
                 <f7-icon slot="media" ios="f7:info" md="material:info"></f7-icon>
@@ -49,7 +44,7 @@
         </f7-list>
     </f7-page>
 </template>
+
 <script>
 export default {};
-
 </script>
