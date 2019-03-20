@@ -13,11 +13,18 @@
 
                 <div class="block">
                     <div class="row">
-                        <button class="button col button-fill">Cancel</button>
-                        <button class="button col button-fill" onclick="try_Login">Login</button>
+                        <f7-button back=true class="button col
+                            button-fill">Cancel</f7-button>
+                        <f7-button class="button col button-fill"
+                            onclick="try_Login">Login</f7-button>
                     </div>
                 </div>
             </f7-list>
         </f7-block>
     </f7-page>
 </template>
+
+
+<script>
+  export default {}
+</script>
