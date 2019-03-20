@@ -13,8 +13,8 @@
 
                 <div class="block">
                     <div class="row">
-                        <f7-button fill raised>Cancel</f7-button>
-                        <f7-button fill raised>Login</f7-button>
+                        <button class="button col button-fill">Cancel</button>
+                        <button class="button col button-fill" onclick="try_Login">Login</button>
                     </div>
                 </div>
             </f7-list>
