@@ -64,14 +64,17 @@
         if(! self.$store.state.alreadyLoggedIn)
         {
           app.request.post(self.$store.state.api + '/authenticate'
-            , {'user':self.username, 'password': btoa(self.password)}
+            , {'login':self.username, 'password': btoa(self.password)}
             , function(json) 
             {
               var res = JSON.parse(json);
-              if( res.status =='ok' && res.data.token != '')
+              if( res.status =='ok' && res.data.apikey != '')
               {
                 self.$store.commit('USER_LOGGED', self.username);
+                self.$store.commit('HIPPO_API_KEY', res.data.apikey);
                 app.dialog.alert(`Success.`, () => {app.loginScreen.close()});
+                self.$localStorage.set('HIPPO-API-KEY', res.data.apikey);
+                self.$localStorage.set('HIPPO-LOGIN', self.username);
               }
               else
                 app.dialog.alert(`Failed to login. Try again.`);
