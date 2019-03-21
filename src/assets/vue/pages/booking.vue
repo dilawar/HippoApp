@@ -7,6 +7,16 @@
     <!--  Show venues as grid or list. -->
     <f7-page-content>
 
+      <!-- Date and time -->
+      <f7-block>
+        <f7-row>
+          <f7-col> <f7-input type="date" label="Date" 
+              validate clear-button> </f7-input> </f7-col>
+          <f7-col> <f7-input type="time" label="Time" 
+              validate clear-button> </f7-input> </f7-col>
+        </f7-row>
+      </f7-block>
+
       <f7-list>
         <f7-list-item 
           v-for="(item, index) in venues" :title="`${item.id}`">
