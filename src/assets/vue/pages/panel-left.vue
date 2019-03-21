@@ -1,41 +1,43 @@
 <template>
   <f7-page>
-    <f7-block-title>Hippo</f7-block-title>
-    <f7-block>
-    </f7-block>
-
-    <!--<f7-block-title>Main View Navigation</f7-block-title>-->
+    <f7-navbar title="Login Screen"></f7-navbar>
 
     <f7-list>
-        <f7-list-item link="/login-screen-page/" 
-                      title="As separate page"></f7-list-item>
-
-        <f7-list-item link="/info/" title="Info" panel-close></f7-list-item>
-
-        <f7-login-screen class="demo-login-screen" 
-                         :opened="loginScreenOpened" 
-                         @loginscreen:closed="loginScreenOpened=false"
-                         >
-
-                         <f7-list form>
-                             <f7-list-input label="Username" 
-                                            type="text"
-                                            placeholder="Your username"
-                                            :value="username"
-                                            @input="username=$event.target.value"
-                                            ></f7-list-input>
-                         </f7-list>
-            <f7-list>
-                <f7-list-button @click="signIn">Sign In</f7-list-button>
-                <f7-block-footer>Some text about login information.<br>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</f7-block-footer>
-            </f7-list>
-
-
-        </f7-login-screen>
-
+      <f7-list-item link="/login-screen-page/" title="As Separate Page"></f7-list-item>
     </f7-list>
+
     <f7-block>
+      <f7-button raised large fill login-screen-open=".hippo-login-screen">Login</f7-button>
     </f7-block>
+
+    <f7-login-screen class="hippo-login-screen" :opened="loginScreenOpened" @loginscreen:closed="loginScreenOpened = false">
+      <f7-page login-screen>
+        <f7-login-screen-title>Login</f7-login-screen-title>
+        <f7-list form>
+          <f7-list-input
+            label="Username"
+            type="text"
+            placeholder="Your username"
+            :value="username"
+            @input="username = $event.target.value"
+            ></f7-list-input>
+          <f7-list-input
+            label="Password"
+            type="password"
+            placeholder="Your password"
+            :value="password"
+            @input="password = $event.target.value"
+            ></f7-list-input>
+        </f7-list>
+        <f7-list>
+          <f7-list-button @click="signIn">Sign In</f7-list-button>
+          <f7-block-footer>
+            Use your NCBS intranet username password or generate an app specific
+            password in Hippo.
+          </f7-block-footer>
+        </f7-list>
+      </f7-page>
+    </f7-login-screen>
   </f7-page>
 </template>
 
@@ -49,13 +51,35 @@
       };
     },
     methods: {
-      signIn() {
+      signIn()
+      {
+        console.log('Trying to login');
         const self = this;
         const app = self.$f7;
 
-        app.dialog.alert(`Username: ${self.username}<br>Password: ${self.password}`, () => {
-          app.loginScreen.close();
-        });
+        // Try to connect.
+        console.log( 'Already logged in is' + self.$store.state.user );
+
+        if(self.username.length>0 && (self.$store.state.user != self.username))
+        {
+          app.request.post(self.$store.state.api + '/authenticate'
+            , {'user':self.username, 'password': btoa(self.password)}
+            , function(json) 
+            {
+              var res = JSON.parse(json);
+              if( res.status =='ok' && res.data.token != '')
+              {
+                console.log('Login was succesful');
+                app.dialog.alert(`Success.`, () => { app.loginScreen.close(); });
+                self.$store.commit('USER_LOGGED', self.username);
+              }
+              else
+                app.dialog.alert(`Failed to login. Try again.`);
+            }
+          );
+        }
+        else
+          console.log('Already logged in');
       },
     },
   };

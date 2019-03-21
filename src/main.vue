@@ -9,6 +9,7 @@
     </f7-app>
 </template>
 <script>
+
 // Import Routes...
 import routes from './routes.js'
 
@@ -23,7 +24,7 @@ export default {
             f7params: {
                 theme,
                 routes,
-                id: 'io.framework7.testapp',
+                id: 'com.dilawar.hippo',
             }
         }
     }
