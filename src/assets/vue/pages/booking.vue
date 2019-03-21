@@ -10,20 +10,25 @@
       <!-- Date and time -->
       <f7-block>
         <f7-row>
-          <f7-col> <f7-input type="date" label="Date" 
-              validate clear-button> </f7-input> </f7-col>
-          <f7-col> <f7-input type="time" label="Time" 
-              validate clear-button> </f7-input> </f7-col>
+          <f7-col> 
+              <f7-input name="date" type="date" label="Date"></f7-input>
+          </f7-col>
+          <f7-col>
+              <f7-input name="time" type="time" label="Time"></f7-input>
+          </f7-col>
         </f7-row>
       </f7-block>
+      <f7-block>
+          <f7-button raised fill round @click="onPageInit">Refresh venues</f7-button>
+      </f7-block>
 
+      <f7-block>
       <f7-list>
         <f7-list-item 
           v-for="(item, index) in venues" :title="`${item.id}`">
         </f7-list-item>
       </f7-list>
-
-      <f7-button outline round @click="onPageInit">Refresh venues</f7-button>
+      </f7-block>
 
     </f7-page-content>
 
