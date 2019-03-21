@@ -4,6 +4,7 @@ import FormPage from './assets/vue/pages/form.vue';
 import LoginPage from './assets/vue/pages/login.vue';
 import DynamicRoutePage from './assets/vue/pages/dynamic-route.vue';
 import BookingPage from './assets/vue/pages/booking.vue';
+import EventPage from './assets/vue/pages/events.vue';
 
 import PanelLeftPage from './assets/vue/pages/panel-left.vue';
 import ColorThemes from './assets/vue/pages/color-themes.vue';
@@ -18,6 +19,10 @@ export default [
   {
     path: '/booking/',
     component: BookingPage
+  },
+  {
+    path: '/events/',
+    component: EventPage
   },
   {
     path: '/login/',
