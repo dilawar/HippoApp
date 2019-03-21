@@ -3,6 +3,7 @@ import AboutPage from './assets/vue/pages/about.vue';
 import FormPage from './assets/vue/pages/form.vue';
 import LoginPage from './assets/vue/pages/login.vue';
 import DynamicRoutePage from './assets/vue/pages/dynamic-route.vue';
+import BookingPage from './assets/vue/pages/booking.vue';
 
 import PanelLeftPage from './assets/vue/pages/panel-left.vue';
 import ColorThemes from './assets/vue/pages/color-themes.vue';
@@ -15,8 +16,8 @@ export default [
     component: Home
   },
   {
-    path: '/about/',
-    component: AboutPage
+    path: '/booking/',
+    component: BookingPage
   },
   {
     path: '/login/',
