@@ -28,16 +28,20 @@
                 <f7-icon slot="media" icon="fa fa-battery fa-fw"></f7-icon>
             </f7-list-item>
         </f7-list>
+
         <f7-list class="searchbar-not-found">
             <f7-list-item title="Nothing found"></f7-list-item>
         </f7-list>
-        <f7-block-title class="searchbar-hide-on-search">Themes</f7-block-title>
-        <f7-list class="searchbar-hide-on-search">
-            <f7-list-item title="iOS Theme" external link="./index.html?theme=ios"></f7-list-item>
-            <f7-list-item title="Material (MD) Theme" external link="./index.html?theme=md"></f7-list-item>
+
+        <!-- <f7-block-title class="searchbar-hide-on-search">Themes</f7-block-title> -->
+<!--  -->
+        <!-- <f7-list class="searchbar-hide-on-search"> -->
+            <!-- <f7-list-item title="iOS Theme" external link="./index.html?theme=ios"></f7-list-item> -->
+            <!-- <f7-list-item title="Material (MD) Theme" external link="./index.html?theme=md"></f7-list-item> -->
             <!-- <f7-list-item title="Color Themes" link="/color-themes/"></f7-list-item> -->
-            <f7-list-item title="Github" external link="https://github.com/dilawar"></f7-list-item>
-        </f7-list>
+            <!-- <f7-list-item title="Github" external link="https://github.com/dilawar"></f7-list-item> -->
+        <!-- </f7-list> -->
+
     </f7-page>
 </template>
 

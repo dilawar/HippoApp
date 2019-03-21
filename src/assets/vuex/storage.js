@@ -6,6 +6,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     user: '',
+    alreadyLoggedIn: false,
     api : 'https://ncbs.res.in/hippo/api'
   },
   actions: {
@@ -15,7 +16,8 @@ export default new Vuex.Store({
   },
   mutations: {
     USER_LOGGED (state, user) {
-      state.user = user
+      state.user = user;
+      state.alreadyLoggedIn = true;
     }
   },
 });

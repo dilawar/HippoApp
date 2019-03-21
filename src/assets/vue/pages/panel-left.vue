@@ -1,16 +1,18 @@
 <template>
   <f7-page>
-    <f7-navbar title="Login Screen"></f7-navbar>
+    <f7-navbar title="NCBS"></f7-navbar>
 
-    <f7-list>
-      <f7-list-item link="/login-screen-page/" title="As Separate Page"></f7-list-item>
-    </f7-list>
-
-    <f7-block>
-      <f7-button raised large fill login-screen-open=".hippo-login-screen">Login</f7-button>
+    <f7-block v-if="showLogin">
+      <f7-button v-if="showLogin" raised large fill login-screen-open=".hippo-login-screen">Login</f7-button>
     </f7-block>
 
-    <f7-login-screen class="hippo-login-screen" :opened="loginScreenOpened" @loginscreen:closed="loginScreenOpened = false">
+    <!-- Other elements -->
+
+    <f7-login-screen class="hippo-login-screen" 
+      :opened="loginScreenOpened" 
+      @loginscreen:closed="loginScreenOpened = false"
+      >
+
       <f7-page login-screen>
         <f7-login-screen-title>Login</f7-login-screen-title>
         <f7-list form>
@@ -53,14 +55,13 @@
     methods: {
       signIn()
       {
-        console.log('Trying to login');
         const self = this;
         const app = self.$f7;
 
         // Try to connect.
         console.log( 'Already logged in is' + self.$store.state.user );
 
-        if(self.username.length>0 && (self.$store.state.user != self.username))
+        if(! self.$store.state.alreadyLoggedIn)
         {
           app.request.post(self.$store.state.api + '/authenticate'
             , {'user':self.username, 'password': btoa(self.password)}
@@ -69,9 +70,8 @@
               var res = JSON.parse(json);
               if( res.status =='ok' && res.data.token != '')
               {
-                console.log('Login was succesful');
-                app.dialog.alert(`Success.`, () => { app.loginScreen.close(); });
                 self.$store.commit('USER_LOGGED', self.username);
+                app.dialog.alert(`Success.`, () => {app.loginScreen.close()});
               }
               else
                 app.dialog.alert(`Failed to login. Try again.`);
@@ -79,8 +79,15 @@
           );
         }
         else
-          console.log('Already logged in');
+        {
+          app.dialog.alert(`You are already logged in!`, ()=>{app.loginScreen.close()});
+        }
       },
     },
+    computed : {
+      showLogin () {
+        return ! this.$store.state.alreadyLoggedIn;
+      }
+    }
   };
 </script>
