@@ -22,6 +22,7 @@ import FontAwesome from 'font-awesome/css/font-awesome.css'
 // Import App Custom Styles
 // import AppStyles from './assets/sass/main.scss'
 
+
 // Import App Component
 import app from './main.vue'
 
@@ -42,7 +43,7 @@ export default new Vue({
   el: '#app',
   store,
   render: c => c('app'),
-  components: { app },
+  components: { app},
   localStorage : {
     HippoApiKey : ''
   }
