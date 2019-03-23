@@ -21,10 +21,8 @@ import FontAwesome from 'font-awesome/css/font-awesome.css'
 
 // Import App Custom Styles
 // import AppStyles from './assets/sass/main.scss'
-//
-import Datetime from 'vue-datetime'
-// You need a specific loader for CSS files
-import 'vue-datetime/dist/vue-datetime.css'
+
+import DatePicker from 'vue2-datepicker'
 
 // Import App Component
 import app from './main.vue'
@@ -38,7 +36,19 @@ import VueLocalStorage from 'vue-localstorage';
 // Different F7-Vue plugin initialization with f7 v3.0
 Framework7.use(Framework7Vue)
 
-Vue.use(Datetime)
+// Global function.
+Vue.mixin({
+  methods : {
+    dbDate: function( date ) {
+      return date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate();
+    },
+    dbTime: function(date) {
+      return date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+    }
+  }
+})
+
+Vue.use(DatePicker)
 Vue.use(VueLocalStorage)
 
 // Init Vue App
@@ -47,8 +57,8 @@ export default new Vue({
   el: '#app',
   store,
   render: c => c('app'),
-  components: { app},
+  components: {app},
   localStorage : {
     HippoApiKey : ''
-  }
+  },
 });

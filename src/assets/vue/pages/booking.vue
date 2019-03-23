@@ -6,25 +6,29 @@
   <!--  Show venues as grid or list. -->
   <f7-page-content>
 
+
     <!-- Date and time -->
     <f7-list simple-list>
       <f7-list-item>
-        <f7-list-item-cell class="width-auto">
-          <f7-icon ios="f7:circle" f7="time"></f7-icon>
+        <f7-list-item-cell>
+          <date-picker v-model="bookingDateTime" lang="en"
+                       value-type="date"
+                       format="MMM DD hh:mm A"
+                       :time-picker-options="{ start: '8:00', step: '00:15', end: '22:30' }"
+                       :minute-step="15"
+                       :append-to-body=true
+                       :popupStyle="{'z-index':10000}"
+                       type="datetime"
+                       > 
+          </date-picker>
         </f7-list-item-cell>
         <f7-list-item-cell>
           <f7-range :min="0.25" :max="8" :step="0.5" :value="1" :label="true"></f7-range>
         </f7-list-item-cell>
       </f7-list-item>
       <f7-list-item>
-          <datetime v-model="datetime" type="datetime"
-                                              :auto="true"
-                                              :minute-step="15"
-                                              > </datetime>
-      </f7-list-item>
-      <f7-list-item>
         <f7-list-item-cell>
-          <f7-button fill>Filter Venues</f7-button>
+          <f7-button raised fill @click="refreshVenues" >Filter Venues</f7-button>
         </f7-list-item-cell>
       </f7-list-item>
     </f7-list>
@@ -44,19 +48,25 @@
 export default {
   data() {
     return {
-      venues : null,
-      datetime : '',
+      venues : [],
+      bookingDateTime: self.Date()
     };
   },
   methods: {
     refreshVenues : function(data) {
-      console.log("Fetching all venues");
-      console.log(data);
       const self = this;
       const app = self.$f7;
-      this.isOpen = false;
+
+      console.log(self.bookingDateTime);
+      const thisDateTime = new Date(self.bookingDateTime);
+
+      const date = self.dbDate( thisDateTime);
+      const time = self.dbTime(thisDateTime);
+
+      self.isOpen = false;
 
       // Try to connect.
+      console.log("Fetching all venues");
       app.request.post(self.$store.state.api + '/venue/list/all'
         , {'HIPPO-API-KEY': self.$localStorage.get('HIPPO-API-KEY')
           , 'login': self.$localStorage.get('HIPPO-LOGIN') 
