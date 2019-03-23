@@ -8,7 +8,7 @@
   "keywords": [
     "ecosystem:cordova"
   ],
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
@@ -54,10 +54,8 @@
     "framework7-icons": "^2.1.1",
     "framework7-vue": "^4.2.0",
     "loglevel": "^1.4.1",
-    "luxon": "^1.12.0",
     "material-design-icons": "^3.0.1",
     "vue": "^2.6.10",
-    "vue-datetime": "^1.0.0-beta.10",
     "vue-localstorage": "^0.6.2",
     "vue2-datepicker": "^2.10.3",
     "vuex": "^3.1.0",
