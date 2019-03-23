@@ -21,7 +21,10 @@ import FontAwesome from 'font-awesome/css/font-awesome.css'
 
 // Import App Custom Styles
 // import AppStyles from './assets/sass/main.scss'
-
+//
+import Datetime from 'vue-datetime'
+// You need a specific loader for CSS files
+import 'vue-datetime/dist/vue-datetime.css'
 
 // Import App Component
 import app from './main.vue'
@@ -35,6 +38,7 @@ import VueLocalStorage from 'vue-localstorage';
 // Different F7-Vue plugin initialization with f7 v3.0
 Framework7.use(Framework7Vue)
 
+Vue.use(Datetime)
 Vue.use(VueLocalStorage)
 
 // Init Vue App
