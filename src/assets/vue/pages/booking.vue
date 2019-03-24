@@ -33,10 +33,12 @@
       </f7-list-item>
     </f7-list>
 
+    <f7-block-title>Free venues</f7-block-title>
     <f7-list>
-      <f7-list-item v-for="(item, index) in venues" :title="`${item.id}`">
+      <f7-list-item v-for="(item, index) in venuesFree" :title="`${item.id}`">
       </f7-list-item>
     </f7-list>
+    </f7-block-title>
 
   </f7-page-content>
 </f7-page>
@@ -48,11 +50,16 @@
 export default {
   data() {
     return {
-      venues : [],
+      venuesStatus : [],
+      venuesFree: [],
+      venuesTaken: [],
       bookingDateTime: self.Date()
     };
   },
   methods: {
+    bookingButton: function(data) {
+      console.log(data);
+    },
     refreshVenues : function(data) {
 
       const self         = this;
@@ -63,17 +70,21 @@ export default {
       self.isOpen        = false;
 
       // Try to connect.
-      console.log("Fetching all venues");
-      app.request.post(self.$store.state.testapi + '/venue/list/all'
-        , { 'HIPPO-API-KEY': self.$localStorage.get('HIPPO-API-KEY')
+      app.request.post(
+          self.$store.state.api+'/venue/status/all/'+date+'/'+time
+          , { 'HIPPO-API-KEY': self.$localStorage.get('HIPPO-API-KEY')
           , 'login': self.$localStorage.get('HIPPO-LOGIN') 
           }, 
         function(json) {
           var res = JSON.parse(json);
+          console.log(res);
           if(res.status == 'ok')
-            self.venues = res.data;
+          {
+            self.venuesStatus = res.data.venues;
+            self.venuesFree = self.venuesStatus.filter(el=>el.events.length==0);
+            self.venuesTaken = self.venuesStatus.filter(el=>el.events.length>0);
+          }
         });
     }
   },
-};
-</script>
+}; </script>
