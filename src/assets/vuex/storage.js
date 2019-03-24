@@ -9,7 +9,8 @@ export default new Vuex.Store({
     alreadyLoggedIn: false,
     // api : 'https://ncbs.res.in/hippo/api',
     api : 'https://172.16.223.30/hippo/api',
-    key : ''
+    key : '',
+    tobook: null
   },
   actions: {
     userLogged ({commit}, user) {
@@ -17,7 +18,10 @@ export default new Vuex.Store({
     },
     keyLogger ( {commit}, key ) {
       commit('HIPPO_API_KEY', key)
-    }
+    },
+    addBookingData( {commit}, data){
+      commit('ADD_BOOKING_DATA', data)
+    },
   },
   mutations: {
     USER_LOGGED (state, user) {
@@ -26,6 +30,9 @@ export default new Vuex.Store({
     },
     HIPPO_API_KEY (state, key) {
       state.key = key;
+    },
+    ADD_BOOKING_DATA(state, data) {
+      state.tobook = data;
     }
   },
 });

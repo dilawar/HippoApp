@@ -1,7 +1,7 @@
 <template>
 
   <f7-page @page:init="refreshVenues">
-  <f7-navbar title="Booking" back-link="Back"></f7-navbar>
+  <f7-navbar title="Venues" back-link="Back"></f7-navbar>
 
   <!--  Show venues as grid or list. -->
   <f7-page-content>
@@ -12,7 +12,6 @@
       <f7-list-item>
         <f7-list-item-cell>
           <date-picker v-model="bookingDateTime" lang="en"
-                       value-type="date"
                        format="MMM DD hh:mm A"
                        :time-picker-options="{ start: '8:00', step: '00:15', end: '22:30' }"
                        :minute-step="15"
@@ -35,21 +34,23 @@
 
     <f7-block-title>Available venues</f7-block-title>
     <f7-list>
-      <f7-list-item v-for="(item, index) in venuesFree" :title="`${item.id}`"
+      <f7-list-item v-for="(item, index) in venuesFree" 
+                    :title="`${item.id}`"
                     :value="`${item.id}`"
-                    after="Book"
-                    @click="openBookPopup(item)"
-        >
-      <f7-popup>
-      </f7-popup>
+                    :key="index"
+                    :link="`/book/${item.id}/${bookingDate}/${bookingTime}`"
+                    after="Book">
+        <f7-icon slot="media" ios="f7:info" md="material:info"></f7-icon>
       </f7-list-item>
     </f7-list>
     </f7-block-title>
 
     <f7-block-title>Occupied venues</f7-block-title>
     <f7-list>
-      <f7-list-item v-for="(item, index) in venuesTaken" :title="`${item.id}`"
+      <f7-list-item v-for="(item, index) in venuesTaken" 
+                    :title="`${item.id}`"
                     :footer="`${item.events[0].title}`"
+                    :key="index"
                     after="Add to calendar"
         >
       </f7-list-item>
@@ -69,7 +70,9 @@ export default {
       venuesStatus : [],
       venuesFree: [],
       venuesTaken: [],
-      bookingDateTime: self.Date()
+      bookingDateTime: self.Date(),
+      bookingDate: '',
+      bookingTime: '',
     };
   },
   actions: {
@@ -81,24 +84,17 @@ export default {
     bookingButton: function(data) {
       console.log(data);
     },
-    openBookPopup: function(data) {
-      console.log("Booking");
-      console.log(data);
-      const self = this;
-      const app = self.$f7;
-      app.popup.create();
-    },
     refreshVenues: function(data) {
       const self         = this;
       const app          = self.$f7;
       const thisDateTime = new Date(self.bookingDateTime);
-      const date         = self.dbDate(thisDateTime);
-      const time         = self.dbTime(thisDateTime);
+      self.bookingDate   = self.dbDate(thisDateTime);
+      self.bookingTime   = self.dbTime(thisDateTime);
       self.isOpen        = false;
 
       // Try to connect.
       app.request.post(
-          self.$store.state.api+'/venue/status/all/'+date+'/'+time
+          self.$store.state.api+'/venue/status/all/'+self.bookingDate+'/'+self.bookingTime
           , { 'HIPPO-API-KEY': self.$localStorage.get('HIPPO-API-KEY')
           , 'login': self.$localStorage.get('HIPPO-LOGIN') 
           }, 
