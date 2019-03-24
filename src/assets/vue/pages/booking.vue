@@ -33,9 +33,25 @@
       </f7-list-item>
     </f7-list>
 
-    <f7-block-title>Free venues</f7-block-title>
+    <f7-block-title>Available venues</f7-block-title>
     <f7-list>
-      <f7-list-item v-for="(item, index) in venuesFree" :title="`${item.id}`">
+      <f7-list-item v-for="(item, index) in venuesFree" :title="`${item.id}`"
+                    :value="`${item.id}`"
+                    after="Book"
+                    @click="openBookPopup(item)"
+        >
+      <f7-popup>
+      </f7-popup>
+      </f7-list-item>
+    </f7-list>
+    </f7-block-title>
+
+    <f7-block-title>Occupied venues</f7-block-title>
+    <f7-list>
+      <f7-list-item v-for="(item, index) in venuesTaken" :title="`${item.id}`"
+                    :footer="`${item.events[0].title}`"
+                    after="Add to calendar"
+        >
       </f7-list-item>
     </f7-list>
     </f7-block-title>
@@ -56,12 +72,23 @@ export default {
       bookingDateTime: self.Date()
     };
   },
+  actions: {
+    bookingPopup: function(data) {
+      console.log(data);
+    },
+  },
   methods: {
     bookingButton: function(data) {
       console.log(data);
     },
-    refreshVenues : function(data) {
-
+    openBookPopup: function(data) {
+      console.log("Booking");
+      console.log(data);
+      const self = this;
+      const app = self.$f7;
+      app.popup.create();
+    },
+    refreshVenues: function(data) {
       const self         = this;
       const app          = self.$f7;
       const thisDateTime = new Date(self.bookingDateTime);
@@ -77,12 +104,12 @@ export default {
           }, 
         function(json) {
           var res = JSON.parse(json);
-          console.log(res);
           if(res.status == 'ok')
           {
             self.venuesStatus = res.data.venues;
             self.venuesFree = self.venuesStatus.filter(el=>el.events.length==0);
             self.venuesTaken = self.venuesStatus.filter(el=>el.events.length>0);
+            console.log(self.venuesTaken);
           }
         });
     }
