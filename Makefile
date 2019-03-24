@@ -8,7 +8,7 @@ init:
 	npm install font-awesome 
 	npm install vue
 
-build:
+apk:
 	cordova build android --release
 	find platforms -name "*.apk" | xargs -I f du -h f
 

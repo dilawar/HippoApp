@@ -54,23 +54,20 @@ export default {
   },
   methods: {
     refreshVenues : function(data) {
-      const self = this;
-      const app = self.$f7;
 
-      console.log(self.bookingDateTime);
+      const self         = this;
+      const app          = self.$f7;
       const thisDateTime = new Date(self.bookingDateTime);
-
-      const date = self.dbDate( thisDateTime);
-      const time = self.dbTime(thisDateTime);
-
-      self.isOpen = false;
+      const date         = self.dbDate(thisDateTime);
+      const time         = self.dbTime(thisDateTime);
+      self.isOpen        = false;
 
       // Try to connect.
       console.log("Fetching all venues");
-      app.request.post(self.$store.state.api + '/venue/list/all'
-        , {'HIPPO-API-KEY': self.$localStorage.get('HIPPO-API-KEY')
+      app.request.post(self.$store.state.testapi + '/venue/list/all'
+        , { 'HIPPO-API-KEY': self.$localStorage.get('HIPPO-API-KEY')
           , 'login': self.$localStorage.get('HIPPO-LOGIN') 
-        }, 
+          }, 
         function(json) {
           var res = JSON.parse(json);
           if(res.status == 'ok')
