@@ -47,11 +47,13 @@ Vue.use(VueLocalStorage)
 Vue.mixin({
   methods : {
     dbDate: function( date ) {
-      console.log( 'Date is ' + date );
       return moment(date, "YYYY-MM-DD").format("YYYY-MM-DD");
     },
     dbTime: function(date, addminutes=0) {
       return moment(date, "HH:MM").add(addminutes, 'm').format("HH:mm");
+    },
+    dbDateTime: function(date) {
+      return moment(date).format('YYYY-MM-DDTHH:mm');
     }
   }
 })

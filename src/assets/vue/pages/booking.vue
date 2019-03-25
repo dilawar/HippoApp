@@ -70,6 +70,7 @@
 
 <script>
 import moment from 'moment';
+moment.defaultFormat = "DD.MM.YYYY HH:mm";
 
 export default {
   data() {
@@ -77,8 +78,8 @@ export default {
       venuesStatus : [],
       venuesFree: [],
       venuesTaken: [],
-      startDateTime: new Date(),
-      endDateTime: moment().add(60, 'm'),
+      startDateTime: moment(),
+      endDateTime: moment().add(60, 'm')
     };
   },
   actions: {
@@ -88,7 +89,7 @@ export default {
   },
   watch: {
     startDateTime: function(data) {
-      this.startDateTime = data;
+      this.startDateTime = moment(data);
       if(this.endDateTime < this.startDateTime)
         this.endDateTime = moment(data).add(60, 'm');
     }
@@ -100,14 +101,11 @@ export default {
     refreshVenues: function(data) {
       const self         = this;
       const app          = self.$f7;
-      self.duration      = 60;
-      self.bookingDate   = self.dbDate(this.bookingDateTime);
-      self.startTime     = self.dbTime(this.bookingDateTime);
       self.isOpen        = false;
 
       // Try to connect.
       app.request.post(
-        self.$store.state.api+'/venue/status/all/'+self.bookingDate+'/'+self.bookingTime
+        self.$store.state.api+'/venue/status/all/'+self.dbDateTime(self.startDateTime)+'/'+self.dbDateTime(self.endDateTime)
         , { 'HIPPO-API-KEY': self.$localStorage.get('HIPPO-API-KEY')
           , 'login': self.$localStorage.get('HIPPO-LOGIN') 
         }, 
