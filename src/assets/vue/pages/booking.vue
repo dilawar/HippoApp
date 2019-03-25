@@ -17,8 +17,7 @@
                        :minute-step="15"
                        :append-to-body=true
                        :popupStyle="{'z-index':10000}"
-                       type="datetime"
-                       > 
+                       type="datetime"> 
           </date-picker>
         </f7-list-item-cell>
         <f7-list-item-cell>
@@ -38,7 +37,7 @@
                     :title="`${item.id}`"
                     :value="`${item.id}`"
                     :key="index"
-                    :link="`/book/${item.id}/${bookingDate}/${bookingTime}`"
+                    :link="`/book/${item.id}/${bookingDate}/${bookingTime}/`"
                     after="Book">
         <f7-icon slot="media" ios="f7:info" md="material:info"></f7-icon>
       </f7-list-item>

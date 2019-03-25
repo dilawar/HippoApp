@@ -1,6 +1,6 @@
 <template>
+  <f7-page @page:init="oninit" @page:refresh="oninit">
 
-  <f7-page @page:init="oninit">
     <f7-navbar title="Booking" back-link="Back"></f7-navbar>
 
     <f7-page-content>
@@ -10,23 +10,11 @@
         <f7-icon icon="demo-list-icon" slot="media"></f7-icon>
       </f7-list-input>
 
-      <f7-list-input
-        label="Password"
-        floating-label
-        type="password"
-        placeholder="Your password"
-        clear-button
-        >
+      <f7-list-input label="Date" type="text" :value="`${bookingDate}`" readonly>
         <f7-icon icon="demo-list-icon" slot="media"></f7-icon>
       </f7-list-input>
 
-      <f7-list-input
-        label="E-mail"
-        floating-label
-        type="email"
-        placeholder="Your e-mail"
-        clear-button
-        >
+      <f7-list-input label="Start Time" type="text" :value="`${startTime}`" readonly>
         <f7-icon icon="demo-list-icon" slot="media"></f7-icon>
       </f7-list-input>
 
@@ -64,19 +52,17 @@
     </f7-page-content>
 
   </f7-page>
-
 </template>
 
 <script>
-
   export default {
     data() {
       return {
         venueId: '',
-        date: '',
+        bookingDate: '',
         startTime: '',
         endTime: '',
-        duration: 60
+        duration: '60',
       };
     },
     methods: {
@@ -84,11 +70,11 @@
         console.log('Initializing booking values');
         const self = this;
         const params = self.$f7route.params;
-        console.log(params);
         self.venueId = params.venueId;
-        self.date = params.date;
+        self.bookingDate = params.bookingDate;
         self.startTime = params.startTime;
         self.endTime = params.endTime;
+        console.log(self);
       },
     },
   }; 

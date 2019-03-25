@@ -33,23 +33,29 @@ import store from './assets/vuex/storage.js'
 // Local file-storage
 import VueLocalStorage from 'vue-localstorage';
 
+// Moment
+import moment from 'moment';
+
 // Different F7-Vue plugin initialization with f7 v3.0
 Framework7.use(Framework7Vue)
+
+// External components.
+Vue.use(DatePicker)
+Vue.use(VueLocalStorage)
 
 // Global function.
 Vue.mixin({
   methods : {
     dbDate: function( date ) {
-      return date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate();
+      console.log( 'Date is ' + date );
+      return moment(date, "YYYY-MM-DD").format("YYYY-MM-DD");
     },
     dbTime: function(date) {
-      return date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+      return moment(date, "HH:MM").format("HH:mm");
     }
   }
 })
 
-Vue.use(DatePicker)
-Vue.use(VueLocalStorage)
 
 // Init Vue App
 export default new Vue({

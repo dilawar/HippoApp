@@ -25,7 +25,7 @@ export default {
         theme,
         routes,
         id: 'com.dilawar.hippo',
-        view: { pushState: true}
+        view: { pushState: true }
       }
     }
   }
