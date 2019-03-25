@@ -11,8 +11,8 @@
     <f7-list simple-list>
       <f7-list-item>
         <f7-list-item-cell>
-          <date-picker v-model="bookingDateTime" lang="en"
-                       format="MMM DD hh:mm A"
+          <date-picker v-model="startDateTime" lang="en"
+                       format="MMM DD HH:mm A"
                        :time-picker-options="{ start: '8:00', step: '00:15', end: '22:30' }"
                        :minute-step="15"
                        :append-to-body=true
@@ -21,7 +21,14 @@
           </date-picker>
         </f7-list-item-cell>
         <f7-list-item-cell>
-          <f7-range :min="0.25" :max="8" :step="0.5" :value="1" :label="true"></f7-range>
+          <date-picker v-model="endDateTime" lang="en"
+                       placeholder="Ending time"
+                       :time-picker-options="{ start: '8:00', step: '00:15', end: '22:30' }"
+                       :append-to-body=true
+                       :popupStyle="{'z-index':10000}"
+                       format="HH:mm A"
+                       type="time">
+          </date-picker>
         </f7-list-item-cell>
       </f7-list-item>
       <f7-list-item>
@@ -37,7 +44,7 @@
                     :title="`${item.id}`"
                     :value="`${item.id}`"
                     :key="index"
-                    :link="`/book/${item.id}/${bookingDate}/${bookingTime}/`"
+                    :link="`/book/${item.id}/${startDateTime}/${endDateTime}//`"
                     after="Book">
         <f7-icon slot="media" ios="f7:info" md="material:info"></f7-icon>
       </f7-list-item>
@@ -62,6 +69,7 @@
 </template>
 
 <script>
+import moment from 'moment';
 
 export default {
   data() {
@@ -69,15 +77,21 @@ export default {
       venuesStatus : [],
       venuesFree: [],
       venuesTaken: [],
-      bookingDateTime: self.Date(),
-      bookingDate: '',
-      bookingTime: '',
+      startDateTime: new Date(),
+      endDateTime: moment().add(60, 'm'),
     };
   },
   actions: {
     bookingPopup: function(data) {
       console.log(data);
     },
+  },
+  watch: {
+    startDateTime: function(data) {
+      this.startDateTime = data;
+      if(this.endDateTime < this.startDateTime)
+        this.endDateTime = moment(data).add(60, 'm');
+    }
   },
   methods: {
     bookingButton: function(data) {
@@ -86,17 +100,17 @@ export default {
     refreshVenues: function(data) {
       const self         = this;
       const app          = self.$f7;
-      const thisDateTime = new Date(self.bookingDateTime);
-      self.bookingDate   = self.dbDate(thisDateTime);
-      self.bookingTime   = self.dbTime(thisDateTime);
+      self.duration      = 60;
+      self.bookingDate   = self.dbDate(this.bookingDateTime);
+      self.startTime     = self.dbTime(this.bookingDateTime);
       self.isOpen        = false;
 
       // Try to connect.
       app.request.post(
-          self.$store.state.api+'/venue/status/all/'+self.bookingDate+'/'+self.bookingTime
-          , { 'HIPPO-API-KEY': self.$localStorage.get('HIPPO-API-KEY')
+        self.$store.state.api+'/venue/status/all/'+self.bookingDate+'/'+self.bookingTime
+        , { 'HIPPO-API-KEY': self.$localStorage.get('HIPPO-API-KEY')
           , 'login': self.$localStorage.get('HIPPO-LOGIN') 
-          }, 
+        }, 
         function(json) {
           var res = JSON.parse(json);
           if(res.status == 'ok')
