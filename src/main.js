@@ -54,10 +54,9 @@ Vue.mixin({
     },
     dbDateTime: function(date) {
       return moment(date).format('YYYY-MM-DDTHH:mm');
-    }
-  }
+    },
+  },
 })
-
 
 // Init Vue App
 export default new Vue({

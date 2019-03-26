@@ -6,7 +6,6 @@
   <!--  Show venues as grid or list. -->
   <f7-page-content>
 
-
     <!-- Date and time -->
     <f7-list simple-list>
       <f7-list-item>
@@ -70,7 +69,7 @@
 
 <script>
 import moment from 'moment';
-moment.defaultFormat = "DD.MM.YYYY HH:mm";
+//moment.defaultFormat = "DD-MM-YYYY HH:mm";
 
 export default {
   data() {
@@ -89,9 +88,8 @@ export default {
   },
   watch: {
     startDateTime: function(data) {
-      this.startDateTime = moment(data);
       if(this.endDateTime < this.startDateTime)
-        this.endDateTime = moment(data).add(60, 'm');
+        this.endDateTime = moment(data).add(60, 'm').format('x');
     }
   },
   methods: {
@@ -116,7 +114,7 @@ export default {
             self.venuesStatus = res.data.venues;
             self.venuesFree = self.venuesStatus.filter(el=>el.events.length==0);
             self.venuesTaken = self.venuesStatus.filter(el=>el.events.length>0);
-            console.log(self.venuesTaken);
+            self.$localStorage.set('venueIDs', res.data.venues.map(x=>x.id));
           }
         });
     }

@@ -5,76 +5,124 @@
 
     <f7-page-content>
 
-    <f7-list no-hairlines-md>
-      <f7-list-input label="Venue" type="text" :value="`${venueId}`" readonly>
-        <f7-icon icon="demo-list-icon" slot="media"></f7-icon>
-      </f7-list-input>
+      <f7-block>
 
-      <f7-list-input label="Date" type="text" :value="`${bookingDate}`" readonly>
-        <f7-icon icon="demo-list-icon" slot="media"></f7-icon>
-      </f7-list-input>
+        <form id="booking_request_form" class="list form-store-data">
+        <f7-list no-hairlines-md>
 
-      <f7-list-input label="Start Time" type="text" :value="`${startTime}`" readonly>
-        <f7-icon icon="demo-list-icon" slot="media"></f7-icon>
-      </f7-list-input>
+          <f7-list-item :title="`${venueID}`" smart-select >
+            <select v-model="venueID" name="venueid">
+              <option v-for="(vid, index) in venueIDs" :value="vid">{{vid}}</option>
+            </select>
+          </f7-list-item>
 
-      <f7-list-input
-        label="URL"
-        floating-label
-        type="url"
-        placeholder="URL"
-        clear-button
-        >
-        <f7-icon icon="demo-list-icon" slot="media"></f7-icon>
-      </f7-list-input>
+          <f7-list-item>
+            <date-picker 
+                      name="start_date_time"
+                      v-model="startDateTime" 
+                      format="MMM DD hh:mm A"
+                      type="datetime" 
+                      lang="en"
+                      >
+            </date-picker>
+          </f7-list-item>
 
-      <f7-list-input
-        label="Phone"
-        floating-label
-        type="tel"
-        placeholder="Your phone number"
-        clear-button
-        >
-        <f7-icon icon="demo-list-icon" slot="media"></f7-icon>
-      </f7-list-input>
+          <f7-list-item>
+            <date-picker name="end_date_time"
+                      v-model="endDateTime" 
+                         format="MMM DD hh:mm A"
+                         type="datetime" 
+                         lang="en"
+                         >
+            </date-picker>
+          </f7-list-item>
 
-      <f7-list-input
-        label="Resizable"
-        floating-label
-        type="textarea"
-        resizable
-        placeholder="Bio"
-        >
-        <f7-icon icon="demo-list-icon" slot="media"></f7-icon>
-      </f7-list-input>
-    </f7-list>
+          <f7-list-item title="Class of event" smart-select>
+            <select v-model="selectedClass" name="classEvents">
+              <option v-for="(cl, index) in classes" :key="cl" :value="cl">{{ cl }}</option>
+            </select>
+          </f7-list-item>
 
+          <f7-list-input name="title" ref="title" type="text" placeholder="Title of your event">
+          </f7-list-input>
+
+          <f7-list-input name="description" ref="description" type="textarea" placeholder="Description">
+          </f7-list-input>
+
+          <f7-list-input name="url" ref="url" type="url" placeholder="External Link (URL)">
+          </f7-list-input>
+
+          <f7-list-input ref="is_public_event"
+            label="Add to NCBS calendar?" type="select" defaultValue="NO">
+            <option value="YES">Yes</option>
+            <option value="NO">No</option>
+          </f7-list-input>
+
+          <f7-list-item>
+            <f7-button raised filled @click="checkAndSubmit"> Send Booking Request </f7-button>
+          </f7-list-item>
+        </f7-list>
+        </form>
+      </f7-block>
     </f7-page-content>
-
   </f7-page>
+
 </template>
 
 <script>
+import moment from 'moment';
+moment.defaultFormat = 'YYYY-MM-DD hh:mm';
+
   export default {
     data() {
+      const params = this.$f7route.params;
+      console.log('init data', params);
       return {
-        venueId: '',
-        bookingDate: '',
-        startTime: '',
-        endTime: '',
-        duration: '60',
+        selectedClass: 'UNKNOWN',
+        venueID: params.venueId,
+        venueIDs: [params.venueID],
+        startDateTime: moment(params.startDateTime, 'x'),
+        endDateTime: moment(params.endDateTime, 'x'),
+        classes: [],
       };
     },
     methods: {
       oninit: function() {
-        console.log('Initializing booking values');
         const self = this;
-        const params = self.$f7route.params;
-        self.venueId = params.venueId;
-        self.bookingDate = params.bookingDate;
-        self.startTime = params.startTime;
-        self.endTime = params.endTime;
-        console.log(self);
+        const app = self.$f7;
+        self.venueIDs = self.$localStorage.get('venueIDs').split(',');
+
+        // Get the types of booking requests available.
+        const endpoint = '/config/bookmyvenue.class';
+        app.request.post( self.$store.state.api+endpoint, 
+          { 'HIPPO-API-KEY': self.$localStorage.get('HIPPO-API-KEY'), 
+            'login': self.$localStorage.get('HIPPO-LOGIN')}
+          , function(json) {
+            const res = JSON.parse(json);
+            if( res.status=='ok')
+              self.classes = new Set(res.data.value.split(','));
+          });
+      },
+      checkAndSubmit : function( ){
+        const self = this;
+        const app = self.$f7;
+
+        var fdata = app.form.convertToData('#booking_request_form');
+        console.log(fdata);
+
+        if( fdata.title.trim().length == 0)
+        {
+          app.notification.create({ 
+            icon: '<i class="fa fa-exclamation-circle"></i>',
+            title: "Something is wrong!",
+            subtitle: "Title is empty",
+            closeButton: true,
+            closeTimeout: 3000,
+          }).open();
+          return;
+        }
+
+        // Else
       },
     },
   }; 
