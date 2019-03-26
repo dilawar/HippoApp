@@ -102,13 +102,16 @@ export default {
       self.isOpen        = false;
 
       // Try to connect.
-      app.request.post(
-        self.$store.state.api+'/venue/status/all/'+self.dbDateTime(self.startDateTime)+'/'+self.dbDateTime(self.endDateTime)
-        , { 'HIPPO-API-KEY': self.$localStorage.get('HIPPO-API-KEY')
-          , 'login': self.$localStorage.get('HIPPO-LOGIN') 
-        }, 
-        function(json) {
+      var link = self.$store.state.api 
+          + '/venue/status/all/'
+          + moment(self.startDateTime).format('X')
+          + '/' + moment(self.endDateTime).format('X')
+      app.request.post( link, this.apiPostData()
+        , function(json) 
+        {
           var res = JSON.parse(json);
+          console.log('res', res);
+
           if(res.status == 'ok')
           {
             self.venuesStatus = res.data.venues;

@@ -55,6 +55,13 @@ Vue.mixin({
     dbDateTime: function(date) {
       return moment(date).format('YYYY-MM-DDTHH:mm');
     },
+    apiPostData: function() {
+        const self = this;
+        return {
+          'HIPPO-API-KEY': self.$localStorage.get('HIPPO-API-KEY'), 
+          'login': self.$localStorage.get('HIPPO-LOGIN')
+        };
+    },
   },
 })
 
@@ -67,14 +74,5 @@ export default new Vue({
   components: {app},
   localStorage : {
     HippoApiKey : ''
-  },
-  methods : {
-    apiPostData: function() {
-        const self = this;
-        return {
-          'HIPPO-API-KEY': self.$localStorage.get('HIPPO-API-KEY'), 
-          'login': self.$localStorage.get('HIPPO-LOGIN')
-        };
-    },
   },
 });

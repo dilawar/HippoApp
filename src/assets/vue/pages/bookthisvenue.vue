@@ -10,7 +10,9 @@
         <form id="booking_request_form" class="list form-store-data">
         <f7-list no-hairlines-md>
 
-          <f7-list-item :title="`${venueID}`" smart-select >
+          <f7-list-item :title="`${venueID}`" smart-select
+                 :smart-select-params="{closeOnSelect: true}"
+                 >
             <select v-model="venueID" name="venueid">
               <option v-for="(vid, index) in venueIDs" :value="vid">{{vid}}</option>
             </select>
@@ -21,6 +23,7 @@
                       name="start_date_time"
                       v-model="startDateTime" 
                       format="MMM DD hh:mm A"
+                      :minute-step="15"
                       type="datetime" 
                       lang="en"
                       >
@@ -32,13 +35,16 @@
                       v-model="endDateTime" 
                          format="MMM DD hh:mm A"
                          type="datetime" 
+                         :minute-step="15"
                          lang="en"
                          >
             </date-picker>
           </f7-list-item>
 
-          <f7-list-item title="Class of event" smart-select>
-            <select v-model="selectedClass" name="class">
+          <f7-list-item title="Class of event" smart-select
+                        :smart-select-params="{closeOnSelect: true}"
+                        >
+            <select name="class">
               <option v-for="(cl, index) in classes" :key="cl" :value="cl">{{ cl }}</option>
             </select>
           </f7-list-item>
@@ -76,12 +82,9 @@ moment.defaultFormat = 'YYYY-MM-DD hh:mm';
   export default {
     data() {
       const params = this.$f7route.params;
-      console.log('init data', params);
-
       return {
-        selectedClass: 'UNKNOWN',
         venueID: params.venueId,
-        venueIDs: [params.venueID],
+        venueIDs: [params.venueId],
         startDateTime: moment(params.startDateTime, 'x'),
         endDateTime: moment(params.endDateTime, 'x'),
         classes: new Set(this.$localStorage.get('classes').split(',')),
@@ -97,7 +100,6 @@ moment.defaultFormat = 'YYYY-MM-DD hh:mm';
         const self = this;
         const app = self.$f7;
         var fdata = app.form.convertToData('#booking_request_form');
-        console.log(fdata);
 
         var errorMsg = '';
         if(fdata.title.trim().length == 0)
@@ -109,6 +111,7 @@ moment.defaultFormat = 'YYYY-MM-DD hh:mm';
 
         if( errorMsg.length > 0)
         {
+          console.log('Error msg', errorMsg);
           app.notification.create({ 
             icon: '<i class="fa fa-exclamation-circle"></i>',
             title: "Something is wrong!",
@@ -121,11 +124,33 @@ moment.defaultFormat = 'YYYY-MM-DD hh:mm';
 
         // Now check if venue is free at this time and date.
         var status = false;
-        app.request.post( self.$store.state.api + '/status/venue/'+venueID+'/'+startDateTime+'/'+endDateTime
-          , { }
-          , function(data) {
-          });
+        var link = self.$store.state.api +
+            '/venue/status/'+this.venueID
+            +'/'+moment(this.startDateTime).format('X')
+            +'/'+moment(self.endDateTime).format('X');
 
+        app.request.post(link
+          , this.apiPostData()
+          , function(data) 
+          {
+            const res = JSON.parse(data);
+            console.log( res.data[self.venueID] );
+            if(res.data[self.venueID].length > 0)
+            {
+              app.notification.create({ 
+                icon: '<i class="fa fa-exclamation-circle"></i>',
+                title: "This venue is already occupied.",
+                subtitle: errorMsg,
+                closeButton: true,
+                closeTimeout: 3000,
+              }).open();
+              return;
+            }
+
+            // Else submit booking request.
+            console.log('OK', 'Ok to book');
+          }
+        );
       },
     },
   }; 
