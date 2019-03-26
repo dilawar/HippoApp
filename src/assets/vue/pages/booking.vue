@@ -117,6 +117,15 @@ export default {
             self.$localStorage.set('venueIDs', res.data.venues.map(x=>x.id));
           }
         });
+      
+      // Fetch classes of booking.
+      app.request.post( self.$store.state.api+'/config/bookmyvenue.class'
+        , this.apiPostData()
+        , function(json) {
+          const res = JSON.parse(json);
+          if( res.status=='ok')
+            self.$localStorage.set('classes', res.data.value);
+        });
     }
   },
 }; </script>

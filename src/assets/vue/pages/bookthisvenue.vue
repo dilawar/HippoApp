@@ -38,7 +38,7 @@
           </f7-list-item>
 
           <f7-list-item title="Class of event" smart-select>
-            <select v-model="selectedClass" name="classEvents">
+            <select v-model="selectedClass" name="class">
               <option v-for="(cl, index) in classes" :key="cl" :value="cl">{{ cl }}</option>
             </select>
           </f7-list-item>
@@ -77,13 +77,14 @@ moment.defaultFormat = 'YYYY-MM-DD hh:mm';
     data() {
       const params = this.$f7route.params;
       console.log('init data', params);
+
       return {
         selectedClass: 'UNKNOWN',
         venueID: params.venueId,
         venueIDs: [params.venueID],
         startDateTime: moment(params.startDateTime, 'x'),
         endDateTime: moment(params.endDateTime, 'x'),
-        classes: [],
+        classes: new Set(this.$localStorage.get('classes').split(',')),
       };
     },
     methods: {
@@ -91,38 +92,40 @@ moment.defaultFormat = 'YYYY-MM-DD hh:mm';
         const self = this;
         const app = self.$f7;
         self.venueIDs = self.$localStorage.get('venueIDs').split(',');
-
-        // Get the types of booking requests available.
-        const endpoint = '/config/bookmyvenue.class';
-        app.request.post( self.$store.state.api+endpoint, 
-          { 'HIPPO-API-KEY': self.$localStorage.get('HIPPO-API-KEY'), 
-            'login': self.$localStorage.get('HIPPO-LOGIN')}
-          , function(json) {
-            const res = JSON.parse(json);
-            if( res.status=='ok')
-              self.classes = new Set(res.data.value.split(','));
-          });
       },
       checkAndSubmit : function( ){
         const self = this;
         const app = self.$f7;
-
         var fdata = app.form.convertToData('#booking_request_form');
         console.log(fdata);
 
-        if( fdata.title.trim().length == 0)
+        var errorMsg = '';
+        if(fdata.title.trim().length == 0)
+          errorMsg += ' Title is empty.';
+        if(fdata.class.trim().length == 0)
+          errorMsg += ' You have not selected class of event';
+        if(fdata.class.trim() == 'UNKNOWN')
+          errorMsg += " Selected class is 'UNKNOWN'";
+
+        if( errorMsg.length > 0)
         {
           app.notification.create({ 
             icon: '<i class="fa fa-exclamation-circle"></i>',
             title: "Something is wrong!",
-            subtitle: "Title is empty",
+            subtitle: errorMsg,
             closeButton: true,
             closeTimeout: 3000,
           }).open();
           return;
         }
 
-        // Else
+        // Now check if venue is free at this time and date.
+        var status = false;
+        app.request.post( self.$store.state.api + '/status/venue/'+venueID+'/'+startDateTime+'/'+endDateTime
+          , { }
+          , function(data) {
+          });
+
       },
     },
   }; 

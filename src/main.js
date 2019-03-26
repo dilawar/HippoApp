@@ -68,4 +68,13 @@ export default new Vue({
   localStorage : {
     HippoApiKey : ''
   },
+  methods : {
+    apiPostData: function() {
+        const self = this;
+        return {
+          'HIPPO-API-KEY': self.$localStorage.get('HIPPO-API-KEY'), 
+          'login': self.$localStorage.get('HIPPO-LOGIN')
+        };
+    },
+  },
 });
