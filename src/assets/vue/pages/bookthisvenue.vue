@@ -10,15 +10,15 @@
         <form id="booking_request_form" class="list form-store-data">
         <f7-list no-hairlines-md>
 
-          <f7-list-item :title="`${venueID}`" smart-select
-                 :smart-select-params="{closeOnSelect: true}"
-                 >
-            <select v-model="venueID" name="venueid">
+          <f7-list-item  title="Venue"
+                         smart-select 
+                         :smart-select-params="{closeOnSelect: true}">
+            <select v-model="venueID" name="venue_id">
               <option v-for="(vid, index) in venueIDs" :value="vid">{{vid}}</option>
             </select>
           </f7-list-item>
 
-          <f7-list-item>
+          <f7-list-item title="Start">
             <date-picker 
                       name="start_date_time"
                       v-model="startDateTime" 
@@ -30,12 +30,13 @@
             </date-picker>
           </f7-list-item>
 
-          <f7-list-item>
+          <f7-list-item title="End">
             <date-picker name="end_date_time"
                       v-model="endDateTime" 
                          format="MMM DD hh:mm A"
                          type="datetime" 
                          :minute-step="15"
+                         :not-before="startDateTime"
                          lang="en"
                          >
             </date-picker>
@@ -58,7 +59,7 @@
           <f7-list-input name="url" ref="url" type="url" placeholder="External Link (URL)">
           </f7-list-input>
 
-          <f7-list-input ref="is_public_event"
+          <f7-list-input name="is_public_event"
             label="Add to NCBS calendar?" type="select" defaultValue="NO">
             <option value="YES">Yes</option>
             <option value="NO">No</option>
@@ -96,7 +97,8 @@ moment.defaultFormat = 'YYYY-MM-DD hh:mm';
         const app = self.$f7;
         self.venueIDs = self.$localStorage.get('venueIDs').split(',');
       },
-      checkAndSubmit : function( ){
+      checkAndSubmit : function()
+      {
         const self = this;
         const app = self.$f7;
         var fdata = app.form.convertToData('#booking_request_form');
@@ -123,15 +125,14 @@ moment.defaultFormat = 'YYYY-MM-DD hh:mm';
         }
 
         // Now check if venue is free at this time and date.
-        var status = false;
+        var okToBook = true;
         var link = self.$store.state.api +
             '/venue/status/'+this.venueID
             +'/'+moment(this.startDateTime).format('X')
             +'/'+moment(self.endDateTime).format('X');
 
-        app.request.post(link
-          , this.apiPostData()
-          , function(data) 
+        app.request.post(link, this.apiPostData(), 
+          function(data) 
           {
             const res = JSON.parse(data);
             console.log( res.data[self.venueID] );
@@ -144,15 +145,35 @@ moment.defaultFormat = 'YYYY-MM-DD hh:mm';
                 closeButton: true,
                 closeTimeout: 3000,
               }).open();
-              return;
+              okToBook = false;
             }
+          }
+        );
 
-            // Else submit booking request.
-            console.log('OK', 'Ok to book');
+        if(! okToBook)
+          return;
+
+        // Else submit booking request.
+        console.log('OK', 'Ok to book');
+        link = self.$store.state.api+'/venue/book/'+this.venueID 
+          +'/'+moment(this.startDateTime).format('X') 
+          +'/'+moment(self.endDateTime).format('X');
+
+        var data = Object.assign(fdata, self.apiPostData());
+
+        console.log('booking link', link);
+        console.log(data);
+        app.request.post(link, data,
+          function(data) 
+          {
+            console.log("Success", data);
+          }
+          , function(data) 
+          {
+            console.log( "Failed to send query.");
           }
         );
       },
-    },
+    }, 
   }; 
-
 </script>
