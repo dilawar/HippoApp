@@ -22,7 +22,7 @@
         <f7-list-item-cell>
           <date-picker v-model="endDateTime" lang="en"
                        placeholder="Ending time"
-                       :time-picker-options="{ start: '8:00', step: '00:15', end: '22:30' }"
+                       :minute-step="15"
                        :append-to-body=true
                        :popupStyle="{'z-index':10000}"
                        format="HH:mm A"
@@ -43,7 +43,7 @@
                     :title="`${item.id}`"
                     :value="`${item.id}`"
                     :key="index"
-                    :link="`/book/${item.id}/${startDateTime}/${endDateTime}//`"
+                    :link="`/book/${item.id}/${startTimeStamp}/${endTimeStamp}/`"
                     after="Book">
         <f7-icon slot="media" ios="f7:info" md="material:info"></f7-icon>
       </f7-list-item>
@@ -69,66 +69,68 @@
 
 <script>
 import moment from 'moment';
-//moment.defaultFormat = "DD-MM-YYYY HH:mm";
 
 export default {
-  data() {
-    return {
-      venuesStatus : [],
-      venuesFree: [],
-      venuesTaken: [],
-      startDateTime: moment(),
-      endDateTime: moment().add(60, 'm')
-    };
-  },
-  actions: {
-    bookingPopup: function(data) {
-      console.log(data);
-    },
-  },
-  watch: {
-    startDateTime: function(data) {
-      if(this.endDateTime < this.startDateTime)
-        this.endDateTime = moment(data).add(60, 'm').format('x');
-    }
-  },
-  methods: {
-    bookingButton: function(data) {
-      console.log(data);
-    },
-    refreshVenues: function(data) {
-      const self         = this;
-      const app          = self.$f7;
-      self.isOpen        = false;
+   data() {
+      return {
+         venuesStatus : [],
+         venuesFree: [],
+         venuesTaken: [],
+         startDateTime: moment(),
+         startTimeStamp: moment().format('X'),
+         endDateTime: moment().add(60, 'm'),
+         endTimeStamp: moment().add(60, 'm').format('X'),
+      };
+   },
+   actions: {
+      bookingPopup: function(data) {
+         console.log(data);
+      },
+   },
+   watch : {
+      startDateTime: function(data){ this.startTimeStamp = moment(data).format('X');}, 
+      endDateTime: function(data){ this.endTimeStamp = moment(data).format('X');},
+   },
+   methods: { 
+      refreshVenues: function(data) 
+      {
+         const self         = this;
+         const app          = self.$f7;
+         self.isOpen        = false;
 
-      // Try to connect.
-      var link = self.$store.state.api 
-          + '/venue/status/all/'
-          + moment(self.startDateTime).format('X')
-          + '/' + moment(self.endDateTime).format('X')
-      app.request.post( link, this.apiPostData()
-        , function(json) 
-        {
-          var res = JSON.parse(json);
-          console.log('res', res);
+         console.log( moment(self.endDateTime).diff(moment(self.startDateTime), 'd') );
 
-          if(res.status == 'ok')
-          {
-            self.venuesStatus = res.data.venues;
-            self.venuesFree = self.venuesStatus.filter(el=>el.events.length==0);
-            self.venuesTaken = self.venuesStatus.filter(el=>el.events.length>0);
-            self.$localStorage.set('venueIDs', res.data.venues.map(x=>x.id));
-          }
-        });
-      
-      // Fetch classes of booking.
-      app.request.post( self.$store.state.api+'/config/bookmyvenue.class'
-        , this.apiPostData()
-        , function(json) {
-          const res = JSON.parse(json);
-          if( res.status=='ok')
-            self.$localStorage.set('classes', res.data.value);
-        });
-    }
-  },
-}; </script>
+         // Try to connect. Convert date to unix-timestamp.
+         var link = self.$store.state.api+'/venue/status/all/'
+            +self.startTimeStamp+'/'+self.endTimeStamp;
+
+         app.request.post( link, this.apiPostData()
+            , function(json) 
+            {
+               var res = JSON.parse(json);
+               if(res.status == 'ok')
+               {
+                  self.venuesStatus = res.data.venues;
+                  self.venuesFree = self.venuesStatus.filter(el=>el.events.length==0);
+                  self.venuesTaken = self.venuesStatus.filter(el=>el.events.length>0);
+                  self.$localStorage.set('venueIDs', res.data.venues.map(x=>x.id));
+               }
+            });
+
+         // TODO: move it to init app section.
+         if( ! self.$localStorage.get('classes') )
+         {
+            // Fetch classes of booking.
+            app.request.post( self.$store.state.api+'/config/bookmyvenue.class'
+               , this.apiPostData()
+               , function(json) {
+                  const res = JSON.parse(json);
+                  if( res.status=='ok')
+                     self.$localStorage.set('classes', res.data.value);
+               });
+         }
+      }
+   },
+}; 
+
+</script>

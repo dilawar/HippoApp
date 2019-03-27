@@ -22,7 +22,7 @@ export default [
     component: BookingPage
   },
   {
-    path: '/book/:venueId/:startDateTime/:endDateTime/',
+    path: '/book/:venue/:startDateTime/:endDateTime/',
     component: BookThisVenuePage
   },
   {
