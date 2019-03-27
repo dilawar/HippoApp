@@ -4,6 +4,7 @@ import FormPage from './assets/vue/pages/form.vue';
 import LoginPage from './assets/vue/pages/login.vue';
 import DynamicRoutePage from './assets/vue/pages/dynamic-route.vue';
 import BookingPage from './assets/vue/pages/booking.vue';
+import MyBookingPage from './assets/vue/pages/mybooking.vue';
 import BookThisVenuePage from './assets/vue/pages/bookthisvenue.vue';
 import EventPage from './assets/vue/pages/events.vue';
 
@@ -20,6 +21,10 @@ export default [
    {
       path: '/booking/',
       component: BookingPage
+   },
+   {
+      path: '/mybooking/',
+      component: MyBookingPage
    },
    {
       path: '/book/:venue/:startDateTime/:endDateTime/',

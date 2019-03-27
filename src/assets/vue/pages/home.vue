@@ -15,12 +15,16 @@
 
         <f7-list class="components-list searchbar-found">
 
-            <f7-list-item link="/booking/" title="Booking" panel-close>
-                <f7-icon slot="media" ios="f7:info" md="material:info"></f7-icon>
+            <f7-list-item link="/booking/" title="Create Booking" panel-close>
+                <f7-icon slot="media" icon="fa fa-clipboard fa-2x"></f7-icon>
+            </f7-list-item>
+
+            <f7-list-item link="/mybooking/" title="My Bookings" panel-close>
+                <f7-icon slot="media" icon="fa fa-edit fa-2x"></f7-icon>
             </f7-list-item>
 
             <f7-list-item link="/events/" title="Events" panel-close>
-                <f7-icon slot="media" icon="fa fa-vcard-o fa-fw"></f7-icon>
+                <f7-icon slot="media" icon="fa fa-calendar fa-2x"></f7-icon>
             </f7-list-item>
 
             <f7-list-item link="/dynamic-route/blog/11/post/23/" title="Dynamic Route" panel-close>

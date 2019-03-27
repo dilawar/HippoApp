@@ -67,12 +67,12 @@ Vue.mixin({
 
 // Init Vue App
 export default new Vue({
-  // Root Element
-  el: '#app',
-  store,
-  render: c => c('app'),
-  components: {app},
-  localStorage : {
-    HippoApiKey : ''
-  },
+   // Root Element
+   el: '#app',
+   store,
+   render: c => c('app'),
+   components: {app},
+   localStorage : {
+      HippoApiKey : ''
+   },
 });

@@ -19,15 +19,21 @@ if (document.location.search.indexOf('theme=') >= 0) {
 }
 
 export default {
-  data() {
-    return {
-      f7params: {
-        theme,
-        routes,
-        id: 'com.dilawar.hippo',
-        view: { pushState: true, domCache:false }
+   data() {
+      return {
+         f7params: {
+            theme,
+            routes,
+            id: 'com.dilawar.hippo',
+            view: {pushState: true, domCache:false},
+            notification: { title: 'Hippo' }
+         },
+         notification: {
+            title: 'NCBS Hippo',
+            closeTimeout: 3000,
+            closeButton: true,
+         },
       }
-    }
-  }
+   }
 }
 </script>
