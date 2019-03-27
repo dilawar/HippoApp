@@ -57,6 +57,7 @@
     "material-design-icons": "^3.0.1",
     "moment": "^2.24.0",
     "vue": "^2.6.10",
+    "vue-add-to-calendar": "^1.0.4",
     "vue-localstorage": "^0.6.2",
     "vue2-datepicker": "^2.10.3",
     "vuex": "^3.1.0",
