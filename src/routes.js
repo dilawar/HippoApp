@@ -13,48 +13,49 @@ import Chat from './assets/vue/pages/chat.vue';
 import Vuex from './assets/vue/pages/vuex.vue';
 
 export default [
-  {
-    path: '/',
-    component: Home
-  },
-  {
-    path: '/booking/',
-    component: BookingPage
-  },
-  {
-    path: '/book/:venue/:startDateTime/:endDateTime/',
-    component: BookThisVenuePage
-  },
-  {
-    path: '/events/',
-    component: EventPage
-  },
-  {
-    path: '/login/',
-    component: LoginPage
-  },
-  {
-    path: '/form/',
-    component: FormPage
-  },
-  {
-    path: '/dynamic-route/blog/:blogId/post/:postId/',
-    component: DynamicRoutePage
-  },
-  {
-    path: '/panel-left/',
-    component: PanelLeftPage
-  },
-  {
-    path: '/color-themes/',
-    component: ColorThemes
-  },
-  {
-    path: '/chat/',
-    component: Chat
-  },
-  {
-    path: '/vuex/',
-    component: Vuex
-  },
+   {
+      path: '/',
+      component: Home
+   },
+   {
+      path: '/booking/',
+      component: BookingPage
+   },
+   {
+      path: '/book/:venue/:startDateTime/:endDateTime/',
+      component: BookThisVenuePage,
+      pushState: false,
+   },
+   {
+      path: '/events/',
+      component: EventPage
+   },
+   {
+      path: '/login/',
+      component: LoginPage
+   },
+   {
+      path: '/form/',
+      component: FormPage
+   },
+   {
+      path: '/dynamic-route/blog/:blogId/post/:postId/',
+      component: DynamicRoutePage
+   },
+   {
+      path: '/panel-left/',
+      component: PanelLeftPage
+   },
+   {
+      path: '/color-themes/',
+      component: ColorThemes
+   },
+   {
+      path: '/chat/',
+      component: Chat
+   },
+   {
+      path: '/vuex/',
+      component: Vuex
+   },
 ]
