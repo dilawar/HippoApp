@@ -18,7 +18,24 @@
                 <f7-accordion-content>
                    <f7-block>{{val.description}}</f7-block>
                 </f7-accordion-content>
-             <f7-icon slot=media icon="fa fa-info-circle"></f7-icon>
+
+             <!-- <f7-icon slot=media icon="fa fa-info-circle"></f7-icon> -->
+             <!-- Calendar -->
+             <add-to-calendar slot="media"
+                              :title="val.title"
+                              :location="val.venue"
+                              :details="val.description"
+                              :start="toDate(val.start)"
+                              :end="toDate(val.end)"
+                              inline-template>
+                <div>
+                <google-calendar id="google-calendar">
+                   <i class="fa fa-google fa-2x"></i></google-calendar>
+                <microsoft-calendar id="microsoft-calendar">
+                   <i class="fa fa-windows fa-2x"></i></microsoft-calendar>
+                </div>
+            </add-to-calendar>
+
           </f7-list-item>
        </f7-list>
   </f7-page-content>

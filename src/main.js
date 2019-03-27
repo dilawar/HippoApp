@@ -23,6 +23,8 @@ import FontAwesome from 'font-awesome/css/font-awesome.css'
 // import AppStyles from './assets/sass/main.scss'
 
 import DatePicker from 'vue2-datepicker'
+var AddToCalendar = require('vue-add-to-calendar');
+Vue.use(AddToCalendar);
 
 // Import App Component
 import app from './main.vue'
@@ -54,6 +56,9 @@ Vue.mixin({
     },
     dbDateTime: function(date) {
       return moment(date).format('YYYY-MM-DDTHH:mm');
+    },
+    toDate: function(dateStr) {
+       return moment(dateStr).toDate();
     },
     apiPostData: function() {
         const self = this;

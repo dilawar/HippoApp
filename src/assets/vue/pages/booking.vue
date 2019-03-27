@@ -54,9 +54,10 @@
     <f7-list>
       <f7-list-item v-for="(item, index) in venuesTaken" 
                     :title="`${item.id}`"
-                    :footer="`${item.events[0].title}`"
+                    :header="`${item.events[0].title}`"
+                    :footer="`${item.events[0].date}
+                    ${item.events[0].start_time} to ${item.events[0].end_time}`"
                     :key="index"
-                    after="Add to calendar"
         >
       </f7-list-item>
     </f7-list>
