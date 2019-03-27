@@ -7,8 +7,8 @@
   <f7-page-content>
 
     <!-- Date and time -->
-    <f7-list no-hairlines>
-       <f7-list-item label="Date">
+    <f7-list no-hairlines simple-list inset>
+       <f7-list-item>
           <date-picker v-model="startDate" 
                        lang="en"
                        format="MMM DD, YYYY"
@@ -16,13 +16,13 @@
                        :popupStyle="{'z-index':10000}"
                        type="date"> 
           </date-picker>
-         <f7-button title="Referesh" filled raised
-                    @click="fetchMyBooking"
-            >Refresh</f7-button>
+         <f7-button title="Referesh" 
+                    filled raised
+                    @click="fetchMyBooking">Refresh</f7-button>
        </f7-list-item>
     </f7-list>
 
-    <f7-block-title>Pending requests</f7-block-title>
+    <f7-block-title medium>Pending requests</f7-block-title>
     <f7-list>
        <f7-list-item accordion-item
                v-for="(requests, gid, index) in requestGroups" 
@@ -50,7 +50,7 @@
        </f7-list-item>
     </f7-list>
 
-    <f7-block-title>Approved booking</f7-block-title>
+    <f7-block-title medium>Approved booking</f7-block-title>
     <f7-list accordion-list >
        <f7-list-item accordion-item 
                v-for="(events, gid, index) in eventGroups" 
@@ -67,7 +67,7 @@
                                 @swipeout:deleted="deleteEvent(val.gid, val.eid)"
                                 :key="val.gid+'.'+val.eid" 
                                 :title="val.date+', '+val.start_time"
-                                :footer="val.venue"
+                                :footer="val.venue + ' | ' + val.title"
                                 >
                      <f7-icon slot="media" icon="fa fa-check-circle fa-2x"></f7-icon>
                      <f7-swipeout-actions right>
