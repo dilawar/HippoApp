@@ -27,6 +27,10 @@
                 <f7-icon slot="media" icon="fa fa-calendar fa-2x"></f7-icon>
             </f7-list-item>
 
+            <f7-list-item link="/travel/" title="Travel" panel-close>
+                <f7-icon slot="media" icon="fa fa-bus fa-2x"></f7-icon>
+            </f7-list-item>
+
             <f7-list-item link="/dynamic-route/blog/11/post/23/" title="Dynamic Route" panel-close>
                 <f7-icon slot="media" icon="fa fa-rss fa-fw"></f7-icon>
             </f7-list-item>
