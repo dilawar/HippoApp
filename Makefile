@@ -1,9 +1,9 @@
-craete:
+create:
 	cordova create . com.dilawar.hippo Hippo \
 	    --template cordova-template-framework7-vue-webpack
 
 init:
-	cordova platform add android 
+	cordova platform add android  || echo "Failed to add android platform"
 	cordova platform add browser
 	npm install font-awesome 
 	npm install vue
