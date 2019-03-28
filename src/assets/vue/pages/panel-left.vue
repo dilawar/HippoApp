@@ -1,7 +1,8 @@
 <template>
    <f7-page>
-      <f7-navbar title="NCBS"></f7-navbar>
+      <f7-navbar title="NCBS Hippo"></f7-navbar>
 
+      <!--
       <f7-block v-if="showLogin">
          <f7-button v-if="showLogin" raised large fill login-screen-open=".hippo-login-screen">Login</f7-button>
       </f7-block>
@@ -40,6 +41,10 @@
                           </f7-list>
                        </f7-page>
       </f7-login-screen>
+      -->
+
+      Here is our panel.
+
    </f7-page>
 </template>
 
