@@ -15,7 +15,10 @@
      </f7-list>
 
      <f7-list media-list no-hairlines>
-        <f7-list-item v-for="(val, key, item) in user" :header="key" :title="val">
+        <f7-list-item v-for="(val, key, item) in user" 
+                      :key="key"
+                      :header="key" 
+                      :title="val">
            <f7-icon slot="media" 
                     v-if="key.toLowerCase()=='extenstion'" 
                     icon="fa fa-phone fa-2x"></f7-icon>

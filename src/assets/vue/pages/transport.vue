@@ -6,8 +6,13 @@
   <f7-page-content>
      <f7-block>
         <f7-row noGap>
-           <f7-col v-for="d in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']">
-              <f7-button raised :fill="d==today?true:false" @click="changeDay(d)"> {{d}} </f7-button>
+           <f7-col v-for="d in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']"
+                   :key="d"
+              >
+              <f7-button raised 
+                         :key="d"
+                         :fill="d==today?true:false" 
+                         @click="changeDay(d)"> {{d}} </f7-button>
            </f7-col>
         </f7-row>
      </f7-block>
@@ -53,6 +58,7 @@
            </f7-list-item>
 
            <f7-list-item v-for="(val,item) in currentTransportActive"
+                         :key="item"
                          :title="val.trip_start_time">
               <f7-icon v-if="val.vehicle.toLowerCase()=='shuttle'" slot="media" icon="fa fa-bus fa-2x"></f7-icon>
               <f7-icon v-else slot="media" icon="fa fa-bug fa-2x"></f7-icon>
