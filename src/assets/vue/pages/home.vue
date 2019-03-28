@@ -30,17 +30,8 @@
             <f7-list-item link="/transport/" title="Transport" panel-close>
                 <f7-icon slot="media" icon="fa fa-bus fa-2x"></f7-icon>
             </f7-list-item>
-
-            <f7-list-item link="/dynamic-route/blog/11/post/23/" title="Dynamic Route" panel-close>
-                <f7-icon slot="media" icon="fa fa-rss fa-fw"></f7-icon>
-            </f7-list-item>
-
-            <f7-list-item link="/chat/" title="Chat" panel-close>
-                <f7-icon slot="media" icon="fa fa-user fa-fw"></f7-icon>
-            </f7-list-item>
-
-            <f7-list-item link="/vuex/" title="Vuex" panel-close>
-                <f7-icon slot="media" icon="fa fa-battery fa-fw"></f7-icon>
+            <f7-list-item link="/search/" title="Search" panel-close>
+                <f7-icon slot="media" icon="fa fa-search fa-2x"></f7-icon>
             </f7-list-item>
         </f7-list>
 

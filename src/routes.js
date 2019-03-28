@@ -13,6 +13,7 @@ import TransportPage from './assets/vue/pages/transport.vue';
 import PanelLeftPage from './assets/vue/pages/panel-left.vue';
 import ColorThemes from './assets/vue/pages/color-themes.vue';
 import Chat from './assets/vue/pages/chat.vue';
+import SearchPage from './assets/vue/pages/search.vue';
 import Vuex from './assets/vue/pages/vuex.vue';
 
 export default [
@@ -60,6 +61,10 @@ export default [
    {
       path: '/panel-left/',
       component: PanelLeftPage
+   },
+   {
+      path: '/search/',
+      component: SearchPage
    },
    {
       path: '/color-themes/',
