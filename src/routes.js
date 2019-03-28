@@ -8,6 +8,7 @@ import MyBookingPage from './assets/vue/pages/mybooking.vue';
 import BookThisVenuePage from './assets/vue/pages/bookthisvenue.vue';
 import EventPage from './assets/vue/pages/events.vue';
 import TravelPage from './assets/vue/pages/travel.vue';
+import TransportPage from './assets/vue/pages/transport.vue';
 
 import PanelLeftPage from './assets/vue/pages/panel-left.vue';
 import ColorThemes from './assets/vue/pages/color-themes.vue';
@@ -39,6 +40,10 @@ export default [
    {
       path: '/travel/',
       component: TravelPage
+   },
+   {
+      path: '/transport/',
+      component: TransportPage
    },
    {
       path: '/login/',
