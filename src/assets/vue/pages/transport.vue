@@ -46,6 +46,7 @@
         <f7-list media-list no-hairlines>
            <f7-list-item v-for="(val,item) in currentTransportGone"
                          :footer="val.trip_start_time"
+                         :key="item"
                          >
               <f7-icon v-if="val.vehicle.toLowerCase()=='shuttle'" slot="media" icon="fa fa-bus fa-1x"></f7-icon>
               <f7-icon v-else slot="media" icon="fa fa-bug fa-1x"></f7-icon>
