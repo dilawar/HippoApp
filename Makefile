@@ -4,9 +4,9 @@ create:
 
 init:
 	cordova platform add android  || echo "Failed to add android platform"
-	cordova platform add browser
+	cordova platform add browser || echo "Failed to add browser"
 	npm install font-awesome 
-	npm install vue
+	npm install vue vuex
 
 apk:
 	cordova build android --release
