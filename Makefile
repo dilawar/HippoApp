@@ -25,3 +25,5 @@ apk:
 run:
 	cordova run browser -- --live-reload
 
+upload :
+	cordova run android

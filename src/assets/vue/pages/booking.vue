@@ -12,6 +12,7 @@
         <f7-list-item-cell>
           <date-picker v-model="startDateTime" lang="en"
                        format="MMM DD HH:mm A"
+                       :width="150"
                        :time-picker-options="{ start: '8:00', step: '00:15', end: '22:30' }"
                        :minute-step="15"
                        :append-to-body=true
