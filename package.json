@@ -1,7 +1,11 @@
 {
   "name": "com.dilawar.hippo",
   "version": "1.0.0",
-  "description": "Brand new cordova project with framework7 - vue - webpack!",
+  "description": "NCBS community app powered by NCBS Hippo",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dilawar/HippoApp.git"
+  },
   "scripts": {
     "default": "echo \"There is no scripts you can run with npm run command.\" && exit 1"
   },
