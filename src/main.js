@@ -47,27 +47,35 @@ Vue.use(VueLocalStorage)
 
 // Global function.
 Vue.mixin({
-  methods : {
-    dbDate: function( date ) {
-      return moment(date, "YYYY-MM-DD").format("YYYY-MM-DD");
-    },
-    dbTime: function(date, addminutes=0) {
-      return moment(date, "HH:MM").add(addminutes, 'm').format("HH:mm");
-    },
-    dbDateTime: function(date) {
-      return moment(date).format('YYYY-MM-DDTHH:mm');
-    },
-    toDate: function(dateStr) {
-       return moment(dateStr).toDate();
-    },
-    apiPostData: function() {
-        const self = this;
-        return {
-          'HIPPO-API-KEY': self.$localStorage.get('HIPPO-API-KEY'), 
-          'login': self.$localStorage.get('HIPPO-LOGIN')
-        };
-    },
-  },
+   methods : {
+      dbDate: function( date ) {
+         return moment(date, "YYYY-MM-DD").format("YYYY-MM-DD");
+      },
+      dbTime: function(date, addminutes=0) {
+         return moment(date, "HH:MM").add(addminutes, 'm').format("HH:mm");
+      },
+      dbDateTime: function(date) {
+         return moment(date).format('YYYY-MM-DDTHH:mm');
+      },
+      toDate: function(dateStr) {
+         return moment(dateStr).toDate();
+      },
+      apiPostData: function() {
+         const self = this;
+         return {
+            'HIPPO-API-KEY': self.$localStorage.get('HIPPO-API-KEY'), 
+            'login': self.$localStorage.get('HIPPO-LOGIN')
+         };
+      },
+      isUserAuthenticated: function() {
+         // If API key is found then user is logged in.
+         const self = this;
+         const apiKey = self.$localStorage.get('HIPPO-API-KEY');
+         if( apiKey && apiKey.trim().length > 0 )
+            return true;
+         return false;
+      },
+   },
 })
 
 // Init Vue App

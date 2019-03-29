@@ -21,6 +21,10 @@ export default [
       component: Home
    },
    {
+      path: '/home/',
+      component: Home
+   },
+   {
       path: '/userpanel/',
       component: PanelLeftPage
    },
