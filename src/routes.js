@@ -1,5 +1,6 @@
 import Home from './assets/vue/pages/home.vue';
 import AboutPage from './assets/vue/pages/about.vue';
+import PanelLeftPage from './assets/vue/pages/panel-left.vue';
 import FormPage from './assets/vue/pages/form.vue';
 import LoginPage from './assets/vue/pages/login.vue';
 import DynamicRoutePage from './assets/vue/pages/dynamic-route.vue';
@@ -9,8 +10,6 @@ import BookThisVenuePage from './assets/vue/pages/bookthisvenue.vue';
 import EventPage from './assets/vue/pages/events.vue';
 import TravelPage from './assets/vue/pages/travel.vue';
 import TransportPage from './assets/vue/pages/transport.vue';
-
-import PanelLeftPage from './assets/vue/pages/panel-left.vue';
 import ColorThemes from './assets/vue/pages/color-themes.vue';
 import Chat from './assets/vue/pages/chat.vue';
 import SearchPage from './assets/vue/pages/search.vue';
@@ -20,6 +19,10 @@ export default [
    {
       path: '/',
       component: Home
+   },
+   {
+      path: '/userpanel/',
+      component: PanelLeftPage
    },
    {
       path: '/booking/',
@@ -57,10 +60,6 @@ export default [
    {
       path: '/dynamic-route/blog/:blogId/post/:postId/',
       component: DynamicRoutePage
-   },
-   {
-      path: '/panel-left/',
-      component: PanelLeftPage
    },
    {
       path: '/search/',

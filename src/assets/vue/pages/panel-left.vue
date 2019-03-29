@@ -1,101 +1,63 @@
 <template>
-   <f7-page>
+   <f7-page @init="isUserAuthenticated">
       <f7-navbar title="NCBS Hippo"></f7-navbar>
 
-      <!--
-      <f7-block v-if="showLogin">
-         <f7-button v-if="showLogin" raised large fill login-screen-open=".hippo-login-screen">Login</f7-button>
+      <f7-block>
+         <f7-list media-list no-hairlines>
+            <f7-list-item :title="username">
+               <f7-button slot="after"
+                          fill raised
+                          panel-close
+                          title="Logout"
+                          label="Logout"
+                          v-if="alreadyLoggedIn" 
+                          @click="signOut">Logout
+               </f7-button>
+            </f7-list-item>
+         </f7-list>
       </f7-block>
 
-      <!-- Other elements -->
-
-      <f7-login-screen class="hippo-login-screen" 
-                       :opened="loginScreenOpened" 
-                       @loginscreen:closed="loginScreenOpened = false"
-                       >
-
-                       <f7-page login-screen>
-                          <f7-login-screen-title>Login</f7-login-screen-title>
-                          <f7-list form>
-                             <f7-list-input
-                                label="Username"
-                                type="text"
-                                placeholder="Your username"
-                                :value="username"
-                                @input="username = $event.target.value"
-                                ></f7-list-input>
-                             <f7-list-input
-                                label="Password"
-                                type="password"
-                                placeholder="Your password"
-                                :value="password"
-                                @input="password = $event.target.value"
-                                ></f7-list-input>
-                          </f7-list>
-                          <f7-list>
-                             <f7-list-button @click="signIn">Sign In</f7-list-button>
-                             <f7-block-footer>
-                                Use your NCBS intranet username password or generate an app specific
-                                password in Hippo.
-                             </f7-block-footer>
-                          </f7-list>
-                       </f7-page>
-      </f7-login-screen>
-      -->
-
-      Here is our panel.
+      <!-- More information here -->
 
    </f7-page>
+
 </template>
 
 <script>
-  export default {
-    data() {
-      return {
-        loginScreenOpened: false,
-        username: '',
-        password: '',
-      };
-    },
-    methods: {
-      signIn()
-      {
-        const self = this;
-        const app = self.$f7;
-
-        // Try to connect.
-        console.log( 'Already logged in is' + self.$store.state.user );
-
-        if(! self.$store.state.alreadyLoggedIn)
-        {
-          app.request.post(self.$store.state.api + '/authenticate'
-            , {'login':self.username, 'password': btoa(self.password)}
-            , function(json) 
-            {
-              var res = JSON.parse(json);
-              if( res.status =='ok' && res.data.apikey != '')
-              {
-                self.$store.commit('USER_LOGGED', self.username);
-                self.$store.commit('HIPPO_API_KEY', res.data.apikey);
-                app.dialog.alert(`Success.`, () => {app.loginScreen.close()});
-                self.$localStorage.set('HIPPO-API-KEY', res.data.apikey);
-                self.$localStorage.set('HIPPO-LOGIN', self.username);
-              }
-              else
-                app.dialog.alert(`Failed to login. Try again.`);
-            }
-          );
-        }
-        else
-        {
-          app.dialog.alert(`You are already logged in!`, ()=>{app.loginScreen.close()});
-        }
+   export default {
+      data() {
+         return {
+            alreadyLoggedIn: false,
+            username: '',
+         };
       },
-    },
-    computed : {
-      showLogin () {
-        return ! this.$store.state.alreadyLoggedIn;
-      }
-    }
-  };
+      mounted()
+      {
+         const self = this;
+         self.alreadyLoggedIn = self.isUserAuthenticated();
+         self.username = self.$localStorage.get('HIPPO-LOGIN');
+      },
+      methods: {
+         signOut: function() {
+            const self = this;
+            console.log( "Signing out.");
+            self.$localStorage.set('HIPPO-API-KEY', '');
+            self.$localStorage.set('HIPPO-LOGIN', '');
+            self.alreadyLoggedIn = false;
+            self.$f7router.navigate("/home/");
+         },
+         isUserAuthenticated: function() {
+            // If API key is found then user is logged in.
+            const self = this;
+            const apiKey = self.$localStorage.get('HIPPO-API-KEY');
+            if( apiKey.trim().length > 0 )
+            {
+               // TODO: Send a request just to verify that key still works.
+               self.alreadyLoggedIn = true;
+               return true;
+            }
+            return false;
+         },
+      },
+   }
 </script>

@@ -2,10 +2,10 @@
   <!-- App -->
   <f7-app :params="f7params">
     <f7-statusbar></f7-statusbar>
-    <f7-panel left cover>
-      <f7-view url="/panel-left/" links-view=".view-main" />
+    <f7-view url="/" main tab tab-active></f7-view>
+    <f7-panel left cover> 
+       <f7-view url="/userpanel/" ></f7-view>
     </f7-panel>
-    <f7-view url="/" :main="true" class="ios-edges"></f7-view>
   </f7-app>
 </template>
 <script>
@@ -25,7 +25,6 @@ export default {
             theme,
             routes,
             id: 'com.dilawar.hippo',
-            view: {pushState: true, domCache:false},
             notification: { title: 'Hippo' }
          },
          notification: {
