@@ -3,7 +3,9 @@
 
       <f7-navbar>
          <f7-nav-left>
-            <f7-link class="panel-open" open-panel="left" icon="fa fa-bars"></f7-link>
+            <f7-link class="panel-open" open-panel="left" icon="fa fa-bars" 
+                                                          @panel:open="isUserAuthenticated"
+               ></f7-link>
          </f7-nav-left>
          <div class="title">NCBS Hippo</div>
       </f7-navbar>
@@ -137,7 +139,7 @@
             // If API key is found then user is logged in.
             const self = this;
             const apiKey = self.$localStorage.get('HIPPO-API-KEY');
-            if( apiKey.trim().length > 0 )
+            if( apiKey && apiKey.trim().length > 0 )
                return true;
             return false;
          },

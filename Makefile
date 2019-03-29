@@ -1,3 +1,7 @@
+KEYSTORE:=$(HOME)/Work/APPS/KeyStore/dilawar.jks
+
+all : apk
+
 create:
 	cordova create . com.dilawar.hippo Hippo \
 	    --template cordova-template-framework7-vue-webpack
@@ -7,16 +11,12 @@ init:
 	cordova platform add browser || echo "Failed to add browser"
 	npm install 
 
-sign : 
-	@cordova run android --release \
-	    -- --keystore=~/Work/APPS/KeyStore/ \
-	    --storePassword=$(KEYSTORE_PASSWORD) \
-
-
+build : 
+	@cordova run android 
 
 apk: 
 	cordova build android --release \
-	    -- --keystore=~/Work/APPS/AndroidSpecific \
+	    -- --keystore=$(KEYSTORE) \
 	    --storePassword=$(KEYSTORE_PASSWORD) \
 	    --alias=dilawar \
 	    --password=$(KEYSTORE_PASSWORD)

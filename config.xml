@@ -18,6 +18,7 @@
     <allow-intent href="sms:*" />
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
+    <icon src="res/icon/android/icon.png" />
     <platform name="android">
         <allow-intent href="market:*" />
     </platform>
@@ -28,5 +29,5 @@
     </platform>
     <allow-navigation href="*" />
     <engine name="android" spec="^7.1.4" />
-    <engine name="browser" spec="~5.0.4" />
+    <engine name="browser" spec="^5.0.4" />
 </widget>

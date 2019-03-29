@@ -25,7 +25,6 @@ export default {
             theme,
             routes,
             id: 'com.dilawar.hippo',
-            notification: { title: 'Hippo' }
          },
          notification: {
             title: 'NCBS Hippo',
