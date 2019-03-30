@@ -1,72 +1,66 @@
 <template>
-<f7-page ptr @ptr:refresh="fetchTransport" @page:init="fetchTransport"
-   @page:refresh="fetchTransport">
+<f7-page page-content
+         ptr @ptr:refresh="fetchTransport" @page:init="fetchTransport"
+         @page:refresh="fetchTransport"
+         >
   <f7-navbar title="Transport" back-link="Back"></f7-navbar>
-  <!--  Show venues as grid or list. -->
-  <f7-page-content>
-     <f7-block>
-        <f7-row noGap>
-           <f7-col v-for="d in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']"
-                   :key="d"
-              >
-              <f7-button raised 
-                         :key="d"
-                         :fill="d==today?true:false" 
-                         @click="changeDay(d)"> {{d}} </f7-button>
-           </f7-col>
-        </f7-row>
-     </f7-block>
 
-     <f7-block>
-        <f7-row>
-           <f7-col>
-              <f7-button raised 
-                  @click="routeFromTo('Mandara','NCBS')"
-                  >Mandara → NCBS</f7-button>
-           </f7-col>
-           <f7-col>
-              <f7-button raised  
-                 @click="routeFromTo('NCBS', 'Mandara')"
-                 >NCBS → Mandara</f7-button>
-           </f7-col>
-        </f7-row>
-        <f7-row>
-           <f7-col>
-              <f7-button raised  
-                         @click="routeFromTo('IISc', 'NCBS')"
-                 >IISc → NCBS</f7-button>
-           </f7-col>
-           <f7-col>
-              <f7-button raised  @click="routeFromTo('NCBS', 'IISc')" 
-                 >NCBS → IISc</f7-button>
-           </f7-col>
-        </f7-row>
-     </f7-block>
+  <f7-block>
+     <f7-row noGap>
+        <f7-col v-for="d in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']" :key="d">
+                <f7-button :key="d"
+                           :fill="d==today?true:false" 
+                           @click="changeDay(d)"> {{d}} </f7-button>
+        </f7-col>
+     </f7-row>
+     <f7-row>
+        <f7-col>
+           <f7-button raised 
+                      @click="routeFromTo('Mandara','NCBS')"
+                      >Mandara → NCBS</f7-button>
+        </f7-col>
+        <f7-col>
+           <f7-button raised  
+                      @click="routeFromTo('NCBS', 'Mandara')"
+                      >NCBS → Mandara</f7-button>
+        </f7-col>
+     </f7-row>
+     <f7-row>
+        <f7-col>
+           <f7-button raised  
+                      @click="routeFromTo('IISc', 'NCBS')"
+                      >IISc → NCBS</f7-button>
+        </f7-col>
+        <f7-col>
+           <f7-button raised  @click="routeFromTo('NCBS', 'IISc')" 
+                      >NCBS → IISc</f7-button>
+        </f7-col>
+     </f7-row>
+  </f7-block>
 
-     <f7-block-title>{{today}} | {{currentRoute}} 
-        <br />
-        <small>These timings are not be throughly verified!</small>
-     </f7-block-title>
+  <f7-block-title> 
+     <f7-icon icon="fa fa-map-marker fa-2x"> {{currentRoute}}</f7-icon>
+  </f7-block-title>
 
-        <f7-list media-list no-hairlines>
-           <f7-list-item v-for="(val,item) in currentTransportGone"
-                         :footer="val.trip_start_time"
-                         :key="item"
-                         >
-              <f7-icon v-if="val.vehicle.toLowerCase()=='shuttle'" slot="media" icon="fa fa-bus fa-1x"></f7-icon>
-              <f7-icon v-else slot="media" icon="fa fa-bug fa-1x"></f7-icon>
-           </f7-list-item>
+  <f7-list media-list no-hairlines>
+     <f7-list-item v-for="(val,item) in currentTransportActive"
+                   :key="'available'+item"
+                   :title="val.trip_start_time">
+        <f7-icon v-if="val.vehicle.toLowerCase()=='shuttle'" 
+           slot="media" icon="fa fa-bus fa-2x"></f7-icon>
+        <f7-icon v-else 
+           slot="media" icon="fa fa-bug fa-2x"></f7-icon>
+     </f7-list-item>
+     <f7-list-item v-for="(val,item) in currentTransportGone"
+                   :footer="val.trip_start_time"
+                   :key="'gone'+item">
+          <f7-icon v-if="val.vehicle.toLowerCase()=='shuttle'" slot="media" icon="fa fa-bus fa-1x"></f7-icon>
+          <f7-icon v-else slot="media" icon="fa fa-bug fa-1x"></f7-icon>
+     </f7-list-item>
 
-           <f7-list-item v-for="(val,item) in currentTransportActive"
-                         :key="item"
-                         :title="val.trip_start_time">
-              <f7-icon v-if="val.vehicle.toLowerCase()=='shuttle'" slot="media" icon="fa fa-bus fa-2x"></f7-icon>
-              <f7-icon v-else slot="media" icon="fa fa-bug fa-2x"></f7-icon>
-           </f7-list-item>
-        </f7-list>
-     </f7-block>
+  </f7-list>
+  </f7-block>
 
-  </f7-page-content>
 </f7-page>
 </template>
 
@@ -78,7 +72,7 @@ export default {
    data() {
       return {
          transport: [],
-         currentRoute: '',
+         currentRoute: 'NCBS to Mandara',
          currentTransport: [],
          currentTransportGone: [],
          currentTransportActive: [],
