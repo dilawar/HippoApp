@@ -14,7 +14,7 @@
          </f7-nav-right>
       </f7-navbar>
 
-      <f7-block v-model="alreadyLoggedIn" v-if="alreadyLoggedIn">
+      <f7-block>
          <f7-list class="components-list" no-hairlines>
 
             <f7-list-item link="/events/" title="Events" panel-close>
@@ -25,24 +25,33 @@
                <f7-icon slot="media" icon="fa fa-bus fa-2x"></f7-icon>
             </f7-list-item>
 
-            <f7-list-item link="/search/" title="Search" panel-close>
-               <f7-icon slot="media" icon="fa fa-search fa-2x"></f7-icon>
-            </f7-list-item>
+            <div v-if="alreadyLoggedIn">
+               <f7-list-item link="/search/" title="Search" panel-close>
+                  <f7-icon slot="media" icon="fa fa-search fa-2x"></f7-icon>
+               </f7-list-item>
+               </div>
          </f7-list>
-
       </f7-block>
-      <f7-block v-else>
+
+      <f7-block v-if="! alreadyLoggedIn">
          <f7-list media-list no-hairlines>
             <f7-list-item>
-               <font v-if="isHippoAlive" slot="footer">Hippo is alive. You may login.</font>
-               <font v-else slot="footer">
-                  Hippo is not responding. Is it alive?!  <br />
-                  You can try login but I woudn't count on it.
-               </font>
-               <f7-button slot="root"
-                          raised fill
-                          login-screen-open=".hippo-login-screen"
-                          >Login</f7-button>
+               <div slot="after">
+                  <font v-if="isHippoAlive">Hippo is alive. You may login.</font>
+                  <font v-else>
+                     Hippo is not responding. Is it alive?!  <br />
+                     You can try login but I woudn't count on it.
+                  </font>
+               </div>
+            </f7-list-item>
+            <f7-list-item>
+               <f7-row slow="root">
+                  <f7-col>
+                  </f7-col>
+                  <f7-col>
+                     <f7-button raised fill login-screen-open=".hippo-login-screen">Login</f7-button>
+                  </f7-col>
+               </f7-row>
             </f7-list-item>
          </f7-list>
       </f7-block>

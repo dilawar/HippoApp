@@ -5,6 +5,7 @@
          >
   <f7-navbar title="Transport" back-link="Back"></f7-navbar>
 
+  <!-- Days related -->
   <f7-block>
      <f7-row noGap>
         <f7-col v-for="d in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']" :key="d">
@@ -13,6 +14,8 @@
                            @click="changeDay(d)"> {{d}} </f7-button>
         </f7-col>
      </f7-row>
+
+
      <f7-row>
         <f7-col>
            <f7-button raised 
@@ -37,6 +40,28 @@
         </f7-col>
      </f7-row>
   </f7-block>
+
+  <!-- Floating button for picking routes. -->
+  <!-- FAB Center (Green) -->
+  <f7-fab position="right-bottom" slot="fixed" color="green">
+     <f7-icon icon="fa fa-map-marker fa-2x"></f7-icon>
+     <f7-icon ios="f7:close" aurora="f7:close" md="material:close"></f7-icon>
+     <f7-fab-buttons position="top">
+        <f7-fab-button label="NCBS to Mandara">n2m</f7-fab-button>
+        <f7-fab-button label="Mandara to NCBS">m2n</f7-fab-button>
+        <f7-fab-button label="NCBS to IISc">n2i</f7-fab-button>
+        <f7-fab-button label="IISc to NCBS">i2n</f7-fab-button>
+     </f7-fab-buttons>
+  </f7-fab>
+
+  <!-- Create tab for each route 
+  <f7-toolbar tabber bottom>
+     <f7-link tab-link="#NCBS2Mandara" tab-link-active>NCBS → Mandara</f7-link>
+     <f7-link tab-link="#Mandara2NCBS" tab-link-active>Mandara → NCBS</f7-link>
+     <f7-link tab-link="#NCBS2IISc" tab-link-active>NCBS → IISc</f7-link>
+     <f7-link tab-link="#IISc2NCBS" tab-link-active>IISc → NCBS</f7-link>
+  </f7-toolbar>
+  -->
 
   <f7-block-title> 
      <f7-icon icon="fa fa-map-marker fa-2x"> {{currentRoute}}</f7-icon>

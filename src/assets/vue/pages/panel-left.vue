@@ -1,8 +1,8 @@
 <template>
    <f7-page>
-      <f7-navbar title="NCBS Hippo"></f7-navbar>
+      <f7-navbar title="Hippo"></f7-navbar>
       <!-- More information here -->
-      <f7-block>
+      <f7-block v-if="alreadyLoggedIn">
          <f7-block-title>Welcome {{username}} </f7-block-title>
 
          <f7-list>
@@ -14,7 +14,11 @@
                <f7-icon slot="media" icon="fa fa-edit fa-2x"></f7-icon>
             </f7-list-item>
          </f7-list>
-
+      </f7-block>
+      <f7-block v-else>
+         <f7-block-title>Welcome Guest</f7-block-title>
+         <p> That is all we have for you. To see/do more, please log-in.</p>
+         </f7-block-title>
       </f7-block>
    </f7-page>
 </template>
