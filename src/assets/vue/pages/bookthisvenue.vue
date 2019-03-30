@@ -59,7 +59,8 @@
                </f7-list-input>
 
                <f7-list-item>
-                  <f7-button raised filled @click="checkAndSubmit"> Send Booking Request </f7-button>
+                  <f7-button slot="after" 
+                     raised fill @click="checkAndSubmit">Send Booking Request</f7-button>
                </f7-list-item>
 
             </f7-list>
@@ -72,16 +73,19 @@
 <script>
 
 import moment from 'moment';
-moment.defaultFormat = 'YYYY/MM/DD HH:mm A';
 
 export default {
    data() {
       const routeP = this.$f7route.params;
-      console.log('route', routeP);
+      console.log('route', routeP.startDateTime, routeP.endDateTime);
+      console.log('route'
+         , moment(routeP.startDateTime, 'X').format('YYYY-MM-DD HH:mm')
+         , moment(routeP.endDateTime, 'X').format('YYYY-MM-DD HH:mm')
+      );
       return {
-         startDateTime: moment(routeP.startDateTime, 'X').format(),
+         startDateTime: moment(routeP.startDateTime, 'X'),
          startDateTimeStamp: routeP.startDateTime,
-         endDateTime: moment(routeP.endDateTime, 'X').format(),
+         endDateTime: moment(routeP.endDateTime, 'X'),
          endDateTimeStamp: routeP.endDateTime,
          venueIDs: [routeP.venue],
          request: {

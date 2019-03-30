@@ -21,6 +21,7 @@
 
              <!-- <f7-icon slot=media icon="fa fa-info-circle"></f7-icon> -->
              <!-- Calendar -->
+             <!--
              <add-to-calendar slot="media"
                               :title="val.title"
                               :location="val.venue"
@@ -35,6 +36,7 @@
                    <i class="fa fa-windows fa-2x"></i></microsoft-calendar>
                 </div>
             </add-to-calendar>
+             -->
 
           </f7-list-item>
        </f7-list>
