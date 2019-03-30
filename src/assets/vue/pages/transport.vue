@@ -1,8 +1,5 @@
 <template>
-<f7-page page-content
-         ptr @ptr:refresh="fetchTransport" @page:init="fetchTransport"
-         @page:refresh="fetchTransport"
-         >
+<f7-page page-content ptr @ptr:refresh="fetchTransport" >
   <f7-navbar title="Transport" back-link="Back"></f7-navbar>
 
   <!-- Days related -->
@@ -20,7 +17,10 @@
 
 
   <f7-block-title> 
-     <f7-icon icon="fa fa-map-marker fa-2x"> {{pickup}} to {{drop}}</f7-icon>
+     <div style="align:right">
+        <f7-icon icon="fa fa-map-marker fa-2x"> </f7-icon> 
+        <font color="blue">Route: {{pickup}} to {{drop}}</font>
+     </div>
   </f7-block-title>
 
   <f7-list media-list no-hairlines>
@@ -113,9 +113,8 @@ export default {
          const self = this;
          self.today = data;
          this.fetchTransport();
-      
       },
-      fetchTransport: function( ) 
+      fetchTransport: function(event, done) 
       {
          const self         = this;
          const app          = self.$f7;
@@ -125,6 +124,7 @@ export default {
             function(json) {
                self.$localStorage.set('transport', json);
             });
+         done();
       },
    },
 };
