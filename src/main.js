@@ -51,8 +51,19 @@ Vue.mixin({
       dbDate: function( date ) {
          return moment(date, "YYYY-MM-DD").format("YYYY-MM-DD");
       },
+      humanReadableDate: function( date ) {
+         return moment(date, "YYYY-MM-DD").format("MMM DD");
+      },
       dbTime: function(date, addminutes=0) {
          return moment(date, "HH:MM").add(addminutes, 'm').format("HH:mm");
+      },
+      humanReadableTime: function( time ) {
+         return moment(time, "HH:MM:ss").format("hh:mm a");
+      },
+      humanReadableDateTime: function(date, time) {
+         var d = moment(date, "YYYY-MM-DD").format("(ddd) MMM DD");
+         var t = moment(time, "hh:mm:ss").format("hh:mm A");
+         return d+', '+t;
       },
       dbDateTime: function(date) {
          return moment(date).format('YYYY-MM-DDTHH:mm');

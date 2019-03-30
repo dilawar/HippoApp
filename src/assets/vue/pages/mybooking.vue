@@ -1,68 +1,71 @@
 <template>
-  <f7-page ptr @ptr:refresh="refreshMyBooking" @page:init="fetchMyBooking">
+  <f7-page ptr @ptr:refresh="refreshMyBooking" 
+           @page:init="fetchMyBooking"
+           @page:refresh="fetchMyBooking"
+           page-content>
+
   <f7-navbar title="My Bookings" back-link="Back"></f7-navbar>
-  <f7-page-content>
-     <f7-block>
-        <f7-list media-list no-hairlines>
-           <f7-list-item accordion-item
-                         v-for="(requests, gid, index) in requestGroups" 
-                         :title="requests[0].title"
-                         :key="gid"
-                         :footer="requests[0].venue">
-                <f7-accordion-content>
-                   <f7-list>
-                      <f7-list-item swipeout
-                           @swipeout:deleted="deleteThisRequest(val.gid, val.rid)"
-                           v-for="(val, index) in requests" 
-                           :key="val.gid+'.'+val.rid" 
-                           :title="val.date+', '+val.start_time+' (' + val.venue + ')'">
-                           <f7-icon slot=media icon="fa fa-hourglass-half"></f7-icon>
-                           <f7-swipeout-actions right>
-                              <f7-swipeout-button delete
-                                                  title="Deleting this request?" delete 
-                                                  confirm-text="Are you sure you want to delete this request?"
-                                                  >Delete
-                              </f7-swipeout-button>
-                           </f7-swipeout-actions>
-                      </f7-list-item>
-                   </f7-list>
-                </f7-accordion-content>
-           </f7-list-item>
+  <f7-block-title></f7-block-title>
 
-           <f7-list-item accordion-item 
-                         v-for="(events, gid, index) in eventGroups" 
-                         :title="events[0].title"
-                         :footer="events[0].venue" 
-                         :key="gid"
-                         >
-                         <f7-accordion-content>
-                            <!-- NOTE: Only simple-list plays well with nested swipeout -->
+     <f7-list media-list no-hairlines>
+        <f7-list-item accordion-item
+                      v-for="(requests, gid, index) in requestGroups" 
+                      :title="requests[0].title"
+                      :key="gid"
+                      :footer="requests[0].venue"
+                      :after-title="requests.length">
+              <font slot="after" color="blue">{{requests.length}} pending</font>
+             <f7-accordion-content>
+                <f7-list>
+                   <f7-list-item swipeout
+                        @swipeout:deleted="deleteThisRequest(val.gid, val.rid)"
+                        v-for="(val, index) in requests" 
+                        :key="val.gid+'.'+val.rid" 
+                        :title="humanReadableDateTime(val.date,val.start_time)+' ('+val.venue+')'">
+                        <f7-icon slot="media" icon="fa fa-hourglass-half"></f7-icon>
+                        <f7-swipeout-actions right>
+                           <f7-swipeout-button delete
+                                               title="Deleting this request?" delete 
+                                               confirm-text="Are you sure you want to delete this request?"
+                                               >Delete
+                           </f7-swipeout-button>
+                        </f7-swipeout-actions>
+                   </f7-list-item>
+                </f7-list>
+             </f7-accordion-content>
+        </f7-list-item>
+
+        <f7-list-item accordion-item 
+                      v-for="(events, gid, index) in eventGroups" 
+                      :title="events[0].title"
+                      :footer="events[0].venue" 
+                      :key="gid">
+           <div slot="after">{{events.length}} confirmed</div>
+           <f7-accordion-content>
               <f7-list media-list>
-                 <!-- Swipeout on individual element. -->
-                 <f7-list-item swipeout 
-                               v-for="(val, index) in events" 
-                               @swipeout:deleted="deleteEvent(val.gid, val.eid)"
-                               :key="val.gid+'.'+val.eid" 
-                               :title="val.date+', '+val.start_time"
-                               :footer="val.venue + ' | ' + val.title"
-                               >
-                               <f7-icon slot="media" icon="fa fa-check-circle fa-2x"></f7-icon>
-                               <f7-swipeout-actions right>
-                                  <f7-swipeout-button delete
-                                                      color="blue"
-                                                      title="Deleting request?" 
-                                                      confirm-text="Delete this item?"
-                                                      >Delete</f7-swipeout-button>
-                               </f7-swipeout-actions>
-                 </f7-list-item>
-              </f7-list>
-                         </f7-accordion-content>
-           </f7-list-item>
-        </f7-list>
-     </f7-block>
-  </f7-page-content>
-  </f7-page>
+              <f7-list-item swipeout 
+                            v-for="(val, index) in events" 
+                            @swipeout:deleted="deleteEvent(val.gid, val.eid)"
+                            :key="val.gid+'.'+val.eid" 
+                            :title="humanReadableDateTime(val.date, val.start_time)"
+                            footer="Swipe ← to cancel"
+                            >
+                            <f7-icon slot="media" icon="fa fa-check-circle"></f7-icon>
+                            <f7-swipeout-actions right>
+                               <f7-swipeout-button delete
+                                                   color="blue"
+                                                   title="Deleting request?" 
+                                                   confirm-text="Cancel booking?"
+                                                   >Cancel
+                               </f7-swipeout-button>
+                            </f7-swipeout-actions>
+              </f7-list-item>
+           </f7-list>
+                      </f7-accordion-content>
+        </f7-list-item>
+     </f7-list>
 
+  </f7-page>
 </template>
 
 <script>
@@ -173,7 +176,6 @@ export default {
             closeButton: true,
          }).open();
       },
-   },
+},
 };
-
 </script>
