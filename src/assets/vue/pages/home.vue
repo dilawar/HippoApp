@@ -17,10 +17,6 @@
       <f7-block v-model="alreadyLoggedIn" v-if="alreadyLoggedIn">
          <f7-list class="components-list" no-hairlines>
 
-            <f7-list-item link="/mybooking/" title="My Bookings" panel-close>
-               <f7-icon slot="media" icon="fa fa-edit fa-2x"></f7-icon>
-            </f7-list-item>
-
             <f7-list-item link="/events/" title="Events" panel-close>
                <f7-icon slot="media" icon="fa fa-calendar fa-2x"></f7-icon>
             </f7-list-item>

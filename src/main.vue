@@ -4,10 +4,9 @@
     <f7-statusbar></f7-statusbar>
 
     <f7-panel left cover>
-       <f7-view url="/userpanel/" ></f7-view>
+       <f7-view name="left" url="/userpanel/" ></f7-view>
     </f7-panel>
-
-    <f7-view url="/" main tab tab-active></f7-view>
+    <f7-view main url="/" tab tab-active></f7-view>
 
   </f7-app>
 </template>

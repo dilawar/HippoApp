@@ -6,11 +6,16 @@
          <f7-block-title>Welcome {{username}} </f7-block-title>
 
          <f7-list>
-            There is nothing here yet.
+            <f7-list-item link="/mybooking/" 
+                          target="_blank"
+                          view=".view-main"
+                          title="My Bookings" 
+                          panel-close>
+               <f7-icon slot="media" icon="fa fa-edit fa-2x"></f7-icon>
+            </f7-list-item>
          </f7-list>
 
       </f7-block>
-
    </f7-page>
 </template>
 
