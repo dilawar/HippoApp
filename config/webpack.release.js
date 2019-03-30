@@ -6,15 +6,16 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const CleanPlugin = require('clean-webpack-plugin');
 
 module.exports = function() {
-  return webpackMerge(commonConfig({ mode: 'production' }), {
-    plugins: [
-      new UglifyJsPlugin(),
-      new CleanPlugin("www", {
-        root: path.join(__dirname, "."),
-        dry: false,
-        verbose: false,
-        exclude: ["index.html"]
-      })
-    ]
-  });
+   return webpackMerge(commonConfig({ mode: 'production' }), {
+      HIPPO_API : 'https://ncbs.res.in/hippo/api',
+      plugins: [
+         new UglifyJsPlugin(),
+         new CleanPlugin("www", {
+            root: path.join(__dirname, "."),
+            dry: false,
+            verbose: false,
+            exclude: ["index.html"]
+         })
+      ]
+   });
 }

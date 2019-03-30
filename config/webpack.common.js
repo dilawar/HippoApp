@@ -91,7 +91,7 @@ module.exports = function (options) {
     plugins: [
       new webpack.DefinePlugin({
         'process.env': {
-          'NODE_ENV': JSON.stringify(options.mode)
+          'NODE_ENV': JSON.stringify(options.mode),
         }
       }),
       new HtmlWebpackPlugin({

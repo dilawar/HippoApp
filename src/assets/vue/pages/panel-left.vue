@@ -6,6 +6,7 @@
          <f7-block-title>Welcome {{username}} </f7-block-title>
 
          <f7-list>
+            There is nothing here yet.
          </f7-list>
 
       </f7-block>
@@ -17,14 +18,12 @@
    export default {
       data() {
          return {
-            alreadyLoggedIn: false,
-            username: '',
+            username : $localStorage.get('HIPPO-LOGIN'),
          };
       },
       mounted()
       {
          const self = this;
-         self.alreadyLoggedIn = self.isUserAuthenticated();
          self.username = self.$localStorage.get('HIPPO-LOGIN');
       },
    }

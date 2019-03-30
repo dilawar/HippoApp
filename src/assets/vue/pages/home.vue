@@ -5,17 +5,17 @@
          <f7-nav-left>
             <f7-link panel-open="left" icon="fa fa-bars"> </f7-link>
          </f7-nav-left>
-         <f7-nav-title>NCBS Hippo</f7-nav-title>
+         <f7-nav-title>Hippo</f7-nav-title>
          <f7-nav-right v-if="alreadyLoggedIn">
-            <f7-link icon="fa fa-sign-out fa-2x" @click="signOut"></f7-link>
+            <f7-link icon="fa fa-sign-out fa-1x" @click="signOut" 
+                     header="Logout"
+                     slot="media">
+            </f7-link>
          </f7-nav-right>
       </f7-navbar>
 
       <f7-block v-model="alreadyLoggedIn" v-if="alreadyLoggedIn">
          <f7-list class="components-list" no-hairlines>
-            <f7-list-item link="/booking/" title="Create Booking" panel-close>
-               <f7-icon slot="media" icon="fa fa-clipboard fa-2x"></f7-icon>
-            </f7-list-item>
 
             <f7-list-item link="/mybooking/" title="My Bookings" panel-close>
                <f7-icon slot="media" icon="fa fa-edit fa-2x"></f7-icon>
@@ -49,6 +49,18 @@
             </f7-list-item>
          </f7-list>
       </f7-block>
+
+      <!-- FAB Right Bottom (Blue) -->
+      <f7-fab position="right-bottom" slot="fixed" color="blue">
+         <f7-icon ios="f7:add" aurora="f7:add" md="material:add"></f7-icon>
+         <f7-icon ios="f7:close" aurora="f7:close" md="material:close"></f7-icon>
+         <f7-fab-buttons position="top">
+            <f7-fab-button href="/booking/" fab-close 
+                           target="_blank"
+                           label="Create new booking"
+               >B</f7-fab-button>
+         </f7-fab-buttons>
+      </f7-fab>
 
       <!-- Other elements -->
       <f7-login-screen class="hippo-login-screen">

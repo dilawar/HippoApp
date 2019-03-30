@@ -5,20 +5,20 @@ const CordovaHtmlOutputPlugin = require('../webpack/plugins/CordovaHtmlOutputPlu
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = function() {
-  return webpackMerge(commonConfig({ mode: 'development' }), {
-    module: {
-      rules: [
-        {
-          test: /\.css$/, use: ExtractTextPlugin.extract({
-            fallback: "style-loader",
-            use: "css-loader"
-          })
-        }
+   return webpackMerge(commonConfig({ mode: 'development' }), {
+      module: {
+         rules: [
+            {
+               test: /\.css$/, use: ExtractTextPlugin.extract({
+                  fallback: "style-loader",
+                  use: "css-loader"
+               })
+            }
+         ]
+      },
+      plugins: [
+         new CordovaHtmlOutputPlugin(),
+         new ExtractTextPlugin("styles.css")
       ]
-    },
-    plugins: [
-      new CordovaHtmlOutputPlugin(),
-      new ExtractTextPlugin("styles.css")
-    ]
-  });
+   });
 }
