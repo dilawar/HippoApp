@@ -1,5 +1,11 @@
 <template>
-   <f7-page ptr @ptr:refresh="fetchEvents" @page:init="fetchEvents"
+   <f7-page ptr 
+            infinite
+            :infinite-distance="50"
+            :infinite-preloader="showPreloader"
+            @infinite="fetchMoreEvents"
+            @page:init="fetchEvents" 
+            @ptr:refresh="fetchEvents" 
             page-content
             >
       <f7-navbar title="Upcoming events" back-link="Back"></f7-navbar>
@@ -54,15 +60,40 @@ export default {
       return {
          events: [],
          startDate: moment(),
+         showPreloader: true,
+         allowInfinite: true,
+         numEvents: 0,
       };
    },
    methods: { 
-      fetchEvents: function(event, done) 
+      fetchEvents: function() 
       {
          const self         = this;
          const app          = self.$f7;
-         app.dialog.preloader('Fetching next 2 weeks events ...');
-         var link = self.$store.state.api+'/publicevents/'+moment(self.startDate).format('X');
+         app.dialog.preloader('Fetching 20 events ...');
+         var link = self.$store.state.api+'/publicevents/'+moment(self.startDate).format('X')+'/20';
+         console.log( 'Link is ', link);
+
+         app.request.post(link, this.apiPostData(),
+            function(json) {
+               var res = JSON.parse(json);
+               self.events = res.data;
+            }
+         );
+         setTimeout(() => {app.dialog.close();}, 1000);
+         return;
+      },
+      fetchMoreEvents: function( )
+      {
+         const self         = this;
+         const app          = self.$f7;
+         if( ! self.allowInfinite ) return;
+
+         self.allowInfinite = false;
+
+         var numToFetch = self.events.length + 10;
+         var link = self.$store.state.api+'/publicevents/'+moment(self.startDate).format('X') 
+            +'/'+ numToFetch.toString();
          console.log('Link is', link);
          app.request.post(link, this.apiPostData(),
             function(json) {
@@ -70,7 +101,13 @@ export default {
                self.events = res.data;
             }
          );
-         setTimeout(() => {app.dialog.close(); done();}, 1000);
+         setTimeout(() => {
+            if(self.events.length >= 50) {
+               self.showPreloader = false;
+               return;
+            }
+            self.allowInfinite = true;
+         }, 2000);
       },
    },
 };
