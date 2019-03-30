@@ -15,15 +15,8 @@
         </f7-col>
      </f7-row>
 
-
-  <f7-block-title> 
-     <div style="align:right">
-        <f7-icon icon="fa fa-map-marker fa-2x"> </f7-icon> 
-        <font color="blue">Route: {{pickup}} to {{drop}}</font>
-     </div>
-  </f7-block-title>
-
   <f7-list media-list no-hairlines>
+     <f7-list-item :footer="`${pickup} to ${drop}`"></f7-list-item>
      <f7-list-item v-for="(val,item) in currentTransportActive"
                    :key="'available'+item"
                    :title="val.trip_start_time">
