@@ -21,10 +21,8 @@ import FontAwesome from 'font-awesome/css/font-awesome.css'
 
 // Import App Custom Styles
 // import AppStyles from './assets/sass/main.scss'
-
+//
 import DatePicker from 'vue2-datepicker'
-var AddToCalendar = require('vue-add-to-calendar');
-Vue.use(AddToCalendar);
 
 // Import App Component
 import app from './main.vue'

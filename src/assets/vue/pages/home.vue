@@ -27,11 +27,9 @@
                <f7-icon slot="media" icon="fa fa-bus fa-2x"></f7-icon>
             </f7-list-item>
 
-            <div v-if="alreadyLoggedIn">
-               <f7-list-item link="/search/" title="Search" panel-close>
-                  <f7-icon slot="media" icon="fa fa-search fa-2x"></f7-icon>
-               </f7-list-item>
-               </div>
+            <f7-list-item v-if="alreadyLoggedIn" link="/search/" title="Search" panel-close>
+               <f7-icon slot="media" icon="fa fa-search fa-2x"></f7-icon>
+            </f7-list-item>
          </f7-list>
       </f7-block>
 
@@ -57,8 +55,8 @@
             </f7-list-item>
          </f7-list>
       </f7-block>
+      <f7-block v-else></f7-block>
 
-      <!-- FAB -->
       <!-- FAB Right Bottom (Blue) -->
       <f7-fab v-if="alreadyLoggedIn" position="right-bottom" slot="fixed" color="blue">
          <f7-icon ios="f7:add" aurora="f7:add" md="material:add"></f7-icon>
@@ -71,8 +69,7 @@
          </f7-fab-buttons>
       </f7-fab>
 
-
-      <!-- Other elements -->
+      <!-- LOGIN SCREEN  -->
       <f7-login-screen class="hippo-login-screen">
         <f7-page login-screen>
            <f7-login-screen-title>Login</f7-login-screen-title>
@@ -82,15 +79,15 @@
                  type="text"
                  placeholder="Your username"
                  :value="username"
-                 @input="username = $event.target.value"
-                 ></f7-list-input>
+                 @input="username = $event.target.value">
+              </f7-list-input>
               <f7-list-input
                  label="Password"
                  type="password"
                  placeholder="Your password"
                  :value="password"
-                 @input="password = $event.target.value"
-                 ></f7-list-input>
+                 @input="password = $event.target.value">
+              </f7-list-input>
            </f7-list>
 
            <f7-block>
@@ -109,9 +106,9 @@
                     Hippo Website</a>.
               </f7-block-footer>
            </f7-block>
-
         </f7-page>
       </f7-login-screen>
+
    </f7-page>
 
 </template>
