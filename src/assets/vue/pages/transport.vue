@@ -9,62 +9,18 @@
   <f7-block>
      <f7-row noGap>
         <f7-col v-for="d in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']" :key="d">
-                <f7-button :key="d"
-                           :fill="d==today?true:false" 
-                           @click="changeDay(d)"> {{d}} </f7-button>
+           <f7-button :key="d"
+                :fill="d==today?true:false" 
+                @click="changeDay(d)"
+                > 
+                <font><small>{{d}}</small></font>
+           </f7-button>
         </f7-col>
      </f7-row>
 
-
-     <f7-row>
-        <f7-col>
-           <f7-button raised 
-                      @click="routeFromTo('Mandara','NCBS')"
-                      >Mandara → NCBS</f7-button>
-        </f7-col>
-        <f7-col>
-           <f7-button raised  
-                      @click="routeFromTo('NCBS', 'Mandara')"
-                      >NCBS → Mandara</f7-button>
-        </f7-col>
-     </f7-row>
-     <f7-row>
-        <f7-col>
-           <f7-button raised  
-                      @click="routeFromTo('IISc', 'NCBS')"
-                      >IISc → NCBS</f7-button>
-        </f7-col>
-        <f7-col>
-           <f7-button raised  @click="routeFromTo('NCBS', 'IISc')" 
-                      >NCBS → IISc</f7-button>
-        </f7-col>
-     </f7-row>
-  </f7-block>
-
-  <!-- Floating button for picking routes. -->
-  <!-- FAB Center (Green) -->
-  <f7-fab position="right-bottom" slot="fixed" color="green">
-     <f7-icon icon="fa fa-map-marker fa-2x"></f7-icon>
-     <f7-icon ios="f7:close" aurora="f7:close" md="material:close"></f7-icon>
-     <f7-fab-buttons position="top">
-        <f7-fab-button label="NCBS to Mandara">n2m</f7-fab-button>
-        <f7-fab-button label="Mandara to NCBS">m2n</f7-fab-button>
-        <f7-fab-button label="NCBS to IISc">n2i</f7-fab-button>
-        <f7-fab-button label="IISc to NCBS">i2n</f7-fab-button>
-     </f7-fab-buttons>
-  </f7-fab>
-
-  <!-- Create tab for each route 
-  <f7-toolbar tabber bottom>
-     <f7-link tab-link="#NCBS2Mandara" tab-link-active>NCBS → Mandara</f7-link>
-     <f7-link tab-link="#Mandara2NCBS" tab-link-active>Mandara → NCBS</f7-link>
-     <f7-link tab-link="#NCBS2IISc" tab-link-active>NCBS → IISc</f7-link>
-     <f7-link tab-link="#IISc2NCBS" tab-link-active>IISc → NCBS</f7-link>
-  </f7-toolbar>
-  -->
 
   <f7-block-title> 
-     <f7-icon icon="fa fa-map-marker fa-2x"> {{currentRoute}}</f7-icon>
+     <f7-icon icon="fa fa-map-marker fa-2x"> {{pickup}} to {{drop}}</f7-icon>
   </f7-block-title>
 
   <f7-list media-list no-hairlines>
@@ -86,6 +42,31 @@
   </f7-list>
   </f7-block>
 
+  <!-- Floating button for picking routes. -->
+  <f7-fab position="right-bottom" slot="fixed" color="green">
+     <f7-icon icon="fa fa-map-marker fa-2x"></f7-icon>
+     <f7-icon ios="f7:close" aurora="f7:close" md="material:close"></f7-icon>
+     <f7-fab-buttons position="top">
+        <f7-fab-button label="NCBS to Mandara" 
+                       fab-close
+                       @click="routeFromTo('NCBS', 'Mandara')"
+                       >n2m</f7-fab-button>
+        <f7-fab-button 
+                       label="Mandara to NCBS"
+                       fab-close
+                       @click="routeFromTo('Mandara', 'NCBS')"
+                       >m2n</f7-fab-button>
+        <f7-fab-button 
+                       fab-close
+                       @click="routeFromTo('NCBS', 'IISc')"
+                       label="NCBS to IISc">n2i</f7-fab-button>
+        <f7-fab-button 
+                       fab-close
+                       @click="routeFromTo('IISc', 'NCBS')"
+                       label="IISc to NCBS">i2n</f7-fab-button>
+     </f7-fab-buttons>
+  </f7-fab>
+
 </f7-page>
 </template>
 
@@ -95,9 +76,11 @@ moment.defaultFormat = 'YYYY-MM-DD';
 
 export default {
    data() {
+      const ls = this.$localStorage;
       return {
          transport: [],
-         currentRoute: 'NCBS to Mandara',
+         pickup: ls.get('lastPickup') || 'NCBS',
+         drop : ls.get('lastDrop') || 'Mandara',
          currentTransport: [],
          currentTransportGone: [],
          currentTransportActive: [],
@@ -106,11 +89,16 @@ export default {
          nowTime: moment().format('HH:mm'),
       };
    },
+   mounted: function() {
+      const self = this;
+      self.routeFromTo(self.pickup, self.drop)
+   },
    methods: { 
       routeFromTo: function(pickup, drop)
       {
          const self = this;
-         self.currentRoute = pickup + ' to ' + drop;
+         self.pickup = pickup;
+         self.drop = drop;
          self.transport = JSON.parse(self.$localStorage.get('transport')).data;
          self.currentTransport = self.transport.filter(x => 
             x.pickup_point.toLowerCase() == pickup.toLowerCase()
@@ -118,6 +106,8 @@ export default {
          );
          self.currentTransportGone = self.currentTransport.filter(x=>self.nowTime >= x.trip_start_time);
          self.currentTransportActive = self.currentTransport.filter(x=>self.nowTime < x.trip_start_time);
+         self.$localStorage.set('lastPickup', self.pickup);
+         self.$localStorage.set('lastDrop', self.drop);
       },
       changeDay: function(data) {
          const self = this;
