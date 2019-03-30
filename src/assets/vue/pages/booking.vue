@@ -1,16 +1,12 @@
 <template>
-
   <f7-page @page:init="refreshVenues">
   <f7-navbar title="Venues" back-link="Back"></f7-navbar>
-
-  <!--  Show venues as grid or list. -->
   <f7-page-content>
-
     <!-- Date and time -->
-    <f7-list simple-list>
-      <f7-list-item>
-        <f7-list-item-cell>
-          <date-picker v-model="startDateTime" lang="en"
+    <f7-block class="row">
+       <f7-col width="60">
+          <date-picker v-model="startDateTime"
+                       lang="en"
                        format="MMM DD HH:mm A"
                        :width="150"
                        :time-picker-options="{ start: '8:00', step: '00:15', end: '22:30' }"
@@ -19,18 +15,22 @@
                        :popupStyle="{'z-index':10000}"
                        type="datetime"> 
           </date-picker>
-        </f7-list-item-cell>
-        <f7-list-item-cell>
-          <date-picker v-model="endDateTime" lang="en"
+       </f7-col>
+       <f7-col width="40">
+          <date-picker v-model="endDateTime" 
+                       lang="en"
                        placeholder="Ending time"
+                       :width="100"
                        :minute-step="15"
                        :append-to-body=true
                        :popupStyle="{'z-index':10000}"
                        format="HH:mm A"
                        type="time">
           </date-picker>
-        </f7-list-item-cell>
-      </f7-list-item>
+       </f7-col>
+    </f7-block>
+
+    <f7-list media-list>
       <f7-list-item>
         <f7-list-item-cell>
           <f7-button raised fill @click="refreshVenues" >Filter Venues</f7-button>

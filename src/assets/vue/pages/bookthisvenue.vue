@@ -12,19 +12,25 @@
                               readonly>
                </f7-list-input>
 
-               <f7-list-input name="start_date_time" 
-                              type="datetime-local"
-                              label="Start Datetime"
-                              v-bind:value="startDateTime"
-                              readonly>
-               </f7-list-input>
+               <f7-list-item>
+                  <date-picker v-bind:value="startDateTime"
+                               format="MMM DD, HH:mm A"
+                               lang="en" 
+                               type="datetime"
+                               label="Start Datetime"
+                               readonly>
+                  </date-picker>
+               </f7-list-item>
 
-               <f7-list-input name="end_date_time" 
-                              type="datetime-local"
-                              label="End Datetime"
-                              v-bind:value="endDateTime"
-                              readonly>
-               </f7-list-input>
+               <f7-list-item>
+                  <date-picker v-bind:value="endDateTime"
+                               format="MMM DD, HH:mm A"
+                               type="datetime"
+                               lang="en"
+                               label="End Datetime"
+                               readonly>
+                  </date-picker>
+               </f7-list-item>
 
                <f7-list-item title="Class of event" smart-select :smart-select-params="{closeOnSelect:true}">
                   <select v-model="request.class">
@@ -71,6 +77,7 @@ moment.defaultFormat = 'YYYY/MM/DD HH:mm A';
 export default {
    data() {
       const routeP = this.$f7route.params;
+      console.log('route', routeP);
       return {
          startDateTime: moment(routeP.startDateTime, 'X').format(),
          startDateTimeStamp: routeP.startDateTime,
