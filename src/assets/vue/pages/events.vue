@@ -16,35 +16,16 @@
                      v-for="(val, index) in events" 
                      :key="index"
                      :header="val.venue"
+                     :text-color="assignColor(val.start, val.end)"
                      :footer="val.date+', '+val.start_time+' to '+val.end_time"
                      :title="val.title"
                      >
                      <f7-accordion-content>
-                        <f7-block bg-color="lightblue">
-                           <strong>{{val.title}}</strong>
-                           <span v-html="val.description"></span>
+                        <f7-block margin=30>
+                              <strong>{{val.title}}</strong>
+                              <small><span v-html="val.description"></span></small>
                         </f7-block>
                      </f7-accordion-content>
-
-                     <!-- <f7-icon slot=media icon="fa fa-info-circle"></f7-icon> -->
-                     <!-- Calendar -->
-                     <!--
-                        <add-to-calendar slot="media"
-                        :title="val.title"
-                        :location="val.venue"
-                        :details="val.description"
-                        :start="toDate(val.start)"
-                        :end="toDate(val.end)"
-                        inline-template>
-                        <div>
-                        <google-calendar id="google-calendar">
-                        <i class="fa fa-google fa-2x"></i></google-calendar>
-                        <microsoft-calendar id="microsoft-calendar">
-                        <i class="fa fa-windows fa-2x"></i></microsoft-calendar>
-                        </div>
-                        </add-to-calendar>
-                     -->
-
                </f7-list-item>
             </f7-list>
       </f7-block>
@@ -53,7 +34,7 @@
 
 <script>
 import moment from 'moment';
-moment.defaultFormat = 'YYYY-MM-DD';
+moment.defaultFormat = 'YYYY-MM-DD HH:mm:ss';
 
 export default {
    data() {
@@ -65,14 +46,23 @@ export default {
          numEvents: 0,
       };
    },
+   computed: {
+   },
    methods: { 
+      assignColor: function(startDateTime, endDateTime) 
+      {
+         console.log( 'start', moment(startDateTime), 'today', moment());
+         if(moment(startDateTime) < moment().add(7, 'd'))
+            return 'purple';
+         if(moment(startDateTime) <= moment().add(1, 'd'))
+            return 'deeppurple';
+         return '';
+      },
       fetchEvents: function() 
       {
          const self         = this;
          const app          = self.$f7;
-         app.dialog.preloader('Fetching 20 events ...');
          var link = self.$store.state.api+'/publicevents/'+moment(self.startDate).format('X')+'/20';
-         console.log( 'Link is ', link);
 
          app.request.post(link, this.apiPostData(),
             function(json) {
