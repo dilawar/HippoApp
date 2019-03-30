@@ -18,7 +18,7 @@
    export default {
       data() {
          return {
-            username : $localStorage.get('HIPPO-LOGIN'),
+            username: 'Guest',
          };
       },
       mounted()

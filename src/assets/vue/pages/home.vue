@@ -33,6 +33,7 @@
                <f7-icon slot="media" icon="fa fa-search fa-2x"></f7-icon>
             </f7-list-item>
          </f7-list>
+
       </f7-block>
       <f7-block v-else>
          <f7-list media-list no-hairlines>
@@ -50,17 +51,19 @@
          </f7-list>
       </f7-block>
 
+      <!-- FAB -->
       <!-- FAB Right Bottom (Blue) -->
-      <f7-fab position="right-bottom" slot="fixed" color="blue">
+      <f7-fab v-if="alreadyLoggedIn" position="right-bottom" slot="fixed" color="blue">
          <f7-icon ios="f7:add" aurora="f7:add" md="material:add"></f7-icon>
          <f7-icon ios="f7:close" aurora="f7:close" md="material:close"></f7-icon>
          <f7-fab-buttons position="top">
             <f7-fab-button href="/booking/" fab-close 
                            target="_blank"
                            label="Create new booking"
-               >B</f7-fab-button>
+                           >B</f7-fab-button>
          </f7-fab-buttons>
       </f7-fab>
+
 
       <!-- Other elements -->
       <f7-login-screen class="hippo-login-screen">
@@ -110,7 +113,6 @@
    export default {
       data() {
          return {
-            loginScreenOpened: false,
             alreadyLoggedIn: false,
             isHippoAlive: false,
             username: '',
@@ -152,6 +154,7 @@
             const self = this;
             const app = self.$f7;
 
+            app.dialog.preloader("Loging in ...");
             app.request.post(self.$store.state.api + '/authenticate'
                , {'login':self.username, 'password': btoa(self.password)}
                , function(json) 
@@ -161,20 +164,23 @@
                   {
                      self.$localStorage.set('HIPPO-API-KEY', res.data.apikey);
                      self.$localStorage.set('HIPPO-LOGIN', self.username);
-
-                     // Perfect. Refresh page.
+                     self.isUserAuthenticated = true;
                      self.$f7router.refreshPage();
                   }
                   else
-                     app.dialog.alert(`Failed to login. Try again.`);
+                  {
+                     app.dialog.alert("Failed to login. Try again.", "Error");
+                  }
                }
             );
+            setTimeout(() => app.dialog.close(), 200);
          },
          signOut: function() {
             const self = this;
             console.log( "Signing out.");
             self.$localStorage.set('HIPPO-API-KEY', '');
             self.$localStorage.set('HIPPO-LOGIN', '');
+            self.isUserAuthenticated = false;
             self.$f7router.refreshPage();
          },
          reinit: function() {
