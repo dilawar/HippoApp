@@ -119,18 +119,6 @@ export default {
                }
             });
 
-         // TODO: move it to init app section.
-         if( ! self.$localStorage.get('classes') )
-         {
-            // Fetch classes of booking.
-            app.request.post( self.$store.state.api+'/config/bookmyvenue.class'
-               , this.apiPostData()
-               , function(json) {
-                  const res = JSON.parse(json);
-                  if( res.status=='ok')
-                     self.$localStorage.set('classes', res.data.value);
-               });
-         }
       }
    },
 }; 

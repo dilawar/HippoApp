@@ -35,11 +35,19 @@
          </f7-list>
       </f7-block>
       <f7-block v-else>
-         <f7-row> 
-            <f7-col>
-               <f7-button raised fill login-screen-open=".hippo-login-screen">Login</f7-button>
-            </f7-col>
-         </f7-row>
+         <f7-list media-list no-hairlines>
+            <f7-list-item>
+               <font v-if="isHippoAlive" slot="footer">Hippo is alive. You may login.</font>
+               <font v-else slot="footer">
+                  Hippo is not responding. Is it alive?!  <br />
+                  You can try login but I woudn't count on it.
+               </font>
+               <f7-button slot="root"
+                          raised fill
+                          login-screen-open=".hippo-login-screen"
+                          >Login</f7-button>
+            </f7-list-item>
+         </f7-list>
       </f7-block>
 
       <!-- Other elements -->
@@ -82,8 +90,8 @@
 
         </f7-page>
       </f7-login-screen>
-
    </f7-page>
+
 </template>
 
 <script>
@@ -92,6 +100,7 @@
          return {
             loginScreenOpened: false,
             alreadyLoggedIn: false,
+            isHippoAlive: false,
             username: '',
             password: '',
          };
@@ -99,7 +108,31 @@
       mounted()
       {
          const self = this;
+         const app = self.$f7;
          self.alreadyLoggedIn = self.isUserAuthenticated();
+
+         // Check if hippo is alive
+         app.request.post(self.$store.state.api + '/status'
+            , function(json) 
+            {
+               var res = JSON.parse(json);
+               if( res.status =='ok' && res.data.status == 'alive')
+               {
+                  self.isHippoAlive = true;
+               }
+            }
+         );
+
+         // Fetch the available classes of booking. 
+         app.request.post( self.$store.state.api+'/config/bookmyvenue.class'
+            , self.apiPostData()
+            , function(json) 
+            {
+               const res = JSON.parse(json);
+               if( res.status=='ok')
+                  self.$localStorage.set('classes', res.data.value);
+            }
+         );
       },
       methods: {
          signIn: function()
