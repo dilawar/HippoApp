@@ -3,11 +3,13 @@
 
       <f7-navbar>
          <f7-nav-left>
-            <f7-link panel-open="left" icon="fa fa-bars"> </f7-link>
+            <f7-link v-if="alreadyLoggedIn" panel-open="left" icon="fa fa-bars"> </f7-link>
+            <f7-link v-else icon="fa fa-bars" @click="youAreNotLoggedIn"> </f7-link>
          </f7-nav-left>
          <f7-nav-title>Hippo</f7-nav-title>
          <f7-nav-right v-if="alreadyLoggedIn">
             <f7-link icon="fa fa-sign-out fa-1x" @click="signOut" 
+                     panel-close
                      header="Logout"
                      slot="media">
             </f7-link>
@@ -194,6 +196,10 @@
             self.isUserAuthenticated();
             console.log( "User logged in " + self.alreadyLoggedIn );
          },
+         youAreNotLoggedIn: function() {
+            const app = this.$f7;
+            app.dialog.alert("Access denied. Login first.", "Prohibited");
+         }
       },
    }
 </script>

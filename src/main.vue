@@ -28,12 +28,7 @@ export default {
             routes,
             id: 'com.dilawar.hippo',
          },
-         notification: {
-            title: 'NCBS Hippo',
-            closeTimeout: 3000,
-            closeButton: true,
-         },
       }
-   }
+   },
 }
 </script>
