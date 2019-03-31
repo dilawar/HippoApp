@@ -10,6 +10,7 @@
              @update:bounds="boundsUpdated"
              >
              <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
+             <l-marker :lat-lng="center" ></l-marker>
       </l-map>
 
    </f7-page>
