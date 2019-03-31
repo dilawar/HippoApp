@@ -3,12 +3,12 @@
 
       <f7-navbar>
          <f7-nav-left>
-            <f7-link v-if="alreadyLoggedIn" panel-open="left" icon="fa fa-bars"> </f7-link>
+            <f7-link v-if="alreadyLoggedIn" panel-open="left" icon="fa fa-bars fw"> </f7-link>
             <f7-link v-else icon="fa fa-bars" @click="youAreNotLoggedIn"> </f7-link>
          </f7-nav-left>
          <f7-nav-title>Hippo</f7-nav-title>
          <f7-nav-right v-if="alreadyLoggedIn">
-            <f7-link icon="fa fa-sign-out fa-1x" @click="signOut" 
+            <f7-link icon="fa fa-sign-out fw" @click="signOut" 
                      panel-close
                      header="Logout"
                      slot="media">
@@ -30,6 +30,11 @@
             <f7-list-item v-if="alreadyLoggedIn" link="/search/" title="Search" panel-close>
                <f7-icon slot="media" icon="fa fa-search fa-2x"></f7-icon>
             </f7-list-item>
+
+            <f7-list-item v-if="alreadyLoggedIn" link="/map/" title="Locate" panel-close>
+               <f7-icon slot="media" icon="fa fa-map fa-2x"></f7-icon>
+            </f7-list-item>
+
          </f7-list>
       </f7-block>
 
