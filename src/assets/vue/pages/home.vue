@@ -27,13 +27,14 @@
                <f7-icon slot="media" icon="fa fa-bus fa-2x"></f7-icon>
             </f7-list-item>
 
+            <f7-list-item link="/map/" title="Map" panel-close>
+               <f7-icon slot="media" icon="fa fa-map fa-2x"></f7-icon>
+            </f7-list-item>
+
             <f7-list-item v-if="alreadyLoggedIn" link="/search/" title="Search" panel-close>
                <f7-icon slot="media" icon="fa fa-search fa-2x"></f7-icon>
             </f7-list-item>
 
-            <f7-list-item v-if="alreadyLoggedIn" link="/map/" title="Map" panel-close>
-               <f7-icon slot="media" icon="fa fa-map fa-2x"></f7-icon>
-            </f7-list-item>
 
          </f7-list>
       </f7-block>
