@@ -10,7 +10,10 @@
              @update:bounds="boundsUpdated"
              >
              <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
-             <l-marker :lat-lng="center" ></l-marker>
+             <l-marker v-for="v in venues" :key="v.html"
+                :lat-lng="v.xy"> 
+                <l-tooltip :options="toolTipOpts"><span v-html="v.html"></span></l-tooltip>
+             </l-marker>
       </l-map>
 
    </f7-page>
@@ -20,16 +23,25 @@
 export default {
    data() {
       return {
-         zoom:17,
+         zoom:20,
          bounds: null,
          center: L.latLng(13.071081, 77.58025),
          url:'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
          attribution:'&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
          mapStyle: 'width:100%; height:100%',
          venues: [ 
-            { xy: L.latLng(13.0714215, 77.5810642), 'name' : 'Reception'},
-            { xy: L.latLng(13.071081, 77.58025), 'name' : 'SLC'},
+            {xy: L.latLng(13.0714215, 77.5810642), 'html' : 'Reception'},
+            {xy:L.latLng(13.07088,77.58049),'html':'Dasheri'},
+            {xy:L.latLng(13.07144,77.58071),'html':'Simon Center'},
+            // Three in SLC
+            {xy:L.latLng(13.07064,77.57989),'html':'Synapse<sup>1</sup><br/>Endosome'+
+               '<sup>2</sup><br />Mitochondria<sup >3</sup>'},
+            {xy:L.latLng(13.07067,77.57962),'html':'Raspuri'},
+            {xy:L.latLng(13.07093,77.58094),'html':'Nucleus<sup>1</sup><br/>Golgi<sup>2</sup>'+
+               '<br/>Chloroplast<sup>3</sup>'
+            },
          ],
+         toolTipOpts: {permanent:false, interactive:true},
       };
    },
    computed: {
