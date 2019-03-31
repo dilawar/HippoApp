@@ -39,8 +39,7 @@
                <div slot="after">
                   <font v-if="isHippoAlive">Hippo is alive. You may login.</font>
                   <font v-else>
-                     Hippo is not responding. Is it alive?!  <br />
-                     You can try login but I woudn't count on it.
+                     <f7-preloader color="blue"></f7-preloader> Pinging Hippo ...
                   </font>
                </div>
             </f7-list-item>
@@ -130,16 +129,17 @@
          self.alreadyLoggedIn = self.isUserAuthenticated();
 
          // Check if hippo is alive
-         app.request.post(self.$store.state.api + '/status'
-            , function(json) 
-            {
-               var res = JSON.parse(json);
-               if( res.status =='ok' && res.data.status == 'alive')
+         setTimeout( () =>
+            app.request.post(self.$store.state.api + '/status'
+               , function(json) 
                {
-                  self.isHippoAlive = true;
-               }
-            }
-         );
+                  var res = JSON.parse(json);
+                  if( res.status =='ok' && res.data.status == 'alive')
+                  {
+                     self.isHippoAlive = true;
+                  }
+               })
+            , 1000);
 
          // Fetch the available classes of booking. 
          app.request.post( self.$store.state.api+'/config/bookmyvenue.class'
