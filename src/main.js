@@ -1,6 +1,24 @@
 // Import Vue
 import Vue from 'vue'
 
+// OSM and leaflet.
+import {LMap, LTileLayer, LMarker, LPopup, LTooltip} from 'vue2-leaflet';
+import {Icon} from 'leaflet'
+import 'leaflet/dist/leaflet.css'
+
+Vue.component('l-map', LMap);
+Vue.component('l-tile-layer', LTileLayer);
+Vue.component('l-marker', LMarker);
+Vue.component('l-popup', LPopup);
+Vue.component('l-tooltip', LTooltip);
+
+delete Icon.Default.prototype._getIconUrl;
+Icon.Default.mergeOptions({
+  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+  iconUrl: require('leaflet/dist/images/marker-icon.png'),
+  shadowUrl: require('leaflet/dist/images/marker-shadow.png')
+});
+
 // Import Framework7
 import Framework7 from 'framework7/framework7.esm.bundle.js';
 
@@ -38,6 +56,7 @@ import moment from 'moment';
 
 // Different F7-Vue plugin initialization with f7 v3.0
 Framework7.use(Framework7Vue)
+
 
 // External components.
 Vue.use(DatePicker)
