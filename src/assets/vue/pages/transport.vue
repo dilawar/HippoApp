@@ -20,10 +20,7 @@
      <f7-list-item v-for="(val,item) in currentTransportActive"
                    :key="'available'+item"
                    :title="val.trip_start_time">
-        <f7-icon v-if="val.vehicle.toLowerCase()=='shuttle'" 
-           slot="media" icon="fa fa-bus fa-2x"></f7-icon>
-        <f7-icon v-else 
-           slot="media" icon="fa fa-bug fa-2x"></f7-icon>
+        <f7-icon slot="media" :icon="transportIcon(val.vehicle, val.trip_start_time)" ></f7-icon>
      </f7-list-item>
      <f7-list-item v-for="(val,item) in currentTransportGone"
                    :footer="val.trip_start_time"
@@ -82,16 +79,39 @@ export default {
          nowTime: moment().format('HH:mm'),
       };
    },
+   computed: {
+   },
    mounted: function() {
       const self = this;
-      self.routeFromTo(self.pickup, self.drop)
+      if( self.pickup && self.drop )
+         self.routeFromTo(self.pickup, self.drop)
    },
    methods: { 
+      transportIcon: function(vehicle, time) {
+         var icon = 'fa ';
+         vehicle = vehicle.toLowerCase();
+         if(vehicle == 'shuttle')
+            icon += ' fa-bus'
+         else if(vehicle == 'buggy')
+            icon += ' fa-bug';
+         else
+            icon += ' fa-bus';
+         var now = moment();
+         var transportTime = moment(time, 'hh:mm:ss');
+         if( now.add(20, 'm') > transportTime)
+            icon += ' fa-spin fa-pulse';
+         return icon + ' fa-2x';
+      },
       routeFromTo: function(pickup, drop)
       {
          const self = this;
          self.pickup = pickup;
          self.drop = drop;
+         if( ! self.$localStorage.get('transport'))
+         {
+            self.fetchTransport();
+            return;
+         }
          self.transport = JSON.parse(self.$localStorage.get('transport')).data;
          self.currentTransport = self.transport.filter(x => 
             x.pickup_point.toLowerCase() == pickup.toLowerCase()
@@ -107,7 +127,7 @@ export default {
          self.today = data;
          this.fetchTransport();
       },
-      fetchTransport: function(event, done) 
+      fetchTransport: function( ) 
       {
          const self         = this;
          const app          = self.$f7;
@@ -115,9 +135,19 @@ export default {
          console.log('Link is', link);
          app.request.post(link, this.apiPostData(),
             function(json) {
-               self.$localStorage.set('transport', json);
+               var res = JSON.parse(json);
+               if( res.status == 'ok' )
+                  self.$localStorage.set('transport', json);
+               else
+                  app.dialog.alert( 
+                     'Failed to fetch transport data',
+                     res.status
+                     );
             });
-         done();
+
+         // refresh page.
+         self.$f7router.refreshPage();
+         return;
       },
    },
 };
