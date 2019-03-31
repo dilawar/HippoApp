@@ -35,7 +35,6 @@
                <f7-icon slot="media" icon="fa fa-search fa-2x"></f7-icon>
             </f7-list-item>
 
-
          </f7-list>
       </f7-block>
 

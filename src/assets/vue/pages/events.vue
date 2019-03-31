@@ -8,16 +8,17 @@
             @ptr:refresh="fetchEvents" 
             page-content
             >
-      <f7-navbar title="Upcoming events" back-link="Back"></f7-navbar>
+      <f7-navbar title="Events" back-link="Back"></f7-navbar>
+
       <f7-block>
             <f7-list accordion-list>
                <f7-list-item 
                      accordion-item
                      v-for="(val, index) in events" 
                      :key="index"
-                     :header="val.venue"
+                     :footer="val.venue"
                      :text-color="assignColor(val.start, val.end)"
-                     :footer="val.date+', '+val.start_time+' to '+val.end_time"
+                     :header="val.date+', '+val.start_time+' to '+val.end_time"
                      :title="val.title"
                      >
                      <f7-accordion-content>
