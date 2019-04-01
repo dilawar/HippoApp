@@ -1,6 +1,6 @@
 <template>
    <!-- TODO: On schedule click. Open a right panel and show the route -->
-  <f7-page ptr @ptr:refresh="fetchTransportAgain" page-content>
+   <f7-page ptr @ptr:refresh="fetchTransportAgain" page-content>
   <f7-navbar title="Transport" back-link="Back"></f7-navbar>
 
   <f7-block>
@@ -98,18 +98,19 @@ export default {
       return {
          pickup: ls.get('lastPickup') || 'NCBS',
          drop : ls.get('lastDrop') || 'Mandara',
-         transport: [], // All transport data.
-         currentTransport: '', // for this day data.
-         selectedDay: moment().format('ddd'),
          nowTime: moment(),
+         selectedDay: moment().format('ddd'),
+         transport: [],
+         currentTransport: [], 
       };
-   },
-   computed: {
    },
    mounted: function() {
       const self = this;
-      if( self.pickup && self.drop )
-         self.routeFromTo(self.pickup, self.drop)
+      self.fetchTransport();
+      setTimeout( () => {
+         self.filterTransport(self.selectedDay, self.pickup, self.drop);
+         self.routeFromTo(self.pickup, self.drop);
+      }, 1000);
    },
    methods: { 
       transportIcon: function(vehicle, startTime, day) {
@@ -124,58 +125,45 @@ export default {
             icon += ' fa-bus';
 
          if(self.isUpcomingTrip(startTime, day))
-            icon += ' fa-spin fa-pulse';
+            icon += ' fa-spin fa-pulse fa-2x';
 
          icon += ' fa-fw';
          return icon;
       },
-
       isUpcomingTrip: function(startTime, day)
       {
          const self = this;
+         if( self.selectedDay != day )
+            return false;
          var tt = moment(startTime, 'HH:mm:ss');
          var now = moment();
-         if(self.selectedDay == day)
-         {
-            var minutesToLeave = tt.diff(now, 'minutes');
-            if(minutesToLeave > 0 && minutesToLeave < 60)
-               return true;
-         }
+         var minutesToLeave = tt.diff(now, 'minutes');
+         if(minutesToLeave > 0 && minutesToLeave < 30)
+            return true;
          return false;
       },
-      routeFromTo: function(pickup, drop)
+      filterTransport: function(day, pickup, drop)
       {
          const self = this;
-         self.pickup = pickup;
-         self.drop = drop;
-
-         if( ! self.$localStorage.get('transport'))
-         {
-            self.fetchTransport();
-         }
-
-         var transport = JSON.parse(self.$localStorage.get('transport')).data;
-         self.currentTransport = transport.filter(x => 
+         console.log('filtering', day, pickup, drop);
+         self.currentTransport = self.transport.filter(x => 
+            x.day.toLowerCase() == day.toLowerCase() && 
             x.pickup_point.toLowerCase() == pickup.toLowerCase() && 
             x.drop_point.toLowerCase() == drop.toLowerCase()
          );
-
+      },
+      routeFromTo: function(pickup, drop)
+      {
+         console.log('Filtering route data', pickup, drop);
+         const self = this;
+         self.pickup = pickup;
+         self.drop = drop;
          self.$localStorage.set('lastPickup', self.pickup);
          self.$localStorage.set('lastDrop', self.drop);
       },
       changeDay: function(data) {
          const self = this;
          self.selectedDay = data;
-         if(self.transport.length == 0)
-            self.fetchTransport();
-
-         // Update currentTransport so that vue can trigger re-rendering.
-         self.currentTransport = self.transport.filter(x => 
-            x.day.toLowerCase() == this.selectedDay.toLowerCase() &&
-            x.pickup_point.toLowerCase() == self.pickup.toLowerCase() && 
-            x.drop_point.toLowerCase() == self.drop.toLowerCase()
-         );
-
       },
       fetchTransportAgain: function(event, done) {
          const self = this;
@@ -190,7 +178,6 @@ export default {
          const self         = this;
          const app          = self.$f7;
          var link = self.$store.state.api+'/transport';
-         console.log('fetching transport data from: ', link);
          app.request.post(link, this.apiPostData(),
             function(json)
             {
@@ -198,8 +185,9 @@ export default {
                // to make sure it triggers the rendering.
                if(res.status == 'ok')
                {
+                  console.log('Got transport data from: ' + link);
                   self.transport = res.data;
-                  self.$localStorage.set('transport', json);
+                  self.$localStorage.set('transport', JSON.stringify(res.data));
                }
                else
                   app.dialog.alert('Failed to fetch transport data', res.status);
