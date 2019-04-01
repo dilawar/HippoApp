@@ -3,37 +3,44 @@
   <f7-navbar title="Book" back-link="Back"></f7-navbar>
 
   <!-- Date and time -->
-  <f7-block class="row">
-     <f7-col width="60">
-        <small>Date and start time</small>
-        <date-picker v-model="startDateTime"
-                     lang="en"
-                     format="MMM DD HH:mm A"
-                     :width="150"
-                     :time-picker-options="{ start: '8:00', step: '00:15', end: '22:30' }"
-                     :minute-step="15"
-                     :append-to-body=true
-                     :popupStyle="{'z-index':10000}"
-                     type="datetime"> 
-        </date-picker>
-     </f7-col>
-     <f7-col width="40">
-        <small>End time </small>
-        <date-picker v-model="endDateTime" 
-                     lang="en"
-                     placeholder="Ending time"
-                     :width="100"
-                     :minute-step="15"
-                     :append-to-body=true
-                     :time-picker-options="{ start: '8:00', step: '00:15', end: '22:30' }"
-                     :popupStyle="{'z-index':10000}"
-                     format="HH:mm A"
-                     type="time">
-        </date-picker>
-     </f7-col>
-     <f7-col>
-        <f7-button raised fill @click="refreshVenues" >Filter Venues</f7-button>
-     </f7-col>
+  <f7-block>
+     <f7-row>
+        <f7-col width="60">
+           <small>Date and start time</small>
+           <date-picker v-model="startDateTime"
+                        lang="en"
+                        format="MMM DD HH:mm A"
+                        :width="150"
+                        :time-picker-options="{ start: '8:00', step: '00:15', end: '22:30' }"
+                        :minute-step="15"
+                        :append-to-body=true
+                        :popupStyle="{'z-index':10000}"
+                        readonly
+                        type="datetime"> 
+           </date-picker>
+        </f7-col>
+        <f7-col width="40">
+           <small>End time </small>
+           <date-picker v-model="endDateTime" 
+                        lang="en"
+                        placeholder="Ending time"
+                        :width="100"
+                        :minute-step="15"
+                        :append-to-body=true
+                        :time-picker-options="{ start: '8:00', step: '00:15', end: '22:30' }"
+                        :popupStyle="{'z-index':10001}"
+                        format="HH:mm A"
+                        readonly
+                        type="time">
+           </date-picker>
+        </f7-col>
+     </f7-row>
+     <f7-row>
+        <f7-col></f7-col>
+        <f7-col>
+           <f7-button raised fill @click="refreshVenues" >Filter Venues</f7-button>
+        </f7-col>
+     </f7-row>
   </f7-block>
 
   <f7-block-title>Available venues</f7-block-title>
