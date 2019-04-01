@@ -95,13 +95,13 @@ export default {
       {
          self.fetchTransport();
          setTimeout( () => {
-            self.filterTransport(self.selectedDay, self.pickup, self.drop);
+            self.filterTransport( );
             self.routeFromTo(self.pickup, self.drop);
          }, 2000);
       }
       else
       {
-         self.filterTransport(self.selectedDay, self.pickup, self.drop);
+         self.filterTransport();
          self.routeFromTo(self.pickup, self.drop);
       }
    },
@@ -135,28 +135,31 @@ export default {
             return true;
          return false;
       },
-      filterTransport: function(day, pickup, drop)
+      filterTransport: function()
       {
          const self = this;
-         console.log('filtering', day, pickup, drop);
+         var day = self.selectedDay;
          self.currentTransport = self.transport.filter(x => 
             x.day.toLowerCase() == day.toLowerCase() && 
-            x.pickup_point.toLowerCase() == pickup.toLowerCase() && 
-            x.drop_point.toLowerCase() == drop.toLowerCase()
+            x.pickup_point.toLowerCase() == self.pickup.toLowerCase() && 
+            x.drop_point.toLowerCase() == self.drop.toLowerCase()
          );
       },
       routeFromTo: function(pickup, drop)
       {
-         console.log('Filtering route data', pickup, drop);
          const self = this;
          self.pickup = pickup;
          self.drop = drop;
          self.$localStorage.set('lastPickup', self.pickup);
          self.$localStorage.set('lastDrop', self.drop);
+         // Change currentTransport else DOM won't render
+         self.filterTransport( );
       },
       changeDay: function(data) {
          const self = this;
          self.selectedDay = data;
+         // Change currentTransport else DOM wont change 
+         self.filterTransport( );
       },
       fetchTransportAgain: function(event, done) {
          const self = this;
