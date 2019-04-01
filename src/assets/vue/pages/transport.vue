@@ -1,59 +1,88 @@
 <template>
-<f7-page page-content ptr @ptr:refresh="fetchTransport" >
+   <!-- TODO: On schedule click. Open a right panel and show the route -->
+  <f7-page ptr @ptr:refresh="fetchTransportAgain" page-content>
   <f7-navbar title="Transport" back-link="Back"></f7-navbar>
 
-  <!-- Days related -->
   <f7-block>
-     <f7-row noGap>
-        <f7-col v-for="d in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']" :key="d">
-           <f7-button :key="d"
-                :fill="d==today?true:false" 
-                @click="changeDay(d)"
-                > 
-                <font><small>{{d}}</small></font>
+     <!-- Days related -->
+     <f7-row noGap v-model="selectedDay">
+        <f7-col v-for="d in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']" :key="'col'+d">
+           <f7-button  
+              :key="d" :fill="(d==selectedDay)?true:false" 
+              @click="changeDay(d)"> 
+              <font><small>{{d}}</small></font>
            </f7-button>
         </f7-col>
      </f7-row>
-
-  <f7-list media-list no-hairlines>
-     <f7-list-item :footer="`${pickup} to ${drop}`"></f7-list-item>
-     <f7-list-item v-for="(val,item) in currentTransportActive"
-                   :key="'available'+item"
-                   :title="val.trip_start_time">
-        <f7-icon slot="media" :icon="transportIcon(val.vehicle, val.trip_start_time)" ></f7-icon>
-     </f7-list-item>
-     <f7-list-item v-for="(val,item) in currentTransportGone"
-                   :footer="val.trip_start_time"
-                   :key="'gone'+item">
-          <f7-icon v-if="val.vehicle.toLowerCase()=='shuttle'" slot="media" icon="fa fa-bus fa-1x"></f7-icon>
-          <f7-icon v-else slot="media" icon="fa fa-bug fa-1x"></f7-icon>
-     </f7-list-item>
-
-  </f7-list>
   </f7-block>
 
-  <!-- Floating button for picking routes. -->
-  <f7-fab position="right-bottom" slot="fixed" color="green">
+  <f7-block>
+     <f7-block-title small>
+        <f7-icon icon="fa fa-map-marker fa-fw"></f7-icon> {{pickup}} to {{drop}} 
+     </f7-block-title>
+
+     <f7-row v-for="ri in 1+Math.floor(currentTransport.length/3)" :key="ri">
+        <f7-col style="margin-bottom:10px"
+                v-for="(val,item) in currentTransport.slice(3*ri,3*(ri+1))" :key="'col'+ri+item"
+                >
+                <f7-button 
+                :icon="transportIcon(val.vehicle,val.trip_start_time,val.day)"
+                panel-open="right"
+                raised 
+                :text="`${humanReadableTime(str2Moment(val.trip_start_time,'HH:mm:ss'))}`"
+                >
+                </f7-button>
+        </f7-col>
+     </f7-row>
+
+  </f7-block>
+
+  <!--
+     <f7-list media-list no-hairlines 
+     v-model="transport" 
+     :title="`${pickup} to {drop}`"
+     >
+     <f7-list-item v-for="(val,item) in currentTransport"
+     :key="'available'+item"
+     :title="val.trip_start_time"
+     :after="isUpcomingTrip(val.trip_start_time, val.day)?'Upcoming':''"
+     >
+     <f7-icon slot="media" :icon="transportIcon(val.vehicle,val.trip_start_time,val.day)">
+     </f7-icon>
+     </f7-list-item>
+     </f7-list>
+  -->
+
+  <!-- FAB: Floating button for picking routes. -->
+  <f7-fab position="right-bottom" fab-extended color="green">
      <f7-icon icon="fa fa-map-marker fa-2x"></f7-icon>
      <f7-icon ios="f7:close" aurora="f7:close" md="material:close"></f7-icon>
      <f7-fab-buttons position="top">
-        <f7-fab-button label="NCBS to Mandara" 
-                       fab-close
-                       @click="routeFromTo('NCBS', 'Mandara')"
-                       >n2m</f7-fab-button>
-        <f7-fab-button 
-                       label="Mandara to NCBS"
+        <f7-fab-button  extended
+                        fab-close 
+                        label="NCBS to Mandara"
+                        @click="routeFromTo('NCBS', 'Mandara')"
+                        >
+                        <small>N→M</small>
+        </f7-fab-button>
+        <f7-fab-button label="Mandara to NCBS"
                        fab-close
                        @click="routeFromTo('Mandara', 'NCBS')"
-                       >m2n</f7-fab-button>
-        <f7-fab-button 
-                       fab-close
+                       >
+              <small>M→N</small>
+        </f7-fab-button>
+        <f7-fab-button fab-close
                        @click="routeFromTo('NCBS', 'IISc')"
-                       label="NCBS to IISc">n2i</f7-fab-button>
-        <f7-fab-button 
-                       fab-close
+                       label="NCBS to IISc"
+                       >
+                       <small>N→I</small>
+        </f7-fab-button>
+        <f7-fab-button fab-close
                        @click="routeFromTo('IISc', 'NCBS')"
-                       label="IISc to NCBS">i2n</f7-fab-button>
+                       label="IISc to NCBS"
+                       >
+              <small>I→N</small>
+        </f7-fab-button>
      </f7-fab-buttons>
   </f7-fab>
 
@@ -61,22 +90,18 @@
 </template>
 
 <script>
-import moment from 'moment';
-moment.defaultFormat = 'YYYY-MM-DD';
+import moment from 'moment'
 
 export default {
    data() {
       const ls = this.$localStorage;
       return {
-         transport: [],
          pickup: ls.get('lastPickup') || 'NCBS',
          drop : ls.get('lastDrop') || 'Mandara',
-         currentTransport: [],
-         currentTransportGone: [],
-         currentTransportActive: [],
-         today: moment().format('ddd'),
-         date: moment().format('MMM DD (ddd)'),
-         nowTime: moment().format('HH:mm'),
+         transport: [], // All transport data.
+         currentTransport: '', // for this day data.
+         selectedDay: moment().format('ddd'),
+         nowTime: moment(),
       };
    },
    computed: {
@@ -87,7 +112,8 @@ export default {
          self.routeFromTo(self.pickup, self.drop)
    },
    methods: { 
-      transportIcon: function(vehicle, time) {
+      transportIcon: function(vehicle, startTime, day) {
+         const self = this;
          var icon = 'fa ';
          vehicle = vehicle.toLowerCase();
          if(vehicle == 'shuttle')
@@ -96,58 +122,89 @@ export default {
             icon += ' fa-bug';
          else
             icon += ' fa-bus';
-         var now = moment();
-         var transportTime = moment(time, 'hh:mm:ss');
-         if( now.add(20, 'm') > transportTime)
+
+         if(self.isUpcomingTrip(startTime, day))
             icon += ' fa-spin fa-pulse';
-         return icon + ' fa-2x';
+
+         icon += ' fa-fw';
+         return icon;
+      },
+
+      isUpcomingTrip: function(startTime, day)
+      {
+         const self = this;
+         var tt = moment(startTime, 'HH:mm:ss');
+         var now = moment();
+         if(self.selectedDay == day)
+         {
+            var minutesToLeave = tt.diff(now, 'minutes');
+            if(minutesToLeave > 0 && minutesToLeave < 60)
+               return true;
+         }
+         return false;
       },
       routeFromTo: function(pickup, drop)
       {
          const self = this;
          self.pickup = pickup;
          self.drop = drop;
+
          if( ! self.$localStorage.get('transport'))
          {
             self.fetchTransport();
-            return;
          }
-         self.transport = JSON.parse(self.$localStorage.get('transport')).data;
-         self.currentTransport = self.transport.filter(x => 
-            x.pickup_point.toLowerCase() == pickup.toLowerCase()
-            && x.drop_point.toLowerCase() == drop.toLowerCase()
+
+         var transport = JSON.parse(self.$localStorage.get('transport')).data;
+         self.currentTransport = transport.filter(x => 
+            x.pickup_point.toLowerCase() == pickup.toLowerCase() && 
+            x.drop_point.toLowerCase() == drop.toLowerCase()
          );
-         self.currentTransportGone = self.currentTransport.filter(x=>self.nowTime >= x.trip_start_time);
-         self.currentTransportActive = self.currentTransport.filter(x=>self.nowTime < x.trip_start_time);
+
          self.$localStorage.set('lastPickup', self.pickup);
          self.$localStorage.set('lastDrop', self.drop);
       },
       changeDay: function(data) {
          const self = this;
-         self.today = data;
-         this.fetchTransport();
+         self.selectedDay = data;
+         if(self.transport.length == 0)
+            self.fetchTransport();
+
+         // Update currentTransport so that vue can trigger re-rendering.
+         self.currentTransport = self.transport.filter(x => 
+            x.day.toLowerCase() == this.selectedDay.toLowerCase() &&
+            x.pickup_point.toLowerCase() == self.pickup.toLowerCase() && 
+            x.drop_point.toLowerCase() == self.drop.toLowerCase()
+         );
+
+      },
+      fetchTransportAgain: function(event, done) {
+         const self = this;
+         setTimeout( () => {
+            self.fetchTransport();
+            done();
+            }, 1000
+         );
       },
       fetchTransport: function( ) 
       {
          const self         = this;
          const app          = self.$f7;
-         var link = self.$store.state.api+'/transport/'+self.today;
-         console.log('Link is', link);
+         var link = self.$store.state.api+'/transport';
+         console.log('fetching transport data from: ', link);
          app.request.post(link, this.apiPostData(),
-            function(json) {
+            function(json)
+            {
                var res = JSON.parse(json);
-               if( res.status == 'ok' )
+               // to make sure it triggers the rendering.
+               if(res.status == 'ok')
+               {
+                  self.transport = res.data;
                   self.$localStorage.set('transport', json);
+               }
                else
-                  app.dialog.alert( 
-                     'Failed to fetch transport data',
-                     res.status
-                     );
-            });
-
-         // refresh page.
-         self.$f7router.refreshPage();
-         return;
+                  app.dialog.alert('Failed to fetch transport data', res.status);
+            }
+         );
       },
    },
 };

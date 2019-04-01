@@ -19,6 +19,9 @@ Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png')
 });
 
+// Moment 
+import moment from 'moment';
+
 // Import Framework7
 import Framework7 from 'framework7/framework7.esm.bundle.js';
 
@@ -38,8 +41,8 @@ import MaterialIcons from 'material-design-icons/iconfont/material-icons.css'
 import FontAwesome from 'font-awesome/css/font-awesome.css'
 
 // Import App Custom Styles
-// import AppStyles from './assets/sass/main.scss'
-//
+import AppStyles from './assets/sass/main.scss'
+
 import DatePicker from 'vue2-datepicker'
 
 // Import App Component
@@ -50,9 +53,6 @@ import store from './assets/vuex/storage.js'
 
 // Local file-storage
 import VueLocalStorage from 'vue-localstorage';
-
-// Moment
-import moment from 'moment';
 
 // Different F7-Vue plugin initialization with f7 v3.0
 Framework7.use(Framework7Vue)
@@ -87,6 +87,9 @@ Vue.mixin({
       },
       toDate: function(dateStr) {
          return moment(dateStr).toDate();
+      },
+      str2Moment: function(str, fmt) {
+         return moment(str, fmt);
       },
       apiPostData: function() {
          const self = this;
