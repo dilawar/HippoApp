@@ -69,9 +69,11 @@
     "moment": "^2.24.0",
     "q": "^1.5.1",
     "vue": "^2.6.10",
+    "vue-light-timeline": "^1.0.1",
     "vue-localstorage": "^0.6.2",
     "vue2-datepicker": "^2.10.3",
     "vue2-leaflet": "^2.0.2",
+    "vue2vis": "0.0.16",
     "vuex": "^3.1.0"
   },
   "displayName": "Hippo",

@@ -19,6 +19,10 @@ Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png')
 });
 
+// Lightweight timeline.
+import LightTimeline from 'vue-light-timeline';
+Vue.use(LightTimeline);
+
 // Moment 
 import moment from 'moment';
 
@@ -90,6 +94,18 @@ Vue.mixin({
       },
       str2Moment: function(str, fmt) {
          return moment(str, fmt);
+      },
+      stringToColour: function(str) {
+         var hash = 0;
+         for (var i = 0; i < str.length; i++) {
+            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+         }
+         var colour = '#';
+         for (var i = 0; i < 3; i++) {
+            var value = (hash >> (i * 8)) & 0xFF;
+            colour += ('00' + value.toString(16)).substr(-2);
+         }
+         return colour;
       },
       apiPostData: function() {
          const self = this;
