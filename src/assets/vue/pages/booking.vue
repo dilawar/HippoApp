@@ -1,5 +1,5 @@
 <template>
-  <f7-page page-content @page:init="refreshVenues">
+  <f7-page page-content @page:init="refreshVenuesStatus">
   <f7-navbar title="Book" back-link="Back"></f7-navbar>
 
   <!-- Date and time -->
@@ -38,7 +38,7 @@
      <f7-row>
         <f7-col></f7-col>
         <f7-col>
-           <f7-button raised fill @click="refreshVenues" >Filter Venues</f7-button>
+           <f7-button raised fill @click="refreshVenuesStatus" >Filter Venues</f7-button>
         </f7-col>
      </f7-row>
   </f7-block>
@@ -48,10 +48,10 @@
      <f7-list-item v-for="(item, index) in venuesFree" 
                    :title="`${item.id}`"
                    :value="`${item.id}`"
+                   :footer="venueToStr(item.id)"
                    :key="index"
                    :link="`/book/${item.id}/${startTimeStamp}/${endTimeStamp}/`"
                    after="Book">
-        <f7-icon slot="media" ios="f7:info" md="material:info"></f7-icon>
      </f7-list-item>
   </f7-list>
   </f7-block-title>
@@ -87,6 +87,7 @@ export default {
          startTimeStamp: moment().format('X'),
          endDateTime: moment().add(60, 'm'),
          endTimeStamp: moment().add(60, 'm').format('X'),
+         venues: [], // information about venues.
       };
    },
    actions: {
@@ -98,14 +99,50 @@ export default {
       startDateTime: function(data){ this.startTimeStamp = moment(data).format('X');}, 
       endDateTime: function(data){ this.endTimeStamp = moment(data).format('X');},
    },
+   mounted: function() {
+      // Fetch the available classes of booking. 
+      const self = this;
+      const app = this.$f7;
+      // Currently only NOPUBLIC type of bookings are allowed.
+      app.request.post(self.$store.state.api+'/config/bookmyvenue.nopublic.class'
+         , self.apiPostData()
+         , function(json) 
+         {
+            const res = JSON.parse(json);
+            self.venues = res.data;
+            if( res.status=='ok')
+               self.$localStorage.set('classes', res.data.value);
+         }
+      );
+
+      // Also save all the venues.
+      app.request.post(self.$store.state.api+'/venue/list/all'
+         , self.apiPostData()
+         , function(json)
+         {
+            const res = JSON.parse(json);
+            if(res.status=='ok')
+            {
+               self.$localStorage.set('venues', JSON.stringify(res.data));
+               self.venues = res.data;
+            }
+         }
+      );
+   },
    methods: { 
-      refreshVenues: function(data) 
+      venueToStr: function(venueID)
+      {
+         const self = this;
+         const v = self.venues[venueID];
+         if(v)
+            return '('+v.strength+') ' + v.summary;
+         return 'Info not available.';
+      },
+      refreshVenuesStatus: function(data) 
       {
          const self         = this;
          const app          = self.$f7;
          self.isOpen        = false;
-
-         console.log( moment(self.endDateTime).diff(moment(self.startDateTime), 'd') );
 
          // Try to connect. Convert date to unix-timestamp.
          var link = self.$store.state.api+'/venue/status/all/'
