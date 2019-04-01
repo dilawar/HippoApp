@@ -48,7 +48,7 @@ export default {
          showPreloader: true,
          actionGridOpened: false,
          venues: [],
-         events: JSON.parse(self.$localStorage.get('events', '[]')),
+         events: JSON.parse(self.$localStorage.get('events', '[{}]')),
          venueEvents: [],
          items: [],
          options: {
@@ -59,7 +59,6 @@ export default {
    mounted: function() {
       const self = this;
       const app = this.$f7;
-
       // Get thisDay events.
       if(self.events.length == 0)
          self.fetchEventsOnThisDay();
@@ -126,30 +125,27 @@ export default {
 
          if(!self.allowInfinite) 
             return;
-
          self.allowInfinite = false;
 
-         setTimeout(() => {
-            if(self.events.length >= 500) {
-               self.showPreloader = false;
-               return;
-            }
-            app.request.post(self.$store.state.api+'/events/latest/' 
-               + (self.events.length+20).toString() + '/' + self.events.length.toString()
-               , self.apiPostData()
-               , function(json) 
+         if(self.events.length >= 500) {
+            self.showPreloader = false;
+            return;
+         }
+         app.request.post(self.$store.state.api+'/events/latest/' 
+            + (self.events.length+20).toString() + '/' + self.events.length.toString()
+            , self.apiPostData()
+            , function(json) 
+            {
+               const res = JSON.parse(json);
+               console.log( 'fetched ', res.data.length);
+               if(res.status=='ok')
                {
-                  const res = JSON.parse(json);
-                  console.log( 'fetched ', res.data.length);
-                  if(res.status=='ok')
-                  {
-                     self.events.push(...res.data);
-                     self.$localStorage.set('events', JSON.stringify(self.events));
-                  }
+                  self.events.push(...res.data);
+                  self.$localStorage.set('events', JSON.stringify(self.events));
                }
-            );
-            self.allowInfinite = true;
-         }, 1000);
+            }
+         );
+         self.allowInfinite = true;
       },
       showTimeline: function(venue) 
       {
