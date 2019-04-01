@@ -16,14 +16,11 @@
                      accordion-item
                      v-for="(val, index) in events" 
                      :key="index"
-                     :footer="val.venue"
-                     :text-color="assignColor(val.start, val.end)"
-                     :header="val.date+', '+val.start_time+' to '+val.end_time"
-                     :title="val.title"
+                     :header="reformatDate(val.date)+', '+val.start_time+' to '+val.end_time"
+                     :footer="val.title"
                      >
                      <f7-accordion-content>
                         <f7-block margin=30>
-                              <strong>{{val.title}}</strong>
                               <small><span v-html="val.description"></span></small>
                         </f7-block>
                      </f7-accordion-content>
@@ -50,9 +47,11 @@ export default {
    computed: {
    },
    methods: { 
+      reformatDate: function(date){
+         return moment(date, 'dddd, MMM DD, YYYY').format('ddd, MMM DD');
+      },
       assignColor: function(startDateTime, endDateTime) 
       {
-         console.log( 'start', moment(startDateTime), 'today', moment());
          if(moment(startDateTime) < moment().add(7, 'd'))
             return 'purple';
          if(moment(startDateTime) <= moment().add(1, 'd'))
@@ -64,7 +63,6 @@ export default {
          const self         = this;
          const app          = self.$f7;
          var link = self.$store.state.api+'/publicevents/'+moment(self.startDate).format('X')+'/20';
-
          app.request.post(link, this.apiPostData(),
             function(json) {
                var res = JSON.parse(json);
@@ -85,7 +83,6 @@ export default {
          var numToFetch = self.events.length + 10;
          var link = self.$store.state.api+'/publicevents/'+moment(self.startDate).format('X') 
             +'/'+ numToFetch.toString();
-         console.log('Link is', link);
          app.request.post(link, this.apiPostData(),
             function(json) {
                var res = JSON.parse(json);
