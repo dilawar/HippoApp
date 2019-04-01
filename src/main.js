@@ -109,6 +109,7 @@ Vue.mixin({
    },
 })
 
+
 // Init Vue App
 export default new Vue({
    // Root Element
@@ -118,5 +119,22 @@ export default new Vue({
    components: {app},
    localStorage : {
       HippoApiKey : ''
+   },
+   methods: {
+      created() {
+         document.addEventListener('backbutton', this.onBackKeyDown, false);
+      },
+      // Back button support.
+      onBackKeyDown: function() 
+      {
+         // Your logic
+         this.$f7.router.back('', {
+            force: true,
+            ignoreCache: true,
+            history: false
+         })
+      },
+
+      // Other functions.
    },
 });
