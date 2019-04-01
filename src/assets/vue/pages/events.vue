@@ -16,7 +16,7 @@
                      accordion-item
                      v-for="(val, index) in events" 
                      :key="index"
-                     :header="reformatDate(val.date)+', '+val.start_time+' to '+val.end_time"
+                     :header="reformatDate(val.date)+', '+val.start_time+' | '+val.venue"
                      :footer="val.title"
                      >
                      <f7-accordion-content>

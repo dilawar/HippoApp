@@ -19,7 +19,11 @@
       <f7-block>
          <f7-list class="components-list" no-hairlines>
 
-            <f7-list-item link="/events/" title="Events" panel-close>
+            <f7-list-item v-if="alreadyLoggedIn" link="/booking/" title="Venues and Booking" panel-close>
+               <f7-icon slot="media" icon="fa fa-building fa-2x"></f7-icon>
+            </f7-list-item>
+
+            <f7-list-item link="/events/" title="Event Calendar" panel-close>
                <f7-icon slot="media" icon="fa fa-calendar fa-2x"></f7-icon>
             </f7-list-item>
 
