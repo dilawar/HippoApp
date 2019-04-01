@@ -7,7 +7,7 @@
      <!-- Days related -->
      <f7-row noGap v-model="selectedDay">
         <f7-col v-for="d in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']" :key="'col'+d">
-           <f7-button  
+           <f7-button  small
               :key="d" :fill="(d==selectedDay)?true:false" 
               @click="changeDay(d)"> 
               <font><small>{{d}}</small></font>
@@ -36,22 +36,6 @@
      </f7-row>
 
   </f7-block>
-
-  <!--
-     <f7-list media-list no-hairlines 
-     v-model="transport" 
-     :title="`${pickup} to {drop}`"
-     >
-     <f7-list-item v-for="(val,item) in currentTransport"
-     :key="'available'+item"
-     :title="val.trip_start_time"
-     :after="isUpcomingTrip(val.trip_start_time, val.day)?'Upcoming':''"
-     >
-     <f7-icon slot="media" :icon="transportIcon(val.vehicle,val.trip_start_time,val.day)">
-     </f7-icon>
-     </f7-list-item>
-     </f7-list>
-  -->
 
   <!-- FAB: Floating button for picking routes. -->
   <f7-fab position="right-bottom" fab-extended color="green">
@@ -106,11 +90,20 @@ export default {
    },
    mounted: function() {
       const self = this;
-      self.fetchTransport();
-      setTimeout( () => {
+      self.transport = JSON.parse(self.$localStorage.get('transport', '[]'));
+      if(self.transport.length == 0)
+      {
+         self.fetchTransport();
+         setTimeout( () => {
+            self.filterTransport(self.selectedDay, self.pickup, self.drop);
+            self.routeFromTo(self.pickup, self.drop);
+         }, 2000);
+      }
+      else
+      {
          self.filterTransport(self.selectedDay, self.pickup, self.drop);
          self.routeFromTo(self.pickup, self.drop);
-      }, 1000);
+      }
    },
    methods: { 
       transportIcon: function(vehicle, startTime, day) {

@@ -156,6 +156,17 @@
                   self.$localStorage.set('classes', res.data.value);
             }
          );
+
+         // Fetch the transport as well.
+         app.request.post( self.$store.state.api+'/transport'
+            , self.apiPostData()
+            , function(json) 
+            {
+               const res = JSON.parse(json);
+               if( res.status=='ok')
+                  self.$localStorage.set('transport', JSON.stringify(res.data));
+            }
+         );
       },
       methods: {
          signIn: function()
