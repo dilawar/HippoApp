@@ -20,7 +20,16 @@ if (document.location.search.indexOf('theme=') >= 0) {
   theme = document.location.search.split('theme=')[1].split('&')[0];
 }
 
-
+document.addEventListener( 'deviceready', onDeviceReady, false);
+function onDeviceReady()
+{
+   document.addEventListener('backbutton', onBackButton, false);
+}
+function onBackButton( )
+{
+   history.go(-1);
+   navigator.app.backHistory();
+}
 
 export default {
    data() {

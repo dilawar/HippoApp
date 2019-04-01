@@ -121,20 +121,5 @@ export default new Vue({
       HippoApiKey : ''
    },
    methods: {
-      created() {
-         document.addEventListener('backbutton', this.onBackKeyDown, false);
-      },
-      // Back button support.
-      onBackKeyDown: function() 
-      {
-         // Your logic
-         this.$f7.router.back('', {
-            force: true,
-            ignoreCache: true,
-            history: false
-         })
-      },
-
-      // Other functions.
    },
 });
