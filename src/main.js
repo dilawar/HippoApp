@@ -103,11 +103,12 @@ Vue.mixin({
             hash = str.charCodeAt(i) + ((hash << 5) - hash);
          }
          var colour = '#';
-         for (var i = 0; i < 3; i++) {
+         for (var i = 0; i < 3; i++) 
+         {
             var value = (hash >> (i * 8)) & 0xFF;
             colour += ('00' + value.toString(16)).substr(-2);
+            return colour;
          }
-         return colour;
       },
       apiPostData: function() {
          const self = this;
@@ -127,7 +128,6 @@ Vue.mixin({
    },
 })
 
-
 // Init Vue App
 export default new Vue({
    // Root Element
@@ -138,6 +138,48 @@ export default new Vue({
    localStorage : {
       HippoApiKey : ''
    },
-   methods: {
+   mounted() {
+      document.addEventListener("deviceready", onDeviceReady, false);
    },
+   methods: 
+   { 
+      onBackButton: function(e) {
+         console.log( 'back button');
+         var leftp = app.panel.left && app.panel.left.opened;
+         var rightp = app.panel.right && app.panel.right.opened;
+         if ( leftp || rightp ) 
+         {
+            app.panel.close();
+            return false;
+         } 
+         else if (app.views.main.router.url == '/') 
+         {
+            app.dialog.confirm('Are you sure you want to exit?', 'Exit MyApp'
+               , function() { navigator.app.exitApp();}
+               , function() { }
+            );
+         } 
+         else 
+            app.views.main.router.back();
+      },
+   },
+   views: {
+      pushState: false
+   }
 });
+
+// device APIs are available
+//
+function onDeviceReady() {
+   // Register the event listener
+   document.addEventListener("backbutton", onBackKeyDown, false);
+}
+
+// Handle the back button
+//
+function onBackKeyDown(et) {
+   alert("back button is disabled.");
+   // this part does not work.
+   //app.methods.onBackButton(et);
+}
+

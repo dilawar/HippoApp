@@ -59,6 +59,8 @@
     "@lazy-copilot/datetimepicker": "^0.1.40",
     "cordova-android": "^7.1.4",
     "cordova-browser": "^5.0.4",
+    "cordova-plugin-document-viewer": "^0.9.10",
+    "cordova-plugin-inappbrowser": "^3.0.0",
     "cordova-plugin-whitelist": "^1.3.3",
     "font-awesome": "^4.7.0",
     "framework7": "^4.2.0",
@@ -80,7 +82,9 @@
   "displayName": "Hippo",
   "cordova": {
     "plugins": {
-      "cordova-plugin-whitelist": {}
+      "cordova-plugin-whitelist": {},
+      "cordova-plugin-document-viewer": {},
+      "cordova-plugin-inappbrowser": {}
     },
     "platforms": [
       "android",
