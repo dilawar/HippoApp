@@ -7,10 +7,19 @@
             <f7-link v-else icon="fa fa-bars" @click="youAreNotLoggedIn"> </f7-link>
          </f7-nav-left>
          <f7-nav-title>Hippo</f7-nav-title>
-         <f7-nav-right v-if="alreadyLoggedIn">
-            <f7-link icon="fa fa-sign-out fw" @click="signOut" 
+         <f7-nav-right>
+            <f7-link v-if="alreadyLoggedIn"
+                     icon="fa fa-sign-out fw" @click="signOut" 
                      panel-close
                      header="Logout"
+                     slot="media">
+            </f7-link>
+            <f7-link v-else
+                     @click="shutdown"
+                     color="red"
+                     icon="fa fa-power-off fa-fw" 
+                     panel-close
+                     header="Close"
                      slot="media">
             </f7-link>
          </f7-nav-right>
@@ -137,6 +146,32 @@
       {
          const self = this;
          const app = self.$f7;
+         var $$ = this.$$;
+
+         // Listen to Cordova's backbutton event
+         document.addEventListener('backbutton', function navigateBack() {
+            // Use Framework7's router to navigate back
+            var mainView = app.views.main;
+
+            var leftp = app.panel.left && app.panel.left.opened;
+            var rightp = app.panel.right && app.panel.right.opened;
+
+            if (leftp || rightp) {
+
+               app.panel.close();
+               return false;
+            } else if ($$('.modal-in').length > 0) {
+
+               app.dialog.close();
+               app.popup.close();
+               return false;
+            } else if (app.views.main.router.url == '/') {
+               navigator.app.exitApp();
+            } else {
+               mainView.router.back();
+            }
+         }, false);
+
          self.alreadyLoggedIn = self.isUserAuthenticated();
 
          // Check if hippo is alive
@@ -151,7 +186,6 @@
                   }
                })
             , 1000);
-
 
          // Fetch the transport as well.
          app.request.post( self.$store.state.api+'/transport'
@@ -206,7 +240,10 @@
          youAreNotLoggedIn: function() {
             const app = this.$f7;
             app.dialog.alert("Access denied. Login first.", "Prohibited");
-         }
+         },
+         shutdown: function() {
+            navigator.app.exitApp();
+         },
       },
    }
 </script>
