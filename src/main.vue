@@ -7,6 +7,10 @@
     </f7-panel>
     <f7-view main url="/" tab tab-active>
 
+       <!--
+          Enable it if we need it to put toolbar on the bottom page. The
+          backbutton has started working fine again.
+
        <f7-toolbar tabber position="bottom">
           <f7-link tab-link="#tab-back" 
                    icon-only 
@@ -28,6 +32,8 @@
                    >
           </f7-link>
        </f7-toolbar>
+       -->
+
     </f7-view>
 
 
@@ -54,10 +60,5 @@ export default {
          },
       }
    },
-   methods: {
-      goBack: function() {
-         console.log( 'Go back', routes );
-      },
-   }
 }
 </script>

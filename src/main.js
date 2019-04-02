@@ -163,23 +163,4 @@ export default new Vue({
             app.views.main.router.back();
       },
    },
-   views: {
-      pushState: false
-   }
 });
-
-// device APIs are available
-//
-function onDeviceReady() {
-   // Register the event listener
-   document.addEventListener("backbutton", onBackKeyDown, false);
-}
-
-// Handle the back button
-//
-function onBackKeyDown(et) {
-   alert("back button is disabled.");
-   // this part does not work.
-   //app.methods.onBackButton(et);
-}
-
