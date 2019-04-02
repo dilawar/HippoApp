@@ -21,7 +21,7 @@
 
             <f7-list-item
                v-if="alreadyLoggedIn" 
-               link="/whatwherewhen/" title="What? Where? When?" panel-close>
+               link="/whatwherewhen/" title="What Where When" panel-close>
                <f7-icon slot="media" icon="fa fa-question-circle-o fa-2x"></f7-icon>
             </f7-list-item>
 
@@ -184,9 +184,7 @@
                      self.$f7router.refreshPage();
                   }
                   else
-                  {
                      app.dialog.alert("Failed to login. Try again.", "Error");
-                  }
                }
             );
             setTimeout(() => app.dialog.close(), 200);

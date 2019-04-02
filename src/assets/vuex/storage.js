@@ -8,7 +8,7 @@ export default new Vuex.Store({
     user: '',
     alreadyLoggedIn: false,
     api : 'https://ncbs.res.in/hippo/api',
-    // api : 'https://172.16.223.30/hippo/api',
+    //api : 'https://172.16.223.30/hippo/api',
     key : '',
     tobook: null
   },
