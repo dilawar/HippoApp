@@ -1,72 +1,72 @@
 <template >
-   <f7-page>
+   <f7-page page-content>
       <f7-navbar title = "Booking" back-link = "Back" > </f7-navbar >
-      <f7-page-content >
-         <f7-block>
-            <f7-list no-hairlines-md>
+      <f7-block>
+         <f7-list no-hairlines-md>
 
-               <f7-list-input name="venue" 
-                              type="text"
-                              label="Selected Venue"
-                              v-model="request.venue"
-                              readonly>
-               </f7-list-input>
+            <f7-list-input name="venue" 
+                           type="text"
+                           label="Selected Venue"
+                           v-model="request.venue"
+                           disabled
+                           readonly>
+            </f7-list-input>
 
-               <f7-list-item>
-                  <date-picker v-bind:value="startDateTime"
-                               format="MMM DD, HH:mm A"
-                               lang="en" 
-                               type="datetime"
-                               label="Start Datetime"
-                               readonly>
-                  </date-picker>
-               </f7-list-item>
+            <f7-list-item>
+               <date-picker v-bind:value="startDateTime"
+                            format="MMM DD, HH:mm A"
+                            lang="en" 
+                            type="datetime"
+                            label="Start Datetime"
+                            disabled
+                            readonly>
+               </date-picker>
+            </f7-list-item>
 
-               <f7-list-item>
-                  <date-picker v-bind:value="endDateTime"
-                               format="MMM DD, HH:mm A"
-                               type="datetime"
-                               lang="en"
-                               label="End Datetime"
-                               readonly>
-                  </date-picker>
-               </f7-list-item>
+            <f7-list-item>
+               <date-picker v-bind:value="endDateTime"
+                            format="MMM DD, HH:mm A"
+                            type="datetime"
+                            lang="en"
+                            label="End Datetime"
+                            disabled
+                            readonly>
+               </date-picker>
+            </f7-list-item>
 
-               <f7-list-item title="Class of event" smart-select :smart-select-params="{closeOnSelect:true}">
-                  <select v-model="request.class">
-                     <option v-for="(cl, index) in classes" :key="cl" :value="cl">{{ cl }}</option>
-                  </select>
-               </f7-list-item>
+            <f7-list-item title="Class of event" smart-select :smart-select-params="{closeOnSelect:true}">
+               <select v-model="request.class">
+                  <option v-for="(cl, index) in classes" :key="cl" :value="cl">{{ cl }}</option>
+               </select>
+            </f7-list-item>
 
-               <f7-list-input :value="request.title"
-                             @input="request.title=$event.target.value"
-                             type="text" placeholder="Title of your event">
-               </f7-list-input>
+            <f7-list-input :value="request.title"
+                          @input="request.title=$event.target.value"
+                          type="text" placeholder="Title of your event">
+            </f7-list-input>
 
-               <f7-list-input :value="request.description" 
-                              @input="request.description=$event.target.value"
-                              type="textarea" 
-                              placeholder="Description">
-               </f7-list-input>
+            <f7-list-input :value="request.description" 
+                           @input="request.description=$event.target.value"
+                           type="textarea" 
+                           placeholder="Description">
+            </f7-list-input>
 
-               <f7-list-input v-model="request.url" type="url" placeholder="External Link (URL)">
-               </f7-list-input>
+            <f7-list-input v-model="request.url" type="url" placeholder="External Link (URL)">
+            </f7-list-input>
 
-               <f7-list-input v-model="request.is_public_event"
-                              label="Add to NCBS calendar?" type="select" defaultValue="NO">
-                  <option value="YES">Yes</option>
-                  <option value="NO">No</option>
-               </f7-list-input>
+            <f7-list-input v-model="request.is_public_event"
+                           label="Add to NCBS calendar?" type="select" defaultValue="NO">
+               <option value="YES">Yes</option>
+               <option value="NO">No</option>
+            </f7-list-input>
 
-               <f7-list-item>
-                  <f7-button slot="after" 
-                     raised fill @click="checkAndSubmit">Send Booking Request</f7-button>
-               </f7-list-item>
+            <f7-list-item>
+               <f7-button slot="after" 
+                  raised fill @click="checkAndSubmit">Send Booking Request</f7-button>
+            </f7-list-item>
+         </f7-list>
 
-            </f7-list>
-         </f7-block>
-
-      </f7-page-content>
+      </f7-block>
    </f7-page>
 </template>
 

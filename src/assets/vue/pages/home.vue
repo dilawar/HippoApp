@@ -19,8 +19,14 @@
       <f7-block>
          <f7-list class="components-list" no-hairlines>
 
-            <f7-list-item link="/events/" title="Events" panel-close>
-               <f7-icon slot="media" icon="fa fa-calendar fa-2x"></f7-icon>
+            <f7-list-item
+               v-if="alreadyLoggedIn" 
+               link="/whatwherewhen/" title="What Where When" panel-close>
+               <f7-icon slot="media" icon="fa fa-question-circle-o fa-2x"></f7-icon>
+            </f7-list-item>
+
+            <f7-list-item link="/events/" title="Event Calendar" panel-close>
+               <f7-icon slot="media" icon="fa fa-calendar-check-o fa-2x"></f7-icon>
             </f7-list-item>
 
             <f7-list-item link="/transport/" title="Transport" panel-close>
@@ -146,16 +152,6 @@
                })
             , 1000);
 
-         // Fetch the available classes of booking. 
-         app.request.post( self.$store.state.api+'/config/bookmyvenue.class'
-            , self.apiPostData()
-            , function(json) 
-            {
-               const res = JSON.parse(json);
-               if( res.status=='ok')
-                  self.$localStorage.set('classes', res.data.value);
-            }
-         );
 
          // Fetch the transport as well.
          app.request.post( self.$store.state.api+'/transport'
@@ -188,9 +184,7 @@
                      self.$f7router.refreshPage();
                   }
                   else
-                  {
                      app.dialog.alert("Failed to login. Try again.", "Error");
-                  }
                }
             );
             setTimeout(() => app.dialog.close(), 200);
