@@ -43,7 +43,6 @@
                    <l-tooltip :options="toolTipOpts">
                       <span v-html="v.html"></span>
                    </l-tooltip>
-                   <l-popup :content="v.html"></l-popup>
                 </l-marker>
       </l-map>
    </f7-page>
