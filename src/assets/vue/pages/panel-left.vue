@@ -6,6 +6,14 @@
          <f7-block-title>Welcome {{username}} </f7-block-title>
 
          <f7-list>
+            <f7-list-item link="/myprofile/" 
+                          target="_blank"
+                          view=".view-main"
+                          title="My Profile" 
+                          panel-close
+                          >
+               <f7-icon slot="media" icon="fa fa-user fa-2x"></f7-icon>
+            </f7-list-item>
             <f7-list-item link="/mybooking/" 
                           target="_blank"
                           view=".view-main"
