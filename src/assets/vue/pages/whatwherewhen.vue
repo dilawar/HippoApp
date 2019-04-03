@@ -62,7 +62,7 @@ export default {
          eventTypes: ['ALL'],
          venues: ['ALL'],
          selectedVenue: 'ALL',
-         selectedType: 'ALL',
+         selectedClass: 'ALL',
          events: JSON.parse(self.$localStorage.get('events', '[]')),
          venueEvents: [],
          items: [],
@@ -113,12 +113,12 @@ export default {
          for(var key in events)
          {
             var ev = events[key];
-            if(self.selectedVenue != 'ALL' && ev.venue != self.selectedVenue)
-               continue;
-            if( moment(ev.date + ' ' + ev.start_time, 'YYYY-MM-DD HH:mm:ss') < moment.now())
+            if( moment(ev.date + ' ' + ev.start_time, 'YYYY-MM-DD HH:mm:ss') <= moment() )
                continue;
             self.items.push(self.eventToTimelinePoint(key, ev));
          }
+         if(self.items.length == 0)
+            self.items.push({tag:'', content:'Nothing found'});
       },
       fetchEventsOnThisDay: function() 
       {
@@ -169,7 +169,7 @@ export default {
                   console.log( 'fetched ', res.data.length);
                   self.events.push(...res.data);
                   // Update self.items so that we can refresh the page.
-                  self.eventsToTimeLine(self.events);
+                  self.filterTimeline(self.selectedVenue, self.selectedClass);
                   self.$localStorage.set('events', JSON.stringify(self.events));
                   console.log( 'Total ', self.events.length);
                }
@@ -182,14 +182,21 @@ export default {
          const self = this;
          const app = self.$f7;
 
+         // Preserve the previous venue, cls because they will be reset on
+         // ptr, refresh or infinite events.
+         self.selectedVenue = venue;
+         self.selectedClass = cls;
          console.log( 'Filter using '+venue+ ' and '+cls);
          var filteredEvents = self.events.filter(x => {
             if(venue)
-               return (venue=='ALL' || x.venue==venue)
+               return (venue=='ALL' || x.venue==self.selectedVenue)
+            else if(cls)
+               return (cls=='ALL' || x.class==self.selectedClass)
             else
-               return (cls=='ALL' || x.cls==cls)
+               return true;
             }
          );
+         console.log('Events found after filter: ', filteredEvents.length);
          self.eventsToTimeLine(filteredEvents);
       },
    },
