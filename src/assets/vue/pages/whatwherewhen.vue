@@ -10,17 +10,30 @@
   <f7-fab position="right-top" 
           slot="fixed"
           color="green"
-          @click="actionGridOpened = true"
           text=""
           >
-          <f7-icon icon="fa fa-filter"></f7-icon>
+          <f7-icon icon="fa fa-plus fa-2x"></f7-icon>
+          <f7-icon icon="fa fa-close fa-2x"></f7-icon>
+          <f7-fab-buttons position="bottom">
+             <f7-fab-button @click="actionVenueGridOpen=true"><small>Venue</small></f7-fab-button>
+             <f7-fab-button @click="actionTypeGridOpen=true"><small>Type</small></f7-fab-button>
+          </f7-fab-buttons>
   </f7-fab>
 
   <!-- Grid -->
-  <f7-actions :grid="true" :opened="actionGridOpened" @actions:closed="actionGridOpened = false">
+  <f7-actions :grid="true" :opened="actionVenueGridOpen" @actions:closed="actionVenueGridOpen = false">
      <f7-actions-group>
-        <f7-actions-button v-for="v in venues" :key="v" @click="showTimeline(v)">
+        <f7-actions-button v-for="v in venues" :key="v" @click="filterTimeline(v, '')">
            <span>{{v}}</span>
+        </f7-actions-button>
+     </f7-actions-group>
+  </f7-actions>
+
+  <!-- Venue grid -->
+  <f7-actions :grid="true" :opened="actionTypeGridOpen" @actions:closed="actionTypeGridOpen = false">
+     <f7-actions-group>
+        <f7-actions-button v-for="t in eventTypes" :key="t" @click="filterTimeline('', t)">
+           <span>{{t}}</span>
         </f7-actions-button>
      </f7-actions-group>
   </f7-actions>
@@ -44,9 +57,12 @@ export default {
       return {
          allowInfinite: true,
          showPreloader: true,
-         actionGridOpened: false,
-         venues: [],
+         actionVenueGridOpen: false,
+         actionTypeGridOpen: false,
+         eventTypes: ['ALL'],
+         venues: ['ALL'],
          selectedVenue: 'ALL',
+         selectedType: 'ALL',
          events: JSON.parse(self.$localStorage.get('events', '[]')),
          venueEvents: [],
          items: [],
@@ -63,16 +79,11 @@ export default {
 
       // Format groups and events.
       self.items = [];
-      var alreayAddedGroups = [];
-      for(var key in self.events)
-      {
-         const ev = self.events[key];
-         if(! alreayAddedGroups.includes(ev.venue))
-         {
-            self.venues.push(ev.venue);
-            alreayAddedGroups.push(ev.venue);
-         }
-      }
+
+      // Two loops but its OK since I don't know better.
+      self.eventTypes = [... new Set( self.events.map(x=>x.class))];
+      self.eventTypes.push('ALL');
+      self.venues = [... new Set(self.events.map(x=>x.venue))];
       self.venues.push('ALL');
       self.eventsToTimeLine(self.events);
    },
@@ -81,17 +92,18 @@ export default {
       {
          const self = this;
          var color = self.stringToColour(ev.class)
-         return {id:key, class:ev.class
+         return { id:key
+            , class:ev.class
             , color : color
             , group: ev.venue
             , tag: self.humanReadableDate(ev.date) + 
                   '\n' + self.str2Moment(ev.start_time,'HH:mm:ss').format('HH:mm A') +
                   '\n' + self.str2Moment(ev.end_time,'HH:mm:ss').format('HH:mm A')
             , htmlMode: true
-            , content:  `<span style="font-size:x-small">` + 
-                        `${ev.class} <strong>${ev.venue}</strong></span>`+
-                        `<br/> ${ev.title}` +
-                        `<br/><span style="font-size:x-small">${ev.created_by}</span>`
+            , content:  `<span style="font-size:10px;color:green;margin-left:-1rem">${ev.venue}</span> `+
+                        `<span style="font-size:8px;color:gray;">${ev.class}</span>`+
+                        `<br/><span style="font-size:small;color:black;margin:1px">${ev.title} </span>` +
+                        `<br/><span style="font-size:9px;color:green;margin:0px">${ev.created_by}</span>`
 
          };
       },
@@ -165,18 +177,20 @@ export default {
          setTimeout( () => {self.allowInfinite = true; }, 1000);
          return;
       },
-      showTimeline: function(venue) 
+      filterTimeline: function(venue, cls) 
       {
          const self = this;
          const app = self.$f7;
-         self.selectedVenue = venue;
-         var venueEvents = self.events.filter(x => {
-            if(venue==self.selectedVenue)
-               return true;
+
+         console.log( 'Filter using '+venue+ ' and '+cls);
+         var filteredEvents = self.events.filter(x => {
+            if(venue)
+               return (venue=='ALL' || x.venue==venue)
             else
-               return x.venue == self.selectedVenue;
-         });
-         self.eventsToTimeLine(venueEvents);
+               return (cls=='ALL' || x.cls==cls)
+            }
+         );
+         self.eventsToTimeLine(filteredEvents);
       },
    },
 }; 

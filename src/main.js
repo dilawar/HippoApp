@@ -23,6 +23,10 @@ Icon.Default.mergeOptions({
 import LightTimeline from 'vue-light-timeline';
 Vue.use(LightTimeline);
 
+// create calendar.
+import { createCalendar } from 'add-to-calendar-buttons';
+import 'add-to-calendar-buttons/main.css';
+
 // Moment 
 import moment from 'moment';
 
@@ -94,6 +98,9 @@ Vue.mixin({
       },
       str2Moment: function(str, fmt) {
          return moment(str, fmt);
+      },
+      addToCalendar: function(ev) {
+         createCalendar(ev);
       },
       stringToColour: function(str) {
          if(! str)
