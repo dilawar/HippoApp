@@ -3,7 +3,7 @@
       <f7-navbar title="Map" back-link="Back"></f7-navbar>
 
 
-      <!-- FAB Right Bottom (Orange) -->
+      <!-- FAB Right Bottom (Orange) 
       <f7-fab position="right-bottom" slot="fixed" color="orange">
          <f7-icon ios="f7:add" aurora="f7:add"
                                md="material:add"></f7-icon>
@@ -16,8 +16,7 @@
             2">2</f7-fab-button>
          </f7-fab-buttons>
       </f7-fab>
-
-   
+      -->
 
       <l-map ref="map" 
              :zoom="zoom" 
@@ -34,21 +33,24 @@
                            :visible="tileProvider.visible"
                            :url="tileProvider.url"
                            :attribution="tileProvider.attribution"
-                           :token="token"
                            layer-type="base"
                            >
              </l-tile-layer>
-             <l-marker v-for="v in mapVenues" :key="v.id" :lat-lng="v.xy"> 
-                <l-tooltip :options="toolTipOpts">
-                   <span v-html="v.html"></span>
-                </l-tooltip>
-             </l-marker>
+                <l-marker :ref="v.id" 
+                           v-for="v in mapVenues" 
+                           :key="v.id" :lat-lng="v.xy"
+                           > 
+                   <l-tooltip :options="toolTipOpts">
+                      <span v-html="v.html"></span>
+                   </l-tooltip>
+                   <l-popup :content="v.html"></l-popup>
+                </l-marker>
       </l-map>
-
    </f7-page>
 </template>
 
 <script>
+
 
 export default {
    data() {
@@ -85,32 +87,51 @@ export default {
             shadowAnchor: [4, 62],
             popupAnchor:  [-3, -76]
          }),
-         venueIcon: L.divIcon({className: 'fa fa-map-pin fa-2x'}),
+         venueIcon: L.divIcon( {className: 'fa fa-map-marker fa-2x' }),
       };
    },
    mounted() {
-      // Periodically show the markers.
-
       const self = this;
-      self.$refs.map.mapObject.invalidateSize();
       console.log( "Fetching venues... ");
       self.fetchVenues();
       self.venues = JSON.parse( self.$localStorage.get('venues', '[]'));
       console.log( " ... got ", self.venues.length);
+
       // Reformat to create mapVenues
       for(var k in self.venues)
       {
-         console.log( 'Adding a venue ... ', k);
          var venue = self.venues[k];
          if( venue.longitude > 0 && venue.latitude > 0)
          {
             var mapV = { 
-               xy: L.latLng(parseFloat(venue.latitude), parseFloat(venue.longitude))
+               id: venue.id
+               , xy: L.latLng(parseFloat(venue.latitude), parseFloat(venue.longitude))
                , html: venue.id + '<sup>' + venue.floor + '</sup>'
             };
             self.mapVenues.push(mapV);
          }
       }
+
+      self.$nextTick( () => {
+         // Add search menu.
+         self.map = self.$refs.map.mapObject;
+         // for(var k in self.mapVenues)
+         // {
+         //    var v = self.mapVenues[k];
+         //    var marker = self.$refs[v.id][0];
+         //    console.log(marker);
+         // }
+         //self.map.eachLayer( function(layer) {
+         //   if(layer instanceof L.Marker)
+         //   {
+         //      console.log( 'Marker found');
+         //      setTimeout( () => {
+         //         layer.bindPopup("yeelow");
+         //         layer.togglePopup( );
+         //      }, 1000);
+         //   }
+         //});
+      });
    },
    methods: { 
       refreshVenues: function() {
@@ -122,7 +143,14 @@ export default {
          //this.venues.map( x => x );
       },
       zoomUpdated (zoom) {
-         this.zoom = zoom;
+         const self = this;
+         //self.map.eachLayer( function(l) {
+         //   console.log(l);
+         //   if(l.options.pane == 'markerPane')
+         //   {
+         //      setTimeout( () => l.togglePopup(), 1000);
+         //   }
+         //});
       },
       centerUpdated (center) {
          this.center = center;
@@ -130,6 +158,7 @@ export default {
       boundsUpdated (bounds) {
          this.bounds = bounds;
       },
+
    },
 };
 

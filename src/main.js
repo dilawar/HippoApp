@@ -22,6 +22,7 @@ Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png')
 });
 
+
 // Lightweight timeline.
 import LightTimeline from 'vue-light-timeline';
 Vue.use(LightTimeline);
@@ -86,7 +87,7 @@ Vue.mixin({
          return moment(date, "HH:MM").add(addminutes, 'm').format("HH:mm");
       },
       humanReadableTime: function( time ) {
-         return moment(time, "HH:MM:ss").format("hh:mm a");
+         return moment(time, "HH:MM:ss").format("HH:mm");
       },
       humanReadableDateTime: function(date, time) {
          var d = moment(date, "YYYY-MM-DD").format("(ddd) MMM DD");
