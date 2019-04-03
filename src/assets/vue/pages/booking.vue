@@ -114,20 +114,7 @@ export default {
                self.$localStorage.set('classes', res.data.value);
          }
       );
-
-      // Also save all the venues.
-      app.request.post(self.$store.state.api+'/venue/list/all'
-         , self.apiPostData()
-         , function(json)
-         {
-            const res = JSON.parse(json);
-            if(res.status=='ok')
-            {
-               self.$localStorage.set('venues', JSON.stringify(res.data));
-               self.venues = res.data;
-            }
-         }
-      );
+      self.venues = self.fetchVenues();
    },
    methods: { 
       venueToStr: function(venueID)

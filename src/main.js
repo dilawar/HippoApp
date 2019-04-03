@@ -2,7 +2,8 @@
 import Vue from 'vue'
 
 // OSM and leaflet.
-import {LMap, LTileLayer, LMarker, LPopup, LTooltip} from 'vue2-leaflet';
+import {LMap, LTileLayer, LMarker, LPopup, LTooltip, LControlLayers} from 'vue2-leaflet';
+import Vue2LeafletLocateControl from 'vue2-leaflet-locatecontrol';
 import {Icon} from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
@@ -11,6 +12,8 @@ Vue.component('l-tile-layer', LTileLayer);
 Vue.component('l-marker', LMarker);
 Vue.component('l-popup', LPopup);
 Vue.component('l-tooltip', LTooltip);
+Vue.component('l-control-layers', LControlLayers);
+Vue.component('v-locatecontrol', Vue2LeafletLocateControl);
 
 delete Icon.Default.prototype._getIconUrl;
 Icon.Default.mergeOptions({
@@ -131,6 +134,19 @@ Vue.mixin({
          if( apiKey && apiKey.trim().length > 0 )
             return true;
          return false;
+      },
+      fetchVenues: function() {
+         const self = this;
+         const app = self.$f7;
+         app.request.post(self.$store.state.api+'/venue/list/all'
+            , self.apiPostData()
+            , function(json)
+            {
+               const res = JSON.parse(json);
+               if(res.status=='ok')
+                  self.$localStorage.set('venues', JSON.stringify(res.data));
+            }
+         );
       },
    },
 })
