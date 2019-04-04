@@ -15,7 +15,8 @@
                <f7-icon slot="media" icon="fa fa-user fa-fw"></f7-icon>
             </f7-list-item>
 
-            <f7-list-item link="/myaws/" 
+            <f7-list-item v-if="profile.eligible_for_aws"
+                          link="/myaws/" 
                           target="_blank"
                           view=".view-main"
                           title="My AWS" 
