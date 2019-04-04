@@ -32,9 +32,7 @@
                                 > <small> {{e.phone}}</small> </f7-link>
          </f7-list-item>
       </f7-list>
-
       </f7-block>
-
    </f7-page>
 </template>
 

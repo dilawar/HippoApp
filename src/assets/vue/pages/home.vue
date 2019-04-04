@@ -30,28 +30,69 @@
 
             <f7-list-item
                v-if="alreadyLoggedIn" 
-               link="/whatwherewhen/" title="What Where When" panel-close>
+               link="/whatwherewhen/" title="What Where When" 
+               footer="Browse what is going on different venues?"
+               panel-close
+               >
+
                <f7-icon slot="media" icon="fa fa-question-circle-o fa-2x"></f7-icon>
             </f7-list-item>
             <f7-list-item v-else
-               link="/events/" title="Event Calendar" panel-close>
+                          link="/events/" 
+                          title="Event Calendar" 
+                          panel-close>
                <f7-icon slot="media" icon="fa fa-calendar-check-o fa-2x"></f7-icon>
             </f7-list-item>
 
-            <f7-list-item link="/transport/" title="Transport" panel-close>
+            <f7-list-item link="/transport/" 
+                          title="Transport" 
+                          footer="Timetable of shuttle and buggy."
+                          panel-close>
                <f7-icon slot="media" icon="fa fa-bus fa-2x"></f7-icon>
             </f7-list-item>
 
-            <f7-list-item link="/map/" title="Map" panel-close>
-               <f7-icon slot="media" icon="fa fa-map fa-2x"></f7-icon>
+            <f7-list-item link="/map/" 
+                          title="Map" 
+                          footer="Vacuole, Synapse! Where are they? I have a
+                          OpenStreetMap ready."
+                          panel-close
+                          >
+               <f7-icon slot="media" icon="fa fa-map-o fa-2x"></f7-icon>
             </f7-list-item>
 
-            <f7-list-item v-if="alreadyLoggedIn" link="/search/" title="Search" panel-close>
+            <f7-list-item v-if="alreadyLoggedIn" 
+                          link="/search/" 
+                          title="Search" 
+                          footer="Limited information from Interanet search"
+                          panel-close>
                <f7-icon slot="media" icon="fa fa-search fa-2x"></f7-icon>
+            </f7-list-item>
+
+            <f7-list-item v-if="alreadyLoggedIn" 
+                          link="/housing/" 
+                          title="Housing" 
+                          footer="Message borad for TO-LET/Renting related
+                          queries"
+                          panel-close>
+               <f7-icon slot="media" icon="fa fa-home fa-2x"></f7-icon>
             </f7-list-item>
 
          </f7-list>
       </f7-block>
+
+      <!--
+      <f7-block v-if="alreadyLoggedIn">
+         <f7-block-title>Community Interaction</f7-block-title>
+            <f7-row>
+               <f7-col>
+                  <f7-button fill>Boards</f7-button>
+               </f7-col>
+               <f7-col>
+                  <f7-button fill>Housing</f7-button>
+               </f7-col>
+            </f7-row>
+      </f7-block>
+      -->
 
       <f7-block v-if="! alreadyLoggedIn">
          <f7-list media-list no-hairlines>

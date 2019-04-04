@@ -1,6 +1,7 @@
 <template>
   <f7-page page-content
            infinite
+           ptr @ptr:refresh="fetchEvents"
            :infinite-preloader="showPreloader"
            @infinite="loadMore"
      >
@@ -12,7 +13,7 @@
           color="green"
           text=""
           >
-          <f7-icon icon="fa fa-plus fa-2x"></f7-icon>
+          <f7-icon icon="fa fa-filter fa-2x"></f7-icon>
           <f7-icon icon="fa fa-close fa-2x"></f7-icon>
           <f7-fab-buttons position="bottom">
              <f7-fab-button @click="actionVenueGridOpen=true"><small>Venue</small></f7-fab-button>
@@ -74,8 +75,7 @@ export default {
       console.log('mounting');
 
       // Get thisDay events.
-      console.log( "Fetching 100 events" );
-      self.fetchEventsOnThisDay();
+      self.fetchEvents();
 
       // Format groups and events.
       self.items = [];
@@ -102,8 +102,8 @@ export default {
             , htmlMode: true
             , content:  `<span style="font-size:10px;color:green;margin-left:-1rem">${ev.venue}</span> `+
                         `<span style="font-size:8px;color:gray;">${ev.class}</span>`+
-                        `<br/><span style="font-size:small;color:black;margin:1px">${ev.title} </span>` +
-                        `<br/><span style="font-size:9px;color:green;margin:0px">${ev.created_by}</span>`
+                        `<br/><span style="font-size:small;color:black;margin:-1rem">${ev.title} </span>` +
+                        `<br/><span style="font-size:9px;color:green;margin:-1rem">${ev.created_by}</span>`
 
          };
       },
@@ -120,24 +120,11 @@ export default {
          if(self.items.length == 0)
             self.items.push({tag:'', content:'Nothing found'});
       },
-      fetchEventsOnThisDay: function() 
+      fetchEvents: function() 
       {
          const self = this;
          const app = this.$f7;
-         app.request.post(self.$store.state.api+'/events/latest/30'
-            , self.apiPostData()
-            , function(json) 
-            {
-               const res = JSON.parse(json);
-               if(res.status=='ok')
-               {
-                  self.events = res.data;
-                  self.venueEvents = self.events;
-                  self.$localStorage.set('events', JSON.stringify(res.data));
-                  return;
-               }
-            }
-         );
+         self.fetchAndStore( '/events/latest/100', 'events');
       },
       loadMore: function() {
          const self = this;
@@ -147,14 +134,14 @@ export default {
             return;
          self.allowInfinite = false;
 
-         if(self.events.length >= 200) 
+         if(self.events.length >= 500) 
          {
             self.preloader = false;
-            const alert = app.notification.create({
+            let alert = app.notification.create({
                title: 'Please stop!',
                text: "I won't fetch more items."
             }).open();
-            setTimeout(()=> alert.close(), 1000);
+            setTimeout(()=> alert.close(), 2000);
             return;
          }
 
@@ -166,15 +153,15 @@ export default {
                const res = JSON.parse(json);
                if(res.status=='ok')
                {
-                  console.log( 'fetched ', res.data.length);
                   self.events.push(...res.data);
-                  // Update self.items so that we can refresh the page.
                   self.filterTimeline(self.selectedVenue, self.selectedClass);
                   self.$localStorage.set('events', JSON.stringify(self.events));
-                  console.log( 'Total ', self.events.length);
                }
-            });
-         setTimeout( () => {self.allowInfinite = true; }, 1000);
+            }
+         );
+         setTimeout(() => {self.allowInfinite = true; }, 200);
+         self.eventTypes.push('ALL');
+         self.venues = [... new Set(self.events.map(x=>x.venue))];
          return;
       },
       filterTimeline: function(venue, cls) 
@@ -196,7 +183,6 @@ export default {
                return true;
             }
          );
-         console.log('Events found after filter: ', filteredEvents.length);
          self.eventsToTimeLine(filteredEvents);
       },
    },
