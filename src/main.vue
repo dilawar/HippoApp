@@ -10,29 +10,29 @@
        <!--
           Enable it if we need it to put toolbar on the bottom page. The
           backbutton has started working fine again.
+         -->
 
-       <f7-toolbar tabber position="bottom">
-          <f7-link tab-link="#tab-back" 
-                   icon-only 
-                   icon-color="blue"
-                   icon="fa fa-backward fa-fw"
-                   back
-                   >
-          </f7-link>
-          <f7-link tab-link="#tab-dontknow" 
-                   icon-only 
-                   icon-color="blue"
-                   icon="fa fa-info fa-fw"
-                   >
-          </f7-link>
-          <f7-link tab-link="#tab-menu" 
-                   icon-only 
-                   icon-color="blue"
-                   icon="fa fa-bars fa-fw"
-                   >
-          </f7-link>
-       </f7-toolbar>
-       -->
+         <f7-toolbar tabber position="bottom">
+            <f7-link tab-link="#tab-back" 
+                     icon-only 
+                     icon-color="blue"
+                     icon="fa fa-backward fa-fw"
+                     back
+                     >
+            </f7-link>
+               <f7-link tab-link="#tab-dontknow" 
+                        icon-only 
+                        icon-color="blue"
+                        icon="fa fa-info fa-fw"
+                        >
+               </f7-link>
+                  <f7-link tab-link="#tab-menu" 
+                           icon-only 
+                           icon-color="blue"
+                           icon="fa fa-ellipsis-v fa-fw"
+                           >
+                  </f7-link>
+         </f7-toolbar>
 
     </f7-view>
 

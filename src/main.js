@@ -152,6 +152,19 @@ Vue.mixin({
             }
          );
       },
+      sendRequest: function(endpoint, post) {
+         const self = this;
+         const app = self.$f7;
+         let data = { ...self.apiPostData(), ...post};
+         app.request.post(self.$store.state.api+'/'+endpoint
+            , data
+            , function(json)
+            {
+               const res = JSON.parse(json);
+               return res.status;
+            }
+         );
+      },
       fetchVenues: function() {
          const self = this;
          const app = self.$f7;
@@ -161,6 +174,21 @@ Vue.mixin({
          const self = this;
          const app = self.$f7;
          self.fetchAndStore('/me/profile', 'me.profile');
+      },
+      filterSchema: function(schema, toremove) 
+      {
+         toremove = toremove.split(',');
+         return schema.filter(obj => ! toremove.find(k => k == obj.Field));
+      },
+      getInputTypeFromSchema: function(schemaObj) {
+         let ret = 'type="text"';
+         if( schemaObj.Type == 'date')
+             ret = 'date';
+         else if( schemaObj.Type == 'time')
+             ret = 'time';
+
+         console.log('type is ', ret);
+         return ret;
       },
    },
 })
@@ -201,3 +229,4 @@ export default new Vue({
       },
    },
 });
+

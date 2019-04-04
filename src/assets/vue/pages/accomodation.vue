@@ -1,24 +1,194 @@
 <template>
-  <f7-page page-content>
+  <f7-page page-content ptr @ptr:refresh="fetchAccomodations">
 
   <f7-navbar title="Accomodation" back-link="Back"></f7-navbar>
-  <f7-block-title></f7-block-title>
+  <f7-block>
+  <f7-block-title> Total {{accomodations.total}} available.</f7-block-title>
 
+  <f7-block v-for="(acc, key) in accomodations" :key="key">
+  </f7-block>
+
+  </f7-block>
+
+  <!-- FAB to create accomodation -->
+  <f7-fab v-if="isUserAuthenticated()"
+          position="right-bottom" 
+          slot="fixed" 
+          @click="popupOpened=true"
+          color="red">
+     <f7-icon ios="f7:add" aurora="f7:add" md="material:add"></f7-icon>
+  </f7-fab>
+
+
+  <f7-popup class="accomodation-popup" :opened="popupOpened" @popup:closed="popupOpened = false">
+     <f7-page>
+        <f7-navbar title="Create Accomodation">
+           <f7-nav-right>
+              <f7-link popup-close>Cancel</f7-link>
+           </f7-nav-right>
+        </f7-navbar>
+        <f7-block>
+
+           <f7-list no-hairlines-md inset>
+              <f7-list-input label="Type"
+                             :value="accomodation.type"
+                             @input="accomodation.type = $event.target.value"
+                             type="select"
+                             defaultValue="1BHK"
+                             placeholder="Please choose ..."
+                             required 
+                             validate
+                             >
+                             <option v-for="typ in accomodations.types" :value="typ">{{typ}}</option>
+              </f7-list-input>
+
+              <f7-list-input label="Available From" 
+                             type="date"
+                             required
+                             validate
+                             >
+              </f7-list-input>
+
+              <f7-list-input label="Open Vacancies"
+                             :value="accomodation.open_vacancies"
+                             @input="accomodation.open_vacancies=$event.target.value"
+                             :input="false"
+                             required
+                             validate
+                             >
+                             <f7-range slot="input" 
+                                       :min="1" :max="5" :step="1"
+                                       :label="true"
+                                       >
+                             </f7-range>
+              </f7-list-input>
+
+                 <f7-list-input label="Address"
+                                :value="accomodation.address"
+                                @input="accomodation.address = $event.target.value"
+                                type="textarea" 
+                                :resizable="true"
+                                required
+                                >
+                 </f7-list-input>
+
+                    <!--
+                       <f7-list-input label="Location"
+                       type="textarea" 
+                       >
+                       </f7-list-input>
+                    -->
+                 <f7-list-input label="Description"
+                                :value="accomodation.description"
+                                @input="accomodation.description = $event.target.value"
+                                :resizable="true"
+                                type="textarea" 
+                                >
+                 </f7-list-input>
+                 <f7-list-input label="Owner Contact"
+                                :value="accomodation.owner_contact"
+                                @input="accomodation.owner_contact = $event.target.value"
+                                :resizable="true"
+                                required
+                                type="textarea" 
+                                >
+                 </f7-list-input>
+                 <f7-list-input label="Rent"
+                                :value="accomodation.rent"
+                                @input="accomodation.rent = $event.target.value"
+                                required
+                                validate
+                                pattern="[0-9]+"
+                                >
+                 </f7-list-input>
+
+                 <f7-list-input label="Extra e.g. elecricity water"
+                                  :value="accomodation.extra"
+                                  @input="accomodation.extra = $event.target.value"
+                                  type="text" 
+                                  >
+                 </f7-list-input>
+                 <f7-list-input label="Advance"
+                                :value="accomodation.advance"
+                                @input="accomodation.advance = $event.target.value"
+                                type="text" 
+                                validate
+                                pattern="[0-9]*"
+                                >
+                 </f7-list-input>
+                 <f7-list-input label="Link to photos"
+                                :value="accomodation.url"
+                                @input="accomodation.url = $event.target.value"
+                                type="url" 
+                                validate
+                                >
+                 </f7-list-input>
+
+                 <f7-list-item>
+                    <f7-button slot="after" raised fill
+                               popup-close
+                               @click="submitAccomodation"
+                       > Submit </f7-button>
+                 </f7-list-item>
+
+           </f7-list>
+        </f7-block>
+
+     </f7-page>
+  </f7-popup>
 
   </f7-page>
 </template>
 
 <script>
 import moment from 'moment';
-moment.defaultFormat = 'YYYY-MM-DD';
 
 export default {
    data() {
+      const self = this;
       return {
-         accomodations: [],
+         accomodations: { total:0 },
+         popupOpened: false,
+         accomodation: {
+            type: '',
+            available_from: moment(),
+            open_vacancies: 1,
+            address: '',
+            description: '',
+            owner_contact: '',
+            rent: 0,
+            advance: 0,
+            url: '',
+         },
       };
    },
+   mounted() {
+      const self = this;
+      self.fetchAccomodations();
+      self.accomodations = JSON.parse(self.$localStorage.get('accomodations', '[]'));
+      self.accomodation = JSON.parse(self.$localStorage.get('me.accomodation', '[]'));
+   },
    methods: { 
+      fetchAccomodations: function()
+      {
+         const self = this;
+         self.fetchAndStore( '/accomodation/list', 'accomodations');
+         self.accomodations = JSON.parse(self.$localStorage.get('accomodations', '[]'));
+      },
+      submitAccomodation: function()
+      {
+         const self = this;
+         const app = self.$f7;
+         console.log( "submitting accomodation", self.accomodation );
+         // Save it before it goes away.
+         self.$localStorage.set('me.accomodation', self.accomodation);
+         let res = self.sendRequest('/accomodation/create', self.accomodation);
+         if( res == 'ok')
+            self.$localStorage.delete('me.accomodation');
+
+         // Also refresh the page.
+         self.$f7router.refreshPage();
+      }
    },
 };
 </script>
