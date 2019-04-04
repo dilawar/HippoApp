@@ -20,6 +20,7 @@
          <f7-list>
             <f7-list-item
                v-for="(val, key) in profile"
+               :key="key"
                :header="key"
                :title="val"
                >

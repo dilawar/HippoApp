@@ -38,7 +38,8 @@
              </l-tile-layer>
                 <l-marker :ref="v.id" 
                            v-for="v in mapVenues" 
-                           :key="v.id" :lat-lng="v.xy"
+                           :key="v.id" 
+                           :lat-lng="v.xy"
                            > 
                    <l-tooltip :options="toolTipOpts">
                       <span v-html="v.html"></span>
@@ -91,7 +92,7 @@ export default {
    },
    mounted() {
       const self = this;
-      console.log( "Fetching venues... ");
+
       self.fetchVenues();
       self.venues = JSON.parse( self.$localStorage.get('venues', '[]'));
       console.log( " ... got ", self.venues.length);
@@ -107,6 +108,14 @@ export default {
                , xy: L.latLng(parseFloat(venue.latitude), parseFloat(venue.longitude))
                , html: venue.id + '<sup>' + venue.floor + '</sup>'
             };
+
+            // Group venues according to coordinates. If two venues shares
+            // coordinate then stack them up onto each other.
+            let venueWithSameCoords = self.mapVenues.find( 
+               x=> x.xy.equals(mapV.xy) 
+            );
+            if( venueWithSameCoords )
+               mapV.html += '<br/>' + venueWithSameCoords.html;
             self.mapVenues.push(mapV);
          }
       }
@@ -134,7 +143,7 @@ export default {
    },
    methods: { 
       refreshVenues: function() {
-
+         self.fetchVenues();
       },
       onResize: function() { },
       refreshMap: function() {
