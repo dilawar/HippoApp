@@ -155,29 +155,12 @@ Vue.mixin({
       fetchVenues: function() {
          const self = this;
          const app = self.$f7;
-         app.request.post(self.$store.state.api+'/venue/list/all'
-            , self.apiPostData()
-            , function(json)
-            {
-               const res = JSON.parse(json);
-               if(res.status=='ok')
-                  self.$localStorage.set('venues', JSON.stringify(res.data));
-            }
-         );
+         self.fetchAndStore( '/venue/list/all', 'venues');
       },
       fetchProfile: function() {
          const self = this;
          const app = self.$f7;
-
-         app.request.post( self.$store.state.api+'/me/profile'
-            , self.apiPostData()
-            , function(json) 
-            {
-               const res = JSON.parse(json);
-               if( res.status=='ok')
-                  self.profile = res.data;
-            }
-         );
+         self.fetchAndStore('/me/profile', 'me.profile');
       },
    },
 })
