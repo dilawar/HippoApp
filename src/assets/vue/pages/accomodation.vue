@@ -3,9 +3,15 @@
 
   <f7-navbar title="Accomodation" back-link="Back"></f7-navbar>
   <f7-block>
-  <f7-block-title> Total {{accomodations.total}} available.</f7-block-title>
+  <f7-block-title> Total {{accomodations.count}} available.</f7-block-title>
 
-  <f7-block v-for="(acc, key) in accomodations" :key="key">
+  <f7-block v-for="(acc, key) in accomodations.list" :key="key">
+     <f7-card
+        :title="`${acc.type} is available from ${acc.available_from}`"
+        :content="acc.description"
+        :footer="`Posted by ${acc.created_by}`"
+        >
+     </f7-card>
   </f7-block>
 
   </f7-block>
@@ -42,23 +48,25 @@
                              <option v-for="typ in accomodations.types" :value="typ">{{typ}}</option>
               </f7-list-input>
 
-              <f7-list-input label="Available From" 
-                             type="date"
-                             required
-                             validate
-                             >
+              <f7-list-input label="Available From" :input="false">
+                 <date-picker lang="en"
+                              v-model="accomodation.available_from"
+                              slot="input"
+                              type="date"
+                              format="YYYY-MM-DD"
+                              readonly
+                              >
+                  </date-picker>
               </f7-list-input>
 
-              <f7-list-input label="Open Vacancies"
-                             :value="accomodation.open_vacancies"
-                             @input="accomodation.open_vacancies=$event.target.value"
-                             :input="false"
-                             required
-                             validate
+              <f7-list-input label="Open Vacancies" :input="false" 
                              >
                              <f7-range slot="input" 
+                                       :value="accomodation.open_vacancies"
+                                       @input="accomodation.open_vacancies=$event.target.value"
                                        :min="1" :max="5" :step="1"
                                        :label="true"
+                                       required 
                                        >
                              </f7-range>
               </f7-list-input>
@@ -98,7 +106,7 @@
                                 @input="accomodation.rent = $event.target.value"
                                 required
                                 validate
-                                pattern="[0-9]+"
+                                pattern="[0-9]{3-6}"
                                 >
                  </f7-list-input>
 
@@ -113,7 +121,7 @@
                                 @input="accomodation.advance = $event.target.value"
                                 type="text" 
                                 validate
-                                pattern="[0-9]*"
+                                pattern="[0-9]{3-7}"
                                 >
                  </f7-list-input>
                  <f7-list-input label="Link to photos"
@@ -147,16 +155,17 @@ export default {
    data() {
       const self = this;
       return {
-         accomodations: { total:0 },
+         accomodations: [],
          popupOpened: false,
          accomodation: {
             type: '',
-            available_from: moment(),
+            available_from: '',
             open_vacancies: 1,
             address: '',
             description: '',
             owner_contact: '',
             rent: 0,
+            extra: '',
             advance: 0,
             url: '',
          },
@@ -164,8 +173,13 @@ export default {
    },
    mounted() {
       const self = this;
+
+      // Get all accomodations.
       self.fetchAccomodations();
       self.accomodations = JSON.parse(self.$localStorage.get('accomodations', '[]'));
+      console.log( self.accomodations );
+
+      // And this accomodation.
       self.accomodation = JSON.parse(self.$localStorage.get('me.accomodation', '[]'));
    },
    methods: { 
@@ -182,12 +196,10 @@ export default {
          console.log( "submitting accomodation", self.accomodation );
          // Save it before it goes away.
          self.$localStorage.set('me.accomodation', self.accomodation);
+         self.accomodation.available_from = moment(self.accomodation.available_from).format('YYYY-MM-DD')
          let res = self.sendRequest('/accomodation/create', self.accomodation);
          if( res == 'ok')
             self.$localStorage.delete('me.accomodation');
-
-         // Also refresh the page.
-         self.$f7router.refreshPage();
       }
    },
 };

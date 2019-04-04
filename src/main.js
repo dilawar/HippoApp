@@ -148,7 +148,10 @@ Vue.mixin({
             {
                const res = JSON.parse(json);
                if(res.status=='ok')
+               {
                   self.$localStorage.set(key, JSON.stringify(res.data));
+                  return res.data;
+               }
             }
          );
       },
