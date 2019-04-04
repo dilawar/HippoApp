@@ -2,18 +2,32 @@
   <f7-page page-content ptr @ptr:refresh="fetchAccomodations">
 
   <f7-navbar title="Accomodation" back-link="Back"></f7-navbar>
-  <f7-block>
   <f7-block-title> Total {{accomodations.count}} available.</f7-block-title>
 
-  <f7-block v-for="(acc, key) in accomodations.list" :key="key">
-     <f7-card
-        :title="`${acc.type} is available from ${acc.available_from}`"
-        :content="acc.description"
-        :footer="`Posted by ${acc.created_by}`"
-        >
-     </f7-card>
-  </f7-block>
+  <f7-block>
+     <f7-list accordion-list no-hairlines>
+        <f7-list-item v-for="(acc, key) in accomodations.list" 
+                      accordion-item   
+                      :key="key"
+                      :title="`${acc.type} is available from ${acc.available_from}`"
+                      :footer="`Posted by ${acc.created_by} on 
+                      ${str2Moment(acc.created_on, 'YYYY-MM-DD HH:mm:ss').format('MMM DD')}`"
+                      >
+                      <f7-accordion-content>
+                         <f7-block inset>
+                            <div v-for="(val, key) in acc">
+                               <div v-if="! hideKeys.find(k=> k===key)">
+                                  <span style="color:gray;font-size:xx-small">{{formatKey(key)}}</span>
+                                  <span style="font-size:small">{{val}}</span>
+                               </div>
+                            </div>
 
+                            <!--- Link to update/edit and delete -->
+                            <f7-link>Update</f7-link>
+                         </f7-block>
+                      </f7-accordion-content>
+        </f7-list-item>
+     </f7-list>
   </f7-block>
 
   <!-- FAB to create accomodation -->
@@ -106,7 +120,7 @@
                                 @input="accomodation.rent = $event.target.value"
                                 required
                                 validate
-                                pattern="[0-9]{3-6}"
+                                pattern="[0-9]{3,7}"
                                 >
                  </f7-list-input>
 
@@ -121,7 +135,7 @@
                                 @input="accomodation.advance = $event.target.value"
                                 type="text" 
                                 validate
-                                pattern="[0-9]{3-7}"
+                                pattern="[0-9]{3,7}"
                                 >
                  </f7-list-input>
                  <f7-list-input label="Link to photos"
@@ -157,6 +171,7 @@ export default {
       return {
          accomodations: [],
          popupOpened: false,
+         hideKeys: ["id","status","created_by","created_on"],
          accomodation: {
             type: '',
             available_from: '',
@@ -200,7 +215,12 @@ export default {
          let res = self.sendRequest('/accomodation/create', self.accomodation);
          if( res == 'ok')
             self.$localStorage.delete('me.accomodation');
-      }
+      },
+      readMore: function(obj) {
+         const self = this;
+         const app = self.$f7;
+         console.log( obj );
+      },
    },
 };
 </script>

@@ -128,6 +128,10 @@ Vue.mixin({
             'login': self.$localStorage.get('HIPPO-LOGIN')
          };
       },
+      getLogin: function() {
+         const self = this;
+         return self.apiPostData().login;
+      },
       isUserAuthenticated: function() {
          // If API key is found then user is logged in.
          const self = this;
