@@ -46,7 +46,7 @@
 
             <f7-list-item link="/transport/" 
                           title="Transport" 
-                          footer="Timetable of shuttle and buggy."
+                          footer="Timetable of shuttle and buggy"
                           panel-close>
                <f7-icon slot="media" icon="fa fa-bus fa-2x"></f7-icon>
             </f7-list-item>
@@ -54,7 +54,7 @@
             <f7-list-item link="/map/" 
                           title="Map" 
                           footer="Vacuole, Synapse! Where are they? I have a
-                          OpenStreetMap ready."
+                          OpenStreetMap ready"
                           panel-close
                           >
                <f7-icon slot="media" icon="fa fa-map-o fa-2x"></f7-icon>
@@ -68,11 +68,9 @@
                <f7-icon slot="media" icon="fa fa-search fa-2x"></f7-icon>
             </f7-list-item>
 
-            <f7-list-item v-if="alreadyLoggedIn" 
-                          link="/housing/" 
-                          title="Housing" 
-                          footer="Message borad for TO-LET/Renting related
-                          queries"
+            <f7-list-item link="/accomodation/" 
+                          title="Accomodations" 
+                          footer="Browse/create TO-LET listing"
                           panel-close>
                <f7-icon slot="media" icon="fa fa-home fa-2x"></f7-icon>
             </f7-list-item>
