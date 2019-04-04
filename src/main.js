@@ -136,6 +136,22 @@ Vue.mixin({
             return true;
          return false;
       },
+      formatKey: function(key) {
+         return key.split('_').join(' ').toUpperCase();
+      },
+      fetchAndStore: function(endpoint, key) {
+         const self = this;
+         const app = self.$f7;
+         app.request.post(self.$store.state.api+'/'+endpoint
+            , self.apiPostData()
+            , function(json)
+            {
+               const res = JSON.parse(json);
+               if(res.status=='ok')
+                  self.$localStorage.set(key, JSON.stringify(res.data));
+            }
+         );
+      },
       fetchVenues: function() {
          const self = this;
          const app = self.$f7;
@@ -146,6 +162,20 @@ Vue.mixin({
                const res = JSON.parse(json);
                if(res.status=='ok')
                   self.$localStorage.set('venues', JSON.stringify(res.data));
+            }
+         );
+      },
+      fetchProfile: function() {
+         const self = this;
+         const app = self.$f7;
+
+         app.request.post( self.$store.state.api+'/me/profile'
+            , self.apiPostData()
+            , function(json) 
+            {
+               const res = JSON.parse(json);
+               if( res.status=='ok')
+                  self.profile = res.data;
             }
          );
       },

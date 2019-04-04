@@ -17,13 +17,14 @@
       </f7-fab>
 
       <f7-block>
-         <f7-list>
+         <f7-list no-hairlines sortable>
             <f7-list-item
                v-for="(val, key) in profile"
                :key="key"
-               :header="key"
+               :header="formatKey(key)"
                :title="val"
                >
+               <f7-icon slot="media" icon="fa fa-check-square-o fa-fw"></f7-icon>
             </f7-list-item>
          </f7-list>
       </f7-block>
@@ -44,25 +45,9 @@
       {
          const self = this;
          const app = self.$f7;
-         self.fetchProfile( );
-         console.log( 'profile', self.profile);
+         self.profile = JSON.parse(self.$localStorage.get('me.profile', '[]'));
       },
       methods: {
-         fetchProfile: function() {
-            // Fetch the transport as well.
-            const self = this;
-            const app = self.$f7;
-
-            app.request.post( self.$store.state.api+'/me/profile'
-               , self.apiPostData()
-               , function(json) 
-               {
-                  const res = JSON.parse(json);
-                  if( res.status=='ok')
-                     self.profile = res.data;
-               }
-            );
-         },
       },
    }
 </script>
