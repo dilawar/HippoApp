@@ -78,7 +78,7 @@ Vue.use(VueLocalStorage)
 Vue.mixin({
    methods : {
       dbDate: function( date ) {
-         return moment(date, "YYYY-MM-DD").format("YYYY-MM-DD");
+         return moment(date).format("YYYY-MM-DD");
       },
       humanReadableDate: function( date ) {
          return moment(date, "YYYY-MM-DD").format("MMM DD");
