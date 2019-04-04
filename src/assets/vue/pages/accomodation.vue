@@ -9,21 +9,21 @@
         <f7-list-item v-for="(acc, key) in accomodations.list" 
                       accordion-item   
                       :key="key"
-                      :title="`${acc.type} is available from ${acc.available_from}`"
+                      :header="`${acc.type} is available from
+                         ${acc.available_from} for ${acc.open_vacancies} person(s)`"
                       :footer="`Posted by ${acc.created_by} on 
-                      ${str2Moment(acc.created_on, 'YYYY-MM-DD HH:mm:ss').format('MMM DD')}`"
+                         ${str2Moment(acc.created_on, 'YYYY-MM-DD HH:mm:ss').format('MMM DD')}`"
                       >
                       <f7-accordion-content>
-                         <f7-block inset>
-                            <div v-for="(val, key) in acc">
-                               <div v-if="! hideKeys.find(k=> k===key)">
+                         <f7-block inset style="background-color:lightcyan">
+                            <span v-for="(val, key) in acc">
+                               <span v-if="! hideKeys.find(k=> k===key)">
                                   <span style="color:gray;font-size:xx-small">{{formatKey(key)}}</span>
                                   <span style="font-size:small">{{val}}</span>
-                               </div>
-                            </div>
-
-                            <!--- Link to update/edit and delete -->
-                            <f7-link>Update</f7-link>
+                                  <br />
+                               </span>
+                            </span>
+                            <br />
                          </f7-block>
                       </f7-accordion-content>
         </f7-list-item>
@@ -171,7 +171,7 @@ export default {
       return {
          accomodations: [],
          popupOpened: false,
-         hideKeys: ["id","status","created_by","created_on"],
+         hideKeys: ["id","type", "available_from", "open_vacancies", "status","created_by","created_on"],
          accomodation: {
             type: '',
             available_from: '',
@@ -191,6 +191,8 @@ export default {
 
       // Get all accomodations.
       self.fetchAccomodations();
+      setTimeout( () => true, 1000);
+
       self.accomodations = JSON.parse(self.$localStorage.get('accomodations', '[]'));
       console.log( self.accomodations );
 
