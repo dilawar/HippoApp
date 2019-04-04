@@ -2,15 +2,13 @@
    <f7-page page-content>
       <f7-navbar title="Search" back-link="Back"></f7-navbar>
       <f7-block>
-         <f7-list media-list no-hairlines>
-         <f7-list-item header="Search by name, department or extension.">
+         <f7-list media-list no-hairlines inset>
             <f7-list-input @input="query=$event.target.value"
-                           type="text" 
-                           placeholder="Query e.g. Purchase, Chakrapani, 6532">
+                  type="text" 
+                  placeholder="Query e.g. Purchase, Chakrapani, 6532">
             </f7-list-input>
             <f7-button @click="searchIntranet" raised fill round>Search</f7-button>
-         </f7-list-item>
-      </f7-list>
+         </f7-list>
 
       <f7-list media-list>
          <f7-list-item v-for="(e,key) in ldapInfo" 
