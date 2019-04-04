@@ -2,12 +2,11 @@
    <f7-page page-content>
       <f7-navbar title="Search" back-link="Back"></f7-navbar>
       <f7-block>
-         <f7-list simple-list>
-         <f7-list-item>
-            <f7-list-input v-model="query" 
-                           @input="query=$event.target.value"
+         <f7-list media-list no-hairlines>
+         <f7-list-item header="Search by name, department or extension.">
+            <f7-list-input @input="query=$event.target.value"
                            type="text" 
-                           placeholder="Search NCBS">
+                           placeholder="Query e.g. Purchase, Chakrapani, 6532">
             </f7-list-input>
             <f7-button @click="searchIntranet" raised fill round>Search</f7-button>
          </f7-list-item>
@@ -67,7 +66,6 @@ export default {
 
                // Append to my personal library.
                var stored = JSON.parse(self.$localStorage.get('ldap.cache'), '[]');
-               console.log('stored', stored);
                for(var k in stored)
                   ldap.push(stored[k]);
                self.$localStorage.set('ldap.cache', JSON.stringify(ldap));
