@@ -160,7 +160,7 @@ export default {
          this.bounds = bounds;
       },
       getIcon: function( strength ) {
-         strength = 3*Math.sqrt(strength);
+         strength = 10+2*Math.sqrt(strength);
          console.log( 'Strength ', strength );
          return L.icon({
             iconUrl: 'http://leafletjs.com/examples/custom-icons/leaf-green.png',
