@@ -78,7 +78,7 @@ Vue.use(VueLocalStorage)
 Vue.mixin({
    methods : {
       dbDate: function( date ) {
-         return moment(date, "YYYY-MM-DD").format("YYYY-MM-DD");
+         return moment(date).format("YYYY-MM-DD");
       },
       humanReadableDate: function( date ) {
          return moment(date, "YYYY-MM-DD").format("MMM DD");
@@ -128,6 +128,10 @@ Vue.mixin({
             'login': self.$localStorage.get('HIPPO-LOGIN')
          };
       },
+      getLogin: function() {
+         const self = this;
+         return self.apiPostData().login;
+      },
       isUserAuthenticated: function() {
          // If API key is found then user is logged in.
          const self = this;
@@ -136,18 +140,62 @@ Vue.mixin({
             return true;
          return false;
       },
-      fetchVenues: function() {
+      formatKey: function(key) {
+         return key.split('_').join(' ').toUpperCase();
+      },
+      fetchAndStore: function(endpoint, key) {
          const self = this;
          const app = self.$f7;
-         app.request.post(self.$store.state.api+'/venue/list/all'
+         app.request.post(self.$store.state.api+'/'+endpoint
             , self.apiPostData()
             , function(json)
             {
                const res = JSON.parse(json);
                if(res.status=='ok')
-                  self.$localStorage.set('venues', JSON.stringify(res.data));
+               {
+                  self.$localStorage.set(key, JSON.stringify(res.data));
+                  return res.data;
+               }
             }
          );
+      },
+      sendRequest: function(endpoint, post) {
+         const self = this;
+         const app = self.$f7;
+         let data = { ...self.apiPostData(), ...post};
+         app.request.post(self.$store.state.api+'/'+endpoint
+            , data
+            , function(json)
+            {
+               const res = JSON.parse(json);
+               return res.status;
+            }
+         );
+      },
+      fetchVenues: function() {
+         const self = this;
+         const app = self.$f7;
+         self.fetchAndStore( '/venue/list/all', 'venues');
+      },
+      fetchProfile: function() {
+         const self = this;
+         const app = self.$f7;
+         self.fetchAndStore('/me/profile', 'me.profile');
+      },
+      filterSchema: function(schema, toremove) 
+      {
+         toremove = toremove.split(',');
+         return schema.filter(obj => ! toremove.find(k => k == obj.Field));
+      },
+      getInputTypeFromSchema: function(schemaObj) {
+         let ret = 'type="text"';
+         if( schemaObj.Type == 'date')
+             ret = 'date';
+         else if( schemaObj.Type == 'time')
+             ret = 'time';
+
+         console.log('type is ', ret);
+         return ret;
       },
    },
 })
@@ -188,3 +236,4 @@ export default new Vue({
       },
    },
 });
+

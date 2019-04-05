@@ -38,7 +38,9 @@
              </l-tile-layer>
                 <l-marker :ref="v.id" 
                            v-for="v in mapVenues" 
-                           :key="v.id" :lat-lng="v.xy"
+                           :key="v.id" 
+                           :lat-lng="v.xy"
+                           :icon="getIcon(v.size)"
                            > 
                    <l-tooltip :options="toolTipOpts">
                       <span v-html="v.html"></span>
@@ -77,21 +79,12 @@ export default {
          mapStyle: 'width:100%; height:100%',
          venues: [],
          mapVenues : [],
-         leafIcon: L.icon({
-            iconUrl: 'http://leafletjs.com/examples/custom-icons/leaf-green.png',
-            shadowUrl: 'http://leafletjs.com/examples/custom-icons/leaf-shadow.png',
-            iconSize:     [38, 95],
-            shadowSize:   [50, 64],
-            iconAnchor:   [22, 94],
-            shadowAnchor: [4, 62],
-            popupAnchor:  [-3, -76]
-         }),
          venueIcon: L.divIcon( {className: 'fa fa-map-marker fa-2x' }),
       };
    },
    mounted() {
       const self = this;
-      console.log( "Fetching venues... ");
+
       self.fetchVenues();
       self.venues = JSON.parse( self.$localStorage.get('venues', '[]'));
       console.log( " ... got ", self.venues.length);
@@ -106,7 +99,16 @@ export default {
                id: venue.id
                , xy: L.latLng(parseFloat(venue.latitude), parseFloat(venue.longitude))
                , html: venue.id + '<sup>' + venue.floor + '</sup>'
+               , size: parseInt(venue.strength),
             };
+
+            // Group venues according to coordinates. If two venues shares
+            // coordinate then stack them up onto each other.
+            let venueWithSameCoords = self.mapVenues.find( 
+               x=> x.xy.equals(mapV.xy) 
+            );
+            if( venueWithSameCoords )
+               mapV.html += '<br/>' + venueWithSameCoords.html;
             self.mapVenues.push(mapV);
          }
       }
@@ -134,7 +136,7 @@ export default {
    },
    methods: { 
       refreshVenues: function() {
-
+         self.fetchVenues();
       },
       onResize: function() { },
       refreshMap: function() {
@@ -157,7 +159,16 @@ export default {
       boundsUpdated (bounds) {
          this.bounds = bounds;
       },
-
+      getIcon: function( strength ) {
+         strength = 10+2*Math.sqrt(strength);
+         console.log( 'Strength ', strength );
+         return L.icon({
+            iconUrl: 'http://leafletjs.com/examples/custom-icons/leaf-green.png',
+            iconSize:     [strength, 2*strength],
+            iconAnchor:   [strength, 2*strength],
+            popupAnchor:  [-3, -76]
+         });
+      },
    },
 };
 

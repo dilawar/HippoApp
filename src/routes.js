@@ -1,5 +1,8 @@
 import Home from './assets/vue/pages/home.vue';
 import AboutPage from './assets/vue/pages/about.vue';
+import ProfilePage from './assets/vue/pages/myprofile.vue';
+import AccomodationPage from './assets/vue/pages/accomodation.vue';
+import AWSPage from './assets/vue/pages/myaws.vue';
 import PanelLeftPage from './assets/vue/pages/panel-left.vue';
 import PanelTimelinePage from './assets/vue/pages/panel-right-timeline.vue';
 import WhatWhereWhenPage from './assets/vue/pages/whatwherewhen.vue';
@@ -29,6 +32,18 @@ export default [
    {
       path: '/userpanel/',
       component: PanelLeftPage
+   },
+   {
+      path: '/myprofile/',
+      component: ProfilePage
+   },
+   {
+      path: '/myaws/',
+      component: AWSPage
+   },
+   {
+      path: '/accomodation/',
+      component: AccomodationPage
    },
    {
       path: '/timelinepanel/:venue',

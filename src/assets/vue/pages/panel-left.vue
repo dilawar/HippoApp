@@ -5,14 +5,33 @@
 
          <f7-block-title>Welcome {{username}} </f7-block-title>
 
-         <f7-list>
+         <f7-list no-hairlines>
+            <f7-list-item link="/myprofile/" 
+                          target="_blank"
+                          view=".view-main"
+                          title="My Profile" 
+                          panel-close
+                          >
+               <f7-icon slot="media" icon="fa fa-user fa-fw"></f7-icon>
+            </f7-list-item>
+
+            <f7-list-item v-if="profile.eligible_for_aws"
+                          link="/myaws/" 
+                          target="_blank"
+                          view=".view-main"
+                          title="My AWS" 
+                          panel-close
+                          >
+             <f7-icon slot="media" icon="fa fa-graduation-cap fa-fw"></f7-icon>
+            </f7-list-item>
+
             <f7-list-item link="/mybooking/" 
                           target="_blank"
                           view=".view-main"
                           title="My Bookings" 
                           panel-close
                           >
-               <f7-icon slot="media" icon="fa fa-edit fa-2x"></f7-icon>
+               <f7-icon slot="media" icon="fa fa-edit fa-fw"></f7-icon>
             </f7-list-item>
          </f7-list>
 
@@ -25,6 +44,7 @@
          return {
             username: 'Guest',
             alreadyLoggedIn: false,
+            profile: [],
          };
       },
       mounted()
@@ -32,6 +52,8 @@
          const self = this;
          self.username = self.$localStorage.get('HIPPO-LOGIN');
          self.alreadyLoggedIn = self.isUserAuthenticated();
+         self.fetchProfile();
+         self.profile = JSON.parse(self.$localStorage.get('me.profile', '[]'));
       },
       methods : {
          refreshData: function( ) {
