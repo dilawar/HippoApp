@@ -57,6 +57,7 @@
   },
   "dependencies": {
     "@lazy-copilot/datetimepicker": "^0.1.40",
+    "@mapbox/leaflet-omnivore": "^0.3.4",
     "add-to-calendar-buttons": "^1.0.0",
     "cordova-android": "^7.1.4",
     "cordova-browser": "^5.0.4",

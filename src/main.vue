@@ -5,8 +5,9 @@
     <f7-panel left cover>
        <f7-view name="left" url="/userpanel/" ></f7-view>
     </f7-panel>
-    <f7-view main url="/" tab tab-active>
 
+
+    <f7-view main url="/" tab tab-active>
        <!--
           Enable it if we need it to put toolbar on the bottom page. The
           backbutton has started working fine again.

@@ -2,7 +2,6 @@
    <f7-page page-content>
       <f7-navbar title="Map" back-link="Back"></f7-navbar>
 
-
       <!-- FAB Right Bottom (Orange) 
       <f7-fab position="right-bottom" slot="fixed" color="orange">
          <f7-icon ios="f7:add" aurora="f7:add"
