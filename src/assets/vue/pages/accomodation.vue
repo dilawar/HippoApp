@@ -2,7 +2,7 @@
   <f7-page page-content ptr @ptr:refresh="fetchAccomodations">
 
   <f7-navbar title="Accomodation" back-link="Back"></f7-navbar>
-  <f7-block-title> Total {{accomodations.count}} available.</f7-block-title>
+  <f7-block-title>Total listings: {{accomodations.count}}</f7-block-title>
 
   <!--
   <f7-block>
@@ -32,11 +32,16 @@
         </f7-list-item>
      </f7-list>
   </f7-block>
+           :style="`background-image:url(${acc.url});background-size:cover`"
   -->
+
   <f7-block>
-     <f7-card v-for="(acc, key) in accomodations.list" :key="key">
-        <f7-card-header>
-           <div style="font-size:x-small">
+     <f7-photo-browser ref="standalone"></f7-photo-browser>
+     <f7-card 
+        v-for="(acc, key) in accomodations.list" :key="key">
+        <f7-card-header
+              >
+           <div style="font-size:x-small;color:gray;">
               Posted by {{acc.created_by}} on {{str2Moment(acc.created_on,
               'YYYY-MM-DD HH:mm:ss').format('MMM DD')}}
            </div>
@@ -61,7 +66,10 @@
                     @click="updateAction(acc)"
               >Update</f7-link>
            <f7-link v-else>+1</f7-link>
-           <f7-link>Comment</f7-link>
+           <!-- TODO 
+           <f7-link raised @click="showPics(acc)">Pics</f7-link>
+           -->
+           <f7-link disabled>Comment</f7-link>
         </f7-card-footer>
      </f7-card>
   </f7-block>
@@ -219,8 +227,9 @@ export default {
       return {
          accomodations: [],
          popupOpened: false,
-         hideKeys: ["id","type", "available_from", "open_vacancies", "status","created_by","created_on"],
+         hideKeys: ["id", "url", "type", "available_from", "open_vacancies", "status","created_by","created_on"],
          popupAction: 'New',
+         photos: [],
          accomodation: {
             type: '',
             status: 'AVAILABLE',
@@ -241,23 +250,24 @@ export default {
 
       // Get all accomodations.
       self.fetchAccomodations();
-      setTimeout( () => true, 1000);
-
       self.accomodations = JSON.parse(self.$localStorage.get('accomodations', '[]'));
-      console.log( self.accomodations );
+      setTimeout( () => true, 10);
 
       // And this accomodation.
       self.accomodation = JSON.parse(self.$localStorage.get('me.accomodation', '[]'));
    },
    methods: { 
-      fetchAccomodations: function()
-      {
+      fetchAccomodations: function() {
          const self = this;
-         self.fetchAndStore( '/accomodation/list', 'accomodations');
-         self.accomodations = JSON.parse(self.$localStorage.get('accomodations', '[]'));
+         const app = self.$f7;
+         setTimeout( () => {
+            self.fetchAndStore( '/accomodation/list', 'accomodations');
+            self.accomodations = JSON.parse(self.$localStorage.get('accomodations', '[]'));
+            return;
+         }, 1000);
+         app.ptr.done();
       },
-      submitAccomodation: function()
-      {
+      submitAccomodation: function() {
          const self = this;
          console.log( "submitting accomodation");
          // Save it before it goes away.
@@ -288,6 +298,11 @@ export default {
       },
       getNumVotes: function(externalID) {
          return 0;
+      },
+      showPics: function(acc) {
+         const self = this;
+         self.$refs.standalone.photos = [ acc.url ];
+         self.$refs.standalone.open();
       },
    },
 };
