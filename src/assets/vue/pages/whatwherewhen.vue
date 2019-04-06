@@ -2,9 +2,9 @@
   <f7-page page-content 
            @page:init="fetchEvents"
            infinite
+           :infinite-preloader="showPreloader" 
            @infinite="loadMore"
-           :infinite-preloader="showPreloader"
-     >
+           >
   <f7-navbar title="What Where When" back-link="Back"></f7-navbar>
 
   <!-- Filter by venue should be a floating button. -->
@@ -40,6 +40,10 @@
   </f7-actions>
 
   <light-timeline v-model="items" :items='items'>
+     <template slot='tag' slot-scope='{ item }'>
+        <span v-html="item.tag"
+           ></span>
+     </template>
   </light-timeline>
 
 
@@ -67,24 +71,6 @@ export default {
          items: [],
       }
    },
-   mounted: function() {
-      const self = this;
-      const app = this.$f7;
-      // Format groups and events.
-      console.log( 'Calling mount function' );
-      self.items = [];
-
-      // Get thisDay events.
-      self.fetchEvents();
-
-      // Two loops but its OK since I don't know better.
-      self.eventTypes = [... new Set( self.events.map(x=>x.class))];
-      self.eventTypes.push('ALL');
-      self.venues = [... new Set(self.events.map(x=>x.venue))];
-      self.venues.push('ALL');
-      self.eventsToTimeLine(self.events);
-
-   },
    methods: { 
       eventToTimelinePoint: function(key, ev) 
       {
@@ -94,9 +80,9 @@ export default {
             , class:ev.class
             , color : color
             , group: ev.venue
-            , tag: self.humanReadableDate(ev.date) + 
-                  '\n' + self.str2Moment(ev.start_time,'HH:mm:ss').format('HH:mm A') +
-                  '\n' + self.str2Moment(ev.end_time,'HH:mm:ss').format('HH:mm A')
+            , tag: self.humanReadableDate(ev.date) + '<br /> ' 
+                  + self.str2Moment(ev.start_time,'HH:mm:ss').format('HH:mm A') + '<br />' 
+                  + self.str2Moment(ev.end_time,'HH:mm:ss').format('HH:mm A')
             , htmlMode: true
             , content:  `<span style="font-size:10px;color:green;margin-left:-1rem">${ev.venue}</span> `+
                         `<span style="font-size:8px;color:gray;">${ev.class}</span>`+
@@ -108,7 +94,7 @@ export default {
       eventsToTimeLine: function(events) 
       {
          const self = this;
-         console.log( 'Drawing timeline' );
+         // console.log( 'Drawing timeline from ', events.length );
          self.items = [];
          for(var key in events)
          {
@@ -117,8 +103,6 @@ export default {
                continue;
             self.items.push(self.eventToTimelinePoint(key, ev));
          }
-
-         setTimeout( ()=> true, 100);
          if(self.items.length == 0)
             self.items.push({tag:'Nothing found.', content:'Pull to refresh!'});
 
@@ -128,7 +112,20 @@ export default {
          const self = this;
          const app = this.$f7;
          self.fetchAndStore( '/events/latest/100', 'events');
-         self.eventsToTimeLine();
+
+         // Give timetime for device to save the data.
+         setTimeout( () => {
+            self.events = JSON.parse(self.$localStorage.get('events', '[]')); 
+            // console.log( 'Got total ', self.events.length, ' events.' );
+            // Two loops but its OK since I don't know better.
+            self.eventTypes = [... new Set( self.events.map(x=>x.class))];
+            self.eventTypes.push('ALL');
+            self.venues = [... new Set(self.events.map(x=>x.venue))];
+            self.venues.push('ALL');
+            self.eventsToTimeLine(self.events);
+            }, 100
+         );
+
       },
       loadMore: function() {
          const self = this;
@@ -164,7 +161,10 @@ export default {
             }
          );
          setTimeout(() => {self.allowInfinite = true; }, 200);
+         self.eventTypes = [... new Set( self.events.map(x=>x.class))];
+         self.eventTypes.push('ALL');
          self.venues = [... new Set(self.events.map(x=>x.venue))];
+         self.venues.push('ALL');
          return;
       },
       filterTimeline: function(venue, cls) 

@@ -28,9 +28,15 @@
              </f7-actions-group>
           </f7-actions>
 
-          <light-timeline :items='items'>
+
+          <light-timeline v-model="items" :items='items'>
+             <template slot='tag' slot-scope='{ item }'>
+                <span v-html="item.tag"
+                      ></span>
+             </template>
           </light-timeline>
 
+          
           <!--
           <f7-block>
              <f7-list accordion-list>
@@ -109,6 +115,7 @@ export default {
                self.generateTimeline();
             }
          );
+         self.$f7router.refreshPage();
          return;
       }
       , fetchMoreEvents: function( )
