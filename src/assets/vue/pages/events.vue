@@ -1,5 +1,7 @@
 <template>
-   <f7-page  page-content ptr infinite 
+   <f7-page page-content 
+             ptr infinite 
+             @page:init="fetchEvents"
              :infinite-distance="50"
              :infinite-preloader="showPreloader"
              @infinite="fetchMoreEvents"

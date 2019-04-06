@@ -1,6 +1,5 @@
 <template>
-  <f7-page page-content
-           infinite
+  <f7-page page-content infinite
            ptr @ptr:refresh="fetchEvents"
            :infinite-preloader="showPreloader"
            @infinite="loadMore"
@@ -40,7 +39,7 @@
   </f7-actions>
 
   <f7-block v-model="items">
-     <light-timeline :items='items'>
+     <light-timeline v-mode="items" :items='items'>
      </light-timeline>
   </f7-block>
 
@@ -57,7 +56,7 @@ export default {
       const self = this;
       return {
          allowInfinite: true,
-         showPreloader: true,
+         showPreloader: false,
          actionVenueGridOpen: false,
          actionTypeGridOpen: false,
          eventTypes: [],
@@ -72,13 +71,12 @@ export default {
    mounted: function() {
       const self = this;
       const app = this.$f7;
-      console.log('mounting');
+      // Format groups and events.
+      console.log( 'Calling mount function' );
+      self.items = [];
 
       // Get thisDay events.
       self.fetchEvents();
-
-      // Format groups and events.
-      self.items = [];
 
       // Two loops but its OK since I don't know better.
       self.eventTypes = [... new Set( self.events.map(x=>x.class))];
@@ -86,6 +84,7 @@ export default {
       self.venues = [... new Set(self.events.map(x=>x.venue))];
       self.venues.push('ALL');
       self.eventsToTimeLine(self.events);
+
    },
    methods: { 
       eventToTimelinePoint: function(key, ev) 
@@ -107,8 +106,10 @@ export default {
 
          };
       },
-      eventsToTimeLine: function(events) {
+      eventsToTimeLine: function(events) 
+      {
          const self = this;
+         console.log( 'Drawing timeline' );
          self.items = [];
          for(var key in events)
          {
@@ -118,13 +119,14 @@ export default {
             self.items.push(self.eventToTimelinePoint(key, ev));
          }
          if(self.items.length == 0)
-            self.items.push({tag:'', content:'Nothing found'});
+            self.items.push({tag:'Nothing found.', content:'Pull to refresh!'});
       },
       fetchEvents: function() 
       {
          const self = this;
          const app = this.$f7;
          self.fetchAndStore( '/events/latest/100', 'events');
+         self.eventsToTimeLine();
       },
       loadMore: function() {
          const self = this;
