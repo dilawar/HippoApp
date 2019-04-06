@@ -210,3 +210,20 @@ input {
     height: 100% !important;
     border: 0px;
 }
+
+.google-calendar {
+    position: relative;
+    padding-bottom: 150%; // This is the aspect ratio
+    padding-left: 5px;
+    padding-right: 10px;
+    height: 0;
+}
+.google-calendar iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    align: middle;
+    width: 100% !important;
+    height: 100% !important;
+    border: 0px;
+}
