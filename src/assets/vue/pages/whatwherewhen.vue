@@ -71,6 +71,13 @@ export default {
          items: [],
       }
    },
+   watch: {
+      $localStorage : function()
+      {
+         self.events = JSON.parse( self.$localStorage.events );
+         self.eventsToTimeLine(self.events);
+      },
+   },
    methods: { 
       eventToTimelinePoint: function(key, ev) 
       {
@@ -105,26 +112,23 @@ export default {
          }
          if(self.items.length == 0)
             self.items.push({tag:'Nothing found.', content:'Pull to refresh!'});
-
       },
       fetchEvents: function() 
       {
          const self = this;
          const app = this.$f7;
-         self.fetchAndStore( '/events/latest/100', 'events');
+
+         self.fetchAndStore('/events/latest/100', 'events');
 
          // Give timetime for device to save the data.
-         setTimeout( () => {
-            self.events = JSON.parse(self.$localStorage.get('events', '[]')); 
-            // console.log( 'Got total ', self.events.length, ' events.' );
-            // Two loops but its OK since I don't know better.
-            self.eventTypes = [... new Set( self.events.map(x=>x.class))];
-            self.eventTypes.push('ALL');
-            self.venues = [... new Set(self.events.map(x=>x.venue))];
-            self.venues.push('ALL');
-            self.eventsToTimeLine(self.events);
-            }, 100
-         );
+         //self.events = JSON.parse(self.$localStorage.get('events', '[]')); 
+         // console.log( 'Got total ', self.events.length, ' events.' );
+         // Two loops but its OK since I don't know better.
+         self.eventTypes = [... new Set( self.events.map(x=>x.class))];
+         self.eventTypes.push('ALL');
+         self.venues = [... new Set(self.events.map(x=>x.venue))];
+         self.venues.push('ALL');
+         self.eventsToTimeLine(self.events);
 
       },
       loadMore: function() {

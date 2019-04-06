@@ -155,6 +155,19 @@ Vue.mixin({
             }
          );
       },
+      postWithPromise: function(endpoint, key) {
+         const self = this;
+         const app = self.$f7;
+         return app.request.promise.post(self.$store.state.api+'/'+endpoint, self.apiPostData());
+      },
+      saveStore: function(data, key) {
+         const self=this;
+         self.$localStorage.save(key, JSON.stringify(res.data));
+      },
+      loadStore: function(key) {
+         const self = this;
+         return JSON.parse(self.$localstorage.get('key', '[]'));
+      },
       sendRequest: function(endpoint, post) {
          const self = this;
          const app = self.$f7;
