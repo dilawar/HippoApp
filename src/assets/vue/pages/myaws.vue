@@ -18,14 +18,16 @@
 
       <f7-block v-for="(aws, key) in awses" :key="key">
          <f7-block-header> {{aws.title}} </f7-block-header>
-         <f7-list media-list no-hairlines>
+         <f7-list >
             <f7-list-item
                :header="aws.venue"
                :footer="str2Moment(aws.date+' '+aws.time, 'YYYY-MM-DD HH:mm:ss').format('ddd, MMM DD, YYYY, hh:mm A')"
                >
             </f7-list-item>
+               <f7-list-item style="width:90%">
+                  <span inset style="font-size:small" v-html="aws.abstract"></span>
+               </f7-list-item>
          </f7-list>
-         <span style="font-size:small" v-html="aws.abstract"></span>
       </f7-block>
 
    </f7-page>

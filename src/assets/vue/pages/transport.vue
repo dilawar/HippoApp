@@ -3,8 +3,28 @@
    <f7-page ptr @ptr:refresh="fetchTransportAgain" page-content>
   <f7-navbar title="Transport" back-link="Back"></f7-navbar>
 
+  <!-- Popup for route -->
+  <f7-popup :opened="popupOpened" @popup:closed="popupOpened = false">
+     <f7-page page-content>
+        <f7-navbar title="Route Map">
+           <f7-nav-right>
+              <f7-link popup-close>Close</f7-link>
+           </f7-nav-right>
+        </f7-navbar>
+
+           <meta http-equiv="Content-Security-Policy" 
+                 content="default-src *;" >
+           </meta>
+
+            <div class="google-maps">
+               <iframe :src="`${thisRouteMap}`"> </iframe>
+           </div>
+
+     </f7-page>
+  </f7-popup>
+
+  <!-- Select days buttons. -->
   <f7-block>
-     <!-- Days related -->
      <f7-row noGap v-model="selectedDay">
         <f7-col v-for="d in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']" :key="'col'+d">
            <f7-button  small
@@ -25,12 +45,18 @@
         <f7-col style="margin-bottom:10px"
                 v-for="(val,item) in currentTransport.slice(3*ri,3*(ri+1))" :key="'col'+ri+item"
                 >
-                <f7-button 
-                :icon="transportIcon(val.vehicle,val.trip_start_time,val.day)"
-                panel-open="right"
-                raised 
-                :text="`${humanReadableTime(str2Moment(val.trip_start_time,'HH:mm:ss'))}`"
-                >
+                <f7-button  v-if="val.url"
+                            raised
+                            @click="routeMap(val)"
+                            :icon="transportIcon(val.vehicle,val.trip_start_time,val.day)"
+                            :text="`${str2Moment(val.trip_start_time,'HH:mm:ss').format('HH:mm')}`"
+                            >
+                </f7-button>
+                <f7-button v-else
+                           @click="routeMap(val)"
+                           :icon="transportIcon(val.vehicle,val.trip_start_time,val.day)"
+                           :text="`${str2Moment(val.trip_start_time,'HH:mm:ss').format('HH:mm')}`"
+                           >
                 </f7-button>
         </f7-col>
      </f7-row>
@@ -86,6 +112,9 @@ export default {
          selectedDay: moment().format('ddd'),
          transport: [],
          currentTransport: [], 
+         popupOpened: false,
+         // This goes onto a poup showing route map.
+         thisRouteMap: '<p>No route found.</p>',
       };
    },
    mounted: function() {
@@ -189,6 +218,15 @@ export default {
                   app.dialog.alert('Failed to fetch transport data', res.status);
             }
          );
+      },
+      routeMap: function(route) {
+         const self = this;
+         if( route.url )
+         {
+            self.thisRouteMap = route.url;
+            console.log( 'Showing route from ', route.url );
+            self.popupOpened = true;
+         }
       },
    },
 };

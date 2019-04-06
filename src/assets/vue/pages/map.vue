@@ -2,7 +2,6 @@
    <f7-page page-content>
       <f7-navbar title="Map" back-link="Back"></f7-navbar>
 
-
       <!-- FAB Right Bottom (Orange) 
       <f7-fab position="right-bottom" slot="fixed" color="orange">
          <f7-icon ios="f7:add" aurora="f7:add"
@@ -161,12 +160,11 @@ export default {
       },
       getIcon: function( strength ) {
          strength = 10+2*Math.sqrt(strength);
-         console.log( 'Strength ', strength );
          return L.icon({
-            iconUrl: 'http://leafletjs.com/examples/custom-icons/leaf-green.png',
+            iconUrl: "static/leaf-green.png",
             iconSize:     [strength, 2*strength],
-            iconAnchor:   [strength, 2*strength],
-            popupAnchor:  [-3, -76]
+            iconAnchor:   [strength*0.5, 2*strength],
+            popupAnchor:  [0, 0]
          });
       },
    },
