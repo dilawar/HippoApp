@@ -53,21 +53,35 @@
                      </f7-nav-right>
                   </f7-navbar>
                   <f7-block>
-                     <p>Version 1.0.10</p>
+                     <p><strong>Version</strong> 1.1, <tt>build</tt> 20190406</p>
 
                      <h3>Development</h3>
-                     Hosted on <a
-                        href="https://github.com/dilawar/HippoApp">github</a>
-                     and is licensed under MIT License.
+                     Hosted on <f7-link external
+                        href="https://github.com/dilawar/HippoApp">Github</f7-link>
+                     and is released under MIT License.
+                     <p>
+                     <strong>Contribution:</strong> <f7-link 
+                        extrernal href="https://github.com/dilawar/HippoApp/blob/master/CONTRIBUTION.md"
+                        >Read this.</f7-link>
+                     </p>
 
 
                      <h3>Credit</h3>
-                     <p> &copy; Dilawar Singh (github: @dilawar): 2019-present. </p>
-                     <p> Hippo logo is designed by <a
-                        href="https://github.com/nunojesus" target="_blank">Nuno
-                        Jesus</a>
-                     </p>
-                     <p>Hosted on the server provided by NCBS IT section.</p>
+                     <p> &copy; Dilawar Singh (github: <f7-link 
+                        external
+                        href="https://github.com/dilawar">@dilawar</f7-link>):
+                     2019-present. Logo is designed by 
+                     <f7-link external href="https://github.com/nunojesus">Nuno
+                     Jesus.</f7-link>
+                     NCBS IT section provided server for backend services.</p>
+
+                     <h3>Disclaimer</h3>
+                     This is <strong>NOT</strong> an official NCBS app. Though I
+                     curate the information provided on this app, developer(s)
+                     is/are not repsonsible for any discrepencies which may arise over the
+                     course of time. You may please report such discrepency by
+                     writing to developers/maintainers.
+
                   </f7-block>
                </f7-page>
             </f7-popup>
