@@ -94,9 +94,11 @@
                      </f7-nav-right>
                   </f7-navbar>
                   <f7-block>
+                     <!--
                      <div class="google-calendar">
 <iframe src="https://calendar.google.com/calendar/embed?showTitle=0&amp;showPrint=0&amp;showCalendars=0&amp;showTz=0&amp;mode=AGENDA&amp;;wkst=1&amp;bgcolor=%23FFFFFF&amp;src=d2jud2r7bsj0i820k0f6j702qo%40group.calendar.google.com&amp;color=%236B3304&amp;ctz=Asia%2FKolkata"></iframe>
                      </div>
+                     -->
 
                   </f7-block>
                </f7-page>

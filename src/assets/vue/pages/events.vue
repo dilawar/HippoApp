@@ -28,30 +28,28 @@
              </f7-actions-group>
           </f7-actions>
 
-          <f7-block v-model="items">
-             <light-timeline :items='items'>
-             </light-timeline>
-          </f7-block>
+          <light-timeline :items='items'>
+          </light-timeline>
 
-             <!--
-             <f7-block>
-                <f7-list accordion-list>
-                <f7-list-item 
-                accordion-item
-                v-for="(val, index) in events" 
-                :key="index"
-                :header="reformatDate(val.date)+', '+val.start_time+' | '+val.venue"
-                :footer="val.title"
-                >
-                <f7-accordion-content>
-                <f7-block margin=30>
-                <small><span v-html="val.description"></span></small>
-                </f7-block>
-                </f7-accordion-content>
-                </f7-list-item>
-                </f7-list>
-                </f7-block>
-             -->
+          <!--
+          <f7-block>
+             <f7-list accordion-list>
+             <f7-list-item 
+             accordion-item
+             v-for="(val, index) in events" 
+             :key="index"
+             :header="reformatDate(val.date)+', '+val.start_time+' | '+val.venue"
+             :footer="val.title"
+             >
+             <f7-accordion-content>
+             <f7-block margin=30>
+             <small><span v-html="val.description"></span></small>
+             </f7-block>
+             </f7-accordion-content>
+             </f7-list-item>
+             </f7-list>
+             </f7-block>
+          -->
 
    </f7-page>
 </template>

@@ -1,8 +1,9 @@
 <template>
-  <f7-page page-content infinite
-           ptr @ptr:refresh="fetchEvents"
-           :infinite-preloader="showPreloader"
+  <f7-page page-content 
+           @page:init="fetchEvents"
+           infinite
            @infinite="loadMore"
+           :infinite-preloader="showPreloader"
      >
   <f7-navbar title="What Where When" back-link="Back"></f7-navbar>
 
@@ -38,10 +39,8 @@
      </f7-actions-group>
   </f7-actions>
 
-  <f7-block v-model="items">
-     <light-timeline v-mode="items" :items='items'>
-     </light-timeline>
-  </f7-block>
+  <light-timeline v-model="items" :items='items'>
+  </light-timeline>
 
 
 
@@ -114,12 +113,15 @@ export default {
          for(var key in events)
          {
             var ev = events[key];
-            if( moment(ev.date + ' ' + ev.start_time, 'YYYY-MM-DD HH:mm:ss') <= moment() )
+            if(moment(ev.date + ' ' + ev.start_time, 'YYYY-MM-DD HH:mm:ss') <= moment() )
                continue;
             self.items.push(self.eventToTimelinePoint(key, ev));
          }
+
+         setTimeout( ()=> true, 100);
          if(self.items.length == 0)
             self.items.push({tag:'Nothing found.', content:'Pull to refresh!'});
+
       },
       fetchEvents: function() 
       {
@@ -162,7 +164,6 @@ export default {
             }
          );
          setTimeout(() => {self.allowInfinite = true; }, 200);
-         self.eventTypes.push('ALL');
          self.venues = [... new Set(self.events.map(x=>x.venue))];
          return;
       },
