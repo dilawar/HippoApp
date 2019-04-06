@@ -1,6 +1,6 @@
 <template>
    <!-- TODO: On schedule click. Open a right panel and show the route -->
-   <f7-page ptr @ptr:refresh="fetchTransportAgain" page-content>
+  <f7-page ptr @ptr:refresh="fetchTransportAgain" page-content>
   <f7-navbar title="Transport" back-link="Back"></f7-navbar>
 
   <!-- Popup for route -->
@@ -11,15 +11,12 @@
               <f7-link popup-close>Close</f7-link>
            </f7-nav-right>
         </f7-navbar>
-
            <meta http-equiv="Content-Security-Policy" 
                  content="default-src *;" >
            </meta>
-
             <div class="google-maps">
                <iframe :src="`${thisRouteMap}`"> </iframe>
            </div>
-
      </f7-page>
   </f7-popup>
 
@@ -39,6 +36,9 @@
   <f7-block>
      <f7-block-title small>
         <f7-icon icon="fa fa-map-marker fa-fw"></f7-icon> {{pickup}} to {{drop}} 
+        <span style="font-size:10px;float:right;color">
+        <f7-link external color="green" href="https://www.ncbs.res.in/shuttle_trips">Official
+           Schedule</f7-link> </span>
      </f7-block-title>
 
      <f7-row v-for="ri in 1+Math.floor(currentTransport.length/3)" :key="ri">

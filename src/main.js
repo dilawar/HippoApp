@@ -27,10 +27,6 @@ Icon.Default.mergeOptions({
 import LightTimeline from 'vue-light-timeline';
 Vue.use(LightTimeline);
 
-// create calendar.
-import { createCalendar } from 'add-to-calendar-buttons';
-import 'add-to-calendar-buttons/main.css';
-
 // Moment 
 import moment from 'moment';
 
