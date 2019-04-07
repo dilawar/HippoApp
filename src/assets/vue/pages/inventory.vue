@@ -14,7 +14,11 @@
     </f7-navbar>
 
     <f7-block>
-       <f7-block-title> Total {{inventories.count}} items </f7-block-title>
+       <f7-block-title> Total {{inventories.count}} items.
+       </f7-block-title>
+
+       <span style="font-size:x-small"> To add inventory, please visit Web portal. </span>
+
     <f7-list class="searchbar-not-found">
        <f7-list-item title="Nothing found"></f7-list-item>
     </f7-list>

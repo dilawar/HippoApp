@@ -35,7 +35,15 @@
                      >
             </f7-link>
 
-            <f7-link tab-link="#tab-menu" 
+            <f7-link tab-link="#tab-canteen" 
+                     icon-only 
+                     icon-color="blue"
+                     @click="canteenPopup=true"
+                     icon="fa fa-cutlery fa-fw"
+                     >
+            </f7-link>
+
+            <f7-link tab-link="#tab-calendar" 
                      icon-only 
                      icon-color="blue"
                      @click="calendarPopup=true"
@@ -89,6 +97,18 @@
                </f7-page>
             </f7-popup>
 
+            <f7-popup :opened="canteenPopup" @popup:closed="canteenPopup = false">
+               <f7-page>
+                  <f7-navbar title="Canteen Menu">
+                     <f7-nav-right>
+                        <f7-link popup-close>Close</f7-link>
+                     </f7-nav-right>
+                  </f7-navbar>
+               </f7-page>
+
+               <!-- Menu -->
+            </f7-popup>
+
             <f7-popup :opened="calendarPopup" @popup:closed="calendarPopup = false">
                <f7-page>
                   <f7-navbar title="Calendar">
@@ -130,6 +150,7 @@ export default {
          },
          infoPopup: false,
          calendarPopup: false,
+         canteenPopup: false,
       }
    },
    mounted() {
