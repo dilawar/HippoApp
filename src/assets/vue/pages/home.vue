@@ -97,13 +97,13 @@
       <f7-block v-else></f7-block>
 
       <!-- FAB Right Bottom (Blue) -->
-      <f7-fab v-if="alreadyLoggedIn" position="right-bottom" slot="fixed" color="blue">
+      <f7-fab v-if="alreadyLoggedIn" position="right-bottom" slot="fixed" color="green">
          <f7-icon ios="f7:add" aurora="f7:add" md="material:add"></f7-icon>
          <f7-icon ios="f7:close" aurora="f7:close" md="material:close"></f7-icon>
-         <f7-fab-buttons position="top">
+         <f7-fab-buttons position="left">
             <f7-fab-button fab-extended
                            href="/booking/" fab-close 
-                           label="Create new booking" >
+                           tooltip="Create new booking" >
                   <f7-icon icon="fa fa-calendar-plus-o fa-fw"></f7-icon>
             </f7-fab-button>
          </f7-fab-buttons>

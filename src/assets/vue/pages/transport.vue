@@ -36,24 +36,23 @@
   <f7-block>
      <f7-block-title small>
         <f7-icon icon="fa fa-map-marker fa-fw"></f7-icon> {{pickup}} to {{drop}} 
-        <span style="font-size:10px;float:right;color">
+        <span style="font-size:11px;float:right;color">
         <f7-link external color="green" href="https://www.ncbs.res.in/shuttle_trips">Official
            Schedule</f7-link> </span>
      </f7-block-title>
 
-     <f7-row v-for="ri in 1+Math.floor(currentTransport.length/3)" :key="ri">
-        <f7-col style="margin-bottom:10px"
+     <f7-row noGap v-for="ri in 1+Math.floor(currentTransport.length/3)" :key="ri">
+        <f7-col style="margin-bottom:4px"
                 v-for="(val,item) in currentTransport.slice(3*ri,3*(ri+1))" :key="'col'+ri+item"
                 >
                 <f7-button  v-if="val.url"
-                            raised
                             @click="routeMap(val)"
+                            raised
                             :icon="transportIcon(val.vehicle,val.trip_start_time,val.day)"
                             :text="`${str2Moment(val.trip_start_time,'HH:mm:ss').format('HH:mm')}`"
                             >
                 </f7-button>
                 <f7-button v-else
-                           @click="routeMap(val)"
                            :icon="transportIcon(val.vehicle,val.trip_start_time,val.day)"
                            :text="`${str2Moment(val.trip_start_time,'HH:mm:ss').format('HH:mm')}`"
                            >
@@ -67,15 +66,15 @@
   <f7-fab position="right-bottom" fab-extended color="green">
      <f7-icon icon="fa fa-map-marker fa-2x"></f7-icon>
      <f7-icon ios="f7:close" aurora="f7:close" md="material:close"></f7-icon>
-     <f7-fab-buttons position="top">
+     <f7-fab-buttons position="left">
         <f7-fab-button  extended
                         fab-close 
-                        label="NCBS to Mandara"
+                        tooltip="NCBS to Mandara"
                         @click="routeFromTo('NCBS', 'Mandara')"
                         >
                         <small>N→M</small>
         </f7-fab-button>
-        <f7-fab-button label="Mandara to NCBS"
+        <f7-fab-button tooltip="Mandara to NCBS"
                        fab-close
                        @click="routeFromTo('Mandara', 'NCBS')"
                        >
@@ -83,13 +82,13 @@
         </f7-fab-button>
         <f7-fab-button fab-close
                        @click="routeFromTo('NCBS', 'IISc')"
-                       label="NCBS to IISc"
+                       tooltip="NCBS to IISc"
                        >
                        <small>N→I</small>
         </f7-fab-button>
         <f7-fab-button fab-close
                        @click="routeFromTo('IISc', 'NCBS')"
-                       label="IISc to NCBS"
+                       tooltip="IISc to NCBS"
                        >
               <small>I→N</small>
         </f7-fab-button>
@@ -219,14 +218,11 @@ export default {
             }
          );
       },
-      routeMap: function(route) {
+      routeMap: function(url) {
          const self = this;
-         if( route.url )
-         {
-            self.thisRouteMap = route.url;
-            console.log( 'Showing route from ', route.url );
-            self.popupOpened = true;
-         }
+         self.thisRouteMap = url;
+         console.log( 'Showing route from ', url );
+         self.popupOpened = true;
       },
    },
 };
