@@ -26,20 +26,19 @@
       </f7-navbar>
 
       <f7-block>
-         <f7-list class="components-list" no-hairlines>
-            <f7-list-item
-               v-if="alreadyLoggedIn" 
-               link="/whatwherewhen/" title="What Where When" panel-close
-               footer="Browse what is going on different venues?"
-               panel-close
-               >
+         <f7-list media-list no-hairlines>
+            <f7-list-item v-if="alreadyLoggedIn" 
+                          link="/whatwherewhen/"
+                          title="What Where When" panel-close
+                          footer="Browse what is going on different venues?"
+                          panel-close>
                <f7-icon slot="media" icon="fa fa-calendar-o fa-2x"></f7-icon>
             </f7-list-item>
             <!--
-            <f7-list-item v-else
-                          link="/events/" title="Event Calendar" panel-close>
+               <f7-list-item v-else
+               link="/events/" title="Event Calendar" panel-close>
                <f7-icon slot="media" icon="fa fa-calendar-check-o fa-2x"></f7-icon>
-            </f7-list-item>
+               </f7-list-item>
             -->
 
             <f7-list-item link="/transport/" 
@@ -54,7 +53,7 @@
                           footer="Synapse, LH2! Where are they? I have a OpenStreetMap ready"
                           panel-close
                           >
-               <f7-icon slot="media" icon="fa fa-map-o fa-2x"></f7-icon>
+                          <f7-icon slot="media" icon="fa fa-map-o fa-2x"></f7-icon>
             </f7-list-item>
 
             <f7-list-item v-if="alreadyLoggedIn" 
@@ -71,7 +70,6 @@
                           panel-close>
                <f7-icon slot="media" icon="fa fa-home fa-2x"></f7-icon>
             </f7-list-item>
-
          </f7-list>
       </f7-block>
 
@@ -103,9 +101,11 @@
          <f7-icon ios="f7:add" aurora="f7:add" md="material:add"></f7-icon>
          <f7-icon ios="f7:close" aurora="f7:close" md="material:close"></f7-icon>
          <f7-fab-buttons position="top">
-            <f7-fab-button href="/booking/" fab-close 
-                           label="Create new booking"
-                           >B</f7-fab-button>
+            <f7-fab-button fab-extended
+                           href="/booking/" fab-close 
+                           label="Create new booking" >
+                  <f7-icon icon="fa fa-calendar-plus-o fa-fw"></f7-icon>
+            </f7-fab-button>
          </f7-fab-buttons>
       </f7-fab>
 
