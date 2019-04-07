@@ -75,6 +75,7 @@
     "vue": "^2.6.10",
     "vue-light-timeline": "^1.0.1",
     "vue-localstorage": "^0.6.2",
+    "vue-persistent-state": "^0.2.1",
     "vue2-datepicker": "^2.10.3",
     "vue2-leaflet": "^2.0.2",
     "vue2-leaflet-locatecontrol": "^1.0.1",

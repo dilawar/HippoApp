@@ -65,7 +65,6 @@ import VueLocalStorage from 'vue-localstorage';
 // Different F7-Vue plugin initialization with f7 v3.0
 Framework7.use(Framework7Vue)
 
-
 // External components.
 Vue.use(DatePicker)
 Vue.use(VueLocalStorage)
@@ -139,6 +138,11 @@ Vue.mixin({
       formatKey: function(key) {
          return key.split('_').join(' ').toUpperCase();
       },
+      postWithPromise: function(endpoint) {
+         const self = this;
+         const app = self.$f7;
+         return app.request.promise.post(self.$store.state.api+'/'+endpoint, self.apiPostData());
+      },
       fetchAndStore: function(endpoint, key) {
          const self = this;
          const app = self.$f7;
@@ -155,14 +159,9 @@ Vue.mixin({
             }
          );
       },
-      postWithPromise: function(endpoint, key) {
-         const self = this;
-         const app = self.$f7;
-         return app.request.promise.post(self.$store.state.api+'/'+endpoint, self.apiPostData());
-      },
-      saveStore: function(data, key) {
+      saveStore: function(key, data) {
          const self=this;
-         self.$localStorage.save(key, JSON.stringify(res.data));
+         self.$localStorage.set(key, JSON.stringify(data));
       },
       loadStore: function(key) {
          const self = this;

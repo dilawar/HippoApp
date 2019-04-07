@@ -1,11 +1,10 @@
 <template>
   <f7-page page-content 
-           @page:init="fetchEvents"
            infinite
            :infinite-preloader="showPreloader" 
            @infinite="loadMore"
            >
-  <f7-navbar title="What Where When" back-link="Back"></f7-navbar>
+  <f7-navbar title="What? Where? When?" back-link="Back"></f7-navbar>
 
   <!-- Filter by venue should be a floating button. -->
   <f7-fab position="right-top" 
@@ -71,12 +70,17 @@ export default {
          items: [],
       }
    },
-   watch: {
-      $localStorage : function()
-      {
-         self.events = JSON.parse( self.$localStorage.events );
-         self.eventsToTimeLine(self.events);
-      },
+   mounted: function() {
+      const self = this;
+      // Wait for event to get stored into the localStorage.
+      self.postWithPromise('/events/latest/100').then(
+         function(json) {
+            self.events = JSON.parse(json).data;
+            self.eventsToTimeLine(self.events);
+            console.log( 'Got ', self.events.length, ' events.');
+            self.saveStore('events', self.events);
+         }
+      );
    },
    methods: { 
       eventToTimelinePoint: function(key, ev) 
@@ -117,13 +121,8 @@ export default {
       {
          const self = this;
          const app = this.$f7;
-
-         self.fetchAndStore('/events/latest/100', 'events');
-
-         // Give timetime for device to save the data.
-         //self.events = JSON.parse(self.$localStorage.get('events', '[]')); 
-         // console.log( 'Got total ', self.events.length, ' events.' );
-         // Two loops but its OK since I don't know better.
+         self.fetchEvents('/events/latest/100', 'events');
+         self.events = JSON.parse(self.$localStorage.get('events', '[]')); 
          self.eventTypes = [... new Set( self.events.map(x=>x.class))];
          self.eventTypes.push('ALL');
          self.venues = [... new Set(self.events.map(x=>x.venue))];
