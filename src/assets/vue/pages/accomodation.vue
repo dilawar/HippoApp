@@ -4,37 +4,6 @@
   <f7-navbar title="Accomodation" back-link="Back"></f7-navbar>
   <f7-block-title>Total listings: {{accomodations.count}}</f7-block-title>
 
-  <!--
-  <f7-block>
-     <f7-list accordion-list no-hairlines>
-        <f7-list-item v-for="(acc, key) in accomodations.list" 
-                      accordion-item   
-                      :key="key"
-                      :header="`${acc.type} is available from
-                         ${acc.available_from} for ${acc.open_vacancies} person(s)`"
-                      :footer="`Posted by ${acc.created_by} on 
-                         ${str2Moment(acc.created_on, 'YYYY-MM-DD HH:mm:ss').format('MMM DD')}`"
-                      >
-                      <f7-accordion-content>
-                         <f7-block inset style="background-color:lightcyan">
-                            <span v-for="(val, key) in acc">
-                               <span v-if="! hideKeys.find(k=> k===key)">
-                                  <span style="color:gray;font-size:xx-small">{{formatKey(key)}}</span>
-                                  <span style="font-size:small">{{val}}</span>
-                                  <br />
-                               </span>
-                            </span>
-                            <br />
-                            <f7-link v-if="acc.created_by===getLogin()">Update/Delete</f7-link>
-                            <f7-link>Comment</f7-link>
-                         </f7-block>
-                      </f7-accordion-content>
-        </f7-list-item>
-     </f7-list>
-  </f7-block>
-           :style="`background-image:url(${acc.url});background-size:cover`"
-  -->
-
   <f7-block>
      <f7-photo-browser ref="standalone"></f7-photo-browser>
      <f7-card 
@@ -249,12 +218,11 @@ export default {
       const self = this;
 
       // Get all accomodations.
-      self.fetchAccomodations();
-      self.accomodations = JSON.parse(self.$localStorage.get('accomodations', '[]'));
-      setTimeout( () => true, 10);
-
-      // And this accomodation.
-      self.accomodation = JSON.parse(self.$localStorage.get('me.accomodation', '[]'));
+      self.postWithPromise( '/accomodation/list').then(
+         function(json) {
+            self.accomodations = JSON.parse(json).data;
+            self.saveStote('accomodations', self.accomodations);
+      });
    },
    methods: { 
       fetchAccomodations: function() {

@@ -34,7 +34,7 @@
                footer="Browse what is going on different venues?"
                panel-close
                >
-               <f7-icon slot="media" icon="fa fa-question-circle-o fa-2x"></f7-icon>
+               <f7-icon slot="media" icon="fa fa-calendar-o fa-2x"></f7-icon>
             </f7-list-item>
             <!--
             <f7-list-item v-else
@@ -76,20 +76,6 @@
 
          </f7-list>
       </f7-block>
-
-      <!--
-      <f7-block v-if="alreadyLoggedIn">
-         <f7-block-title>Community Interaction</f7-block-title>
-            <f7-row>
-               <f7-col>
-                  <f7-button fill>Boards</f7-button>
-               </f7-col>
-               <f7-col>
-                  <f7-button fill>Housing</f7-button>
-               </f7-col>
-            </f7-row>
-      </f7-block>
-      -->
 
       <f7-block v-if="! alreadyLoggedIn">
          <f7-list media-list no-hairlines>

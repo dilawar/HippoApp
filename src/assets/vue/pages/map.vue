@@ -81,35 +81,36 @@ export default {
          venueIcon: L.divIcon( {className: 'fa fa-map-marker fa-2x' }),
       };
    },
-   mounted() {
+   mounted: function() {
       const self = this;
+      self.postWithPromise( '/venue/list/all').then(
+         function(json) {
+            self.venues = JSON.parse(json).data;
+            self.saveStore('venues', self.venues);
 
-      self.fetchVenues();
-      self.venues = JSON.parse( self.$localStorage.get('venues', '[]'));
-      console.log( " ... got ", self.venues.length);
+            // Reformat to create mapVenues
+            for(var k in self.venues)
+            {
+               var venue = self.venues[k];
+               if(venue.longitude > 0 && venue.latitude > 0)
+               {
+                  var mapV = { 
+                     id: venue.id
+                     , xy: L.latLng(parseFloat(venue.latitude), parseFloat(venue.longitude))
+                     , html: venue.id + '<sup>' + venue.floor + '</sup>'
+                     , size: parseInt(venue.strength),
+                  };
 
-      // Reformat to create mapVenues
-      for(var k in self.venues)
-      {
-         var venue = self.venues[k];
-         if( venue.longitude > 0 && venue.latitude > 0)
-         {
-            var mapV = { 
-               id: venue.id
-               , xy: L.latLng(parseFloat(venue.latitude), parseFloat(venue.longitude))
-               , html: venue.id + '<sup>' + venue.floor + '</sup>'
-               , size: parseInt(venue.strength),
+                  // Group venues according to coordinates. If two venues shares
+                  // coordinate then stack them up onto each other.
+                  let venueWithSameCoords = self.mapVenues.find( 
+                     x=> x.xy.equals(mapV.xy) 
+                  );
+                  if( venueWithSameCoords )
+                     mapV.html += '<br/>' + venueWithSameCoords.html;
+                  self.mapVenues.push(mapV);
+               }
             };
-
-            // Group venues according to coordinates. If two venues shares
-            // coordinate then stack them up onto each other.
-            let venueWithSameCoords = self.mapVenues.find( 
-               x=> x.xy.equals(mapV.xy) 
-            );
-            if( venueWithSameCoords )
-               mapV.html += '<br/>' + venueWithSameCoords.html;
-            self.mapVenues.push(mapV);
-         }
       }
 
       self.$nextTick( () => {
