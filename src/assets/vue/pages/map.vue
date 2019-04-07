@@ -111,27 +111,6 @@ export default {
                   self.mapVenues.push(mapV);
                }
             };
-      }
-
-      self.$nextTick( () => {
-         // Add search menu.
-         self.map = self.$refs.map.mapObject;
-         // for(var k in self.mapVenues)
-         // {
-         //    var v = self.mapVenues[k];
-         //    var marker = self.$refs[v.id][0];
-         //    console.log(marker);
-         // }
-         //self.map.eachLayer( function(layer) {
-         //   if(layer instanceof L.Marker)
-         //   {
-         //      console.log( 'Marker found');
-         //      setTimeout( () => {
-         //         layer.bindPopup("yeelow");
-         //         layer.togglePopup( );
-         //      }, 1000);
-         //   }
-         //});
       });
    },
    methods: { 
