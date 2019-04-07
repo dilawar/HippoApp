@@ -27,7 +27,6 @@
 
       <f7-block>
          <f7-list class="components-list" no-hairlines>
-
             <f7-list-item
                v-if="alreadyLoggedIn" 
                link="/whatwherewhen/" title="What Where When" panel-close
@@ -52,8 +51,7 @@
 
             <f7-list-item link="/map/" 
                           title="Map" 
-                          footer="Vacuole, Synapse! Where are they? I have a
-                          OpenStreetMap ready"
+                          footer="Synapse, LH2! Where are they? I have a OpenStreetMap ready"
                           panel-close
                           >
                <f7-icon slot="media" icon="fa fa-map-o fa-2x"></f7-icon>
@@ -106,7 +104,6 @@
          <f7-icon ios="f7:close" aurora="f7:close" md="material:close"></f7-icon>
          <f7-fab-buttons position="top">
             <f7-fab-button href="/booking/" fab-close 
-                           target="_blank"
                            label="Create new booking"
                            >B</f7-fab-button>
          </f7-fab-buttons>

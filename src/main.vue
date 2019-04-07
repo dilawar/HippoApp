@@ -67,13 +67,16 @@
 
 
                      <h3>Credit</h3>
-                     <p> &copy; Dilawar Singh (github: <f7-link 
-                        external
-                        href="https://github.com/dilawar">@dilawar</f7-link>):
-                     2019-present. Logo is designed by 
-                     <f7-link external href="https://github.com/nunojesus">Nuno
-                     Jesus.</f7-link>
-                     NCBS IT section provided server for backend services.</p>
+
+                     Logo is designed by <f7-link external
+                        href="https://github.com/nunojesus">Nuno
+                        Jesus.</f7-link> NCBS IT section provided server for
+                     backend services.</p>
+
+                     <small> <p> &copy; Dilawar Singh 
+                        (github: <f7-link external href="https://github.com/dilawar">@dilawar</f7-link>):
+                        2019-present. </p>
+                     </small>
 
                      <h3>Disclaimer</h3>
                      This is <strong>NOT</strong> an official NCBS app. Though I

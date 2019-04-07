@@ -95,7 +95,7 @@ export default {
             , class:ev.class
             , color : color
             , group: ev.venue
-            , tag: self.humanReadableDate(ev.date) + '<br /> ' 
+            , tag: self.toNow(ev.date, ev.start_time) + '<br /> ' 
                   + self.str2Moment(ev.start_time,'HH:mm:ss').format('HH:mm A') + '<br />' 
                   + self.str2Moment(ev.end_time,'HH:mm:ss').format('HH:mm A')
             , htmlMode: true
