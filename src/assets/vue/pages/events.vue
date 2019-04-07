@@ -1,10 +1,9 @@
 <template>
    <f7-page page-content 
              ptr infinite 
-             @page:init="fetchEvents"
              :infinite-distance="50"
              :infinite-preloader="showPreloader"
-             @infinite="fetchMoreEvents"
+             @infinite="loadMore"
              page-content
          >
 
@@ -29,33 +28,11 @@
           </f7-actions>
 
 
-          <light-timeline v-model="items" :items='items'>
+          <light-timeline :items='items'>
              <template slot='tag' slot-scope='{ item }'>
-                <span v-html="item.tag"
-                      ></span>
+                <span v-html="item.tag" ></span>
              </template>
           </light-timeline>
-
-          
-          <!--
-          <f7-block>
-             <f7-list accordion-list>
-             <f7-list-item 
-             accordion-item
-             v-for="(val, index) in events" 
-             :key="index"
-             :header="reformatDate(val.date)+', '+val.start_time+' | '+val.venue"
-             :footer="val.title"
-             >
-             <f7-accordion-content>
-             <f7-block margin=30>
-             <small><span v-html="val.description"></span></small>
-             </f7-block>
-             </f7-accordion-content>
-             </f7-list-item>
-             </f7-list>
-             </f7-block>
-          -->
 
    </f7-page>
 </template>
@@ -77,19 +54,14 @@ export default {
          items: [],
       };
    }
-   , computed: { }
-   , mounted() {
-      const self         = this;
-      const app          = self.$f7;
-      var link = self.$store.state.api+'/publicevents/'+moment(self.startDate).format('X')+'/20';
-      app.request.post(link, this.apiPostData(),
-         function(json) {
-            var res = JSON.parse(json);
-            self.events = res.data;
-            self.generateTimeline();
-         }
-      );
-      return;
+   , mounted: function() {
+      const self = this;
+      self.postWithPromise('/publicevents/'+moment(self.startDate).format('X')+'/20')
+         .then( function(json) {
+            self.events = JSON.parse(json).data;
+            self.saveStore('pubevents', self.events);
+            self.generateTimeline(self.events);
+         });
    }
    , methods: { 
       reformatDate: function(date){
@@ -103,72 +75,54 @@ export default {
             return 'deeppurple';
          return '';
       }
-      , fetchEvents: function() 
+      , loadMore: function( )
       {
          const self         = this;
          const app          = self.$f7;
-         var link = self.$store.state.api+'/publicevents/'+moment(self.startDate).format('X')+'/20';
-         app.request.post(link, this.apiPostData(),
-            function(json) {
-               var res = JSON.parse(json);
-               self.events = res.data;
-               self.generateTimeline();
-            }
-         );
-         self.$f7router.refreshPage();
-         return;
-      }
-      , fetchMoreEvents: function( )
-      {
-         const self         = this;
-         const app          = self.$f7;
-         if( ! self.allowInfinite ) return;
+         if(! self.allowInfinite) 
+            return;
 
          self.allowInfinite = false;
-
-         var numToFetch = self.events.length + 10;
-         var link = self.$store.state.api+'/publicevents/'+moment(self.startDate).format('X') 
-            +'/'+ numToFetch.toString();
-         app.request.post(link, this.apiPostData(),
+         var numToFetch = self.events.length + 20;
+         console.log('loading more ', numToFetch);
+         let link = '/publicevents/'+moment(self.startDate).format('X') +'/'+numToFetch.toString()
+         self.postWithPromise(link).then( 
             function(json) {
-               var res = JSON.parse(json);
-               self.events = res.data;
-               self.generateTimeline();
-            }
-         );
-         setTimeout(() => {
-            if(self.events.length >= 50) {
-               self.showPreloader = false;
+               self.events = JSON.parse(json).data;
+               console.log( "got ", self.events.length );
+               self.saveStore('pubevents', self.events);
+               self.generateTimeline(self.events);
                return;
             }
-            self.allowInfinite = true;
-         }, 1000);
+         );
+         self.allowInfinite = true;
       },
-      generateTimeline: function()
+      generateTimeline: function( events )
       {
          const self = this;
          self.items = [];
-         self.eventTypes = [... new Set(self.events.map(x=>x.class))];
-         for(var k in self.events)
+         self.eventTypes = [... new Set(events.map(x=>x.class))];
+         for(var k in events)
          {
-            var e = self.events[k];
+            var e = events[k];
             self.items.push(self.eventToItem(e));
          }
       }
       , eventToItem: function(e) 
       {
          const self = this;
-         return {tag : e.venue
-                     + '\n' + moment(e.date, 'dddd, MMM DD, YYYY').format('ddd MMM DD') 
-                     + '\n' + e.start_time
-               , htmlMode : true
-               , color : self.stringToColour(e.class)
-               , content: `<span style='font-size:8px;color:gray;'>${e.class}</span>` 
-                           + '<br/>' + e.title
-                           + '<br/>'
+         return {
+            tag : moment(e.date, 'dddd, MMM DD, YYYY').format('ddd MMM DD') 
+                  + '<br />' + e.start_time + '<br />'
+                  + `<span style='font-size:10px;'>${e.venue}</span>`
+            , htmlMode : true
+            , color : self.stringToColour(e.class)
+            , content: `<span style='font-size:9px;color:black;'>${e.class}</span>` 
+                        + '<br/>' + e.title
+                        + '<br/>'
          };
       }
-      , filterTimeline: function( vtype )
+      , filterTimeline: function(vtype)
       {
          const self = this;
          console.log('Filtering for ' + vtype, self.events.length);
@@ -176,7 +130,6 @@ export default {
          for(var k in self.events)
          {
             var e = self.events[k];
-            console.log( e.class );
             if(e.class == vtype )
                self.items.push(self.eventToItem(e));
          }

@@ -30,12 +30,18 @@
 
             <f7-list-item
                v-if="alreadyLoggedIn" 
-               link="/whatwherewhen/" title="What Where When" 
+               link="/whatwherewhen/" title="What Where When" panel-close
                footer="Browse what is going on different venues?"
                panel-close
                >
                <f7-icon slot="media" icon="fa fa-question-circle-o fa-2x"></f7-icon>
             </f7-list-item>
+            <!--
+            <f7-list-item v-else
+                          link="/events/" title="Event Calendar" panel-close>
+               <f7-icon slot="media" icon="fa fa-calendar-check-o fa-2x"></f7-icon>
+            </f7-list-item>
+            -->
 
             <f7-list-item link="/transport/" 
                           title="Transport" 

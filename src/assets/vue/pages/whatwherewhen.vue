@@ -4,7 +4,7 @@
            :infinite-preloader="showPreloader" 
            @infinite="loadMore"
            >
-  <f7-navbar title="What? Where? When?" back-link="Back"></f7-navbar>
+  <f7-navbar title="What Where When" back-link="Back"></f7-navbar>
 
   <!-- Filter by venue should be a floating button. -->
   <f7-fab position="right-top" 
@@ -76,6 +76,10 @@ export default {
       self.postWithPromise('/events/latest/100').then(
          function(json) {
             self.events = JSON.parse(json).data;
+            self.eventTypes = [... new Set( self.events.map(x=>x.class))];
+            self.eventTypes.push('ALL');
+            self.venues = [... new Set(self.events.map(x=>x.venue))];
+            self.venues.push('ALL');
             self.eventsToTimeLine(self.events);
             console.log( 'Got ', self.events.length, ' events.');
             self.saveStore('events', self.events);
@@ -117,19 +121,6 @@ export default {
          if(self.items.length == 0)
             self.items.push({tag:'Nothing found.', content:'Pull to refresh!'});
       },
-      fetchEvents: function() 
-      {
-         const self = this;
-         const app = this.$f7;
-         self.fetchEvents('/events/latest/100', 'events');
-         self.events = JSON.parse(self.$localStorage.get('events', '[]')); 
-         self.eventTypes = [... new Set( self.events.map(x=>x.class))];
-         self.eventTypes.push('ALL');
-         self.venues = [... new Set(self.events.map(x=>x.venue))];
-         self.venues.push('ALL');
-         self.eventsToTimeLine(self.events);
-
-      },
       loadMore: function() {
          const self = this;
          const app = this.$f7;
@@ -145,7 +136,7 @@ export default {
                title: 'Please stop!',
                text: "I won't fetch more items."
             }).open();
-            setTimeout(()=> alert.close(), 2000);
+            setTimeout(()=> alert.close(), 500);
             return;
          }
 

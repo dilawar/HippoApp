@@ -152,10 +152,9 @@ Vue.mixin({
             {
                const res = JSON.parse(json);
                if(res.status=='ok')
-               {
                   self.$localStorage.set(key, JSON.stringify(res.data));
-                  return res.data;
-               }
+               else
+                  console.log('Warn: Failed to fetch ',);
             }
          );
       },
@@ -164,8 +163,8 @@ Vue.mixin({
          self.$localStorage.set(key, JSON.stringify(data));
       },
       loadStore: function(key) {
-         const self = this;
-         return JSON.parse(self.$localstorage.get('key', '[]'));
+         const self=this;
+         return JSON.parse(self.$localStorage.get(key, '[]'));
       },
       sendRequest: function(endpoint, post) {
          const self = this;
