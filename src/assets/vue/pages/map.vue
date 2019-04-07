@@ -87,6 +87,8 @@ export default {
          function(json) {
             self.venues = JSON.parse(json).data;
             self.saveStore('venues', self.venues);
+            self.venues.sort(function(a,b) {return
+               parseInt(a.floor)<parseInt(b.floor)});
 
             // Reformat to create mapVenues
             for(var k in self.venues)
@@ -103,15 +105,15 @@ export default {
 
                   // Group venues according to coordinates. If two venues shares
                   // coordinate then stack them up onto each other.
-                  let venueWithSameCoords = self.mapVenues.find( 
-                     x=> x.xy.equals(mapV.xy) 
-                  );
-                  if( venueWithSameCoords )
-                     mapV.html += '<br/>' + venueWithSameCoords.html;
-                  self.mapVenues.push(mapV);
+                  let venueWithSameCoords = self.mapVenues.find(x=> x.xy.equals(mapV.xy));
+                  if(venueWithSameCoords)
+                     venueWithSameCoords.html += '<br/>' + mapV.html;
+                  else
+                     self.mapVenues.push(mapV);
                }
             };
-      });
+         }
+      );
    },
    methods: { 
       refreshVenues: function() {
