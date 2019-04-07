@@ -19,6 +19,7 @@ import ColorThemes from './assets/vue/pages/color-themes.vue';
 import Chat from './assets/vue/pages/chat.vue';
 import SearchPage from './assets/vue/pages/search.vue';
 import Vuex from './assets/vue/pages/vuex.vue';
+import InventoryPage from './assets/vue/pages/inventory.vue';
 
 export default [
    {
@@ -44,6 +45,10 @@ export default [
    {
       path: '/accomodation/',
       component: AccomodationPage
+   },
+   {
+      path: '/inventory/',
+      component: InventoryPage
    },
    {
       path: '/timelinepanel/:venue',

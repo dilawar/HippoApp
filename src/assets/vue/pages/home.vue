@@ -50,7 +50,7 @@
 
             <f7-list-item link="/map/" 
                           title="Map" 
-                          footer="Synapse, LH2! Where are they? I have a OpenStreetMap ready"
+                          footer="Synapse, LH2! Where are they?"
                           panel-close
                           >
                           <f7-icon slot="media" icon="fa fa-map-o fa-2x"></f7-icon>
@@ -70,6 +70,14 @@
                           panel-close>
                <f7-icon slot="media" icon="fa fa-home fa-2x"></f7-icon>
             </f7-list-item>
+
+            <f7-list-item link="/inventory/" 
+                          title="Inventory" 
+                          footer="So that other can search and borrow"
+                          panel-close>
+               <f7-icon slot="media" icon="fa fa-archive fa-2x"></f7-icon>
+            </f7-list-item>
+
          </f7-list>
       </f7-block>
 
