@@ -221,7 +221,7 @@ export default {
       self.postWithPromise( '/accomodation/list').then(
          function(json) {
             self.accomodations = JSON.parse(json).data;
-            self.saveStote('accomodations', self.accomodations);
+            self.saveStore('accomodations', self.accomodations);
       });
    },
    methods: { 

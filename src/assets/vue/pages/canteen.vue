@@ -2,37 +2,11 @@
   <f7-page page-content ptr @ptr:refresh="fetchMenu">
 
   <f7-navbar title="Canteen Menu" back-link="Back"></f7-navbar>
-  <f7-block-title>Total listings: {{menu.count}}</f7-block-title>
+  <f7-block-title>Total listings: {{cards.length}}</f7-block-title>
 
   <f7-block>
-     <f7-photo-browser ref="standalone"></f7-photo-browser>
-     <f7-card 
-        v-for="(acc, key) in menu.list" :key="key">
-        <f7-card-header>
-           <div style="font-size:x-small;color:gray;">
-              Created by {{acc.created_by}} 
-           </div>
-        </f7-card-header>
-        <f7-card-content>
-           <span v-for="(val, key) in acc">
-              <span v-if="! hideKeys.find(k=> k===key)">
-                 <span style="color:gray;font-size:xx-small">{{formatKey(key)}}</span>
-                 <span style="font-size:small">{{val}}</span>
-                 <br />
-              </span>
-           </span>
-        </f7-card-content>
-        </f7-card-content>
-        <f7-card-footer>
-           <f7-link v-if="acc.created_by===getLogin()"
-                    @click="updateAction(acc)"
-              >Update</f7-link>
-           <f7-link v-else>+1</f7-link>
-           <!-- TODO 
-           <f7-link raised @click="showPics(acc)">Pics</f7-link>
-           -->
-           <f7-link disabled>Comment</f7-link>
-        </f7-card-footer>
+     <f7-card v-for="(card, key) in cards">
+        <f7-card-title> {{ card.title }} </f7-card-title>
      </f7-card>
   </f7-block>
 
@@ -152,6 +126,7 @@ export default {
             available_upto: '',
             status: 'VALID',
          },
+         cards: [],
       };
    },
    mounted: function() {
@@ -161,8 +136,9 @@ export default {
          function(json) {
             let res = JSON.parse(json);
             if( res.status == 'ok') {
-               self.saveStote('menu', self.menu);
+               self.saveStore('menu', self.menu);
                self.menu = res.data;
+               self.menuToCards(self.menu.list);
             }
          }
       );
@@ -172,6 +148,7 @@ export default {
          const self = this;
          self.fetchAndStore( '/menu/list/'+self.selectedDay, 'menu');
          self.menu = self.getStore('menu');
+         self.menuToCards(self.menu.list);
       },
       submitAccomodation: function() {
          const self = this;
@@ -209,6 +186,24 @@ export default {
          const self = this;
          self.$refs.standalone.photos = [ acc.url ];
          self.$refs.standalone.open();
+      },
+      menuToCards: function(items) {
+         const self = this;
+         let groupItems = [];
+         for(let k in items)
+         {
+            let item = items[k];
+            let key = item.canteen_name + ':' + item.which_meal;
+            if(key in self.cards)
+               groupItems[key].push(item);
+            else 
+               groupItems[key] = [item];
+         }
+         for(var k in groupItems)
+         {
+            let items = groupItems[k];
+            self.cards.push({ title: k, count : items.length });
+         }
       },
    },
 };
