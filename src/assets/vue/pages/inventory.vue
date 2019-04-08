@@ -1,7 +1,6 @@
 <template>
   <f7-page>
-
-    <f7-navbar title="Inventories">
+    <f7-navbar title="Inventories" back-link="Back">
       <f7-subnavbar :inner="false">
          <f7-searchbar
             search-container=".inventory-list"
