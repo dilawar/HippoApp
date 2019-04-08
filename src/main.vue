@@ -22,7 +22,7 @@
             <f7-link tab-link="#tab-back" 
                      icon-only 
                      icon-color="blue"
-                     icon="fa fa-backward fa-fw"
+                     icon="fa fa-backward fa-2x"
                      back
                      >
             </f7-link>
@@ -31,15 +31,15 @@
                      @click="infoPopup=true"
                      icon-only 
                      icon-color="blue"
-                     icon="fa fa-info fa-fw"
+                     icon="fa fa-info fa-2x"
                      >
             </f7-link>
 
-            <f7-link tab-link="#tab-canteen" 
-                     icon-only 
+            <f7-link icon-only 
                      icon-color="blue"
-                     @click="canteenPopup=true"
-                     icon="fa fa-cutlery fa-fw"
+                     href="/canteen/"
+                     tooltip="Canteen"
+                     icon="fa fa-cutlery fa-2x"
                      >
             </f7-link>
 
@@ -47,7 +47,8 @@
                      icon-only 
                      icon-color="blue"
                      @click="calendarPopup=true"
-                     icon="fa fa-calendar fa-fw"
+                     tooltip="Public calendar"
+                     icon="fa fa-calendar fa-2x"
                      >
             </f7-link>
 
