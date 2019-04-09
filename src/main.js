@@ -148,6 +148,11 @@ Vue.mixin({
          const app = self.$f7;
          return app.request.promise.post(self.$store.state.api+'/'+endpoint, self.apiPostData());
       },
+      postToHippo: function(endpoint, data) {
+         const self = this;
+         const app = self.$f7;
+         app.request.post(self.$store.state.api+'/'+endpoint);
+      },
       fetchAndStore: function(endpoint, key) {
          const self = this;
          const app = self.$f7;

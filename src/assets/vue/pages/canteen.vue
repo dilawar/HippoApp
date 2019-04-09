@@ -6,8 +6,10 @@
      <f7-row noGap v-model="selectedDay">
         <f7-col v-for="d in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']" :key="'col'+d">
            <f7-button  small
-              :key="d" :fill="(d==selectedDay)?true:false" 
-              @click="changeDay(d)"> 
+                       :key="d" 
+                       :fill="(d==selectedDay)?true:false" 
+                       @click="changeDay(d)"
+                       > 
               <font><small>{{d}}</small></font>
            </f7-button>
         </f7-col>
@@ -16,8 +18,17 @@
 
   <f7-block>
      <f7-card v-for="(card, key) in cards" :key="key">
-        <f7-card-header> {{ card.title }} </f7-card-header>
-        <f7-card-content> {{ card.content }} </f7-card-content>
+        <f7-card-header> 
+           <span style="color:gray">{{card.title}}</span> 
+        </f7-card-header>
+        <f7-card-content> 
+           <span v-for="(item, key) in card.menuItems" style="margin-right:10px">
+              <f7-link color="green" @click="updateMenuItem(item)"
+                  v-if="isUserAuthenticated()"> {{item.name}}</f7-link>
+              <f7-link v-else>{{item.name}}</f7-link>
+              <sup>₹{{parseFloat(item.price)}}</sup>
+           </span>
+        </f7-card-content>
         <f7-card-footer> 
            <span style="font-size:x-small">Recent contributors: {{ card.footer }} </span>
            <span style=""> 
@@ -25,9 +36,7 @@
                          raised 
                          v-if="isUserAuthenticated()"
                          @click="addItemToMenu(card)"
-                 >
-                 Add Item
-              </f7-button>
+                 >Add</f7-button>
            </span>
         </f7-card-footer>
      </f7-card>
@@ -60,7 +69,7 @@
 
               <f7-list-input label="Name"
                              :value="menu_item.name"
-                             @input="menu_item.type = $event.target.value"
+                             @input="menu_item.name = $event.target.value"
                              required 
                              >
               </f7-list-input>
@@ -114,12 +123,12 @@
                  <f7-button v-if="popupAction=='New'"
                             slot="after" raised fill
                             popup-close
-                            @click="submitAccomodation"
+                            @click="submitNewMenuItem(menu_item)"
                             >Submit</f7-button>
                  <f7-button v-if="popupAction=='Update'"
                             slot="after" raised fill
                             popup-close
-                            @click="updateAccomodation(menu_item.id)"
+                            @click="submitUpdateMenuItem(menu_item)"
                             >Submit</f7-button>
               </f7-list-item>
 
@@ -142,7 +151,7 @@ export default {
          selectedDay: moment().format('ddd'),
          menu: [],
          popupOpened: false,
-         hideKeys: ["id", "url", "type", "available_from", "open_vacancies", "status","created_by","created_on"],
+         hideKeys: [],
          popupAction: 'New',
          photos: [],
          menu_item: {
@@ -194,7 +203,6 @@ export default {
       },
       submitAccomodation: function() {
          const self = this;
-         console.log( "submitting accomodation");
          // Save it before it goes away.
          self.$localStorage.set('me.accomodation', self.accomodation);
          self.accomodation.available_from = moment(self.accomodation.available_from).format('YYYY-MM-DD')
@@ -212,14 +220,12 @@ export default {
       {
          const self = this;
          self.popupAction = 'New';
-         console.log( 'Updating id: ', id);
          self.accomodation.available_from = self.dbDate(self.accomodation.available_from);
          self.sendRequest('/accomodation/update/id', self.accomodation);
          return;
       },
       readMore: function(obj) {
          const self = this;
-         console.log( obj );
       },
       getNumVotes: function(externalID) {
          return 0;
@@ -245,9 +251,10 @@ export default {
          for(var k in groupItems)
          {
             let items = groupItems[k];
-            console.log( 'items', items);
-            let menuItems = items.map(x => x.name).join(', ');
-            let contributors = [... new Set(items.map(x=>x.modified_by))].join(', ');
+            let content = items.map(x => x.name).join(', ');
+            let contributors = [... new Set( 
+                     items.reduce((v, x)=>x.modified_by+v, '').split(','))
+                  ].join(',');
             self.cards.push({
                title: k
                , canteen_name: items[0].canteen_name
@@ -255,14 +262,21 @@ export default {
                , available_from: items[0].available_from
                , available_upto: items[0].available_upto
                , count: items.length
-               , content: menuItems
+               , content: content
+               , menuItems: items
                , footer: contributors}
             );
          }
       },
       addItemToMenu: function(card) {
          const self = this;
-         console.log( 'Adding to ', card);
+         self.popupAction = "New";
+
+         // Clear object.
+         for(const prop of Object.keys(self.menu_item)){
+            delete self.menu_item[prop];
+         }
+
          self.menu_item.canteen_name = card.canteen_name;
          self.menu_item.which_meal = card.which_meal;
          self.menu_item.available_upto = card.available_upto;
@@ -270,6 +284,22 @@ export default {
          self.menu_item.status = 'AVAILABLE';
          self.popupOpened = true;
       },
+      submitNewMenuItem: function(card) {
+         const self = this;
+         const app = self.$f7;
+         self.sendRequest( 'menu/create', card);
+      },
+      updateMenuItem: function(card) {
+         const self = this;
+         self.popupAction = 'Update';
+         self.menu_item = card;
+         self.popupOpened = true;
+      },
+      submitUpdateMenuItem: function(card) {
+         const self = this;
+         const app = self.$f7;
+         self.sendRequest( 'menu/update', card);
+      }
    },
 };
 </script>
