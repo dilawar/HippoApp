@@ -35,7 +35,11 @@
            </span>
         </f7-card-content>
         <f7-card-footer> 
-           <span style="font-size:x-small">Recent contributors: {{ card.footer }} </span>
+           <span style="font-size:x-small">
+              Recent contributors: {{ card.footer }}
+              <br />
+               Last Modified: {{ card.modified_on}} 
+           </span>
            <span style=""> 
               <f7-button small 
                          raised 
@@ -126,19 +130,19 @@
               </f7-list-input>
 
               <f7-list-item>
-                 <div v-if="popupAction=='New'">
-                    <f7-button slot="after" raised fill
+                    <f7-button v-if="popupAction == 'New'" 
+                              slot="after" raised fill
                                popup-close
                                @click="submitNewMenuItem(menu_item)"
                                >Submit</f7-button>
-                 </div>
-                 <div v-if="popupAction=='Update'">
-                    <f7-button slot="root" raised fill
+                    <f7-button v-if="popupAction == 'Update'"
+                               slot="media" 
                                popup-close
                                @click="submitDeleteMenuItem(menu_item.id)"
                                >Delete
                     </f7-button>
-                    <f7-button slot="after" raised fill
+                    <f7-button v-if="popupAction == 'Update'"
+                               slot="after" raised fill
                                popup-close
                                @click="submitUpdateMenuItem(menu_item)"
                                >Update
@@ -246,6 +250,9 @@ export default {
             let contributors = [... new Set( 
                      items.reduce((v, x)=>x.modified_by+v, '').split(','))
                   ].join(',');
+            let modifiedOn = moment.max(items.map(x => 
+               moment(x.modified_on, 'YYYY-MM-DD HH:mm:ss')
+            ));
             self.cards.push({
                title: k
                , canteen_name: items[0].canteen_name
@@ -255,6 +262,7 @@ export default {
                , count: items.length
                , content: content
                , menuItems: items
+               , modified_on: modifiedOn.fromNow()
                , footer: contributors}
             );
          }
