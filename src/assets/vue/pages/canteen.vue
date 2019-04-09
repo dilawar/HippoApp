@@ -23,8 +23,13 @@
         </f7-card-header>
         <f7-card-content> 
            <span v-for="(item, key) in card.menuItems" style="margin-right:10px">
-              <f7-link color="green" @click="updateMenuItem(item)"
-                  v-if="isUserAuthenticated()"> {{item.name}}</f7-link>
+              <f7-link color="green" 
+                       @click="updateMenuItem(item)"
+                       v-if="isUserAuthenticated()"
+                       style="font-variant:small-caps"
+                       > 
+                       {{item.name}} 
+              </f7-link>
               <f7-link v-else>{{item.name}}</f7-link>
               <sup>₹{{parseFloat(item.price)}}</sup>
            </span>
@@ -56,14 +61,15 @@
 
   <f7-popup class="canteen-popup" :opened="popupOpened" @popup:closed="popupOpened = false">
      <f7-page>
-        <f7-navbar :title="`${popupAction} Canteen`">
+        <f7-navbar>
+           <span slot="title" v-if="popupAction == 'Add'">Adding item to menu</span>
+           <span slot="title" v-else> Updating menu</span>
            <f7-nav-right>
               <f7-link popup-close>Cancel</f7-link>
            </f7-nav-right>
         </f7-navbar>
 
         <f7-block>
-           <f7-block-title>Please add one item at a time!</f7-block-title>
            <f7-list no-hairlines-md inset>
 
 
@@ -120,16 +126,24 @@
               </f7-list-input>
 
               <f7-list-item>
-                 <f7-button v-if="popupAction=='New'"
-                            slot="after" raised fill
-                            popup-close
-                            @click="submitNewMenuItem(menu_item)"
-                            >Submit</f7-button>
-                 <f7-button v-if="popupAction=='Update'"
-                            slot="after" raised fill
-                            popup-close
-                            @click="submitUpdateMenuItem(menu_item)"
-                            >Submit</f7-button>
+                 <div v-if="popupAction=='New'">
+                    <f7-button slot="after" raised fill
+                               popup-close
+                               @click="submitNewMenuItem(menu_item)"
+                               >Submit</f7-button>
+                 </div>
+                 <div v-if="popupAction=='Update'">
+                    <f7-button slot="root" raised fill
+                               popup-close
+                               @click="submitDeleteMenuItem(menu_item.id)"
+                               >Delete
+                    </f7-button>
+                    <f7-button slot="after" raised fill
+                               popup-close
+                               @click="submitUpdateMenuItem(menu_item)"
+                               >Update
+                    </f7-button>
+                 </div>
               </f7-list-item>
 
            </f7-list>
@@ -201,34 +215,11 @@ export default {
          this.selectedDay = day;
          this.fetchMenu();
       },
-      submitAccomodation: function() {
-         const self = this;
-         // Save it before it goes away.
-         self.$localStorage.set('me.accomodation', self.accomodation);
-         self.accomodation.available_from = moment(self.accomodation.available_from).format('YYYY-MM-DD')
-         let res = self.sendRequest('/accomodation/create', self.accomodation);
-         if( res == 'ok')
-            self.$localStorage.delete('me.accomodation');
-      },
       updateAction: function(acc) {
          const self = this;
          self.accomodation = acc;
          self.popupAction = 'Update';
          self.popupOpened = true;
-      },
-      updateAccomodation: function(id) 
-      {
-         const self = this;
-         self.popupAction = 'New';
-         self.accomodation.available_from = self.dbDate(self.accomodation.available_from);
-         self.sendRequest('/accomodation/update/id', self.accomodation);
-         return;
-      },
-      readMore: function(obj) {
-         const self = this;
-      },
-      getNumVotes: function(externalID) {
-         return 0;
       },
       showPics: function(acc) {
          const self = this;
@@ -268,7 +259,8 @@ export default {
             );
          }
       },
-      addItemToMenu: function(card) {
+      addItemToMenu: function(card) 
+      {
          const self = this;
          self.popupAction = "New";
 
@@ -297,8 +289,13 @@ export default {
       },
       submitUpdateMenuItem: function(card) {
          const self = this;
-         const app = self.$f7;
+         console.log( "Updating menu");
          self.sendRequest( 'menu/update', card);
+      },
+      submitDeleteMenuItem: function(id) {
+         const self = this;
+         console.log( "deleting item", id);
+         self.sendRequest( 'menu/delete/'+id);
       }
    },
 };
