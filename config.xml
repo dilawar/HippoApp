@@ -19,11 +19,11 @@
     <allow-intent href="mailto:*"/>
     <allow-intent href="geo:*"/>
     <icon src="res/icon/android/icon.png"/>
+    <splash src="res/screen/sweety_meel_deer.png" width="720" height="1280"/>
     <platform name="android">
         <allow-intent href="market:*"/>
     </platform>
     <platform name="ios">
-        <splash src="res/screen/sweety_meel_deer.png"/>
         <allow-intent href="itms:*"/>
         <allow-intent href="itms-apps:*"/>
     </platform>
