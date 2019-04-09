@@ -23,8 +23,7 @@
         </f7-card-header>
         <f7-card-content> 
            <span v-for="(item, key) in card.menuItems" style="margin-right:10px">
-              <f7-link color="green" 
-                       @click="updateMenuItem(item)"
+              <f7-link @click="updateMenuItem(item)"
                        v-if="isUserAuthenticated()"
                        style="font-variant:small-caps"
                        > 
@@ -214,6 +213,7 @@ export default {
                self.menuToCards(self.menu.list);
             }
          );
+         self.$f7.ptr.done();
       },
       changeDay: function(day) {
          this.selectedDay = day;
@@ -253,6 +253,8 @@ export default {
             let modifiedOn = moment.max(items.map(x => 
                moment(x.modified_on, 'YYYY-MM-DD HH:mm:ss')
             ));
+
+            items.sort((x, y)=> x.name > y.name);
             self.cards.push({
                title: k
                , canteen_name: items[0].canteen_name
