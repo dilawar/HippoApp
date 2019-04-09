@@ -19,9 +19,11 @@
     <allow-intent href="mailto:*"/>
     <allow-intent href="geo:*"/>
     <icon src="res/icon/android/icon.png"/>
-    <splash src="res/screen/sweety_meel_deer.png" width="720" height="1280"/>
     <platform name="android">
         <allow-intent href="market:*"/>
+        <splash src="res/screen/android/splash-port-mdpi.jpg" density="port-hdpi"/>
+        <preference name="SplashShowOnlyFirstTime" value="false"/>
+        <preference name="SplashScreenSpinnerColor" value="blue"/>
     </platform>
     <platform name="ios">
         <allow-intent href="itms:*"/>
