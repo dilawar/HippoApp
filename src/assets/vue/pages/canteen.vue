@@ -1,12 +1,26 @@
 <template>
   <f7-page page-content ptr @ptr:refresh="fetchMenu">
-
   <f7-navbar title="Canteen Menu" back-link="Back"></f7-navbar>
-  <f7-block-title>Total listings: {{cards.length}}</f7-block-title>
+
+  <f7-block>
+     <f7-row noGap v-model="selectedDay">
+        <f7-col v-for="d in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']" :key="'col'+d">
+           <f7-button  small
+              :key="d" :fill="(d==selectedDay)?true:false" 
+              @click="changeDay(d)"> 
+              <font><small>{{d}}</small></font>
+           </f7-button>
+        </f7-col>
+     </f7-row>
+  </f7-block>
 
   <f7-block>
      <f7-card v-for="(card, key) in cards">
-        <f7-card-title> {{ card.title }} </f7-card-title>
+        <f7-card-header> {{ card.title }} </f7-card-header>
+        <f7-card-content> {{ card.content }} </f7-card-content>
+        <f7-card-footer> 
+           <span style="font-size:x-small">Recent contributors: {{ card.footer }} </span>
+        </f7-card-footer>
      </f7-card>
   </f7-block>
 
@@ -22,7 +36,7 @@
 
   <f7-popup class="accomodation-popup" :opened="popupOpened" @popup:closed="popupOpened = false">
      <f7-page>
-        <f7-navbar :title="`${popupAction} Accomodation`">
+        <f7-navbar :title="`${popupAction} Canteen`">
            <f7-nav-right>
               <f7-link popup-close>Cancel</f7-link>
            </f7-nav-right>
@@ -146,9 +160,22 @@ export default {
    methods: { 
       fetchMenu: function() {
          const self = this;
-         self.fetchAndStore( '/menu/list/'+self.selectedDay, 'menu');
-         self.menu = self.getStore('menu');
-         self.menuToCards(self.menu.list);
+         self.postWithPromise( '/menu/list/'+self.selectedDay).then(
+            function(json) {
+               let res = JSON.parse(json);
+               if( res.status == 'ok') {
+                  self.saveStore('menu', self.menu);
+                  self.menu = res.data;
+               }
+               else
+                  self.menu = self.loadStore('menu');
+               self.menuToCards(self.menu.list);
+            }
+         );
+      },
+      changeDay: function(day) {
+         this.selectedDay = day;
+         this.fetchMenu();
       },
       submitAccomodation: function() {
          const self = this;
@@ -193,16 +220,25 @@ export default {
          for(let k in items)
          {
             let item = items[k];
-            let key = item.canteen_name + ':' + item.which_meal;
-            if(key in self.cards)
+            let key = item.canteen_name + ': ' + item.which_meal;
+            if(key in groupItems)
                groupItems[key].push(item);
             else 
                groupItems[key] = [item];
          }
+         self.cards = [];
          for(var k in groupItems)
          {
             let items = groupItems[k];
-            self.cards.push({ title: k, count : items.length });
+            console.log( 'items', items);
+            let menuItems = items.map(x => x.name).join(', ');
+            let contributors = [... new Set(items.map(x=>x.modified_by))].join(', ');
+            self.cards.push({
+               title: k
+               , count: items.length
+               , content: menuItems
+               , footer: contributors}
+            );
          }
       },
    },
