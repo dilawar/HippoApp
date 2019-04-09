@@ -15,16 +15,26 @@
   </f7-block>
 
   <f7-block>
-     <f7-card v-for="(card, key) in cards">
+     <f7-card v-for="(card, key) in cards" :key="key">
         <f7-card-header> {{ card.title }} </f7-card-header>
         <f7-card-content> {{ card.content }} </f7-card-content>
         <f7-card-footer> 
            <span style="font-size:x-small">Recent contributors: {{ card.footer }} </span>
+           <span style=""> 
+              <f7-button small 
+                         raised 
+                         v-if="isUserAuthenticated()"
+                         @click="addItemToMenu(card)"
+                 >
+                 Add Item
+              </f7-button>
+           </span>
         </f7-card-footer>
      </f7-card>
   </f7-block>
 
   <!-- FAB to create accomodation -->
+  <!--
   <f7-fab v-if="isUserAuthenticated()"
           position="right-bottom" 
           slot="fixed" 
@@ -32,9 +42,10 @@
           color="red">
      <f7-icon ios="f7:add" aurora="f7:add" md="material:add"></f7-icon>
   </f7-fab>
+  -->
 
 
-  <f7-popup class="accomodation-popup" :opened="popupOpened" @popup:closed="popupOpened = false">
+  <f7-popup class="canteen-popup" :opened="popupOpened" @popup:closed="popupOpened = false">
      <f7-page>
         <f7-navbar :title="`${popupAction} Canteen`">
            <f7-nav-right>
@@ -43,8 +54,10 @@
         </f7-navbar>
 
         <f7-block>
-
+           <f7-block-title>Please add one item at a time!</f7-block-title>
            <f7-list no-hairlines-md inset>
+
+
               <f7-list-input label="Name"
                              :value="menu_item.name"
                              @input="menu_item.type = $event.target.value"
@@ -52,7 +65,15 @@
                              >
               </f7-list-input>
 
+              <f7-list-input label="Price (per unit)"
+                             :value="menu_item.price"
+                             @input="menu_item.price = $event.target.value"
+                             type="int" 
+                             >
+              </f7-list-input>
+
               <f7-list-input label="Day"
+                             v-if="menu_item.day"
                              :value="menu_item.day"
                              @input="menu_item.day = $event.target.value"
                              required
@@ -61,15 +82,12 @@
 
               <f7-list-input label="Which meal?"
                              :value="menu_item.which_meal"
-                             @input="menu_item.which_meal = $event.target.value"
+                             type="select"
+                             required
                              >
+                       <option v-for="(meal,key) in menu.meals" :value="meal" :key="key"> {{meal}} </option>
               </f7-list-input>
-              <f7-list-input label="Price (per unit)"
-                             :value="menu_item.price"
-                             @input="menu_item.price = $event.target.value"
-                             type="int" 
-                             >
-              </f7-list-input>
+
               <f7-list-input label="Available From"
                              :value="menu_item.available_from"
                              @input="menu_item.available_from = $event.target.value"
@@ -84,15 +102,12 @@
                              >
               </f7-list-input>
 
-
-              <f7-list-input label="Change status"
-                             :value="menu_item.status"
-                             @input="menu_item.status = $event.target.value"
+              <f7-list-input label="Canteen name"
                              type="select"
-                             :defaultValue="menu_item.status"
-                             info="To cancel change this field"
+                             required 
+                             :defaultValue="menu_item.canteen_name"
                              >
-                    <option v-for="st in menu.status" :value="st">{{st}}</option>
+                     <option v-for="(cant, key) in menu.canteens" :key="key" :value="cant">{{cant}}</option>
               </f7-list-input>
 
               <f7-list-item>
@@ -134,7 +149,7 @@ export default {
             id: '',
             name: '',
             print: '',
-            day: self.selectedDay,
+            day: moment().format('ddd'),
             which_meal: '',
             available_from: '',
             available_upto: '',
@@ -150,7 +165,7 @@ export default {
          function(json) {
             let res = JSON.parse(json);
             if( res.status == 'ok') {
-               self.saveStore('menu', self.menu);
+               self.saveStore('menu', res.data);
                self.menu = res.data;
                self.menuToCards(self.menu.list);
             }
@@ -235,11 +250,25 @@ export default {
             let contributors = [... new Set(items.map(x=>x.modified_by))].join(', ');
             self.cards.push({
                title: k
+               , canteen_name: items[0].canteen_name
+               , which_meal: items[0].which_meal
+               , available_from: items[0].available_from
+               , available_upto: items[0].available_upto
                , count: items.length
                , content: menuItems
                , footer: contributors}
             );
          }
+      },
+      addItemToMenu: function(card) {
+         const self = this;
+         console.log( 'Adding to ', card);
+         self.menu_item.canteen_name = card.canteen_name;
+         self.menu_item.which_meal = card.which_meal;
+         self.menu_item.available_upto = card.available_upto;
+         self.menu_item.available_from = card.available_from;
+         self.menu_item.status = 'AVAILABLE';
+         self.popupOpened = true;
       },
    },
 };
