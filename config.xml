@@ -21,7 +21,7 @@
     <icon src="res/icon/android/icon.png"/>
     <platform name="android">
         <allow-intent href="market:*"/>
-        <splash src="res/screen/android/splash-port-mdpi.jpg" density="port-hdpi"/>
+        <splash src="res/screen/android/splash-port-mdpi.png" density="port-hdpi"/>
         <preference name="SplashShowOnlyFirstTime" value="false"/>
         <preference name="SplashScreenSpinnerColor" value="blue"/>
     </platform>
