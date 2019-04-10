@@ -91,11 +91,10 @@
                      </small>
 
                      <h3>Disclaimer</h3>
-                     This is <strong>NOT</strong> an official NCBS app. Though I
-                     curate the information provided on this app, developer(s)
-                     is/are not repsonsible for any discrepencies which may arise over the
-                     course of time. You may please report such discrepency by
-                     writing to developers/maintainers.
+                     This is <strong>NOT</strong> an official NCBS app. 
+                     Developer(s) is/are not repsonsible for any discrepencies 
+                     which may arise over the course of time. You may please report 
+                     discrepency by writing to developers/maintainers.
 
                   </f7-block>
                </f7-page>
