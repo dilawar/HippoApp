@@ -11,6 +11,7 @@ import FormPage from './assets/vue/pages/form.vue';
 import DynamicRoutePage from './assets/vue/pages/dynamic-route.vue';
 import BookingPage from './assets/vue/pages/booking.vue';
 import MyBookingPage from './assets/vue/pages/mybooking.vue';
+import MyInventoryPage from './assets/vue/pages/myinventory.vue';
 import BookThisVenuePage from './assets/vue/pages/bookthisvenue.vue';
 import EventPage from './assets/vue/pages/events.vue';
 import TravelPage from './assets/vue/pages/travel.vue';
@@ -54,6 +55,10 @@ export default [
    {
       path: '/inventory/',
       component: InventoryPage
+   },
+   {
+      path: '/myinventory/',
+      component: MyInventoryPage
    },
    {
       path: '/timelinepanel/:venue',

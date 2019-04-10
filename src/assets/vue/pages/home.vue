@@ -66,7 +66,7 @@
             <f7-list-item v-if="alreadyLoggedIn"
                           link="/inventory/" 
                           title="Inventory" 
-                          footer="So that other can search and borrow"
+                          footer="Search and borrow"
                           panel-close>
                <f7-icon slot="media" icon="fa fa-archive fa-2x"></f7-icon>
             </f7-list-item>

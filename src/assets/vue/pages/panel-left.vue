@@ -33,6 +33,16 @@
                           >
                <f7-icon slot="media" icon="fa fa-edit fa-fw"></f7-icon>
             </f7-list-item>
+
+            <f7-list-item link="/myinventory/" 
+                          target="_blank"
+                          view=".view-main"
+                          title="My Inventory" 
+                          panel-close
+                          >
+               <f7-icon slot="media" icon="fa fa-archive fa-fw"></f7-icon>
+            </f7-list-item>
+
          </f7-list>
 
    </f7-page>

@@ -8,13 +8,14 @@
          </f7-list>
       </f7-block>
 
-      <!-- FAB Right Bottom (Blue) -->
+      <!--
       <f7-fab position="right-bottom" slot="fixed" color="blue">
          <f7-icon ios="f7:add" aurora="f7:add" md="material:add"></f7-icon>
          <f7-icon ios="f7:close" aurora="f7:close" md="material:close"></f7-icon>
          <f7-fab-buttons position="top">
          </f7-fab-buttons>
       </f7-fab>
+      -->
 
       <f7-block>
          <f7-list no-hairlines sortable>
