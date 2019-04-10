@@ -1,5 +1,5 @@
 <template>
-   <f7-page>
+   <f7-page ptr @ptr:refresh="fetchInventories">
       <f7-navbar title="Your Lab Inventory" back-link="Back"></f7-navbar>
 
       <f7-fab position="right-bottom" 
@@ -11,20 +11,49 @@
               <f7-icon ios="f7:close" aurora="f7:close" md="material:close"></f7-icon>
       </f7-fab>
 
-      <f7-list media-list no-hairlines>
-         <f7-list-item v-for="(item, index) in inventories.list"
-                       :key="index"
-                       :title="item.name + ', ' + item.scientific_name"
-                       media-item
-                       >
-           <div slot="header" style="color:green">
-              {{item.item_condition}}, {{item.quantity_with_unit}} 
-           </div>
-            <f7-link external :href="'mailto:'+item.person_in_charge">{{item.person_in_charge}}
-            </f7-link> | {{item.faculty_in_charge}}
-            <f7-button small slot="after" @click="updateInventory(item)">Update</f7-button>
-         </f7-list-item>
-      </f7-list>
+      <f7-block>
+         <f7-block-title>Swipe left/right to do more.</f7-block-title>
+
+         <f7-list media-list no-hairlines>
+            <f7-list-item v-for="(item, index) in inventories.list"
+                          :key="index"
+                          :text="item.description"
+                          media-item
+                          swipeout
+                          >
+                     <div slot="header">
+                        <span style="color:red">{{item.item_condition}}</span>
+                        <span v-if="item.borrowing.borrower" style="color:green">
+                           <br />
+                           Borrowed by {{item.borrowing.borrower}} on
+                           {{item.borrowing.borrowed_on}}
+                        </span>
+
+                        <span v-if="item.location" style="float:right">
+                           <f7-icon icon="fa fa-map-marker fa-fw"></f7-icon>
+                           <font style="color:black">{{item.location}}</font>
+                        </span>
+                     </div>
+                    <div slot="title">
+                       {{item.name}}, {{item.scientific_name}}, {{item.quantity_with_unit}}  
+                    </div>
+                    <div slot="footer">
+                       Person in charge: 
+                       <f7-link external :href="'mailto:'+item.person_in_charge">
+                          {{item.person_in_charge}}
+                       </f7-link> 
+                    </div>
+
+                    <!-- Swipeout actions -->
+                    <f7-swipeout-actions right>
+                       <f7-swipeout-button @click="updateInventory(item)">Update</f7-swipeout-button>
+                    </f7-swipeout-actions>
+                    <f7-swipeout-actions left>
+                       <f7-swipeout-button @click="lendInventory(item)">Lend</f7-swipeout-button>
+                    </f7-swipeout-actions>
+            </f7-list-item>
+         </f7-list>
+         </f7-block>
 
       <f7-popup class="inventory-popup" :opened="popupOpened" @popup:closed="popupOpened = false">
          <f7-page>
@@ -36,7 +65,7 @@
 
             <f7-block>
 
-            <f7-list no-hairlines-md inset>
+            <f7-list no-hairlines-md v-if="popupAction!='Lend'">
 
             <f7-list-input label="Name"
                            :value="inventory.name"
@@ -66,6 +95,14 @@
                            required
                            >
             </f7-list-input>
+
+            <f7-list-input label="Location"
+                           :value="inventory.location"
+                           @input="inventory.location = $event.target.value"
+                           required
+                           >
+            </f7-list-input>
+
 
             <f7-list-input label="Description"
                            :value="inventory.description"
@@ -117,8 +154,33 @@
                           @click="submitUpdateInventory(inventory)"
                           >Update</f7-button>
             </f7-list-item>
-
          </f7-list>
+
+         <!-- Lending list -->
+         <f7-list media-list no-hairlines v-else>
+            <div>You are lending {{inventory.name}}, id {{inventory.id}} </div>
+
+            <f7-list-input label="Borrower (email)"
+                           :value="inventory.borrower"
+                           @input="inventory.borrower = $event.target.value"
+                           type="email" 
+                           required
+                           validate
+                           >
+            </f7-list-input>
+
+            <f7-list-item>
+               <f7-button slot="after" raised fill
+                          popup-close
+                          @click="submitLendInventory(inventory)"
+                        > Lend </f7-button>
+               <f7-button slot="title" raised fill
+                          popup-close
+                          @click="submitClearLending(inventory)"
+                        >Clear Borrowing</f7-button>
+            </f7-list-item>
+         </f7-list>
+
       </f7-block>
    </f7-page>
 
@@ -145,12 +207,15 @@ export default {
             vendor: 'UNSPECIFIED',
             quantity_with_unit: '1 nos',
             description: '',
+            location: '',
             status: 'VALID',
             expiry_date: '',
             person_in_charge: self.getLogin(),
             faculty_in_charge: '',
             requires_booking: 'NO',
             item_condition: 'FUNCTIONAL',
+            id: '',
+            borrower: '',
          },
       };
    },
@@ -212,6 +277,23 @@ export default {
          self.sendRequest( 'labinventory/delete/'+id);
          self.fetchInventories();
       },
+      lendInventory: function(inv) {
+         const self = this;
+         console.log( "lenging inventory item");
+         self.popupAction = "Lend";
+         self.inventory = inv;
+         self.popupOpened = true;
+      },
+      submitLendInventory: function( inv ) {
+         const self = this;
+         self.inventory = inv;
+         console.log( 'Lending inventory' );
+         self.sendRequest( 'labinventory/lend', inv);
+      },
+      submitClearLending: function( inv ) {
+         const self = this;
+         self.sendRequest('labinventory/gotback/'+inv.id);
+      }
    }
 };
 

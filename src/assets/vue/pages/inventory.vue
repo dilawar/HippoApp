@@ -13,29 +13,34 @@
     </f7-navbar>
 
     <f7-block>
-       <f7-block-title> Total {{inventories.count}} items.
-       </f7-block-title>
 
-       <span style="font-size:x-small"> To add inventory, please visit Web portal. </span>
+       <f7-block-title> Total {{inventories.count}} items. </f7-block-title>
 
     <f7-list class="searchbar-not-found">
        <f7-list-item title="Nothing found"></f7-list-item>
     </f7-list>
 
     <f7-list class="inventory-list"
-             media-list no-hairlines
+             media-list 
+             no-hairlines
              :virtual-list-params="{items, searchAll, renderExternal}"
              >
       <ul>
-        <f7-list-item v-for="(item, index) in vlData.items" 
+        <f7-list-item media-item
+                      v-for="(item, index) in vlData.items"  
                       :key="index"
-                      media-item
                       link="#"
                       :title="item.title"
                       :header="item.header"
-                      :footer="item.footer"
                       :style="`top: ${vlData.topPosition}px`"
                       >
+             <div slot="footer">
+                <f7-link style="margin-right:5px" 
+                   href="'mailto:'+item.data.person_in_charge">
+                   {{item.data.person_in_charge}} 
+                </f7-link>({{item.data.faculty_in_charge}})
+             </div>
+             <div slot="text" v-html="item.data.description"> </div>
         </f7-list-item>
       </ul>
     </f7-list>
@@ -73,6 +78,7 @@ export default {
       fetchInventory: function() {
          const self = this;
          const app = self.$f7;
+         
          self.postWithPromise( '/inventory/list')
             .then(function(json) {
                let res = JSON.parse(json);
@@ -98,6 +104,9 @@ export default {
                title: inv.name,
                header: inv.scientific_name,
                footer: inv.person_in_charge + ' (' + inv.faculty_in_charge + ')',
+               data: inv,
+               text: [inv.name, inv.scientific_name, inv.description,
+                  , inv.person_in_charge, inv.faculty_in_charge].join(' ')
             });
          }
          self.vlData.items = self.items;
@@ -105,13 +114,9 @@ export default {
       searchAll: function(query, items) 
       {
          const found = [];
+         let q = query.toLowerCase().trim();
          for (let i = 0; i < items.length; i += 1) 
-            if (
-               items[i].title.toLowerCase().indexOf(query.toLowerCase()) >= 0
-               || items[i].header.toLowerCase().indexOf(query.toLowerCase()) >= 0 
-               || items[i].footer.toLowerCase().indexOf(query.toLowerCase()) >= 0 
-               || query.trim() === ''
-            ) 
+            if ( (items[i].text.toLowerCase().indexOf(q) >= 0) || (q === '')) 
                found.push(i);
          return found; // return array with mathced indexes
       },
