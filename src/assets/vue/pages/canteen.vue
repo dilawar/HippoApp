@@ -97,6 +97,7 @@
 
               <f7-list-input label="Which meal?"
                              :value="menu_item.which_meal"
+                             @input="menu_item.which_meal = $event.target.value"
                              type="select"
                              required
                              >
@@ -120,6 +121,7 @@
               <f7-list-input label="Canteen name"
                              type="select"
                              required 
+                             @input="menu_item.canteen_name = $event.target.value"
                              :defaultValue="menu_item.canteen_name"
                              >
                      <option v-for="(cant, key) in menu.canteens" :key="key" :value="cant">{{cant}}</option>
