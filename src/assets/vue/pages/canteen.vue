@@ -51,7 +51,6 @@
   </f7-block>
 
   <!-- FAB to create accomodation -->
-  <!--
   <f7-fab v-if="isUserAuthenticated()"
           position="right-bottom" 
           slot="fixed" 
@@ -59,7 +58,6 @@
           color="red">
      <f7-icon ios="f7:add" aurora="f7:add" md="material:add"></f7-icon>
   </f7-fab>
-  -->
 
 
   <f7-popup class="canteen-popup" :opened="popupOpened" @popup:closed="popupOpened = false">
@@ -246,9 +244,7 @@ export default {
          {
             let items = groupItems[k];
             let content = items.map(x => x.name).join(', ');
-            let contributors = [... new Set( 
-                     items.reduce((v, x)=>x.modified_by+v, '').split(','))
-                  ].join(',');
+            let contributors = [...new Set(items.map(x =>x.modified_by))].join(',');
             let modifiedOn = moment.max(items.map(x => 
                moment(x.modified_on, 'YYYY-MM-DD HH:mm:ss')
             ));
@@ -284,6 +280,7 @@ export default {
          self.menu_item.available_upto = card.available_upto;
          self.menu_item.available_from = card.available_from;
          self.menu_item.status = 'AVAILABLE';
+         self.menu_item.day = moment().format('ddd');
          self.popupOpened = true;
       },
       submitNewMenuItem: function(card) {
@@ -302,6 +299,7 @@ export default {
          const self = this;
          console.log( "Updating menu");
          self.sendRequest( 'menu/update', card);
+         self.fetchMenu();
       },
       submitDeleteMenuItem: function(id) {
          const self = this;
