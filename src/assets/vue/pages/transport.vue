@@ -11,8 +11,7 @@
               <f7-link popup-close>Close</f7-link>
            </f7-nav-right>
         </f7-navbar>
-           <meta http-equiv="Content-Security-Policy" 
-                 content="default-src *;" >
+           <meta http-equiv="Content-Security-Policy" content="default-src *;" >
            </meta>
             <div class="google-maps">
                <iframe :src="`${thisRouteMap}`"> </iframe>
@@ -46,7 +45,7 @@
                 v-for="(val,item) in currentTransport.slice(3*ri,3*(ri+1))" :key="'col'+ri+item"
                 >
                 <f7-button  v-if="val.url"
-                            @click="routeMap(val)"
+                            @click="routeMap(val.url)"
                             raised
                             :icon="transportIcon(val.vehicle,val.trip_start_time,val.day)"
                             :text="`${str2Moment(val.trip_start_time,'HH:mm:ss').format('HH:mm')}`"

@@ -22,7 +22,7 @@
     <platform name="android">
         <allow-intent href="market:*"/>
         <splash src="res/screen/android/splash-port-mdpi.png" density="port-hdpi"/>
-        <preference name="SplashShowOnlyFirstTime" value="false"/>
+        <preference name="SplashShowOnlyFirstTime" value="true"/>
         <preference name="SplashScreenSpinnerColor" value="blue"/>
     </platform>
     <platform name="ios">

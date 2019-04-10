@@ -8,14 +8,15 @@
      <f7-photo-browser ref="standalone"></f7-photo-browser>
      <f7-card 
         v-for="(acc, key) in accomodations.list" :key="key">
-        <f7-card-header
-              >
+        <f7-card-header>
            <div style="font-size:x-small;color:gray;">
               Posted by {{acc.created_by}} on {{str2Moment(acc.created_on,
               'YYYY-MM-DD HH:mm:ss').format('MMM DD')}}
            </div>
            <div style="font-size:small"> 
-              {{acc.type}} is available from {{str2Moment(acc.available_from,
+              Current Status: <strong>{{acc.status}}</strong>
+              <br />
+              {{acc.type}} available from {{str2Moment(acc.available_from,
               'YYYY-MM-DD').format('MMM DD, YY')}} for
               {{acc.open_vacancies}} person(s).
            </div>
@@ -228,11 +229,21 @@ export default {
       fetchAccomodations: function() {
          const self = this;
          const app = self.$f7;
-         setTimeout( () => {
-            self.fetchAndStore( '/accomodation/list', 'accomodations');
-            self.accomodations = JSON.parse(self.$localStorage.get('accomodations', '[]'));
-            return;
-         }, 1000);
+         app.dialog.preloader();
+         self.postWithPromise( '/accomodation/list' ).then( 
+            function(json) 
+            {
+               let res = JSON.parse(json);
+               if(res.status == "ok")
+               {
+                  self.accomodations = res.data;
+                  self.saveStore('accomodations', self.accomodations);
+               }
+               else
+                  self.accomodations = self.loadStore('accomodations');
+               app.dialog.close();
+            });
+         setTimeout( () => app.dialog.close(), 1000);
          app.ptr.done();
       },
       submitAccomodation: function() {

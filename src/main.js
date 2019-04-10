@@ -156,6 +156,7 @@ Vue.mixin({
       fetchAndStore: function(endpoint, key) {
          const self = this;
          const app = self.$f7;
+         app.dialog.preloader();
          app.request.post(self.$store.state.api+'/'+endpoint
             , self.apiPostData()
             , function(json)
@@ -165,8 +166,10 @@ Vue.mixin({
                   self.$localStorage.set(key, JSON.stringify(res.data));
                else
                   console.log('Warn: Failed to fetch ',);
+               app.dialog.close();
             }
          );
+         setTimeout(()=> app.dialog.close(), 1000);
       },
       saveStore: function(key, data) {
          const self=this;

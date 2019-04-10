@@ -101,14 +101,17 @@ export default {
             });
          }
          self.vlData.items = self.items;
-         console.log( 'x', self.vlData.items.length );
       },
       searchAll: function(query, items) 
       {
-         console.log( 'After search ' );
          const found = [];
          for (let i = 0; i < items.length; i += 1) 
-            if (items[i].title.toLowerCase().indexOf(query.toLowerCase()) >= 0 || query.trim() === '') 
+            if (
+               items[i].title.toLowerCase().indexOf(query.toLowerCase()) >= 0
+               || items[i].header.toLowerCase().indexOf(query.toLowerCase()) >= 0 
+               || items[i].footer.toLowerCase().indexOf(query.toLowerCase()) >= 0 
+               || query.trim() === ''
+            ) 
                found.push(i);
          return found; // return array with mathced indexes
       },
