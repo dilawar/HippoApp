@@ -191,7 +191,6 @@ Vue.mixin({
       },
       fetchVenues: function() {
          const self = this;
-         const app = self.$f7;
          self.fetchAndStore( '/venue/list/all', 'venues');
       },
       fetchProfile: function() {
