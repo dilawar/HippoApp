@@ -79,8 +79,11 @@
 
                      Logo is designed by <f7-link external
                         href="https://github.com/nunojesus">Nuno
-                        Jesus.</f7-link> NCBS IT section provided server for
-                     backend services.</p>
+                        Jesus.</f7-link> 
+                     Art work in splash screen is created by Sweety Meel.
+                     NCBS IT section provided server for
+                     backend services.
+                     </p>
 
                      <small> <p> &copy; Dilawar Singh 
                         (github: <f7-link external href="https://github.com/dilawar">@dilawar</f7-link>):
