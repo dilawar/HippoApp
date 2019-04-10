@@ -91,7 +91,6 @@
               </f7-list-input>
 
               <f7-list-input label="Day"
-                             v-if="menu_item.day"
                              :value="menu_item.day"
                              @input="menu_item.day = $event.target.value"
                              required
@@ -281,6 +280,7 @@ export default {
 
          self.menu_item.canteen_name = card.canteen_name;
          self.menu_item.which_meal = card.which_meal;
+         self.menu_item.day = moment().format('ddd');
          self.menu_item.available_upto = card.available_upto;
          self.menu_item.available_from = card.available_from;
          self.menu_item.status = 'AVAILABLE';
@@ -290,6 +290,7 @@ export default {
          const self = this;
          const app = self.$f7;
          self.sendRequest( 'menu/create', card);
+         self.fetchMenu();
       },
       updateMenuItem: function(card) {
          const self = this;
@@ -306,6 +307,7 @@ export default {
          const self = this;
          console.log( "deleting item", id);
          self.sendRequest( 'menu/delete/'+id);
+         self.fetchMenu();
       }
    },
 };
