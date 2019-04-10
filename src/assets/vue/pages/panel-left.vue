@@ -37,7 +37,7 @@
             <f7-list-item link="/myinventory/" 
                           target="_blank"
                           view=".view-main"
-                          title="My Inventory" 
+                          title="Lab Inventory"
                           panel-close
                           >
                <f7-icon slot="media" icon="fa fa-archive fa-fw"></f7-icon>

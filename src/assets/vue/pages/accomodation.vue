@@ -11,10 +11,10 @@
         <f7-card-header>
            <div style="font-size:x-small;color:gray;">
               Posted by {{acc.created_by}} on {{str2Moment(acc.created_on,
-              'YYYY-MM-DD HH:mm:ss').format('MMM DD')}}
+              'YYYY-MM-DD HH:mm:ss').format('MMM DD')}} 
            </div>
            <div style="font-size:small"> 
-              Current Status: <strong>{{acc.status}}</strong>
+              <span style="color:red">{{acc.status}} | {{acc.available_for}}</span>.
               <br />
               {{acc.type}} available from {{str2Moment(acc.available_from,
               'YYYY-MM-DD').format('MMM DD, YY')}} for
@@ -23,9 +23,9 @@
         </f7-card-header>
         <f7-card-content>
            <span v-for="(val, key) in acc">
-              <span v-if="! hideKeys.find(k=> k===key)">
+              <span v-if="! hideKeys.find(k=> k===key) && val.length > 0">
                  <span style="color:gray;font-size:xx-small">{{formatKey(key)}}</span>
-                 <span style="font-size:small">{{val}}</span>
+                 <span style="font-size:small; margin-right:2ex">{{val}}</span>
                  <br />
               </span>
            </span>
@@ -88,15 +88,22 @@
                   </date-picker>
               </f7-list-input>
 
-              <f7-list-input label="Open Vacancies" :input="false" >
-                 <f7-range slot="input" 
-                           :value="accomodation.open_vacancies"
-                           @input="accomodation.open_vacancies=$event.target.value"
-                           :min="1" :max="5" :step="1"
-                           :label="true"
-                           required 
-                           >
-                 </f7-range>
+              <f7-list-input label="Open Vacancies"
+                             @input="accomodation.open_vacancies=$event.target.value"
+                             type="int"
+                             :defaultValue="1"
+                             required
+                             >
+              </f7-list-input>
+
+              <f7-list-input label="Available For (Gender)"
+                             @input="accomodation.available_for=$event.target.value"
+                             type="select"
+                             required
+                             >
+                  <option v-for="(val, key) in accomodations.available_for" 
+                          :value="val" :key="key"
+                          > {{val}} </option>
               </f7-list-input>
 
               <f7-list-input label="Address"
@@ -147,23 +154,16 @@
                              pattern="[0-9]{3,7}"
                              >
               </f7-list-input>
-                 
-              <f7-list-input label="Link to photos"
-                             :value="accomodation.url"
-                             @input="accomodation.url = $event.target.value"
-                             type="url" 
-                             validate
-                             >
-              </f7-list-input>
 
-              <f7-list-input label="Change status"
+              <f7-list-input v-if="popupAction == 'Update'"
+                             label="Change status"
                              :value="accomodation.status"
                              @input="accomodation.status = $event.target.value"
                              type="select"
                              :defaultValue="accomodation.status"
                              info="To cancel change this field"
                              >
-                    <option v-for="st in accomodations.status" :value="st">{{st}}</option>
+                             <option v-for="st in accomodations.status" :value="st">{{st}}</option>
               </f7-list-input>
 
               <f7-list-item>
@@ -197,13 +197,14 @@ export default {
       return {
          accomodations: [],
          popupOpened: false,
-         hideKeys: ["id", "url", "type", "available_from", "open_vacancies", "status","created_by","created_on"],
+         hideKeys: "id,url,type,available_from,open_vacancies,available_for,status,last_modified_on,created_by,created_on".split(','),
          popupAction: 'New',
          photos: [],
          accomodation: {
             type: '',
             status: 'AVAILABLE',
             available_from: '',
+            available_for: '',
             open_vacancies: 1,
             address: '',
             description: '',

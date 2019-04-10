@@ -190,8 +190,8 @@ export default {
          function(json) {
             let res = JSON.parse(json);
             if( res.status == 'ok') {
-               self.saveStore('menu', res.data);
                self.menu = res.data;
+               self.saveStore('menu', res.data);
                self.menuToCards(self.menu.list);
             }
          }
