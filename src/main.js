@@ -81,7 +81,7 @@ Vue.mixin({
       toNow: function(date, time){
          let b = moment(date + ' ' + time, 'YYYY-MM-DD HH:mm:ss');
          let a = moment();
-         return b.toNow(a);
+         return b.toNow(a, true);
       },
       dbTime: function(date, addminutes=0) {
          return moment(date, "HH:MM").add(addminutes, 'm').format("HH:mm");

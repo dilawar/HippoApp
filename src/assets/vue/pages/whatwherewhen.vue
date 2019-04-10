@@ -40,7 +40,7 @@
 
   <light-timeline v-model="items" :items='items'>
      <template slot='tag' slot-scope='{ item }'>
-        <span v-html="item.tag"></span>
+        <span v-html="item.tag" style="color:black"></span>
      </template>
   </light-timeline>
 
@@ -96,14 +96,14 @@ export default {
             , color : color
             , group: ev.venue
             , tag: self.toNow(ev.date, ev.start_time) + '<br /> ' 
-                  + self.str2Moment(ev.start_time,'HH:mm:ss').format('HH:mm A') + '<br />' 
-                  + self.str2Moment(ev.end_time,'HH:mm:ss').format('HH:mm A')
+                  + self.str2Moment(ev.date, 'YYYY-MM-DD').format('MMM DD')+'<br/>'
+                  + self.str2Moment(ev.start_time,'HH:mm:ss').format('HH:mm')+'-' 
+                  + self.str2Moment(ev.end_time,'HH:mm:ss').format('HH:mm')
             , htmlMode: true
-            , content:  `<span style="font-size:10px;color:green;margin-left:-1rem">${ev.venue}</span> `+
-                        `<span style="font-size:8px;color:gray;">${ev.class} ${status}</span>`+
-                        `<br/><span style="font-size:small;color:black;margin:-1rem">${ev.title} </span>` +
-                        `<br/><span
-            style="font-size:9px;color:green;margin:-1rem">${ev.created_by}</span>`
+            , content:  `<span style="font-size:12px;color:green;margin-left:0rem">${ev.venue}</span> `+
+                        `<span style="font-size:10px;color:gray;">${ev.class} ${status}</span>`+
+                        `<br/><span style="color:black;margin:0rem">${ev.title} </span>` +
+                        `<br/><span style="font-size:9px;color:green;margin:0rem">${ev.created_by}</span>`
 
          };
       },
