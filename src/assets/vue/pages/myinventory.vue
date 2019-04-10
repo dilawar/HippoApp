@@ -227,7 +227,6 @@ export default {
       fetchInventories: function() {
          const self = this;
          const app = self.$f7;
-         app.dialog.preloader();
          self.postWithPromise( '/labinventory/list/').then(
             function(json) {
                let res = JSON.parse(json);
@@ -237,7 +236,6 @@ export default {
                }
                else
                   self.inventories = self.loadStore('me.inventories');
-               app.dialog.close();
             }
          );
       },
