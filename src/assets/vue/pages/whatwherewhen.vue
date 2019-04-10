@@ -1,4 +1,5 @@
 <template>
+
   <f7-page page-content 
            infinite
            :infinite-preloader="showPreloader" 
@@ -90,7 +91,7 @@ export default {
       {
          const self = this;
          var color = self.stringToColour(ev.class)
-         let status = (ev.status == 'PENDING')?' | PENDING':'';
+         let status = (ev.status == 'PENDING')?' (Pending Approval)':'';
          return { id:key
             , class:ev.class
             , color : color
