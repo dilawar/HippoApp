@@ -40,8 +40,7 @@
 
   <light-timeline v-model="items" :items='items'>
      <template slot='tag' slot-scope='{ item }'>
-        <span v-html="item.tag"
-           ></span>
+        <span v-html="item.tag"></span>
      </template>
   </light-timeline>
 
@@ -91,6 +90,7 @@ export default {
       {
          const self = this;
          var color = self.stringToColour(ev.class)
+         let status = (ev.status == 'PENDING')?' | PENDING':'';
          return { id:key
             , class:ev.class
             , color : color
@@ -100,9 +100,10 @@ export default {
                   + self.str2Moment(ev.end_time,'HH:mm:ss').format('HH:mm A')
             , htmlMode: true
             , content:  `<span style="font-size:10px;color:green;margin-left:-1rem">${ev.venue}</span> `+
-                        `<span style="font-size:8px;color:gray;">${ev.class}</span>`+
+                        `<span style="font-size:8px;color:gray;">${ev.class} ${status}</span>`+
                         `<br/><span style="font-size:small;color:black;margin:-1rem">${ev.title} </span>` +
-                        `<br/><span style="font-size:9px;color:green;margin:-1rem">${ev.created_by}</span>`
+                        `<br/><span
+            style="font-size:9px;color:green;margin:-1rem">${ev.created_by}</span>`
 
          };
       },
