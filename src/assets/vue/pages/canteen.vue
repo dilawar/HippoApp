@@ -282,7 +282,7 @@ export default {
          self.menu_item.available_upto = card.available_upto;
          self.menu_item.available_from = card.available_from;
          self.menu_item.status = 'AVAILABLE';
-         self.menu_item.day = moment().format('ddd');
+         self.menu_item.day = self.selectedDay;
          self.popupOpened = true;
       },
       submitNewMenuItem: function(card) {
