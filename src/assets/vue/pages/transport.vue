@@ -47,16 +47,19 @@
      <f7-accordion-item
                    v-for="(route, key) in transport.routes"
                    :key="key"
-                   :title="route.pickup_point + ' to ' + route.drop_point"
                    >
-           <f7-accodion-toggle> Item {{key}} </f7-accodion-toggle>
+           <f7-accordion-toggle> 
+              <div class="inner" style="font-size:large;margin-bottom:10px">
+              <f7-icon icon="fa fa-map-marker fa-fw"></f7-icon>
+                 {{route.pickup_point}} to {{ route.drop_point }}
+              </div>
+           </f7-accordion-toggle>
            <f7-accordion-content>
-              <f7-list>
+              <f7-list media-list>
               <f7-list-item v-for="(t, key) in thisTimetable"
                             :key="key"
-                            :title="`${str2Moment(t.trip_start_time, 'HH:mm:ss').format('HH:mm')}`"
+                            :title="`${str2Moment(t.trip_start_time, 'HH:mm:ss').format('hh:mm A')}`"
                             >
-                  <!--
                   <f7-icon slot="media"
                      :icon="transportIcon(t.vehicle,t.trip_start_time,t.day)">
                   </f7-icon>
@@ -66,7 +69,6 @@
                        {{ str2Moment(t.trip_start_time, 'HH:mm:ss').fromNow() }}
                     </span>
                  </div>
-                  -->
               </f7-list-item>
            </f7-list>
         </f7-accordion-content>
@@ -74,7 +76,7 @@
 
   </f7-block>
 
-  <!-- FAB: Floating button for picking routes. -->
+  <!-- FAB
   <f7-fab position="right-bottom" fab-extended color="green">
      <f7-icon icon="fa fa-map-marker fa-2x"></f7-icon>
      <f7-icon ios="f7:close" aurora="f7:close" md="material:close"></f7-icon>
@@ -106,6 +108,7 @@
         </f7-fab-button>
      </f7-fab-buttons>
   </f7-fab>
+  -->
 
 </f7-page>
 </template>
