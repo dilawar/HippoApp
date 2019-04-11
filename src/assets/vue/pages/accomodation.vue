@@ -43,7 +43,8 @@
            <!-- TODO 
            <f7-link raised @click="showPics(acc)">Pics</f7-link>
            -->
-           <f7-link v-if="isUserAuthenticated()" @click="addComment(acc)">Comment</f7-link>
+           <f7-link v-if="isUserAuthenticated()"
+                    @click="addComment(acc)">Comment ({{acc.num_comments}})</f7-link>
         </f7-card-footer>
      </f7-card>
   </f7-block>
@@ -257,7 +258,9 @@ export default {
       return {
          accomodations: [],
          popupOpened: false,
-         hideKeys: "id,url,type,available_from,open_vacancies,available_for,status,last_modified_on,created_by,created_on".split(','),
+         hideKeys: `id,url,type,available_from,open_vacancies
+                     ,available_for,status,last_modified_on
+                     ,num_comments,created_by,created_on`.split(','),
          popupAction: 'New',
          photos: [],
          accomodation: {
