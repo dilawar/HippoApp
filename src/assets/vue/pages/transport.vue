@@ -45,6 +45,7 @@
      </f7-block-title>
 
      <f7-list accordion-list no-hairlines>
+
      <f7-list-item accordion-item
                    v-for="(route, key) in transport.routes"
                    :key="key"
@@ -56,15 +57,14 @@
             <span slot="footer"> {{ nextTrip(route) }}</span>
 
            <f7-accordion-content>
-              <f7-list media-list>
-              <f7-list-item v-for="(t, key) in thisRouteTimetable(route)"
-                            :key="key"
-                            :title="`${str2Moment(t.trip_start_time, 'HH:mm:ss').format('hh:mm A')}`"
-                            style="margin-top:-2ex;margin-bottom:-1ex"
-                            >
-                  <f7-icon slot="media"
-                     :icon="transportIcon(t.vehicle,t.trip_start_time,t.day)">
-                  </f7-icon>
+
+              <f7-list inner>
+              <f7-list-item v-for="(t, key) in thisRouteTimetable(route)" :key="key" >
+                   <div slot="title">
+                      <f7-icon :icon="transportIcon(t.vehicle,t.trip_start_time,t.day)">
+                      </f7-icon>
+                      {{str2Moment(t.trip_start_time, 'HH:mm:ss').format('hh:mm A')}}
+                   </div>
 
                  <div slot="after"  v-if="t.day.toLowerCase() === today.toLowerCase()" >
                     <span v-if="str2Moment(t.trip_start_time, 'HH:mm:ss') > str2Moment()"> 
@@ -77,6 +77,7 @@
                  </div>
               </f7-list-item>
            </f7-list>
+
         </f7-accordion-content>
 
      </f7-list-item>
