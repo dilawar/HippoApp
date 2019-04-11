@@ -1,31 +1,17 @@
 <template>
-   <!-- TODO: On schedule click. Open a right panel and show the route -->
   <f7-page ptr @ptr:refresh="fetchTransportAgain" page-content>
-  <f7-navbar title="Transport" back-link="Back"></f7-navbar>
 
-  <!-- Popup for route -->
-  <f7-popup :opened="popupOpened" @popup:closed="popupOpened = false">
-     <f7-page page-content>
-        <f7-navbar title="Route Map">
-           <f7-nav-right>
-              <f7-link popup-close>Close</f7-link>
-           </f7-nav-right>
-        </f7-navbar>
-           <meta http-equiv="Content-Security-Policy" content="default-src *;" >
-           </meta>
-            <div class="google-maps">
-               <iframe :src="`${thisRouteMap}`"> </iframe>
-           </div>
-     </f7-page>
-  </f7-popup>
+  <f7-navbar title="Transport" back-link="Back"></f7-navbar>
 
   <!-- Select days buttons. -->
   <f7-block>
-     <f7-row noGap v-model="selectedDay">
-        <f7-col v-for="d in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']" :key="'col'+d">
+     <f7-row noGap>
+        <f7-col noGap v-for="d in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']" :key="'col'+d">
            <f7-button  small
-              :key="d" :fill="(d==selectedDay)?true:false" 
-              @click="changeDay(d)"> 
+                       :key="d" 
+                       :fill="(d==selectedDay)?true:false" 
+                       @click="changeDay(d)"
+                       > 
               <font><small>{{d}}</small></font>
            </f7-button>
         </f7-col>
@@ -37,7 +23,7 @@
         <f7-link external 
                  style="float:right"
                  color="green" 
-                 target="_system"
+                 target="system"
                  href="https://www.ncbs.res.in/shuttle_trips"
                  >
                  Official Schedule
@@ -46,8 +32,8 @@
 
      <f7-list accordion-list no-hairlines>
 
-     <f7-list-item accordion-item
-                   v-for="(route, key) in transport.routes"
+     <f7-list-item accordion-item 
+                   v-for="(route, key) in transport.routes" 
                    :key="key"
             >
             <div slot="title" style="font-size:large;margin-bottom:10px">
@@ -146,12 +132,10 @@ export default {
    mounted: function() {
       const self = this;
       self.transport = self.loadStore('transport');
-
       // If nothing found then only fetch. LAZY.
       if(self.transport.timetable.length == 0)
          self.fetchTransport();
-
-      self.routeFromTo(self.pickup, self.drop);
+      self.filterTransport();
    },
    methods: { 
       upcomingTrip: function(t) {
@@ -193,17 +177,14 @@ export default {
       filterTransport: function()
       {
          const self = this;
-         self.thisTimetable = [];
-         for(let k in self.transport.timetable)
-         {
-            let x = self.transport.timetable[k];
-            if( (x.day.toLowerCase() === self.selectedDay.toLowerCase()) && 
-               (x.pickup_point.toLowerCase() === self.pickup.toLowerCase()) && 
-               (x.drop_point.toLowerCase() === self.drop.toLowerCase()))
-            {
-               self.thisTimetable.push(x);
-            }
-         }
+         let d = self.transport.timetable[self.selectedDay.toLowerCase()];
+         console.log('day', d);
+         if(d)
+            d = d[self.pickup.toLowerCase()];
+         console.log('pickup', d);
+         if(d)
+            d = d[self.drop.toLowerCase()];
+         self.thisTimetable = Object.values(d);
       },
       routeFromTo: function(pickup, drop)
       {
@@ -219,13 +200,14 @@ export default {
          console.log('Changing day ', data);
          const self = this;
          self.selectedDay = data;
+
          // Change timetable else DOM wont change 
          self.filterTransport( );
       },
-      fetchTransportAgain: function(event, done) {
+      fetchTransportAgain: function( ) {
          const self = this;
          self.fetchTransport();
-         done();
+         self.$f7.ptr.done();
       },
       fetchTransport: function( ) 
       {
@@ -236,7 +218,7 @@ export default {
             {
                var res = JSON.parse(json);
                // to make sure it triggers the rendering.
-               if(res.status == 'ok')
+               if(res.status == "ok")
                {
                   self.transport = res.data;
                   self.saveStore('transport', res.data);
@@ -244,8 +226,8 @@ export default {
                }
                else
                {
-                  console.log('Failed to fetch transport.');
-                  self.transport = self.loadStore('transport');
+                  console.log("Failed to fetch transport.");
+                  self.transport = self.loadStore("transport");
                }
             }
          );
@@ -258,18 +240,12 @@ export default {
       },
       thisRouteTimetable: function(route) {
          const self = this;
-         let thisTimetable = [];
-         for(let k in self.transport.timetable)
-         {
-            let x = self.transport.timetable[k];
-            if( (x.day.toLowerCase() === self.selectedDay.toLowerCase()) && 
-               (x.pickup_point.toLowerCase() === route.pickup_point.toLowerCase()) && 
-               (x.drop_point.toLowerCase() === route.drop_point.toLowerCase())
-            ){
-               thisTimetable.push(x);
-            }
-         }
-         return thisTimetable;
+         let d = self.transport.timetable[self.selectedDay.toLowerCase()];
+         if(d)
+            d = d[route.pickup_point.toLowerCase()];
+         if(d) 
+            d = d[route.drop_point.toLowerCase()];
+         return Object.values(d);
       },
       nextTrip: function(route) {
          const self = this;
@@ -288,7 +264,7 @@ export default {
          }
          if(nextTrip)
             return 'Next trip ' + nextTrip.fromNow();
-         return 'All are looking into the Past!';
+         return 'You are looking into the Past!';
       },
    },
 };

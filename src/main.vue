@@ -69,7 +69,7 @@
                      </f7-nav-right>
                   </f7-navbar>
                   <f7-block>
-                     <p><strong>Version</strong> 1.2, <tt>build</tt>20190410</p>
+                     <p><strong>Version</strong> 1.3, <tt>build</tt>20190411</p>
 
                      <h3>Development</h3>
                      Hosted on <f7-link external target="system" href="https://github.com/dilawar/HippoApp"
