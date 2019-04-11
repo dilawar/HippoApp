@@ -43,7 +43,7 @@
            <!-- TODO 
            <f7-link raised @click="showPics(acc)">Pics</f7-link>
            -->
-           <f7-link disabled>Comment</f7-link>
+           <f7-link v-if="isUserAuthenticated()" @click="addComment(acc)">Comment</f7-link>
         </f7-card-footer>
      </f7-card>
   </f7-block>
@@ -57,8 +57,22 @@
      <f7-icon ios="f7:add" aurora="f7:add" md="material:add"></f7-icon>
   </f7-fab>
 
+  <f7-popup :opened="commentPopupOpened" @popup:closed="commentPopupOpened = false">
+     <f7-page>
+        <f7-navbar title="Comments">
+           <f7-nav-right>
+              <f7-link popup-close>Cancel</f7-link>
+           </f7-nav-right>
+        </f7-navbar>
 
-  <f7-popup class="accomodation-popup" :opened="popupOpened" @popup:closed="popupOpened = false">
+        <f7-block>
+
+        </f7-block>
+
+     </f7-page>
+  </f7-popup>
+
+  <f7-popup :opened="popupOpened" @popup:closed="popupOpened = false">
      <f7-page>
         <f7-navbar :title="`${popupAction} Accomodation`">
            <f7-nav-right>
@@ -201,9 +215,11 @@ export default {
       return {
          accomodations: [],
          popupOpened: false,
+         commentPopupOpened: false,
          hideKeys: "id,url,type,available_from,open_vacancies,available_for,status,last_modified_on,created_by,created_on".split(','),
          popupAction: 'New',
          photos: [],
+         comments: [],
          accomodation: {
             type: '',
             status: 'AVAILABLE',
@@ -287,6 +303,22 @@ export default {
          const self = this;
          self.$refs.standalone.photos = [ acc.url ];
          self.$refs.standalone.open();
+      },
+      addComment: function(card) {
+         const self = this;
+         const app = self.$f7;
+         self.postWithPromise('/accomodation/comments').then(
+            function(json) {
+               let res = JSON.parse(json);
+               if(res.status == 'ok')
+               {
+                  self.comments = res.data;
+                  self.saveStore('accomodation.comment', self.comments);
+               }
+               else
+                  self.comments = self.loadStore('accomodation.comment');
+            });
+         self.commentPopupOpened = true;
       },
    },
 };
