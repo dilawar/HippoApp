@@ -53,7 +53,7 @@
                <f7-icon icon="fa fa-map-marker fa-fw"></f7-icon>
                {{route.pickup_point}} to {{ route.drop_point }}
             </div>
-            <span slot="footer">Next trip {{ nextTrip(route) }}</span>
+            <span slot="footer"> {{ nextTrip(route) }}</span>
 
            <f7-accordion-content>
               <f7-list media-list>
@@ -263,12 +263,13 @@ export default {
       },
       nextTrip: function(route) {
          const self = this;
+
          let thisTimeTable = self.thisRouteTimetable(route);
          let nextTrip = null;
          for(let k in thisTimeTable)
          {
             let x = thisTimeTable[k];
-            let t = self.str2Moment(x.trip_start_time, 'HH:mm:ss');
+            let t = self.str2Moment(x.day + ' ' + x.trip_start_time, 'ddd HH:mm:ss');
             if( t > moment())
             {
                nextTrip = t
@@ -276,8 +277,8 @@ export default {
             }
          }
          if(nextTrip)
-            return nextTrip.fromNow();
-         return '';
+            return 'Next trip ' + nextTrip.fromNow();
+         return 'All are looking into the Past!';
       },
    },
 };
