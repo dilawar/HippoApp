@@ -48,14 +48,6 @@
                <f7-icon slot="media" icon="fa fa-bus fa-2x"></f7-icon>
             </f7-list-item>
 
-            <f7-list-item link="/map/" 
-                          title="Map" 
-                          footer="Synapse, LH2! Where are they?"
-                          panel-close
-                          >
-                          <f7-icon slot="media" icon="fa fa-map-o fa-2x"></f7-icon>
-            </f7-list-item>
-
             <f7-list-item v-if="alreadyLoggedIn" 
                           link="/search/" 
                           title="Search" 

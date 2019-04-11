@@ -167,7 +167,6 @@ Vue.mixin({
                   console.log('Warn: Failed to fetch ',);
             }
          );
-         setTimeout(()=> app.dialog.close(), 1000);
       },
       saveStore: function(key, data) {
          const self=this;

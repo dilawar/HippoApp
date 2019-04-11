@@ -48,7 +48,7 @@
   -->
 
   <f7-block>
-     <f7-block-title small>Pull to refresh</f7-block-title>
+     <f7-block-title small>Cancelled events are not shown.</f7-block-title>
 
      <f7-list accordion-list media-list no-hairlines>
 
