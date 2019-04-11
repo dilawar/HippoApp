@@ -9,7 +9,7 @@
          <f7-navbar title="Public Calendar" back-link="Back"></f7-navbar>
          <f7-block-title> Total events {{events.length}} </f7-block-title>
 
-         <f7-block>
+         <f7-block v-if="showGoogleCalendar">
             <div class="google-calendar">
 <iframe src="https://calendar.google.com/calendar/embed?showTitle=0&amp;showPrint=0&amp;showCalendars=0&amp;showTz=0&amp;mode=AGENDA&amp;;wkst=1&amp;bgcolor=%23FFFFFF&amp;src=d2jud2r7bsj0i820k0f6j702qo%40group.calendar.google.com&amp;color=%236B3304&amp;ctz=Asia%2FKolkata"></iframe>
             </div>
@@ -51,6 +51,7 @@ moment.defaultFormat = 'YYYY-MM-DD HH:mm:ss';
 export default {
    data() {
       return {
+         showGoogleCalendar: true,
          events: [],
          eventTypes: [],
          startDate: moment(),
@@ -89,9 +90,10 @@ export default {
                self.events = JSON.parse(json).data;
                self.saveStore('pubevents', self.events);
                app.dialog.close();
-               self.generateTimeline(self.events);
+               app.ptr.done();
             });
          setTimeout( () => app.dialog.close(), 1000);
+         self.generateTimeline(self.events);
       },
       loadMore: function() {
          console.log('Loading more');
@@ -118,12 +120,17 @@ export default {
                   console.log('Error', e);
                }
                self.allowInfinite = true;
-               console.log( "loadMOre is done");
+               app.dialog.close();
             }
          );
       },
       generateTimeline: function( events )
       {
+         if( ! events || events.length == 0 )
+         {
+            console.log( 'Error. No events' );
+            return;
+         }
          const self = this;
          self.items = [];
          self.eventTypes = [... new Set(events.map(x=>x.class))];
@@ -138,13 +145,12 @@ export default {
          const self = this;
          return {
             tag : moment(e.date, 'dddd, MMM DD, YYYY').format('ddd MMM DD') 
-                  + '<br />' + e.start_time + '<br />'
-                  + `<span style='font-size:10px;'>${e.venue}</span>`
+                  + '<br />' + e.start_time 
             , htmlMode : true
             , color : self.stringToColour(e.class)
-            , content: `<span style='font-size:9px;color:black;'>${e.class}</span>` 
-                        + '<br/>' + e.title
-                        + '<br/>'
+            , content: `<span style='color:black;'>${e.class}</span>` 
+                       + `<span style='float:right;'>${e.venue}</span>`
+                       + '<br/>' + e.title
          };
       }
       , filterTimeline: function(vtype)
