@@ -1,5 +1,5 @@
 <template>
-  <f7-page>
+  <f7-page ptr @ptr:refresh="fetchInventory">
     <f7-navbar title="Inventories" back-link="Back">
       <f7-subnavbar :inner="false">
          <f7-searchbar
@@ -64,15 +64,19 @@ export default {
    },
    mounted() {
       const self = this;
-      // Get all inventory.
-      self.postWithPromise( '/inventory/list/100').then(
-         function(json) 
-         {
-            self.inventories = JSON.parse(json).data;
-            self.saveStore('inventories', self.inventories);
-            self.toItems(self.inventories.list);
-         }
-      );
+      self.inventories = self.loadStore('inventories');
+      if( ! self.inventories || self.inventories.length == 0)
+      {
+         // Get all inventory.
+         self.postWithPromise( '/inventory/list/100').then(
+            function(json) 
+            {
+               self.inventories = JSON.parse(json).data;
+               self.saveStore('inventories', self.inventories);
+            }
+         );
+      }
+      self.toItems(self.inventories.list);
    },
    methods: { 
       fetchInventory: function() {
@@ -92,6 +96,7 @@ export default {
                self.toItems(self.inventories.list);
             }
          );
+         app.ptr.done();
       },
       toItems: function( invItems ) 
       {
@@ -102,7 +107,7 @@ export default {
             let inv = invItems[k];
             self.items.push({
                title: inv.name,
-               header: inv.scientific_name,
+               header: inv.item_condition + ', ' + inv.scientific_name,
                footer: inv.person_in_charge + ' (' + inv.faculty_in_charge + ')',
                data: inv,
                text: [inv.name, inv.scientific_name, inv.description,

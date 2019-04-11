@@ -58,19 +58,21 @@
 
            <f7-accordion-content>
 
-              <f7-list inner>
-              <f7-list-item v-for="(t, key) in thisRouteTimetable(route)" :key="key" >
+              <f7-list media-list inner>
+              <f7-list-item v-for="(t, key) in thisRouteTimetable(route)"
+                            :key="key"
+                            style='margin-top:-1ex;padding:-1px'
+                            >
                    <div slot="title">
-                      <f7-icon :icon="transportIcon(t.vehicle,t.trip_start_time,t.day)">
-                      </f7-icon>
                       {{str2Moment(t.trip_start_time, 'HH:mm:ss').format('hh:mm A')}}
                    </div>
+                  <f7-icon slot="media"
+                     :icon="transportIcon(t.vehicle,t.trip_start_time,t.day)">
+                  </f7-icon>
 
-                 <div slot="after"  v-if="t.day.toLowerCase() === today.toLowerCase()" >
-                    <span v-if="str2Moment(t.trip_start_time, 'HH:mm:ss') > str2Moment()"> 
-                       {{ str2Moment(t.trip_start_time, 'HH:mm:ss').fromNow() }}
-                    </span>
-                 </div>
+                  <span slot='after' v-if="upcomingTrip(t)">
+                    {{ str2Moment(t.trip_start_time, 'HH:mm:ss').fromNow() }}
+                 </span>
 
                  <div slot="after"  v-if="t.url">
                     <f7-link @click="routeMap(t.url)">Route</f7-link>
@@ -152,6 +154,13 @@ export default {
       self.routeFromTo(self.pickup, self.drop);
    },
    methods: { 
+      upcomingTrip: function(t) {
+         const self = this;
+         if(t.day.toLowerCase() === self.today.toLowerCase())
+            if(self.str2Moment(t.trip_start_time, 'HH:mm:ss') >= self.str2Moment())
+               return true;
+         return false;
+      },
       transportIcon: function(vehicle, startTime, day) {
          const self = this;
          var icon = 'fa ';
