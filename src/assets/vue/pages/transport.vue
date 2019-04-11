@@ -32,7 +32,7 @@
      </f7-row>
   </f7-block>
 
-  <f7-block inner accordion-list>
+  <f7-block accordion-list>
      <f7-block-title small>
         <f7-link external 
                  style="float:right"
@@ -49,7 +49,7 @@
                    :key="key"
                    >
            <f7-accordion-toggle> 
-              <div class="inner" style="font-size:large;margin-bottom:10px">
+              <div style="font-size:large;margin-bottom:10px">
               <f7-icon icon="fa fa-map-marker fa-fw"></f7-icon>
                  {{route.pickup_point}} to {{ route.drop_point }}
               </div>
@@ -59,15 +59,20 @@
               <f7-list-item v-for="(t, key) in thisTimetable"
                             :key="key"
                             :title="`${str2Moment(t.trip_start_time, 'HH:mm:ss').format('hh:mm A')}`"
+                            style="margin-top:-2ex;margin-bottom:-1ex"
                             >
                   <f7-icon slot="media"
                      :icon="transportIcon(t.vehicle,t.trip_start_time,t.day)">
                   </f7-icon>
 
-                 <div slot="header"  v-if="t.day.toLowerCase() === today.toLowerCase()" >
+                 <div slot="after"  v-if="t.day.toLowerCase() === today.toLowerCase()" >
                     <span v-if="str2Moment(t.trip_start_time, 'HH:mm:ss') > str2Moment()"> 
                        {{ str2Moment(t.trip_start_time, 'HH:mm:ss').fromNow() }}
                     </span>
+                 </div>
+
+                 <div slot="after"  v-if="t.url">
+                    <f7-link @click="routeMap(t.url)">Route</f7-link>
                  </div>
               </f7-list-item>
            </f7-list>
