@@ -1,13 +1,20 @@
 <template>
    <f7-page page-content 
-             ptr infinite 
-             :infinite-distance="50"
-             :infinite-preloader="showPreloader"
-             @infinite="loadMore"
-             page-content
-         >
+            ptr @ptr:refresh="fetchEvents"
+            infinite 
+            :infinite-preloader="showPreloader"
+            @infinite="loadMore"
+            >
 
-          <f7-navbar title="Events" back-link="Back"></f7-navbar>
+         <f7-navbar title="Public Calendar" back-link="Back"></f7-navbar>
+         <f7-block-title> Total events {{events.length}} </f7-block-title>
+
+         <f7-block v-if="showGoogleCalendar">
+            <div class="google-calendar">
+<iframe src="https://calendar.google.com/calendar/embed?showTitle=0&amp;showPrint=0&amp;showCalendars=0&amp;showTz=0&amp;mode=AGENDA&amp;;wkst=1&amp;bgcolor=%23FFFFFF&amp;src=d2jud2r7bsj0i820k0f6j702qo%40group.calendar.google.com&amp;color=%236B3304&amp;ctz=Asia%2FKolkata"></iframe>
+            </div>
+         </f7-block>
+
 
           <!-- Filter by venue should be a floating button. -->
           <f7-fab position="right-top" 
@@ -26,7 +33,7 @@
                 </f7-actions-button>
              </f7-actions-group>
           </f7-actions>
-
+          
 
           <light-timeline :items='items'>
              <template slot='tag' slot-scope='{ item }'>
@@ -44,6 +51,7 @@ moment.defaultFormat = 'YYYY-MM-DD HH:mm:ss';
 export default {
    data() {
       return {
+         showGoogleCalendar: true,
          events: [],
          eventTypes: [],
          startDate: moment(),
@@ -53,17 +61,15 @@ export default {
          actionGridOpened: false,
          items: [],
       };
-   }
-   , mounted: function() {
+   }, 
+   mounted: function() {
       const self = this;
-      self.postWithPromise('/publicevents/'+moment(self.startDate).format('X')+'/20')
-         .then( function(json) {
-            self.events = JSON.parse(json).data;
-            self.saveStore('pubevents', self.events);
-            self.generateTimeline(self.events);
-         });
-   }
-   , methods: { 
+      self.events = self.loadStore('pubevents');
+      if(! self.events || self.events.length == 0)
+         self.fetchEvents();
+      self.generateTimeline(self.events);
+   }, 
+   methods: { 
       reformatDate: function(date){
          return moment(date, 'dddd, MMM DD, YYYY').format('ddd, MMM DD');
       }
@@ -74,31 +80,57 @@ export default {
          if(moment(startDateTime) <= moment().add(1, 'd'))
             return 'deeppurple';
          return '';
-      }
-      , loadMore: function( )
-      {
-         const self         = this;
-         const app          = self.$f7;
+      }, 
+      fetchEvents: function() {
+         const self = this;
+         const app = self.$f7;
+         app.dialog.preloader();
+         self.postWithPromise('/publicevents/'+moment(self.startDate).format('X')+'/20')
+            .then( function(json) {
+               self.events = JSON.parse(json).data;
+               self.saveStore('pubevents', self.events);
+               app.dialog.close();
+               app.ptr.done();
+            });
+         setTimeout( () => app.dialog.close(), 1000);
+         self.generateTimeline(self.events);
+      },
+      loadMore: function() {
+         console.log('Loading more');
+         const self = this;
+         const app = self.$f7;
          if(! self.allowInfinite) 
+         {
+            console.log( ' .... returning ');
             return;
+         }
 
          self.allowInfinite = false;
-         var numToFetch = self.events.length + 20;
-         console.log('loading more ', numToFetch);
-         let link = '/publicevents/'+moment(self.startDate).format('X') +'/'+numToFetch.toString()
-         self.postWithPromise(link).then( 
+         let link = "/publicevents/" + 
+            moment(self.startDate).format('X')+"/10/"+self.events.length;
+         self.postWithPromise(link).then(
             function(json) {
-               self.events = JSON.parse(json).data;
-               console.log( "got ", self.events.length );
-               self.saveStore('pubevents', self.events);
-               self.generateTimeline(self.events);
-               return;
+               try {
+                  let events = JSON.parse(json).data;
+                  self.events = self.events.concat(events);
+                  self.saveStore('pubevents', self.events);
+                  console.log( "Total events ", self.events.length);
+               } catch(e) {  
+                  // pass
+                  console.log('Error', e);
+               }
+               self.allowInfinite = true;
+               app.dialog.close();
             }
          );
-         self.allowInfinite = true;
       },
       generateTimeline: function( events )
       {
+         if( ! events || events.length == 0 )
+         {
+            console.log( 'Error. No events' );
+            return;
+         }
          const self = this;
          self.items = [];
          self.eventTypes = [... new Set(events.map(x=>x.class))];
@@ -113,13 +145,12 @@ export default {
          const self = this;
          return {
             tag : moment(e.date, 'dddd, MMM DD, YYYY').format('ddd MMM DD') 
-                  + '<br />' + e.start_time + '<br />'
-                  + `<span style='font-size:10px;'>${e.venue}</span>`
+                  + '<br />' + e.start_time 
             , htmlMode : true
             , color : self.stringToColour(e.class)
-            , content: `<span style='font-size:9px;color:black;'>${e.class}</span>` 
-                        + '<br/>' + e.title
-                        + '<br/>'
+            , content: `<span style='color:black;'>${e.class}</span>` 
+                       + `<span style='float:right;'>${e.venue}</span>`
+                       + '<br/>' + e.title
          };
       }
       , filterTimeline: function(vtype)

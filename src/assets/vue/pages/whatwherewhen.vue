@@ -1,6 +1,6 @@
 <template>
-
   <f7-page page-content 
+           ptr @ptr:refresh="fetchEvents"
            infinite
            :infinite-preloader="showPreloader" 
            @infinite="loadMore"
@@ -39,11 +39,32 @@
      </f7-actions-group>
   </f7-actions>
 
+  <!--
   <light-timeline v-model="items" :items='items'>
      <template slot='tag' slot-scope='{ item }'>
         <span v-html="item.tag" style="color:black"></span>
      </template>
   </light-timeline>
+  -->
+
+  <f7-block>
+     <f7-block-title small>Cancelled events are not shown.</f7-block-title>
+
+     <f7-list accordion-list media-list no-hairlines>
+
+        <f7-list-item :accordion-item="item.data.description.length>80"
+              v-for="(item, key) in items"
+              :key="key"
+              >
+              <div slot="title" v-html="item.data.title"></div>
+              <div slot="footer" v-html="genTimeline(item.data)"></div>
+              <div slot="header" v-html="genWhereline(item.data)"></div>
+
+              <f7-accordion-content v-html="item.data.title+'<br/>'+item.data.description">
+              </f7-accordion-content>
+        </f7-list-item>
+     </f7-list>
+  </f7-block>
 
 
 
@@ -65,36 +86,53 @@ export default {
          venues: [],
          selectedVenue: 'ALL',
          selectedClass: 'ALL',
-         events: JSON.parse(self.$localStorage.get('events', '[]')),
+         events: self.loadStore('events'),
          venueEvents: [],
          items: [],
       }
    },
    mounted: function() {
       const self = this;
-      // Wait for event to get stored into the localStorage.
-      self.postWithPromise('/events/latest/100').then(
-         function(json) {
-            self.events = JSON.parse(json).data;
-            self.eventTypes = [... new Set( self.events.map(x=>x.class))];
-            self.eventTypes.push('ALL');
-            self.venues = [... new Set(self.events.map(x=>x.venue))];
-            self.venues.push('ALL');
-            self.eventsToTimeLine(self.events);
-            console.log( 'Got ', self.events.length, ' events.');
-            self.saveStore('events', self.events);
-         }
-      );
+      // Only fetch when nothing is available in the store.
+      self.events = self.loadStore('events');
+      self.initVenuesAndClasses();
+      if(! self.events || self.events.length == 0)
+         self.fetchEvents();
+      self.eventsToTimeLine(self.events);
    },
    methods: { 
+      initVenuesAndClasses: function( ) {
+         const self = this;
+         self.eventTypes = [... new Set( self.events.map(x=>x.class))];
+         self.eventTypes.push('ALL');
+         self.venues = [... new Set(self.events.map(x=>x.venue))];
+         self.venues.push('ALL');
+      },
+      fetchEvents: function( ) {
+         const self = this;
+         const app = self.$f7;
+         app.dialog.preloader();
+         self.postWithPromise('/events/latest/100').then(
+            function(json) {
+               self.events = JSON.parse(json).data;
+               self.initVenuesAndClasses();
+               self.saveStore('events', self.events);
+               app.dialog.close();
+               self.eventsToTimeLine(self.events);
+            }
+         );
+
+         setTimeout( () => app.dialog.close(), 1000);
+      },
       eventToTimelinePoint: function(key, ev) 
       {
          const self = this;
          var color = self.stringToColour(ev.class)
          let status = (ev.status == 'PENDING')?' (Pending Approval)':'';
          return { id:key
-            , class:ev.class
+            , class: ev.class
             , color : color
+            , data: ev
             , group: ev.venue
             , tag: self.toNow(ev.date, ev.start_time) + '<br /> ' 
                   + self.str2Moment(ev.date, 'YYYY-MM-DD').format('MMM DD')+'<br/>'
@@ -183,6 +221,28 @@ export default {
             }
          );
          self.eventsToTimeLine(filteredEvents);
+      },
+      genTimeline: function( ev ) 
+      {
+         const self = this;
+
+         let whereWhere = '';
+
+         whereWhere += moment(ev.date, 'YYYY-MM-DD').format('ddd, MMM DD') +
+            ', ' + moment(ev.start_time, 'HH:mm:ss').format('h:mm A')
+         return whereWhere;
+      },
+      genWhereline: function(ev) 
+      {
+         const self = this;
+         let content =  `<span style="color:green">${ev.venue}</span> `+
+                        `<span style="color:gray;">${ev.class} ${status}</span>`;
+         if( self.str2Moment(ev.date, 'YYYY-MM-DD').diff(moment(), 'days') < 1)
+         {
+            let fromNow = self.str2Moment(ev.date + ' ' + ev.start_time , 'YYYY-MM-DD HH:mm:ss').fromNow();
+            content = '<span style="float:right">'+fromNow+'</span>' + content;
+         }
+         return content;
       },
    },
 }; 

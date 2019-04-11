@@ -9,19 +9,23 @@
      <f7-card 
         v-for="(acc, key) in accomodations.list" :key="key">
         <f7-card-header>
-           <div style="font-size:x-small;color:gray;">
+           <div style="font-size:x-small;color:gray;margin-right:2px">
               Posted by {{acc.created_by}} on {{str2Moment(acc.created_on,
               'YYYY-MM-DD HH:mm:ss').format('MMM DD')}} 
            </div>
-           <div style="font-size:small"> 
-              <span style="color:red">{{acc.status}} | {{acc.available_for}}</span>.
+           <div style="font-size:small;margin-left:2px"> 
+              <span style="color:green">{{acc.status }} | {{acc.available_for}}</span>.
               <br />
-              {{acc.type}} available from {{str2Moment(acc.available_from,
-              'YYYY-MM-DD').format('MMM DD, YY')}} for
-              {{acc.open_vacancies}} person(s).
+              {{acc.open_vacancies}} vacancy in {{acc.type}} <br />
+              Available from {{str2Moment(acc.available_from, 'YYYY-MM-DD').format('MMM DD, YY')}} 
            </div>
         </f7-card-header>
         <f7-card-content>
+           <div v-if="acc.last_modified_on" style="color:green;">
+            <f7-icon icon="fa fa-bell fa-fw"></f7-icon>
+            Last modified {{str2Moment(acc.last_modified_on, 'YYYY-MM-DD HH:mm:ss').fromNow()}}
+          </div>
+
            <span v-for="(val, key) in acc">
               <span v-if="! hideKeys.find(k=> k===key) && val.length > 0">
                  <span style="color:gray;font-size:xx-small">{{formatKey(key)}}</span>
@@ -39,7 +43,8 @@
            <!-- TODO 
            <f7-link raised @click="showPics(acc)">Pics</f7-link>
            -->
-           <f7-link disabled>Comment</f7-link>
+           <f7-link v-if="isUserAuthenticated()"
+                    @click="addComment(acc)">Comment ({{acc.num_comments}})</f7-link>
         </f7-card-footer>
      </f7-card>
   </f7-block>
@@ -53,8 +58,64 @@
      <f7-icon ios="f7:add" aurora="f7:add" md="material:add"></f7-icon>
   </f7-fab>
 
+  <f7-popup :opened="commentPopupOpened" @popup:closed="commentPopupOpened = false">
+     <f7-page>
+        <f7-navbar title="Comments">
+           <f7-nav-right>
+              <f7-link popup-close>Cancel</f7-link>
+           </f7-nav-right>
+        </f7-navbar>
 
-  <f7-popup class="accomodation-popup" :opened="popupOpened" @popup:closed="popupOpened = false">
+
+        <f7-block>
+           <!-- Submit comment. -->
+
+           <f7-list media-list no-hairlines>
+
+              <f7-list-item v-if="thisAccomodation"
+                            :footer="'Created by ' + thisAccomodation.created_by"
+                            :text="thisAccomodation.type+' at '+ thisAccomodation.address"
+                            >
+              </f7-list-item>
+
+              <f7-list-input label="Comment"
+                             :value="thisComment"
+                             @input="thisComment = $event.target.value"
+                             :resizable="true"
+                             required
+                             type="textarea" 
+                             >
+              </f7-list-input>
+              <f7-list-item>
+                 <f7-button raised 
+                            popup-close
+                            fill 
+                            @click="submitComment(thisAccomodation.id)" 
+                            slot="after"
+                            >
+                            Submit
+                 </f7-button>
+                 <f7-button raised popup-close slot="title">Cancel</f7-button>
+              </f7-list-item>
+
+              <!-- Existing comments. -->
+              <f7-list-item v-for="(c, key) in comments"
+                            :key="key"
+                            :text="c.comment"
+                            :header="'By ' + c.commenter"
+                     >
+                  <f7-link v-if="c.commenter===getLogin()"
+                           slot="after"
+                           @click="deleteComment(c.id)"
+                           >Delete</f7-link>
+              </f7-list-item>
+           </f7-list>
+        </f7-block>
+
+     </f7-page>
+  </f7-popup>
+
+  <f7-popup :opened="popupOpened" @popup:closed="popupOpened = false">
      <f7-page>
         <f7-navbar :title="`${popupAction} Accomodation`">
            <f7-nav-right>
@@ -197,7 +258,9 @@ export default {
       return {
          accomodations: [],
          popupOpened: false,
-         hideKeys: "id,url,type,available_from,open_vacancies,available_for,status,last_modified_on,created_by,created_on".split(','),
+         hideKeys: `id,url,type,available_from,open_vacancies
+                     ,available_for,status,last_modified_on
+                     ,num_comments,created_by,created_on`.split(','),
          popupAction: 'New',
          photos: [],
          accomodation: {
@@ -214,6 +277,11 @@ export default {
             advance: 0,
             url: '',
          },
+         // Comments.
+         thisComment: '',
+         comments: [],
+         thisAccomodation: '',
+         commentPopupOpened: false,
       };
    },
    mounted() {
@@ -283,6 +351,32 @@ export default {
          const self = this;
          self.$refs.standalone.photos = [ acc.url ];
          self.$refs.standalone.open();
+      },
+      // COMMENT SECTION.
+      addComment: function(acc) {
+         const self = this;
+         const app = self.$f7;
+         self.thisAccomodation = acc;
+
+         self.postWithPromise('/accomodation/comment/list/'+acc.id).then(
+            function(json) {
+               let res = JSON.parse(json);
+               if(res.status == 'ok')
+                  self.comments = res.data.comments;
+            });
+
+         self.commentPopupOpened = true;
+      },
+      submitComment: function(id) {
+         const self = this;
+         let data =  {id:id, comment:self.thisComment};
+         console.log('Sending data: ', data);
+         self.sendRequest('/accomodation/comment/post', data);
+         self.commentPopupOpened = false;
+      },
+      deleteComment: function(id) {
+         const self = this;
+         self.sendRequest('/accomodation/comment/delete/'+id);
       },
    },
 };

@@ -37,16 +37,23 @@
 
             <f7-link icon-only 
                      icon-color="blue"
+                     href="/map/"
+                     tooltip="Campus Map"
+                     icon="fa fa-map fa-2x"
+                     >
+            </f7-link>
+
+            <f7-link icon-only 
+                     icon-color="blue"
                      href="/canteen/"
                      tooltip="Canteen"
                      icon="fa fa-cutlery fa-2x"
                      >
             </f7-link>
 
-            <f7-link tab-link="#tab-calendar" 
-                     icon-only 
+            <f7-link icon-only 
                      icon-color="blue"
-                     @click="calendarPopup=true"
+                     href="/events/"
                      tooltip="Public calendar"
                      icon="fa fa-calendar fa-2x"
                      >
@@ -65,24 +72,19 @@
                      <p><strong>Version</strong> 1.2, <tt>build</tt>20190410</p>
 
                      <h3>Development</h3>
-                     Hosted on <f7-link external
-                        href="https://github.com/dilawar/HippoApp">Github</f7-link>
-                     and is released under MIT License.
-                     <p>
-                     <strong>Contribution:</strong> <f7-link 
-                        extrernal href="https://github.com/dilawar/HippoApp/blob/master/CONTRIBUTION.md"
-                        >Read this.</f7-link>
-                     </p>
+                     Hosted on <f7-link external target="system" href="https://github.com/dilawar/HippoApp"
+                        >Github</f7-link> and is released under MIT License.
+
+                     <p> <strong>Contribution:</strong> <f7-link extrernal target="system"
+                    href="https://github.com/dilawar/HippoApp/blob/master/CONTRIBUTION.md">Read this.
+                     </f7-link></p>
 
 
                      <h3>Credit</h3>
 
-                     Logo is designed by <f7-link external
-                        href="https://github.com/nunojesus">Nuno
-                        Jesus.</f7-link> 
-                     Art work in splash screen is created by Sweety Meel.
-                     NCBS IT section provided server for
-                     backend services.
+                     Logo is designed by <f7-link external href="https://github.com/nunojesus">Nuno
+                        Jesus.</f7-link> Art work in splash screen is created by Sweety Meel.
+                     NCBS IT section provided server for backend services.
                      </p>
 
                      <small> <p> &copy; Dilawar Singh 
@@ -107,23 +109,6 @@
                         <f7-link popup-close>Close</f7-link>
                      </f7-nav-right>
                   </f7-navbar>
-               </f7-page>
-
-               <!-- Menu -->
-            </f7-popup>
-
-            <f7-popup :opened="calendarPopup" @popup:closed="calendarPopup = false">
-               <f7-page>
-                  <f7-navbar title="Calendar">
-                     <f7-nav-right>
-                        <f7-link popup-close>Close</f7-link>
-                     </f7-nav-right>
-                  </f7-navbar>
-                  <f7-block>
-                     <div class="google-calendar">
-<iframe src="https://calendar.google.com/calendar/embed?showTitle=0&amp;showPrint=0&amp;showCalendars=0&amp;showTz=0&amp;mode=AGENDA&amp;;wkst=1&amp;bgcolor=%23FFFFFF&amp;src=d2jud2r7bsj0i820k0f6j702qo%40group.calendar.google.com&amp;color=%236B3304&amp;ctz=Asia%2FKolkata"></iframe>
-                     </div>
-                  </f7-block>
                </f7-page>
             </f7-popup>
 
