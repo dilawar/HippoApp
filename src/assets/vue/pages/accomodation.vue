@@ -65,8 +65,50 @@
            </f7-nav-right>
         </f7-navbar>
 
-        <f7-block>
 
+        <f7-block>
+           <!-- Submit comment. -->
+
+           <f7-list media-list no-hairlines>
+
+              <f7-list-item v-if="thisAccomodation"
+                            :footer="'Created by ' + thisAccomodation.created_by"
+                            :text="thisAccomodation.type+' at '+ thisAccomodation.address"
+                            >
+              </f7-list-item>
+
+              <f7-list-input label="Comment"
+                             :value="thisComment"
+                             @input="thisComment = $event.target.value"
+                             :resizable="true"
+                             required
+                             type="textarea" 
+                             >
+              </f7-list-input>
+              <f7-list-item>
+                 <f7-button raised 
+                            popup-close
+                            fill 
+                            @click="submitComment(thisAccomodation.id)" 
+                            slot="after"
+                            >
+                            Submit
+                 </f7-button>
+                 <f7-button raised popup-close slot="title">Cancel</f7-button>
+              </f7-list-item>
+
+              <!-- Existing comments. -->
+              <f7-list-item v-for="(c, key) in comments"
+                            :key="key"
+                            :text="c.comment"
+                            :header="'By ' + c.commenter"
+                     >
+                  <f7-link v-if="c.commenter===getLogin()"
+                           slot="after"
+                           @click="deleteComment(c.id)"
+                           >Delete</f7-link>
+              </f7-list-item>
+           </f7-list>
         </f7-block>
 
      </f7-page>
@@ -215,11 +257,9 @@ export default {
       return {
          accomodations: [],
          popupOpened: false,
-         commentPopupOpened: false,
          hideKeys: "id,url,type,available_from,open_vacancies,available_for,status,last_modified_on,created_by,created_on".split(','),
          popupAction: 'New',
          photos: [],
-         comments: [],
          accomodation: {
             type: '',
             status: 'AVAILABLE',
@@ -234,6 +274,11 @@ export default {
             advance: 0,
             url: '',
          },
+         // Comments.
+         thisComment: '',
+         comments: [],
+         thisAccomodation: '',
+         commentPopupOpened: false,
       };
    },
    mounted() {
@@ -304,21 +349,31 @@ export default {
          self.$refs.standalone.photos = [ acc.url ];
          self.$refs.standalone.open();
       },
-      addComment: function(card) {
+      // COMMENT SECTION.
+      addComment: function(acc) {
          const self = this;
          const app = self.$f7;
-         self.postWithPromise('/accomodation/comments').then(
+         self.thisAccomodation = acc;
+
+         self.postWithPromise('/accomodation/comment/list/'+acc.id).then(
             function(json) {
                let res = JSON.parse(json);
                if(res.status == 'ok')
-               {
-                  self.comments = res.data;
-                  self.saveStore('accomodation.comment', self.comments);
-               }
-               else
-                  self.comments = self.loadStore('accomodation.comment');
+                  self.comments = res.data.comments;
             });
+
          self.commentPopupOpened = true;
+      },
+      submitComment: function(id) {
+         const self = this;
+         let data =  {id:id, comment:self.thisComment};
+         console.log('Sending data: ', data);
+         self.sendRequest('/accomodation/comment/post', data);
+         self.commentPopupOpened = false;
+      },
+      deleteComment: function(id) {
+         const self = this;
+         self.sendRequest('/accomodation/comment/delete/'+id);
       },
    },
 };

@@ -187,15 +187,16 @@ Vue.mixin({
       sendRequest: function(endpoint, post) {
          const self = this;
          const app = self.$f7;
+         app.dialog.preloader();
          let data = { ...self.apiPostData(), ...post};
-         app.request.post(self.$store.state.api+'/'+endpoint
-            , data
-            , function(json)
-            {
+         app.request.promise.post(self.$store.state.api+'/'+endpoint, data)
+            .then( function(json) {
                const res = JSON.parse(json);
+               app.dialog.close();
                return res.status;
             }
          );
+         setTimeout( () => app.dialog.close(), 1000);
       },
       fetchVenues: function() {
          const self = this;
