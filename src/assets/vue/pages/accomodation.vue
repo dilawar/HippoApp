@@ -9,19 +9,23 @@
      <f7-card 
         v-for="(acc, key) in accomodations.list" :key="key">
         <f7-card-header>
-           <div style="font-size:x-small;color:gray;">
+           <div style="font-size:x-small;color:gray;margin-right:2px">
               Posted by {{acc.created_by}} on {{str2Moment(acc.created_on,
               'YYYY-MM-DD HH:mm:ss').format('MMM DD')}} 
            </div>
-           <div style="font-size:small"> 
-              <span style="color:red">{{acc.status}} | {{acc.available_for}}</span>.
+           <div style="font-size:small;margin-left:2px"> 
+              <span style="color:green">{{acc.status }} | {{acc.available_for}}</span>.
               <br />
-              {{acc.type}} available from {{str2Moment(acc.available_from,
-              'YYYY-MM-DD').format('MMM DD, YY')}} for
-              {{acc.open_vacancies}} person(s).
+              {{acc.open_vacancies}} vacancy in {{acc.type}} <br />
+              Available from {{str2Moment(acc.available_from, 'YYYY-MM-DD').format('MMM DD, YY')}} 
            </div>
         </f7-card-header>
         <f7-card-content>
+           <div v-if="acc.last_modified_on" style="color:green;">
+            <f7-icon icon="fa fa-bell fa-fw"></f7-icon>
+            Last modified {{str2Moment(acc.last_modified_on, 'YYYY-MM-DD HH:mm:ss').fromNow()}}
+          </div>
+
            <span v-for="(val, key) in acc">
               <span v-if="! hideKeys.find(k=> k===key) && val.length > 0">
                  <span style="color:gray;font-size:xx-small">{{formatKey(key)}}</span>
