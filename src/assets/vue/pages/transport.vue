@@ -52,7 +52,9 @@
               <div style="font-size:large;margin-bottom:10px">
               <f7-icon icon="fa fa-map-marker fa-fw"></f7-icon>
                  {{route.pickup_point}} to {{ route.drop_point }}
+                 <span style="float:right;font-size:small;color:gray">{{ nextTrip(route) }}</span>
               </div>
+              <f7-icon slot="after"></f7-icon>
            </f7-accordion-toggle>
            <f7-accordion-content>
               <f7-list media-list>
@@ -242,6 +244,28 @@ export default {
          self.thisRouteMap = url;
          console.log( 'Showing route from ', url );
          self.popupOpened = true;
+      },
+      nextTrip: function(route) {
+         const self = this;
+         let nextTrip = null;
+         for(let k in self.transport.timetable)
+         {
+            let x = self.transport.timetable[k];
+            if( (x.day.toLowerCase() === self.selectedDay.toLowerCase()) && 
+               (x.pickup_point.toLowerCase() === self.pickup.toLowerCase()) && 
+               (x.drop_point.toLowerCase() === self.drop.toLowerCase())
+            ){
+               let t = self.str2Moment(x.trip_start_time, 'HH:mm:ss');
+               if( t > moment())
+               {
+                  nextTrip = t
+                  break;
+               }
+            }
+         }
+         if(nextTrip)
+            return nextTrip.fromNow();
+         return '';
       },
    },
 };
