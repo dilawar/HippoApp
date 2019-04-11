@@ -51,15 +51,17 @@
      <f7-block-title small>Pull to refresh</f7-block-title>
 
      <f7-list accordion-list media-list no-hairlines>
-        <f7-list-item accordion-item 
-                      v-for="(item, key) in items"
-                      :key="key"
-                     >
-               <div slot="title" v-html="item.data.title"></div>
-               <div slot="footer" v-html="genTimeline(item.data)"></div>
-               <div slot="header" v-html="genWhereline(item.data)"></div>
-           <f7-accordion-content v-html="item.data.description">
-           </f7-accordion-content>
+
+        <f7-list-item :accordion-item="item.data.description.length>80"
+              v-for="(item, key) in items"
+              :key="key"
+              >
+              <div slot="title" v-html="item.data.title"></div>
+              <div slot="footer" v-html="genTimeline(item.data)"></div>
+              <div slot="header" v-html="genWhereline(item.data)"></div>
+
+              <f7-accordion-content v-html="item.data.title+'<br/>'+item.data.description">
+              </f7-accordion-content>
         </f7-list-item>
      </f7-list>
   </f7-block>
@@ -91,14 +93,21 @@ export default {
    },
    mounted: function() {
       const self = this;
-
       // Only fetch when nothing is available in the store.
-      if(  self.events.length == 0 )
+      self.events = self.loadStore('events');
+      self.initVenuesAndClasses();
+      if(! self.events || self.events.length == 0)
          self.fetchEvents();
-      else
-         self.eventsToTimeLine(self.events);
+      self.eventsToTimeLine(self.events);
    },
    methods: { 
+      initVenuesAndClasses: function( ) {
+         const self = this;
+         self.eventTypes = [... new Set( self.events.map(x=>x.class))];
+         self.eventTypes.push('ALL');
+         self.venues = [... new Set(self.events.map(x=>x.venue))];
+         self.venues.push('ALL');
+      },
       fetchEvents: function( ) {
          const self = this;
          const app = self.$f7;
@@ -106,15 +115,13 @@ export default {
          self.postWithPromise('/events/latest/100').then(
             function(json) {
                self.events = JSON.parse(json).data;
-               self.eventTypes = [... new Set( self.events.map(x=>x.class))];
-               self.eventTypes.push('ALL');
-               self.venues = [... new Set(self.events.map(x=>x.venue))];
-               self.venues.push('ALL');
+               self.initVenuesAndClasses();
                self.saveStore('events', self.events);
                app.dialog.close();
                self.eventsToTimeLine(self.events);
             }
          );
+
          setTimeout( () => app.dialog.close(), 1000);
       },
       eventToTimelinePoint: function(key, ev) 
