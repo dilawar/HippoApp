@@ -44,21 +44,20 @@
         </f7-link> 
      </f7-block-title>
 
-     <f7-accordion-item
+     <f7-list accordion-list no-hairlines>
+     <f7-list-item accordion-item
                    v-for="(route, key) in transport.routes"
                    :key="key"
-                   >
-           <f7-accordion-toggle> 
-              <div style="font-size:large;margin-bottom:10px">
-              <f7-icon icon="fa fa-map-marker fa-fw"></f7-icon>
-                 {{route.pickup_point}} to {{ route.drop_point }}
-                 <span style="float:right;font-size:small;color:gray">{{ nextTrip(route) }}</span>
-              </div>
-              <f7-icon slot="after"></f7-icon>
-           </f7-accordion-toggle>
+            >
+            <div slot="title" style="font-size:large;margin-bottom:10px">
+               <f7-icon icon="fa fa-map-marker fa-fw"></f7-icon>
+               {{route.pickup_point}} to {{ route.drop_point }}
+            </div>
+            <span slot="footer">Next trip {{ nextTrip(route) }}</span>
+
            <f7-accordion-content>
               <f7-list media-list>
-              <f7-list-item v-for="(t, key) in thisTimetable"
+              <f7-list-item v-for="(t, key) in thisRouteTimetable(route)"
                             :key="key"
                             :title="`${str2Moment(t.trip_start_time, 'HH:mm:ss').format('hh:mm A')}`"
                             style="margin-top:-2ex;margin-bottom:-1ex"
@@ -79,7 +78,9 @@
               </f7-list-item>
            </f7-list>
         </f7-accordion-content>
-     </f7-accordion-item>
+
+     </f7-list-item>
+     </f7-list>
 
   </f7-block>
 
@@ -245,22 +246,33 @@ export default {
          console.log( 'Showing route from ', url );
          self.popupOpened = true;
       },
-      nextTrip: function(route) {
+      thisRouteTimetable: function(route) {
          const self = this;
-         let nextTrip = null;
+         let thisTimetable = [];
          for(let k in self.transport.timetable)
          {
             let x = self.transport.timetable[k];
             if( (x.day.toLowerCase() === self.selectedDay.toLowerCase()) && 
-               (x.pickup_point.toLowerCase() === self.pickup.toLowerCase()) && 
-               (x.drop_point.toLowerCase() === self.drop.toLowerCase())
+               (x.pickup_point.toLowerCase() === route.pickup_point.toLowerCase()) && 
+               (x.drop_point.toLowerCase() === route.drop_point.toLowerCase())
             ){
-               let t = self.str2Moment(x.trip_start_time, 'HH:mm:ss');
-               if( t > moment())
-               {
-                  nextTrip = t
-                  break;
-               }
+               thisTimetable.push(x);
+            }
+         }
+         return thisTimetable;
+      },
+      nextTrip: function(route) {
+         const self = this;
+         let thisTimeTable = self.thisRouteTimetable(route);
+         let nextTrip = null;
+         for(let k in thisTimeTable)
+         {
+            let x = thisTimeTable[k];
+            let t = self.str2Moment(x.trip_start_time, 'HH:mm:ss');
+            if( t > moment())
+            {
+               nextTrip = t
+               break;
             }
          }
          if(nextTrip)
