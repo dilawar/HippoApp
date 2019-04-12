@@ -6,55 +6,70 @@
 
   <f7-block>
      <f7-photo-browser ref="standalone"></f7-photo-browser>
-     <f7-card 
-        v-for="(acc, key) in accomodations.list" :key="key">
-        <f7-card-header>
-           <div style="font-size:x-small;color:gray;margin-right:2px">
-              Posted by {{acc.created_by}} on {{str2Moment(acc.created_on,
+     <f7-list accordion-list media-list no-hairlines>
+     <f7-list-item accordion-item v-for="(acc, key) in accomodations.list" :key="key">
+        <div slot="header" style="font-size:small;margin-left:2px"> 
+           <span style="color:green">{{acc.status }} | {{acc.available_for}}</span>.
+        </div>
+        <div slot="title">
+           {{acc.type}}, {{acc.open_vacancies}} vacancy.
+        </div>
+        <div slot="subtitle">
+           <f7-icon icon="fa fa-map-marker fa-fw"></f7-icon> {{acc.address}}
+        </div>
+        <div slot="footer">
+           Posted by {{acc.created_by}} on {{str2Moment(acc.created_on,
               'YYYY-MM-DD HH:mm:ss').format('MMM DD')}} 
-           </div>
-           <div style="font-size:small;margin-left:2px"> 
-              <span style="color:green">{{acc.status }} | {{acc.available_for}}</span>.
-              <br />
-              {{acc.open_vacancies}} vacancy in {{acc.type}} <br />
-              Available from {{str2Moment(acc.available_from, 'YYYY-MM-DD').format('MMM DD, YY')}} 
-           </div>
-        </f7-card-header>
-        <f7-card-content>
-           <div v-if="acc.last_modified_on" style="color:green;">
-            <f7-icon icon="fa fa-bell fa-fw"></f7-icon>
-            Last modified {{str2Moment(acc.last_modified_on, 'YYYY-MM-DD HH:mm:ss').fromNow()}}
-          </div>
+        </div>
+        <f7-accordion-content>
+           <f7-block>
+              <div> 
+                 <f7-icon icon="fa fa-clock-o fa-fw"></f7-icon>
+                 Available from {{str2Moment(acc.available_from,
+                 'YYYY-MM-DD').format('MMM DD')}}.
+                 <span v-if="acc.last_modified_on" style="color:green;float:right">
+                    <f7-icon icon="fa fa-bell fa-fw"></f7-icon>
+                    Last modified {{str2Moment(acc.last_modified_on, 'YYYY-MM-DD HH:mm:ss').fromNow()}}
+                 </span>
+              </div>
 
-           <span v-for="(val, key) in acc">
-              <span v-if="! hideKeys.find(k=> k===key) && val.length > 0">
-                 <span style="color:gray;font-size:xx-small">{{formatKey(key)}}</span>
-                 <span style="font-size:small; margin-right:2ex">{{val}}</span>
-                 <br />
+              <span v-for="(val, key) in acc">
+                 <span v-if="showKeys.find(k => k===key) && val.length > 0">
+                    <span style="color:gray;font-size:x-small">{{formatKey(key)}}</span>
+                    <span style="margin-right:2ex;font-size:medium">{{val}}</span>
+                    <br />
+                 </span>
               </span>
-           </span>
-        </f7-card-content>
-        </f7-card-content>
-        <f7-card-footer>
-           <f7-link v-if="acc.created_by===getLogin()"
-                    @click="updateAction(acc)"
-              >Update</f7-link>
-           <f7-link v-else>+1</f7-link>
-           <!-- TODO 
-           <f7-link raised @click="showPics(acc)">Pics</f7-link>
-           -->
-           <f7-link v-if="isUserAuthenticated()"
-                    @click="addComment(acc)">Comment ({{acc.num_comments}})</f7-link>
-        </f7-card-footer>
-     </f7-card>
+
+              <f7-row style="margin-top:1ex">
+                 <f7-col>
+                    <f7-link v-if="acc.created_by===getLogin()"
+                             @click="updateAction(acc)"
+                             >Update
+                    </f7-link>
+                    <f7-link v-else>+1</f7-link>
+                 </f7-col>
+                 <f7-col>
+                    <f7-link v-if="isUserAuthenticated()" 
+                             style="float:right"
+                             @click="addComment(acc)"
+                             >Comment ({{acc.num_comments}})
+                    </f7-link>
+                 </f7-col>
+              </f7-row>
+           </f7-block>
+        </f7-accordion-content>
+     </f7-list-item>
+     </f7-list>
   </f7-block>
 
   <!-- FAB to create accomodation -->
   <f7-fab v-if="isUserAuthenticated()"
-          position="right-bottom" 
+          position="right-top" 
           slot="fixed" 
           @click="popupOpened=true"
-          color="red">
+          color="green"
+          >
      <f7-icon ios="f7:add" aurora="f7:add" md="material:add"></f7-icon>
   </f7-fab>
 
@@ -258,9 +273,7 @@ export default {
       return {
          accomodations: [],
          popupOpened: false,
-         hideKeys: `id,url,type,available_from,open_vacancies
-                     ,available_for,status,last_modified_on
-                     ,num_comments,created_by,created_on`.split(','),
+         showKeys: "description,rent,advance,extra,owner_contact".split(','),
          popupAction: 'New',
          photos: [],
          accomodation: {

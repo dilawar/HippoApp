@@ -158,8 +158,6 @@ export default {
                continue;
             self.items.push(self.eventToTimelinePoint(key, ev));
          }
-         if(self.items.length == 0)
-            self.items.push({tag:'Nothing found.', content:'Pull to refresh!'});
       },
       loadMore: function() {
          const self = this;
