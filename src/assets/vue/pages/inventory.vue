@@ -35,9 +35,12 @@
                       :style="`top: ${vlData.topPosition}px`"
                       >
              <div slot="footer">
-                <f7-link style="margin-right:5px" 
-                   href="'mailto:'+item.data.person_in_charge">
-                   {{item.data.person_in_charge}} 
+                <f7-link external
+                         target="_system"
+                         :href="'mailto:'+item.data.person_in_charge"
+                         style="margin-right:5px" 
+                  >
+                  {{item.data.person_in_charge}} 
                 </f7-link>({{item.data.faculty_in_charge}})
              </div>
              <div slot="text" v-html="item.data.description"> </div>
