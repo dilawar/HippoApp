@@ -72,11 +72,11 @@
                      <p><strong>Version</strong> 1.3, <tt>build</tt>20190411</p>
 
                      <h3>Development</h3>
-                     Hosted on <f7-link external target="system" href="https://github.com/dilawar/HippoApp"
+                     Hosted on <f7-link external target="_system" href="https://github.com/dilawar/HippoApp"
                         >Github</f7-link> and is released under MIT License.
 
-                     <p> <strong>Contribution:</strong> <f7-link extrernal target="system"
-                    href="https://github.com/dilawar/HippoApp/blob/master/CONTRIBUTION.md">Read this.
+                     <p> <strong>Contribution:</strong> 
+                     <f7-link extrernal target="_system" href="https://github.com/dilawar/HippoApp/blob/master/CONTRIBUTION.md">Read this.
                      </f7-link></p>
 
 

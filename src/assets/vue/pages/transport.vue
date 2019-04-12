@@ -23,7 +23,7 @@
         <f7-link external 
                  style="float:right"
                  color="green" 
-                 target="system"
+                 target="_system"
                  href="https://www.ncbs.res.in/shuttle_trips"
                  >
                  Official Schedule
