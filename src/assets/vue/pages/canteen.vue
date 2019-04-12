@@ -34,17 +34,17 @@
            </span>
         </f7-card-content>
         <f7-card-footer> 
+           <span style=""> 
+              <f7-button small 
+                         raised  fill
+                         v-if="isUserAuthenticated()"
+                         @click="addItemToMenu(card)"
+                 >Add</f7-button>
+           </span>
            <span style="font-size:x-small">
               Recent contributors: {{ card.footer }}
               <br />
                Last Modified: {{ card.modified_on}} 
-           </span>
-           <span style=""> 
-              <f7-button small 
-                         raised 
-                         v-if="isUserAuthenticated()"
-                         @click="addItemToMenu(card)"
-                 >Add</f7-button>
            </span>
         </f7-card-footer>
      </f7-card>

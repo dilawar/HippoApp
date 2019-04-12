@@ -60,7 +60,8 @@
               <div slot="footer" v-html="genTimeline(item.data)"></div>
               <div slot="header" v-html="genWhereline(item.data)"></div>
 
-              <f7-accordion-content v-html="item.data.title+'<br/>'+item.data.description">
+              <f7-accordion-content style="background-color:Ivory"
+                                    v-html="item.data.title+'<br/>'+item.data.description">
               </f7-accordion-content>
         </f7-list-item>
      </f7-list>

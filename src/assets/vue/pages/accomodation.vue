@@ -1,13 +1,30 @@
 <template>
   <f7-page page-content ptr @ptr:refresh="fetchAccomodations">
-
   <f7-navbar title="Accomodation" back-link="Back"></f7-navbar>
-  <f7-block-title>Total listings: {{accomodations.count}}</f7-block-title>
 
   <f7-block>
      <f7-photo-browser ref="standalone"></f7-photo-browser>
      <f7-list accordion-list media-list no-hairlines>
-     <f7-list-item accordion-item v-for="(acc, key) in accomodations.list" :key="key">
+     <f7-list-item accordion-item 
+                   swipeout
+                   v-for="(acc, key) in accomodations.list" 
+                   :key="key"
+                   >
+
+          <f7-icon v-if="favouriteAccomodations.includes(acc.id)"
+               icon="fa fa-bookmark fa-2x"
+               slot="media"
+               >
+          </f7-icon>
+
+          <f7-swipeout-actions left>
+             <f7-swipeout-button v-if="! favouriteAccomodations.includes(acc.id)"
+                @click="addToFavoriteAcc(acc.id)">Favourite</f7-swipeout-button>
+             <f7-swipeout-button v-else 
+                @click="removeFromFavoriteAcc(acc.id)">Unfavorite</f7-swipeout-button>
+          </f7-swipeout-actions>
+
+
         <div slot="header" style="font-size:small;margin-left:2px"> 
            <span style="color:green">{{acc.status }} | {{acc.available_for}}</span>.
         </div>
@@ -22,7 +39,7 @@
               'YYYY-MM-DD HH:mm:ss').format('MMM DD')}} 
         </div>
         <f7-accordion-content>
-           <f7-block>
+           <f7-block style="background-color:Ivory">
               <div> 
                  <f7-icon icon="fa fa-clock-o fa-fw"></f7-icon>
                  Available from {{str2Moment(acc.available_from,
@@ -272,6 +289,7 @@ export default {
       const self = this;
       return {
          accomodations: [],
+         favouriteAccomodations: self.loadStore('me.favourite.accomodations'),
          popupOpened: false,
          showKeys: "description,rent,advance,extra,owner_contact".split(','),
          popupAction: 'New',
@@ -390,6 +408,24 @@ export default {
       deleteComment: function(id) {
          const self = this;
          self.sendRequest('/accomodation/comment/delete/'+id);
+      },
+      addToFavoriteAcc: function(id) {
+         const self = this;
+         self.favouriteAccomodations = self.loadStore('me.favourite.accomodations');
+         if( ! self.favouriteAccomodations )
+            self.favouriteAccomodations = [];
+
+         if(! self.favouriteAccomodations.includes(id))
+            self.favouriteAccomodations.push(id);
+         self.saveStore('me.favourite.accomodations', self.favouriteAccomodations);
+         console.log( 'Added ' + id + ' to favourite accomodations.');
+      },
+      removeFromFavoriteAcc: function(id) {
+            const self = this;
+            self.favouriteAccomodations = self.loadStore('me.favourite.accomodations');
+            if(self.favouriteAccomodations.includes(id))
+               self.removeFromArray(self.favouriteAccomodations, id);
+            self.saveStore('me.favourite.accomodations', self.favouriteAccomodations);
       },
    },
 };
