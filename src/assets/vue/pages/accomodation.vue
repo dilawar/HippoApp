@@ -284,6 +284,9 @@
 <script>
 import moment from 'moment';
 
+import { OpenStreetMapProvider, } from 'leaflet-geosearch'; 
+const provider = new OpenStreetMapProvider(); 
+
 export default {
    data() {
       const self = this;

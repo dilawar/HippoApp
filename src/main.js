@@ -1,6 +1,7 @@
 // Import Vue
 import Vue from 'vue'
 
+
 // OSM and leaflet.
 import {LMap, LTileLayer, LMarker, LPopup, LTooltip, LControlLayers} from 'vue2-leaflet';
 import Vue2LeafletLocateControl from 'vue2-leaflet-locatecontrol';
