@@ -316,8 +316,12 @@ export default {
          comments: [],
          thisAccomodation: '',
          commentPopupOpened: false,
-         mapProvider: new GoogleProvider({params: {key:
-            self.loadStoreStr('GOOGLE-MAP-API-KEY'), }, }),
+         mapProvider: new GoogleProvider({
+            params: {
+               key: self.loadStoreStr('GOOGLE-MAP-API-KEY'), 
+               client: 'HippoAndroidApp',
+            },
+         }),
       };
    },
    mounted() {
