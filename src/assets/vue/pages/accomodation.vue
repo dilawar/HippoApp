@@ -200,13 +200,10 @@
               </f7-list-input>
 
               <f7-list-input label="Address"
-                             ref="address"
-                             :value="accomodation.address"
-                             @input="locateAddress"
-                             type="textarea" 
-                             :resizable="true"
-                             required
+                             type="text"
+                             :input="false"
                              >
+                     <input id="autocomplete-dropdown-expand"  slot="input" type="text" />
               </f7-list-input>
 
               <f7-list-input label="Description"
@@ -326,15 +323,41 @@ export default {
    },
    mounted() {
       const self = this;
+      const app = self.$f7;
 
       // Get all accomodations.
       self.postWithPromise( '/accomodation/list').then(
          function(json) {
             self.accomodations = JSON.parse(json).data;
             self.saveStore('accomodations', self.accomodations);
-      });
+         }
+      );
 
-      // Add searcher.
+      // Autocomplete.
+      app.autocomplete.create({
+         inputEl : '#autocomplete-dropdown-expand',
+         openIn: 'dropdown',
+         valueProperty: 'address',
+         limit: 5,
+
+         source: function(q, render) {
+            var autocomplete = this;
+            if(q.length === 0)
+            {
+               render(results);
+               return;
+            }
+            autocomplete.preloaderShow();
+            var res = [];
+            self.mapProvider.search({query: q}).then( (results) => {
+               console.log(results);
+               //render(results);
+               res = results.map(x => x.label);
+               autocomplete.preloaderHide();
+               render(res);
+            });
+         },
+      });
    },
    methods: { 
       fetchAccomodations: function() {
@@ -361,9 +384,9 @@ export default {
          const self = this;
          let addr = event.target.value;
          event.preventDefault();
-         self.mapProvider.search({query: addr}).then( (results) => {
-            console.log(results);
-         });
+         //self.mapProvider.search({query: addr}).then( (results) => {
+         //   console.log(results);
+         //});
       },
       submitAccomodation: function() {
          const self = this;
