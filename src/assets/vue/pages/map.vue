@@ -1,22 +1,6 @@
 <template>
    <f7-page page-content>
       <f7-navbar title="Map" back-link="Back"></f7-navbar>
-
-      <!-- FAB Right Bottom (Orange) 
-      <f7-fab position="right-bottom" slot="fixed" color="orange">
-         <f7-icon ios="f7:add" aurora="f7:add"
-                               md="material:add"></f7-icon>
-         <f7-icon ios="f7:close" aurora="f7:close"
-                                 md="material:close"></f7-icon>
-         <f7-fab-buttons position="top">
-            <f7-fab-button label="Action
-            1">1</f7-fab-button>
-            <f7-fab-button label="Action
-            2">2</f7-fab-button>
-         </f7-fab-buttons>
-      </f7-fab>
-      -->
-
       <l-map ref="map" 
              :zoom="zoom" 
              :center="center"
@@ -35,28 +19,37 @@
                            layer-type="base"
                            >
              </l-tile-layer>
-                <l-marker :ref="v.id" 
-                           v-for="v in mapVenues" 
-                           :key="v.id" 
-                           :lat-lng="v.xy"
-                           :icon="getIcon(v.size)"
-                           > 
-                   <l-tooltip :options="toolTipOpts">
-                      <span v-html="v.html"></span>
-                   </l-tooltip>
-                </l-marker>
+             <l-marker :ref="v.id" 
+                        v-for="v in mapVenues" 
+                        :key="v.id" 
+                        :lat-lng="v.xy"
+                        :icon="getIcon(v.size)"
+                        > 
+                <l-tooltip :options="toolTipOpts">
+                   <span v-html="v.html"></span>
+                </l-tooltip>
+             </l-marker>
       </l-map>
    </f7-page>
 </template>
 
 <script>
 
+//import {GeoSearchControl, OpenStreetMapProvider} from 'leaflet-geosearch';
+//import "leaflet-geosearch/assets/css/leaflet.css";
+//
+//// Add search control.
+//const provider = new OpenStreetMapProvider();
+//const searchControl = new GeoSearchControl({ provider: provider, }); 
+//searchControl.setPosition('topright');
 
 export default {
    data() {
+      const self = this;
       return {
          zoom:17,
          bounds: null,
+         map: null,
          tileProviders: [
             {
                name: 'OpenStreetMap',
@@ -79,10 +72,55 @@ export default {
          venues: [],
          mapVenues : [],
          venueIcon: L.divIcon( {className: 'fa fa-map-marker fa-2x' }),
+         geosearchOptions: {},
+         CustomControl :  L.Control.extend({
+            onAdd: function (map) {
+               var container = L.DomUtil.create('input');
+               container.type="input";
+               container.placeholder="Search venues";
+               container.value = "";
+
+               container.style.backgroundColor = 'white';     
+               //container.style.backgroundImage = "url(https://t1.gstatic.com/images?q=tbn:ANd9GcR6FCUMW5bPn8C4PbKak2BJQQsmC-K9-mbYBeFZm1ZM2w2GRy40Ew)";
+               container.style.backgroundSize = "100px 100px";
+               container.style.width = '110px';
+               container.style.height = '15px';
+
+               container.onmouseover = function(){
+                  container.style.backgroundColor = 'pink'; 
+               }
+               container.onmouseout = function(){
+                  container.style.backgroundColor = 'white'; 
+               }
+
+               container.oninput = function( ){
+                  if(container.value.length > 1){
+                     let name = container.value;
+                     console.log( 'Trigger autocomplete');
+                     console.log( name );
+                     let found = [];
+                     for(let k in self.mapVenues)
+                     {
+                        let venue = self.mapVenues[k];
+                        if( venue.id.toLowerCase().includes(name.toLowerCase()) )
+                           found.push(venue);
+                     }
+                     console.log( 'Total ', found.length, ' venues found.');
+                     // Flash these venues
+                     found.map( venue => {
+                        L.popup().setLatLng(venue.xy).setContent(venue.id).addTo(self.map);
+                     });
+                  }
+               }
+
+               return container;
+            },
+         }),
       };
    },
    mounted: function() {
       const self = this;
+
       self.postWithPromise( '/venue/list/all').then(
          function(json) {
             self.venues = JSON.parse(json).data;
@@ -111,6 +149,10 @@ export default {
             };
          }
       );
+
+      // Once venues have been fetched, add them to controller.
+      self.map = this.$refs.map.mapObject;
+      new self.CustomControl({position:'topright'}).addTo(self.map);
    },
    methods: { 
       refreshVenues: function() {
@@ -143,7 +185,7 @@ export default {
             iconUrl: "static/leaf-green.png",
             iconSize:     [strength, 2*strength],
             iconAnchor:   [strength*0.5, 2*strength],
-            popupAnchor:  [0, 0]
+            popupAnchor:  [0, 10]
          });
       },
    },

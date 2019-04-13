@@ -4,6 +4,7 @@ import Vue from 'vue'
 // OSM and leaflet.
 import {LMap, LTileLayer, LMarker, LPopup, LTooltip, LControlLayers} from 'vue2-leaflet';
 import Vue2LeafletLocateControl from 'vue2-leaflet-locatecontrol';
+
 import {Icon} from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
@@ -152,6 +153,10 @@ Vue.mixin({
          const self = this;
          const app = self.$f7;
          app.request.post(self.$store.state.api+'/'+endpoint);
+      },
+      getGoogleMapApiKey: function( ) {
+         const self = this;
+         return this.$store.state.google_map_api_key;
       },
       fetchAndStore: function(endpoint, key) {
          const self = this;
