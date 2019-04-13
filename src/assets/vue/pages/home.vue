@@ -225,25 +225,24 @@
          {
             const self = this;
             const app = self.$f7;
-
             app.dialog.preloader("Loging in ...");
-            app.request.post(self.$store.state.api + '/authenticate'
-               , {'login':self.username, 'password': btoa(self.password)}
-               , function(json) 
-               {
+            app.request.promise.post( self.$store.state.api+"/authenticate"
+               , {"login":self.username, "password": btoa(self.password)}
+               ).then( function(json) {
                   var res = JSON.parse(json);
                   if( res.status =='ok' && res.data.apikey != '')
                   {
                      self.$localStorage.set('HIPPO-API-KEY', res.data.apikey);
+                     self.$localStorage.set('GOOGLE-MAP-API-KEY', res.data.gmapapikey);
                      self.$localStorage.set('HIPPO-LOGIN', self.username);
                      self.isUserAuthenticated = true;
                      self.$f7router.refreshPage();
                   }
                   else
                      app.dialog.alert("Failed to login. Try again.", "Error");
-               }
-            );
-            setTimeout(() => app.dialog.close(), 200);
+                  app.dialog.close();
+               });
+            setTimeout(() => app.dialog.close(), 2000);
          },
          signOut: function() {
             const self = this;
