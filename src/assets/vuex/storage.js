@@ -7,10 +7,9 @@ export default new Vuex.Store({
   state: {
     user: '',
     alreadyLoggedIn: false,
-    //api : 'https://ncbs.res.in/hippo/api',
-    api : 'https://172.16.223.30/hippo/api',
+    api : 'https://ncbs.res.in/hippo/api',
+    //api : 'https://172.16.223.30/hippo/api',
     key : '',
-    google_map_api_key: 'AIzaSyCf22AJi56cEmBb-hN-1SF-L5EZNtAtF1g',
     tobook: null
   },
   actions: {
