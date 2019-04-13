@@ -200,8 +200,9 @@
               </f7-list-input>
 
               <f7-list-input label="Address"
+                             ref="address"
                              :value="accomodation.address"
-                             @input="accomodation.address = $event.target.value"
+                             @input="locateAddress"
                              type="textarea" 
                              :resizable="true"
                              required
@@ -284,8 +285,7 @@
 <script>
 import moment from 'moment';
 
-import { OpenStreetMapProvider, } from 'leaflet-geosearch'; 
-const provider = new OpenStreetMapProvider(); 
+import { OpenStreetMapProvider, GoogleProvider } from 'leaflet-geosearch'; 
 
 export default {
    data() {
@@ -316,6 +316,8 @@ export default {
          comments: [],
          thisAccomodation: '',
          commentPopupOpened: false,
+         mapProvider: new GoogleProvider({params: {key:
+            self.loadStoreStr('GOOGLE-MAP-API-KEY'), }, }),
       };
    },
    mounted() {
@@ -327,6 +329,8 @@ export default {
             self.accomodations = JSON.parse(json).data;
             self.saveStore('accomodations', self.accomodations);
       });
+
+      // Add searcher.
    },
    methods: { 
       fetchAccomodations: function() {
@@ -348,6 +352,14 @@ export default {
             });
          setTimeout( () => app.dialog.close(), 1000);
          app.ptr.done();
+      },
+      locateAddress: function(event) {
+         const self = this;
+         let addr = event.target.value;
+         event.preventDefault();
+         self.mapProvider.search({query: addr}).then( (results) => {
+            console.log(results);
+         });
       },
       submitAccomodation: function() {
          const self = this;
