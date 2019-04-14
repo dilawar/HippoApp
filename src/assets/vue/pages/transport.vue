@@ -4,13 +4,21 @@
   <f7-navbar title="Transport" back-link="Back"></f7-navbar>
 
   <f7-link external 
-           style="float:right"
            color="green" 
            target="_system"
            href="https://www.ncbs.res.in/shuttle_trips"
            >Official Schedule
   </f7-link> 
 
+  <!-- FAB Left Top (Yellow) -->
+  <f7-fab position="right-bottom" 
+          slot="fixed" 
+          color="green" 
+          @click="trackMe()"
+          :text="tracking?'Stop':'Track'"
+          >
+     <f7-icon icon="fa fa-map-marker fa-fw"></f7-icon>
+  </f7-fab>
 
   <!-- Select days buttons. -->
   <f7-block>
@@ -103,6 +111,11 @@
   </f7-fab>
   -->
 
+  <f7-block v-if="! tracking" style="align:bottom">
+  <div>If you are inside a vehicle, click on <tt>TRACK</tt> button to anonymously
+     share you location. We use it to display live location and create routes.
+  </div>
+  </f7-block>
 </f7-page>
 </template>
 
@@ -123,6 +136,8 @@ export default {
          popupOpened: false,
          // This goes onto a poup showing route map.
          thisRouteMap: '<p>No route found.</p>',
+         tracking: false, 
+         watchID: null,
       };
    },
    mounted: function() {
@@ -261,6 +276,35 @@ export default {
          if(nextTrip)
             return 'Next trip ' + nextTrip.fromNow();
          return 'All trips are over!';
+      },
+      trackMe: function() {
+         const self = this;
+         const app = self.$f7;
+
+         self.tracking = ! self.tracking;
+         if(self.tracking) 
+         {
+            self.watchID = navigator.geolocation.watchPosition( 
+               function(pos) {
+                  let coord = pos.coords;
+                  self.sendRequestSilent('/geolocation/submit', pos.coords);
+               }
+               , function() { console.log( 'error'); }
+               , { enableHighAccuracy : true }
+            );
+
+            // Do not track more than 45 mins.
+            setTimeout(() => {
+               if(self.watchID)
+                  navigator.geolocation.clearWatch(self.watchID);
+               self.tracking = false;
+            }, 1000*60*45);
+         }
+         else 
+         {
+            self.tracking = false;
+            navigator.geolocation.clearWatch(self.watchID);
+         }
       },
    },
 };

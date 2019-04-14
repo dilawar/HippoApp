@@ -215,6 +215,17 @@ Vue.mixin({
          );
          setTimeout( () => app.dialog.close(), 1000);
       },
+      sendRequestSilent: function(endpoint, post) {
+         const self = this;
+         const app = self.$f7;
+         let data = { ...self.apiPostData(), ...post};
+         app.request.promise.post(self.$store.state.api+'/'+endpoint, data)
+            .then( function(json) {
+               const res = JSON.parse(json);
+               return res.status;
+            }
+         );
+      },
       fetchVenues: function() {
          const self = this;
          self.fetchAndStore( '/venue/list/all', 'venues');
