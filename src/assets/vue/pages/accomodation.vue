@@ -66,7 +66,7 @@
                     </f7-link>
                  </f7-col>
                  <f7-col>
-                    <f7-link href="/map/" >Map</f7-link>
+                    <f7-link :href="'/osm/accomodation/'+acc.id+'/'">Map</f7-link>
                  </f7-col>
                  <f7-col>
                     <f7-link v-if="isUserAuthenticated()" 
