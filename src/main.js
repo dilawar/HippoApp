@@ -215,10 +215,14 @@ Vue.mixin({
          );
          setTimeout( () => app.dialog.close(), 1000);
       },
-      sendRequestSilent: function(endpoint, post) {
+      sendCoordinates: function(endpoint, coords) {
          const self = this;
          const app = self.$f7;
-         let data = { ...self.apiPostData(), ...post};
+         let data = {};
+
+         // Construct a object for JSON.
+         for(let k in coords)
+            data[k] = coords[k];
          app.request.promise.post(self.$store.state.api+'/'+endpoint, data)
             .then( function(json) {
                const res = JSON.parse(json);

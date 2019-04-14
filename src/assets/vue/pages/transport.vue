@@ -189,10 +189,8 @@ export default {
       {
          const self = this;
          let d = self.transport.timetable[self.selectedDay.toLowerCase()];
-         console.log('day', d);
          if(d)
             d = d[self.pickup.toLowerCase()];
-         console.log('pickup', d);
          if(d)
             d = d[self.drop.toLowerCase()];
          self.thisTimetable = Object.values(d);
@@ -246,7 +244,6 @@ export default {
       routeMap: function(url) {
          const self = this;
          self.thisRouteMap = url;
-         console.log( 'Showing route from ', url );
          self.popupOpened = true;
       },
       thisRouteTimetable: function(route) {
@@ -286,8 +283,7 @@ export default {
          {
             self.watchID = navigator.geolocation.watchPosition( 
                function(pos) {
-                  let coord = pos.coords;
-                  self.sendRequestSilent('/geolocation/submit', pos.coords);
+                  self.sendCoordinates('/geolocation/submit', pos.coords);
                }
                , function() { console.log( 'error'); }
                , { enableHighAccuracy : true }
