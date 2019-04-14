@@ -24,6 +24,8 @@ Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png')
 });
 
+// GoogleMap services.
+import { OpenStreetMapProvider, GoogleProvider } from 'leaflet-geosearch'; 
 
 // Lightweight timeline.
 import LightTimeline from 'vue-light-timeline';
@@ -73,6 +75,16 @@ Vue.use(VueLocalStorage)
 
 // Global function.
 Vue.mixin({
+   data: function() {
+      return {
+         googleMapProvider: new GoogleProvider({
+            params: {
+               key: this.loadStoreStr('GOOGLE-MAP-API-KEY'), 
+               client: 'HippoAndroidApp',
+            },
+         }),
+      };
+   },
    methods : {
       dbDate: function( date ) {
          return moment(date).format("YYYY-MM-DD");

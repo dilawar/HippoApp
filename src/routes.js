@@ -78,7 +78,7 @@ export default [
       component: NCBSMap
    },
    {
-      path: '/osm/:action/:id/',
+      path: '/osm/:arg1/:arg2/:arg3?',
       component: OSM
    },
    {

@@ -1,7 +1,7 @@
 <template>
    <f7-page page-content>
       <f7-navbar title="Open Street Map" back-link="Back"></f7-navbar>
-      <l-map ref="map" 
+      <l-map ref="osm" 
              :zoom="zoom" 
              :center="center"
              :style="mapStyle"
@@ -20,13 +20,14 @@
                            >
              </l-tile-layer>
              <l-marker :ref="v.id" 
-                        v-for="v in mapVenues" 
+                        v-for="v in markers" 
                         :key="v.id" 
                         :lat-lng="v.xy"
-                        :icon="getIcon(v.size)"
+                        :options="v.options"
                         > 
-                <l-tooltip :options="$store.state.OSM.toolTipOpts">
-                   <span v-html="v.html"></span>
+                <l-tooltip :options="$store.state.OSM.toolTipOpts"
+                   style="white-space:normal;width:100px">
+                   <div v-html="v.html"></div>
                 </l-tooltip>
              </l-marker>
       </l-map>
@@ -39,101 +40,68 @@ export default {
    data() {
       const self = this;
       return {
-         zoom:17,
+         zoom:13,
          bounds: null,
          map: null,
          center: L.latLng(13.071081, 77.58025),
          mapStyle: 'width:100%; height:100%',
+         markers: [],
          venues: [],
-         mapVenues : [],
-         venueIcon: L.divIcon( {className: 'fa fa-map-marker fa-2x' }),
          geosearchOptions: {},
-         CustomControl :  L.Control.extend({
-            onAdd: function (map) {
-               var container = L.DomUtil.create('input');
-               container.type="input";
-               container.placeholder="Search venues";
-               container.value = "";
-
-               container.style.backgroundColor = 'white';     
-               //container.style.backgroundImage = "url(https://t1.gstatic.com/images?q=tbn:ANd9GcR6FCUMW5bPn8C4PbKak2BJQQsmC-K9-mbYBeFZm1ZM2w2GRy40Ew)";
-               container.style.backgroundSize = "100px 100px";
-               container.style.width = '110px';
-               container.style.height = '15px';
-
-               container.onmouseover = function(){
-                  container.style.backgroundColor = 'pink'; 
-               }
-               container.onmouseout = function(){
-                  container.style.backgroundColor = 'white'; 
-               }
-
-               container.oninput = function( ){
-                  if(container.value.length > 1){
-                     let name = container.value;
-                     let found = [];
-                     for(let k in self.mapVenues)
-                     {
-                        let venue = self.mapVenues[k];
-                        if( venue.id.toLowerCase().includes(name.toLowerCase()) )
-                           found.push(venue);
-                     }
-                     // Flash these venues
-                     found.map( venue => {
-                        L.popup().setLatLng(venue.xy).setContent(venue.id).addTo(self.map);
-                     });
-                  }
-               }
-
-               return container;
-            },
-         }),
       };
    },
    mounted: function() {
       const self = this;
-      self.postWithPromise("/venue/list/all").then(
-         function(json) {
-            let res = JSON.parse(json);
-            if(res.status === "ok")
-            {
-               self.venues = JSON.parse(json).data;
-               self.saveStore("venues", self.venues);
-            }
-            else
-            {
-               self.venues = self.loadStore("venues");
-               console.log( "Failed to fetch venues" );
-            }
+      self.map = self.$refs.osm.mapObject;
 
-            // Reformat to create mapVenues
-            for(var k in self.venues)
-            {
-               var venue = self.venues[k];
-               if(venue.longitude > 0 && venue.latitude > 0)
-               {
-                  var mapV = { 
-                     id: venue.id
-                     , xy: L.latLng(parseFloat(venue.latitude), parseFloat(venue.longitude))
-                     , html: venue.id + "<sup>" + venue.floor + "</sup>"
-                     , size: parseInt(venue.strength),
-                  };
-
-                  // Group venues according to coordinates. If two venues shares
-                  // coordinate then stack them up onto each other.
-                  let venueWithSameCoords = self.mapVenues.find(x=> x.xy.equals(mapV.xy));
-                  if(venueWithSameCoords)
-                     venueWithSameCoords.html += '<br/>' + mapV.html;
-                  else
-                     self.mapVenues.push(mapV);
-               }
-            };
-         }
+      // Add NCBS to default.
+      self.markers.push({ id: 'NCBS', xy: self.center
+         , html: "NCBS Bangalore"
+         , options: {opacity: 0.75}}
       );
 
-      // Once venues have been fetched, add them to controller.
-      self.map = this.$refs.map.mapObject;
-      new self.CustomControl({position:'topright'}).addTo(self.map);
+      // Check what we got from router.
+      let action = self.$f7route.params.arg1;
+      let id = self.$f7route.params.arg2;
+      if(action === 'accomodation')
+      {
+         let acc = self.loadStore('accomodations').list.find(x=> x.id === id);
+         if(acc)
+         {
+            let addr = acc.address;
+            let loc = acc.location;
+            if(loc) 
+            {
+               // Location found. It is coordinates.
+               self.markers.push({
+                  id: index, xy: L.latLng(place.y, place.x)
+                  , html: place.label
+               });
+            }
+            else 
+            {
+               self.googleMapProvider.search({query: addr}).then( (results) => {
+                  console.log( "Found many results ", results);
+                  results.map((place, index) => {
+                     console.log('x', place.x, place.y, place.label);
+                     self.markers.push({
+                        id: index, xy: L.latLng(place.y, place.x)
+                        , html: `<font style='color:red'> This position is found by
+                                 Google Map as per given address. Use it at your
+                                 own risk! <br /> </font>`
+                        + place.label
+                     });
+                  });
+                  console.log( 'Total markers ' + self.markers.length);
+                  // Add the address on the 
+               });
+            }
+         }
+      }
+      else
+      {
+         console.log("Not supported:"+action+"/"+id);
+      }
    },
    methods: { 
       refreshVenues: function() {
@@ -152,15 +120,6 @@ export default {
       },
       boundsUpdated (bounds) {
          this.bounds = bounds;
-      },
-      getIcon: function( strength ) {
-         strength = 10+2*Math.sqrt(strength);
-         return L.icon({
-            iconUrl: "static/leaf-green.png",
-            iconSize:     [strength, 2*strength],
-            iconAnchor:   [strength*0.5, 2*strength],
-            popupAnchor:  [0, 10]
-         });
       },
    },
 };

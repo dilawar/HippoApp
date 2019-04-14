@@ -288,7 +288,6 @@
 
 <script>
 import moment from 'moment';
-
 import { OpenStreetMapProvider, GoogleProvider } from 'leaflet-geosearch'; 
 
 export default {
