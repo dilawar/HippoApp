@@ -19,13 +19,12 @@
                            layer-type="base"
                            >
              </l-tile-layer>
-             <l-marker :ref="v.id" 
+             <l-marker :ref="'marker'+v.id" 
                         v-for="v in mapVenues" 
                         :key="v.id" 
                         :lat-lng="v.xy"
-                        :icon="getIcon(v.size)"
                         > 
-                <l-tooltip :options="$store.state.OSM.toolTipOpts">
+                <l-tooltip :ref="'tooltip'+v.id" :options="$store.state.OSM.toolTipOpts">
                    <span v-html="v.html"></span>
                 </l-tooltip>
              </l-marker>
@@ -39,7 +38,7 @@ export default {
    data() {
       const self = this;
       return {
-         zoom:17,
+         zoom:18,
          bounds: null,
          map: null,
          center: L.latLng(13.071081, 77.58025),
@@ -69,7 +68,7 @@ export default {
                }
 
                container.oninput = function( ){
-                  if(container.value.length > 1){
+                  if(container.value.length > 2){
                      let name = container.value;
                      let found = [];
                      for(let k in self.mapVenues)
@@ -80,7 +79,9 @@ export default {
                      }
                      // Flash these venues
                      found.map( venue => {
-                        L.popup().setLatLng(venue.xy).setContent(venue.id).addTo(self.map);
+                        // Find its reference.
+                        let p = self.$refs['marker'+venue.id][0].mapObject;
+                        p.bindPopup(venue.html).openPopup();
                      });
                   }
                }
@@ -118,14 +119,7 @@ export default {
                      , html: venue.id + "<sup>" + venue.floor + "</sup>"
                      , size: parseInt(venue.strength),
                   };
-
-                  // Group venues according to coordinates. If two venues shares
-                  // coordinate then stack them up onto each other.
-                  let venueWithSameCoords = self.mapVenues.find(x=> x.xy.equals(mapV.xy));
-                  if(venueWithSameCoords)
-                     venueWithSameCoords.html += '<br/>' + mapV.html;
-                  else
-                     self.mapVenues.push(mapV);
+                  self.mapVenues.push(mapV);
                }
             };
          }
