@@ -3,25 +3,33 @@
 
   <f7-navbar title="Transport" back-link="Back"></f7-navbar>
 
-  <f7-link external 
-           color="green" 
-           target="_system"
-           href="https://www.ncbs.res.in/shuttle_trips"
-           >Official Schedule
-  </f7-link> 
-
-  <!-- FAB Left Top (Yellow) -->
-  <f7-fab position="right-bottom" 
-          slot="fixed" 
-          color="green" 
-          @click="trackMe()"
-          :text="tracking?'Stop':'Track'"
-          >
-     <f7-icon icon="fa fa-map-marker fa-fw"></f7-icon>
-  </f7-fab>
 
   <!-- Select days buttons. -->
   <f7-block>
+     <f7-row>
+        <f7-col width="40">
+           <f7-button external 
+                    color="green" 
+                    target="_system"
+                    href="https://www.ncbs.res.in/shuttle_trips"
+                    ><small>Official Schedule</small>
+           </f7-button> 
+        </f7-col>
+        <f7-col width="30">
+           <f7-button color="green" 
+                      raised  small
+                      href="/osm/liveroute/30/"
+                      >Track</f7-button>
+        </f7-col>
+        <f7-col width="30">
+           <f7-button color="green" 
+                      raised small
+                      @click="trackMe()"
+                      :text="tracking?'Stop':'Share'"
+                      >
+           </f7-button>
+        </f7-col>
+     </f7-row>
      <f7-row noGap>
         <f7-col noGap v-for="d in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']" :key="'col'+d">
            <f7-button  small

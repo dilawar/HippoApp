@@ -1,6 +1,6 @@
 <template>
    <f7-page page-content>
-      <f7-navbar title="Open Street Map" back-link="Back"></f7-navbar>
+      <f7-navbar :title="title" back-link="Back"></f7-navbar>
       <l-map ref="osm" 
              :zoom="zoom" 
              :center="center"
@@ -10,6 +10,8 @@
              @update:bounds="boundsUpdated"
              >
              <l-control-layers position="topright"></l-control-layers>
+
+
              <l-tile-layer v-for="tileProvider in $store.state.OSM.tileProviders"
                            :key="tileProvider.name"
                            :name="tileProvider.name"
@@ -19,6 +21,13 @@
                            layer-type="base"
                            >
              </l-tile-layer>
+
+             <l-polyline v-for="(arr, key) in hotlines" 
+                                :lat-lngs="arr" 
+                                :key="key"
+                                >
+             </l-polyline>
+
              <l-marker :ref="v.id" 
                         v-for="v in markers" 
                         :key="v.id" 
@@ -36,11 +45,14 @@
 
 <script>
 
+import hotline from 'leaflet-hotline';
+
 export default {
    data() {
       const self = this;
       return {
          zoom:13,
+         title: 'OSM',
          bounds: null,
          map: null,
          center: L.latLng(13.071081, 77.58025),
@@ -48,6 +60,7 @@ export default {
          markers: [],
          venues: [],
          geosearchOptions: {},
+         hotlines: {},
       };
    },
    mounted: function() {
@@ -98,6 +111,32 @@ export default {
             }
          }
       }
+      else if(action === "liveroute")
+      {
+         const self = this;
+         const app = self.$f7;
+         self.map = self.$refs.osm.mapObject;
+
+         // Show location of all available tracks.
+         self.title = 'OSM: Live location';
+         self.postWithPromise( '/geolocation/get/'+id).then(
+            function(json) {
+               let res = JSON.parse(json);
+               if(res.status === "ok") 
+               {
+                  for(let k in res.data) 
+                  {
+                     let pts = res.data[k].map(x => [x.latitude, x.longitude]);
+                     self.hotlines[k] = pts;
+                  }
+               }
+               else
+               {
+                  console.log("No data");
+               }
+            }
+         );
+      }
       else
       {
          console.log("Not supported:"+action+"/"+id);
@@ -109,8 +148,8 @@ export default {
       },
       onResize: function() { },
       refreshMap: function() {
-         const map = this.$refs.map.mapObject;
-         //this.venues.map( x => x );
+         // const map = this.$refs.osm.mapObject;
+         // this.venues.map( x => x );
       },
       zoomUpdated (zoom) {
          const self = this;

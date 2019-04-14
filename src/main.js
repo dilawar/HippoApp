@@ -1,9 +1,8 @@
 // Import Vue
 import Vue from 'vue'
 
-
 // OSM and leaflet.
-import {LMap, LTileLayer, LMarker, LPopup, LTooltip, LControlLayers} from 'vue2-leaflet';
+import {LMap, LTileLayer, LMarker, LPolyline, LPopup, LTooltip, LControlLayers} from 'vue2-leaflet';
 import Vue2LeafletLocateControl from 'vue2-leaflet-locatecontrol';
 
 import {Icon} from 'leaflet'
@@ -14,6 +13,7 @@ Vue.component('l-tile-layer', LTileLayer);
 Vue.component('l-marker', LMarker);
 Vue.component('l-popup', LPopup);
 Vue.component('l-tooltip', LTooltip);
+Vue.component('l-polyline', LPolyline);
 Vue.component('l-control-layers', LControlLayers);
 Vue.component('v-locatecontrol', Vue2LeafletLocateControl);
 
