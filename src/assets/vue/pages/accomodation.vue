@@ -207,7 +207,9 @@
                              type="text"
                              :input="false"
                              >
-                     <input id="autocomplete-dropdown-expand"  slot="input" type="text" />
+                     <input id="autocomplete-dropdown-expand"  
+                            :value="accomodation.address"
+                            slot="input" type="text" />
               </f7-list-input>
 
               <f7-list-input label="Description"
@@ -357,6 +359,7 @@ export default {
             }
             autocomplete.preloaderShow();
             var res = [];
+            self.accomodation.address = q;
             self.mapProvider.search({query: q}).then( (results) => {
                console.log(results);
                //render(results);
@@ -364,6 +367,12 @@ export default {
                autocomplete.preloaderHide();
                render(res);
             });
+         },
+         on: {
+            change: function(val) {
+               console.log('Changed to ', val);
+               self.accomodation.address = val[0];
+            },
          },
       });
    },
