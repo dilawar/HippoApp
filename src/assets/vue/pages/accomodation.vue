@@ -59,14 +59,11 @@
               </span>
 
               <f7-row style="margin-top:1ex">
-                 <f7-col>
-                    <f7-link v-if="acc.created_by===getLogin()"
-                             @click="updateAction(acc)"
-                             >Update
-                    </f7-link>
+                 <f7-col v-if="acc.created_by===getLogin()">
+                    <f7-link @click="updateAction(acc)" >Update </f7-link>
                  </f7-col>
                  <f7-col>
-                    <f7-link :href="'/osm/accomodation/'+acc.id+'/'">Map</f7-link>
+                    <f7-link :href="'/osm/accomodation/'+acc.id+'/'">Show on Map</f7-link>
                  </f7-col>
                  <f7-col>
                     <f7-link v-if="isUserAuthenticated()" 
