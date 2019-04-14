@@ -39,31 +39,31 @@
               'YYYY-MM-DD HH:mm:ss').format('MMM DD')}} 
         </div>
         <f7-accordion-content>
-           <f7-block style="background-color:Ivory">
+           <f7-block style="background-color:Yellow;">
               <div> 
                  <f7-icon icon="fa fa-clock-o fa-fw"></f7-icon>
                  Available from {{str2Moment(acc.available_from,
                  'YYYY-MM-DD').format('MMM DD')}}.
-                 <span v-if="acc.last_modified_on" style="color:green;float:right">
-                    <f7-icon icon="fa fa-bell fa-fw"></f7-icon>
-                    Last modified {{str2Moment(acc.last_modified_on, 'YYYY-MM-DD HH:mm:ss').fromNow()}}
-                 </span>
               </div>
 
               <span v-for="(val, key) in acc">
                  <span v-if="showKeys.find(k => k===key) && val.length > 0">
-                    <span style="color:gray;font-size:x-small">{{formatKey(key)}}</span>
+                    <span style="font-size:x-small">{{formatKey(key)}}</span>
                     <span style="margin-right:2ex;font-size:medium">{{val}}</span>
                     <br />
                  </span>
               </span>
+              <div v-if="acc.last_modified_on" style="color:green;text-align:right">
+                 <f7-icon icon="fa fa-bell fa-fw"></f7-icon>
+                 Last changed: {{str2Moment(acc.last_modified_on, 'YYYY-MM-DD HH:mm:ss').fromNow()}}
+              </div>
 
-              <f7-row style="margin-top:1ex">
+              <f7-row style="margin-top:1ex;font-size:medium">
                  <f7-col v-if="acc.created_by===getLogin()">
                     <f7-link @click="updateAction(acc)" >Update </f7-link>
                  </f7-col>
                  <f7-col>
-                    <f7-link :href="'/osm/accomodation/'+acc.id+'/'">Show on Map</f7-link>
+                    <f7-link :href="'/osm/accomodation/'+acc.id+'/'">Locate</f7-link>
                  </f7-col>
                  <f7-col>
                     <f7-link v-if="isUserAuthenticated()" 
@@ -302,7 +302,7 @@ export default {
          locationMap : {
             center: L.latLng(13.071081, 77.58025),
             bounds: null,
-            zoom: 15,
+            zoom: 16,
          },
          accomodation: {
             type: '',
