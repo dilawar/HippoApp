@@ -64,7 +64,9 @@
                              @click="updateAction(acc)"
                              >Update
                     </f7-link>
-                    <f7-link v-else>+1</f7-link>
+                 </f7-col>
+                 <f7-col>
+                    <f7-link href="/map/" >Map</f7-link>
                  </f7-col>
                  <f7-col>
                     <f7-link v-if="isUserAuthenticated()" 
@@ -299,6 +301,11 @@ export default {
          showKeys: "description,rent,advance,extra,owner_contact".split(','),
          popupAction: 'New',
          photos: [],
+         locationMap : {
+            center: L.latLng(13.071081, 77.58025),
+            bounds: null,
+            zoom: 15,
+         },
          accomodation: {
             type: '',
             status: 'AVAILABLE',
@@ -473,6 +480,19 @@ export default {
             if(self.favouriteAccomodations.includes(id))
                self.removeFromArray(self.favouriteAccomodations, id);
             self.saveStore('me.favourite.accomodations', self.favouriteAccomodations);
+      },
+      refreshMap: function() {
+         //const map = this.$refs.accmap.mapObject;
+         //this.venues.map( x => x );
+      },
+      zoomUpdated (zoom) {
+         const self = this;
+      },
+      centerUpdated (center) {
+         this.locationMap.center = center;
+      },
+      boundsUpdated (bounds) {
+         this.locationMap.bounds = bounds;
       },
    },
 };

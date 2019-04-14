@@ -16,6 +16,7 @@ import BookThisVenuePage from './assets/vue/pages/bookthisvenue.vue';
 import EventPage from './assets/vue/pages/events.vue';
 import TravelPage from './assets/vue/pages/travel.vue';
 import NCBSMap from './assets/vue/pages/map.vue';
+import OSM from './assets/vue/pages/osm.vue';
 import TransportPage from './assets/vue/pages/transport.vue';
 import ColorThemes from './assets/vue/pages/color-themes.vue';
 import Chat from './assets/vue/pages/chat.vue';
@@ -75,6 +76,10 @@ export default [
    {
       path: '/map/',
       component: NCBSMap
+   },
+   {
+      path: '/osm/',
+      component: OSM
    },
    {
       path: '/mybooking/',
