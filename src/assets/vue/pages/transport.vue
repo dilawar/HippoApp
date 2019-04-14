@@ -3,6 +3,15 @@
 
   <f7-navbar title="Transport" back-link="Back"></f7-navbar>
 
+  <f7-link external 
+           style="float:right"
+           color="green" 
+           target="_system"
+           href="https://www.ncbs.res.in/shuttle_trips"
+           >Official Schedule
+  </f7-link> 
+
+
   <!-- Select days buttons. -->
   <f7-block>
      <f7-row noGap>
@@ -11,27 +20,14 @@
                        :key="d" 
                        :fill="(d==selectedDay)?true:false" 
                        @click="changeDay(d)"
-                       > 
-              <font><small>{{d}}</small></font>
+                       > {{d}}
            </f7-button>
         </f7-col>
      </f7-row>
   </f7-block>
 
   <f7-block accordion-list>
-     <f7-block-title small>
-        <f7-link external 
-                 style="float:right"
-                 color="green" 
-                 target="_system"
-                 href="https://www.ncbs.res.in/shuttle_trips"
-                 >
-                 Official Schedule
-        </f7-link> 
-     </f7-block-title>
-
      <f7-list accordion-list no-hairlines>
-
      <f7-list-item accordion-item 
                    v-for="(route, key) in transport.routes" 
                    :key="key"
@@ -264,7 +260,7 @@ export default {
          }
          if(nextTrip)
             return 'Next trip ' + nextTrip.fromNow();
-         return 'You are looking into the Past!';
+         return 'All trips are over!';
       },
    },
 };
