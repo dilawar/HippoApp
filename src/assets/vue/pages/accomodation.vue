@@ -129,17 +129,22 @@
                  </f7-button>
                  <f7-button raised popup-close slot="title">Cancel</f7-button>
               </f7-list-item>
-
+           </f7-list>
+        </f7-block>
+        <f7-block>
+           <f7-block-title small>Existing comments</f7-block-title>
+           <f7-list media-list no-hairlines>
               <!-- Existing comments. -->
               <f7-list-item v-for="(c, key) in comments"
                             :key="key"
                             :text="c.comment"
-                            :header="'By ' + c.commenter"
-                     >
-                  <f7-link v-if="c.commenter===getLogin()"
-                           slot="after"
-                           @click="deleteComment(c.id)"
-                           >Delete</f7-link>
+                            :footer="'By ' + c.commenter"
+                            style="background-color:Ivory"
+                            >
+                            <f7-link v-if="c.commenter===getLogin()"
+                                     slot="after"
+                                     @click="deleteComment(c.id)"
+                                     >Delete</f7-link>
               </f7-list-item>
            </f7-list>
         </f7-block>

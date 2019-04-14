@@ -10,7 +10,7 @@
              @update:bounds="boundsUpdated"
              >
              <l-control-layers position="topright"></l-control-layers>
-             <l-tile-layer v-for="tileProvider in tileProviders"
+             <l-tile-layer v-for="tileProvider in $store.state.OSM.tileProviders"
                            :key="tileProvider.name"
                            :name="tileProvider.name"
                            :visible="tileProvider.visible"
@@ -25,7 +25,7 @@
                         :lat-lng="v.xy"
                         :icon="getIcon(v.size)"
                         > 
-                <l-tooltip :options="toolTipOpts">
+                <l-tooltip :options="$store.state.OSM.toolTipOpts">
                    <span v-html="v.html"></span>
                 </l-tooltip>
              </l-marker>
@@ -35,14 +35,6 @@
 
 <script>
 
-//import {GeoSearchControl, OpenStreetMapProvider} from 'leaflet-geosearch';
-//import "leaflet-geosearch/assets/css/leaflet.css";
-//
-//// Add search control.
-//const provider = new OpenStreetMapProvider();
-//const searchControl = new GeoSearchControl({ provider: provider, }); 
-//searchControl.setPosition('topright');
-
 export default {
    data() {
       const self = this;
@@ -50,24 +42,7 @@ export default {
          zoom:17,
          bounds: null,
          map: null,
-         tileProviders: [
-            {
-               name: 'OpenStreetMap',
-               visible: true,
-               attribution: '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-               url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-            },
-            {
-               name: 'OpenTopoMap',
-               visible: false,
-               url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
-               attribution: 'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
-            }
-         ],
-         toolTipOpts: {permanent:false, interactive:true},
          center: L.latLng(13.071081, 77.58025),
-         url:'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
-         attribution:'&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
          mapStyle: 'width:100%; height:100%',
          venues: [],
          mapVenues : [],
@@ -96,8 +71,6 @@ export default {
                container.oninput = function( ){
                   if(container.value.length > 1){
                      let name = container.value;
-                     console.log( 'Trigger autocomplete');
-                     console.log( name );
                      let found = [];
                      for(let k in self.mapVenues)
                      {
@@ -105,7 +78,6 @@ export default {
                         if( venue.id.toLowerCase().includes(name.toLowerCase()) )
                            found.push(venue);
                      }
-                     console.log( 'Total ', found.length, ' venues found.');
                      // Flash these venues
                      found.map( venue => {
                         L.popup().setLatLng(venue.xy).setContent(venue.id).addTo(self.map);
@@ -120,11 +92,20 @@ export default {
    },
    mounted: function() {
       const self = this;
-
-      self.postWithPromise( '/venue/list/all').then(
+      self.postWithPromise("/venue/list/all").then(
          function(json) {
-            self.venues = JSON.parse(json).data;
-            self.saveStore('venues', self.venues);
+            let res = JSON.parse(json);
+            if(res.status === "ok")
+            {
+               self.venues = JSON.parse(json).data;
+               self.saveStore("venues", self.venues);
+            }
+            else
+            {
+               self.venues = self.loadStore("venues");
+               console.log( "Failed to fetch venues" );
+            }
+
             // Reformat to create mapVenues
             for(var k in self.venues)
             {
@@ -134,7 +115,7 @@ export default {
                   var mapV = { 
                      id: venue.id
                      , xy: L.latLng(parseFloat(venue.latitude), parseFloat(venue.longitude))
-                     , html: venue.id + '<sup>' + venue.floor + '</sup>'
+                     , html: venue.id + "<sup>" + venue.floor + "</sup>"
                      , size: parseInt(venue.strength),
                   };
 
@@ -165,13 +146,6 @@ export default {
       },
       zoomUpdated (zoom) {
          const self = this;
-         //self.map.eachLayer( function(l) {
-         //   console.log(l);
-         //   if(l.options.pane == 'markerPane')
-         //   {
-         //      setTimeout( () => l.togglePopup(), 1000);
-         //   }
-         //});
       },
       centerUpdated (center) {
          this.center = center;
