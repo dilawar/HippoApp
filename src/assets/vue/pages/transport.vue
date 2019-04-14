@@ -136,7 +136,7 @@ export default {
          popupOpened: false,
          // This goes onto a poup showing route map.
          thisRouteMap: '<p>No route found.</p>',
-         tracking: false, 
+         tracking: self.loadStore('tracking'), 
          watchID: null,
       };
    },
@@ -279,6 +279,8 @@ export default {
          const app = self.$f7;
 
          self.tracking = ! self.tracking;
+         self.saveStore('tracking', self.tracking);
+
          if(self.tracking) 
          {
             self.watchID = navigator.geolocation.watchPosition( 
@@ -294,12 +296,14 @@ export default {
                if(self.watchID)
                   navigator.geolocation.clearWatch(self.watchID);
                self.tracking = false;
-            }, 1000*60*45);
+               self.saveStore('tracking', self.tracking);
+               }, 1000*60*45);
          }
          else 
          {
             self.tracking = false;
             navigator.geolocation.clearWatch(self.watchID);
+            self.saveStore('tracking', self.tracking);
          }
       },
    },
