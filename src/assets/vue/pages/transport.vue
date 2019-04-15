@@ -49,8 +49,13 @@
               <f7-list media-list inner>
               <f7-list-item v-for="(t, key) in thisRouteTimetable(route)"
                             :key="key"
-                            style='margin-top:-1ex;padding:-1px'
+                            swipeout
                             >
+                 <f7-swipeout-actions right>
+                    <f7-swipeout-button @click="showRoute(t)">Show This Route
+                    </f7-swipeout-button>
+                 </f7-swipeout-actions>
+
                    <div slot="title">
                       {{str2Moment(t.trip_start_time, 'HH:mm:ss').format('hh:mm A')}}
                    </div>
@@ -62,9 +67,6 @@
                     {{ str2Moment(t.trip_start_time, 'HH:mm:ss').fromNow() }}
                  </span>
 
-                 <div slot="after"  v-if="t.url">
-                    <f7-link @click="routeMap(t.url)">Route</f7-link>
-                 </div>
               </f7-list-item>
            </f7-list>
 
@@ -303,6 +305,9 @@ export default {
             navigator.geolocation.clearWatch(self.watchID);
             self.saveStore('tracking', self.tracking);
          }
+      },
+      showRoute: function() {
+         console.log( "Show me this route" );
       },
    },
 };
