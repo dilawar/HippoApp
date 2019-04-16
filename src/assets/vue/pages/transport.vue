@@ -1,35 +1,25 @@
 <template>
   <f7-page ptr @ptr:refresh="fetchTransportAgain" page-content>
-
   <f7-navbar title="Transport" back-link="Back"></f7-navbar>
 
+  <f7-fab position="right-bottom" slot="fixed" color="green">
+     <f7-icon icon="fa fa-map-marker fa-2x"></f7-icon>
+     <f7-icon icon="fa fa-map fa-2x"></f7-icon>
+     <f7-fab-buttons>
+        <f7-fab-button href="/osm/liveroute/30/">Live</f7-fab-button>
+        <f7-fab-button @click="trackMe()">{{ tracking?'Stop':'Share' }}</f7-fab-button>
+     </f7-fab-buttons>
+  </f7-fab>
+
+  <f7-link external 
+           target="_system"
+           style="float:right"
+           href="https://www.ncbs.res.in/shuttle_trips"
+           ><small>Official Schedule</small>
+  </f7-link> 
 
   <!-- Select days buttons. -->
   <f7-block>
-     <f7-row>
-        <f7-col width="40">
-           <f7-button external 
-                    color="green" 
-                    target="_system"
-                    href="https://www.ncbs.res.in/shuttle_trips"
-                    ><small>Official Schedule</small>
-           </f7-button> 
-        </f7-col>
-        <f7-col width="30">
-           <f7-button color="green" 
-                      raised  small
-                      href="/osm/liveroute/30/"
-                      >Track</f7-button>
-        </f7-col>
-        <f7-col width="30">
-           <f7-button color="green" 
-                      raised small
-                      @click="trackMe()"
-                      :text="tracking?'Stop':'Share'"
-                      >
-           </f7-button>
-        </f7-col>
-     </f7-row>
      <f7-row noGap>
         <f7-col noGap v-for="d in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']" :key="'col'+d">
            <f7-button  small
@@ -59,8 +49,13 @@
               <f7-list media-list inner>
               <f7-list-item v-for="(t, key) in thisRouteTimetable(route)"
                             :key="key"
-                            style='margin-top:-1ex;padding:-1px'
+                            swipeout
                             >
+                 <f7-swipeout-actions right>
+                    <f7-swipeout-button @click="showRoute(t)">Show This Route
+                    </f7-swipeout-button>
+                 </f7-swipeout-actions>
+
                    <div slot="title">
                       {{str2Moment(t.trip_start_time, 'HH:mm:ss').format('hh:mm A')}}
                    </div>
@@ -72,9 +67,6 @@
                     {{ str2Moment(t.trip_start_time, 'HH:mm:ss').fromNow() }}
                  </span>
 
-                 <div slot="after"  v-if="t.url">
-                    <f7-link @click="routeMap(t.url)">Route</f7-link>
-                 </div>
               </f7-list-item>
            </f7-list>
 
@@ -313,6 +305,9 @@ export default {
             navigator.geolocation.clearWatch(self.watchID);
             self.saveStore('tracking', self.tracking);
          }
+      },
+      showRoute: function() {
+         console.log( "Show me this route" );
       },
    },
 };
