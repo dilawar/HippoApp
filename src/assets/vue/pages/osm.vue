@@ -1,5 +1,5 @@
 <template>
-   <f7-page page-content>
+   <f7-page page-content @page:afterout="clearAll" >
       <f7-navbar :title="title" back-link="Back"></f7-navbar>
       <l-map ref="osm" 
              :zoom="zoom" 
@@ -22,11 +22,23 @@
                            >
              </l-tile-layer>
 
+             <!-- Show hotlines -->
              <l-polyline v-for="(arr, key) in hotlines" 
-                                :lat-lngs="arr" 
-                                :key="key"
-                                >
+                         :lat-lngs="arr" 
+                         :key="key"
+                         color="blue"
+                         :weight="5"
+                         :smoothFactor="2.0"
+                         >
              </l-polyline>
+
+             <!-- Latest position -->
+             <l-marker v-for="(p, key) in latestPos" 
+                        :key="p.id" 
+                        :lat-lng="p.xy"
+                        :icon="p.options.icon"
+                        > 
+             </l-marker>
 
              <l-marker :ref="v.id" 
                         v-for="v in markers" 
@@ -61,6 +73,8 @@ export default {
          venues: [],
          geosearchOptions: {},
          hotlines: {},
+         latestPos: [],
+         repeat: null,
       };
    },
    mounted: function() {
@@ -68,10 +82,12 @@ export default {
       self.map = self.$refs.osm.mapObject;
 
       // Add NCBS to default.
+      /*
       self.markers.push({ id: 'NCBS', xy: self.center
          , html: "NCBS Bangalore"
          , options: {opacity: 0.75}}
       );
+       */
 
       // Check what we got from router.
       let action = self.$f7route.params.arg1;
@@ -96,7 +112,6 @@ export default {
                self.googleMapProvider.search({query: addr}).then( (results) => {
                   console.log( "Found many results ", results);
                   results.map((place, index) => {
-                     console.log('x', place.x, place.y, place.label);
                      self.markers.push({
                         id: index, xy: L.latLng(place.y, place.x)
                         , html: `<font style='color:red'> This position is found by
@@ -117,24 +132,36 @@ export default {
          const app = self.$f7;
          self.map = self.$refs.osm.mapObject;
 
-         // Show location of all available tracks.
-         self.title = 'OSM: Live location';
-         self.postWithPromise( '/geolocation/get/'+id).then(
-            function(json) {
-               let res = JSON.parse(json);
-               if(res.status === "ok") 
-               {
+         // Refresh it every 10 seconds.
+         self.repeat = setInterval( () => {
+            // Show location of all available tracks.
+            self.title = "OSM: Live location";
+            self.postWithPromise( "/geolocation/latest/10").then(
+               function(json) {
+                  let res = JSON.parse(json);
+                  if(res.status !== "ok") 
+                     return
+
+                  console.log( "Drawing hotline");
+                  self.latestPos = [];
                   for(let k in res.data) 
                   {
                      let pts = res.data[k].map(x => [x.latitude, x.longitude]);
                      self.hotlines[k] = pts;
+                     self.latestPos.push({
+                        id: 'latest'+k, 
+                        xy: L.latLng(pts[0][0], pts[0][1]),
+                        options: { 
+                           icon: L.divIcon({
+                              className : 'location-head-icon',
+                              html: '<i class="fa fa-bus fa-2x"></i>'
+                              }),
+                           },
+                        }
+                     );
                   }
-               }
-               else
-               {
-                  console.log("No data");
-               }
-            }
+               });
+            }, 7000
          );
       }
       else
@@ -159,6 +186,11 @@ export default {
       },
       boundsUpdated (bounds) {
          this.bounds = bounds;
+      },
+      clearAll: function( ) {
+         console.log( "Clearing events " )
+         if(self.repeat)
+            clearInterval(self.repeat);
       },
    },
 };

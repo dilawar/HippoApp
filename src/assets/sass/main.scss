@@ -227,3 +227,15 @@ input {
     height: 100% !important;
     border: 0px;
 }
+
+.location-head-icon {
+    min-width: 25px;
+    min-height: 25px;
+    display: flex;
+    background-color: yellow;
+    vertical-align: middle;
+    justify-content: center;
+    align-items:center;
+    border-radius: 50%;
+}
+
