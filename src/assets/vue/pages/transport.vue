@@ -136,7 +136,7 @@ export default {
          popupOpened: false,
          // This goes onto a poup showing route map.
          thisRouteMap: '<p>No route found.</p>',
-         tracking: self.loadStoreStr('tracking') || 'Start', 
+         tracking: (self.loadStoreStr('tracking') === '')?'Start':'Stop', 
       };
    },
    mounted: function() {
