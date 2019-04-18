@@ -7,7 +7,7 @@
      <f7-icon icon="fa fa-map fa-2x"></f7-icon>
      <f7-fab-buttons>
         <f7-fab-button href="/osm/liveroute/30/">Live</f7-fab-button>
-        <f7-fab-button @click="trackMe()">{{ tracking?'Stop':'Share' }}</f7-fab-button>
+        <f7-fab-button @click="trackMe()">{{tracking}}</f7-fab-button>
      </f7-fab-buttons>
   </f7-fab>
 
@@ -111,7 +111,7 @@
   </f7-fab>
   -->
 
-  <f7-block v-if="! tracking" style="align:bottom">
+  <f7-block v-if="! tracking === 'Stop'" style="align:bottom">
   <div>If you are inside a vehicle, click on <tt>TRACK</tt> button to anonymously
      share you location. We use it to display live location and create routes.
   </div>
@@ -136,8 +136,7 @@ export default {
          popupOpened: false,
          // This goes onto a poup showing route map.
          thisRouteMap: '<p>No route found.</p>',
-         tracking: self.loadStore('tracking', 'false'), 
-         watchID: null,
+         tracking: self.loadStoreStr('tracking') || 'Start', 
       };
    },
    mounted: function() {
@@ -274,11 +273,12 @@ export default {
             return 'Next trip ' + nextTrip.fromNow();
          return 'All trips are over!';
       },
-      trackMe: function() {
+      trackMe: function()
+      {
          const self = this;
          const app = self.$f7;
 
-         if(self.tracking) 
+         if(self.tracking === 'Start') 
          {
              BackgroundGeolocation.configure({
                 locationProvider: BackgroundGeolocation.ACTIVITY_PROVIDER,
@@ -298,12 +298,16 @@ export default {
             BackgroundGeolocation.on('location', function(loc) {
                self.sendCoordinates('/geolocation/submit', loc);
             });
+
+            // When successful, flip the button text.
+            self.tracking = 'Stop';
          }
          else 
          {
-            self.tracking = false;
-            self.saveStore('tracking', self.tracking);
+            self.saveStoreStr('tracking', self.tracking);
             BackgroundGeolocation.removeAllListeners();
+            console.log( 'Switching off location tracking.');
+            self.tracking = 'Start';
          }
       },
       showRoute: function() {
