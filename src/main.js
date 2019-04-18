@@ -197,9 +197,9 @@ Vue.mixin({
          const self=this;
          self.$localStorage.set(key, data);
       },
-      loadStore: function(key) {
+      loadStore: function(key, dflt='[]') {
          const self=this;
-         return JSON.parse(self.$localStorage.get(key, '[]'));
+         return JSON.parse(self.$localStorage.get(key, dflt));
       },
       loadStoreStr: function(key) {
          return this.$localStorage.get(key, '');

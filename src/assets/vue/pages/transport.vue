@@ -136,7 +136,7 @@ export default {
          popupOpened: false,
          // This goes onto a poup showing route map.
          thisRouteMap: '<p>No route found.</p>',
-         tracking: self.loadStore('tracking'), 
+         tracking: self.loadStore('tracking', 'false'), 
          watchID: null,
       };
    },
@@ -278,55 +278,32 @@ export default {
          const self = this;
          const app = self.$f7;
 
-         self.tracking = ! self.tracking;
-         self.saveStore('tracking', self.tracking);
-
          if(self.tracking) 
          {
              BackgroundGeolocation.configure({
                 locationProvider: BackgroundGeolocation.ACTIVITY_PROVIDER,
-                desiredAccuracy: BackgroundGeolocation.HIGH_ACCURACY,
-                stationaryRadius: 50,
-                distanceFilter: 50,
-                notificationTitle: 'Background tracking',
+                //locationProvider: BackgroundGeolocation.RAW_PROVIDER,
+                desiredAccuracy: BackgroundGeolocation.LOW_ACCURACY,
+                stationaryRadius: 10,
+                distanceFilter: 30,
+                notificationTitle: 'Background Tracking',
                 notificationText: 'enabled',
-                debug: true,
+                debug: false,
                 interval: 10000,
                 fastestInterval: 5000,
                 activitiesInterval: 10000,
-                url: 'http://192.168.81.15:3000/location',
-                httpHeaders: {
-                  'X-FOO': 'bar'
-                },
-                // customize post properties
-                postTemplate: {
-                  lat: '@latitude',
-                  lon: '@longitude',
-                  foo: 'bar' // you can also add your own properties
-                }
             });
 
-           // self.watchID = navigator.geolocation.watchPosition( 
-           //    function(pos) {
-           //       self.sendCoordinates('/geolocation/submit', pos.coords);
-           //    }
-           //    , function() { console.log( 'error'); }
-           //    , { enableHighAccuracy : true }
-           // );
-
-           // // Do not track more than 45 mins.
-           // setTimeout(() => {
-           //    if(self.watchID)
-           //       navigator.geolocation.clearWatch(self.watchID);
-           //    self.tracking = false;
-           //    self.saveStore('tracking', self.tracking);
-           //    }, 1000*60*45);
+            BackgroundGeolocation.start();
+            BackgroundGeolocation.on('location', function(loc) {
+               self.sendCoordinates('/geolocation/submit', loc);
+            });
          }
          else 
          {
             self.tracking = false;
-            navigator.geolocation.clearWatch(self.watchID);
             self.saveStore('tracking', self.tracking);
+            BackgroundGeolocation.removeAllListeners();
          }
       },
       showRoute: function() {
