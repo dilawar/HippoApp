@@ -283,21 +283,44 @@ export default {
 
          if(self.tracking) 
          {
-            self.watchID = navigator.geolocation.watchPosition( 
-               function(pos) {
-                  self.sendCoordinates('/geolocation/submit', pos.coords);
-               }
-               , function() { console.log( 'error'); }
-               , { enableHighAccuracy : true }
-            );
+             BackgroundGeolocation.configure({
+                locationProvider: BackgroundGeolocation.ACTIVITY_PROVIDER,
+                desiredAccuracy: BackgroundGeolocation.HIGH_ACCURACY,
+                stationaryRadius: 50,
+                distanceFilter: 50,
+                notificationTitle: 'Background tracking',
+                notificationText: 'enabled',
+                debug: true,
+                interval: 10000,
+                fastestInterval: 5000,
+                activitiesInterval: 10000,
+                url: 'http://192.168.81.15:3000/location',
+                httpHeaders: {
+                  'X-FOO': 'bar'
+                },
+                // customize post properties
+                postTemplate: {
+                  lat: '@latitude',
+                  lon: '@longitude',
+                  foo: 'bar' // you can also add your own properties
+                }
+            });
 
-            // Do not track more than 45 mins.
-            setTimeout(() => {
-               if(self.watchID)
-                  navigator.geolocation.clearWatch(self.watchID);
-               self.tracking = false;
-               self.saveStore('tracking', self.tracking);
-               }, 1000*60*45);
+           // self.watchID = navigator.geolocation.watchPosition( 
+           //    function(pos) {
+           //       self.sendCoordinates('/geolocation/submit', pos.coords);
+           //    }
+           //    , function() { console.log( 'error'); }
+           //    , { enableHighAccuracy : true }
+           // );
+
+           // // Do not track more than 45 mins.
+           // setTimeout(() => {
+           //    if(self.watchID)
+           //       navigator.geolocation.clearWatch(self.watchID);
+           //    self.tracking = false;
+           //    self.saveStore('tracking', self.tracking);
+           //    }, 1000*60*45);
          }
          else 
          {
