@@ -26,7 +26,7 @@
              <l-polyline v-for="(arr, key) in hotlines" 
                          :lat-lngs="arr" 
                          :key="key"
-                         color="blue"
+                         color="green"
                          :weight="5"
                          :smoothFactor="2.0"
                          >
@@ -38,6 +38,10 @@
                         :lat-lng="p.xy"
                         :icon="p.options.icon"
                         > 
+               <l-tooltip :options="{permanent: false}"
+                   style="white-space:normal;width:50px">
+                   <div v-html="p.html"></div>
+               </l-tooltip>
              </l-marker>
 
              <l-marker :ref="v.id" 
@@ -46,8 +50,10 @@
                         :lat-lng="v.xy"
                         :options="v.options"
                         > 
-                <l-tooltip :options="$store.state.OSM.toolTipOpts"
-                   style="white-space:normal;width:100px">
+                <l-tooltip 
+                        :options="$store.state.OSM.toolTipOpts"
+                        style="white-space:normal;width:100px"
+                        >
                    <div v-html="v.html"></div>
                 </l-tooltip>
              </l-marker>
@@ -64,7 +70,7 @@ export default {
       const self = this;
       return {
          zoom:13,
-         title: 'OSM',
+         title: 'Please wait ...',
          bounds: null,
          map: null,
          center: L.latLng(13.071081, 77.58025),
@@ -74,7 +80,8 @@ export default {
          geosearchOptions: {},
          hotlines: {},
          latestPos: [],
-         repeat: null,
+         repeat: 0,
+         lastUpdatedOn: [],
       };
    },
    mounted: function() {
@@ -129,40 +136,15 @@ export default {
       else if(action === "liveroute")
       {
          const self = this;
-         const app = self.$f7;
-         self.map = self.$refs.osm.mapObject;
 
          // Refresh it every 10 seconds.
-         self.repeat = setInterval( () => {
-            // Show location of all available tracks.
-            self.title = "OSM: Live location";
-            self.postWithPromise( "/geolocation/latest/10").then(
-               function(json) {
-                  let res = JSON.parse(json);
-                  if(res.status !== "ok") 
-                     return
+         if( self.repeat != 0 )
+            return;
 
-                  console.log( "Drawing hotline");
-                  self.latestPos = [];
-                  for(let k in res.data) 
-                  {
-                     let pts = res.data[k].map(x => [x.latitude, x.longitude]);
-                     self.hotlines[k] = pts;
-                     self.latestPos.push({
-                        id: 'latest'+k, 
-                        xy: L.latLng(pts[0][0], pts[0][1]),
-                        options: { 
-                           icon: L.divIcon({
-                              className : 'location-head-icon',
-                              html: '<i class="fa fa-bus fa-2x"></i>'
-                              }),
-                           },
-                        }
-                     );
-                  }
-               });
-            }, 7000
-         );
+         self.repeat = setInterval(() => {
+            self.fetchLatestRoute( ) 
+            self.title = "OSM: Live location";
+         }, 5000);
       }
       else
       {
@@ -178,6 +160,40 @@ export default {
          // const map = this.$refs.osm.mapObject;
          // this.venues.map( x => x );
       },
+      fetchLatestRoute: function() {
+         const self = this;
+
+         self.postWithPromise("/geolocation/latest/20")
+            .then(function(json) {
+               let res = JSON.parse(json);
+               if(res.status !== "ok") 
+                  return
+
+               console.log( "Creating hotlines ...");
+               self.latestPos = [];
+               self.lastUpdatedOn = [];
+               for(let k in res.data) {
+                  let pts = res.data[k];
+                  let coords = pts.map(x => [x.latitude, x.longitude]);
+                  let lastPCoord = coords[0];
+                  self.hotlines[k] = coords;
+                  self.lastUpdatedOn.push(pts[0].timestamp);
+                  self.latestPos.push({
+                     id: 'latest'+k, 
+                     xy: L.latLng(lastPCoord[0], lastPCoord[1]),
+
+                     html: self.str2Moment(pts[0].timestamp, 'YYYY-MM-DD HH:mm:ss').fromNow(),
+                     options: { 
+                        icon: L.divIcon({
+                           className : 'location-head-icon',
+                           html: '<i class="fa fa-map-pin fa-2x"></i>'
+                           }),
+                        },
+                     }
+                  );
+               }
+            });
+      },
       zoomUpdated (zoom) {
          const self = this;
       },
@@ -188,9 +204,11 @@ export default {
          this.bounds = bounds;
       },
       clearAll: function( ) {
+         const self = this;
          console.log( "Clearing events " )
-         if(self.repeat)
-            clearInterval(self.repeat);
+         clearInterval(self.repeat);
+         console.log( self.repeat, 'repeat');
+         self.repeat = 0;
       },
    },
 };
