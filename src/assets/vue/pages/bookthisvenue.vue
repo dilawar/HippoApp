@@ -54,7 +54,7 @@
             <f7-list-input v-model="request.url" type="url" placeholder="External Link (URL)">
             </f7-list-input>
 
-            <f7-list-input v-model="request.is_public_event"
+            <f7-list-input :value="request.is_public_event"
                            label="Add to NCBS calendar?" type="select" defaultValue="NO">
                <option value="YES">Yes</option>
                <option value="NO">No</option>
