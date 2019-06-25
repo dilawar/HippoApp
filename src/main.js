@@ -1,6 +1,11 @@
 // Import Vue
 import Vue from 'vue'
 
+//
+import VueQrcodeReader from "vue-qrcode-reader";
+Vue.use(VueQrcodeReader);
+import 'vue-qrcode-reader/dist/vue-qrcode-reader.css';
+
 // OSM and leaflet.
 import {LMap, LTileLayer, LMarker, LPolyline, LPopup, LTooltip, LControlLayers} from 'vue2-leaflet';
 import Vue2LeafletLocateControl from 'vue2-leaflet-locatecontrol';

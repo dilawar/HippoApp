@@ -179,7 +179,7 @@ export default {
       fetchLatestRoute: function() {
          const self = this;
 
-         self.postWithPromise("/geolocation/latest/20")
+         self.postWithPromise("/geolocation/latest/10")
             .then(function(json) {
                let res = JSON.parse(json);
                if(res.status !== "ok") 
