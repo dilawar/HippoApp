@@ -1,6 +1,11 @@
 // Import Vue
 import Vue from 'vue'
 
+// Import css from dropzone.
+import Dropzone from "vue2-dropzone";
+import 'vue2-dropzone/dist/vue2Dropzone.min.css'
+Vue.component('vue-dropzone', Dropzone);
+
 //
 // import VueQrcodeReader from "vue-qrcode-reader";
 // Vue.use(VueQrcodeReader);
@@ -12,6 +17,7 @@ import Vue2LeafletLocateControl from 'vue2-leaflet-locatecontrol';
 
 import {Icon} from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+
 
 Vue.component('l-map', LMap);
 Vue.component('l-tile-layer', LTileLayer);

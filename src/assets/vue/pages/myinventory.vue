@@ -135,6 +135,7 @@
                            <option value="NO">No</option>
             </f7-list-input>
 
+              <vue-dropzone id="drop1" url="https://example.com"></vue-dropzone>
 
             <f7-list-item>
                <f7-button v-if="popupAction=='New'"
@@ -193,6 +194,7 @@
 <script>
 
 import moment from 'moment';
+
 
 export default {
    data() {
