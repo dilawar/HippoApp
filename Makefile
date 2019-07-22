@@ -1,6 +1,6 @@
 KEYSTORE:=$(HOME)/Work/APPS/KeyStore/dilawar.jks
 
-all : apk
+all : run
 
 create:
 	cordova create . com.dilawar.hippo Hippo \
@@ -18,6 +18,7 @@ build :
 	@cordova run android 
 
 apk: 
+	mkdir -p www
 	cordova build android --release \
 	    -- --keystore=$(KEYSTORE) \
 	    --storePassword=$(KEYSTORE_PASSWORD) \
