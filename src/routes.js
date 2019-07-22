@@ -23,7 +23,6 @@ import Chat from './assets/vue/pages/chat.vue';
 import SearchPage from './assets/vue/pages/search.vue';
 import Vuex from './assets/vue/pages/vuex.vue';
 import InventoryPage from './assets/vue/pages/inventory.vue';
-import QrPage from './assets/vue/pages/qr.vue'
 
 export default [
    {
