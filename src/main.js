@@ -2,9 +2,9 @@
 import Vue from 'vue'
 
 //
-import VueQrcodeReader from "vue-qrcode-reader";
-Vue.use(VueQrcodeReader);
-import 'vue-qrcode-reader/dist/vue-qrcode-reader.css';
+// import VueQrcodeReader from "vue-qrcode-reader";
+// Vue.use(VueQrcodeReader);
+// import 'vue-qrcode-reader/dist/vue-qrcode-reader.css';
 
 // OSM and leaflet.
 import {LMap, LTileLayer, LMarker, LPolyline, LPopup, LTooltip, LControlLayers} from 'vue2-leaflet';
@@ -32,9 +32,9 @@ Icon.Default.mergeOptions({
 // GoogleMap services.
 import { OpenStreetMapProvider, GoogleProvider } from 'leaflet-geosearch'; 
 
-// Lightweight timeline.
-import LightTimeline from 'vue-light-timeline';
-Vue.use(LightTimeline);
+//// fixme: Lightweight timeline.
+//import LightTimeline from 'vue-light-timeline';
+//Vue.use(LightTimeline);
 
 // Moment 
 import moment from 'moment';

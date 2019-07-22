@@ -123,10 +123,6 @@ export default [
       component: Chat
    },
    {
-      path: '/qr/',
-      component: QrPage
-   },
-   {
       path: '/vuex/',
       component: Vuex
    },
