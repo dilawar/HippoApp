@@ -135,7 +135,9 @@
                            <option value="NO">No</option>
             </f7-list-input>
 
-              <vue-dropzone id="drop1" url="https://example.com"></vue-dropzone>
+            <f7-list-item>
+               <vue-dropzone id="drop1" :options="dropzoneOptions"></vue-dropzone>
+            </f7-list-item>
 
             <f7-list-item>
                <f7-button v-if="popupAction=='New'"
@@ -218,6 +220,12 @@ export default {
             item_condition: 'FUNCTIONAL',
             id: '',
             borrower: '',
+         },
+         dropzoneOptions: {
+            url: 'https://httpbin.org/post',
+            thumbnailWidth: 150,
+            maxFilesize: 0.5,
+            headers: { "My-Awesome-Header": "header value" }
          },
       };
    },
