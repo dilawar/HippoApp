@@ -21,6 +21,7 @@ module.exports = function() {
       contentBase: path.join(__dirname, "../www"),
       port: devServerPort,
       stats: { colors: true },
+      disableHostCheck: true,
       watchOptions: {
           aggregateTimeout: 300,
           poll: 100,
