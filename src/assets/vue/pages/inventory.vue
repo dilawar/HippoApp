@@ -49,7 +49,7 @@
                <div slot="text" v-html="item.data.description"> </div>
 
                <!-- if images are found, display them. -->
-               <div slot="after" v-if="item.data.image_id.length > 0">
+               <div slot="after" v-if="item.data.image_id > 0">
                   <f7-link @click="fetchAndDisplayPhoto(item.data.image_id)">Images</f7-link>
                </div>
             </f7-list-item>
