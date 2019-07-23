@@ -16,6 +16,9 @@
 
        <f7-block-title> Total {{inventories.count}} items are available. </f7-block-title>
 
+      <f7-photo-browser :photos="photos" ref="standalone">
+      </f7-photo-browser>
+
        <f7-list class="searchbar-not-found">
           <f7-list-item title="Nothing found"></f7-list-item>
        </f7-list>
@@ -25,27 +28,35 @@
                 no-hairlines
                 :virtual-list-params="{items, searchAll, renderExternal}"
                 >
-                <ul>
-                   <f7-list-item media-item
-                                 v-for="(item, index) in vlData.items"  
-                                 :key="index"
-                                 link="#"
-                                 :title="item.title"
-                                 :header="item.header"
-                                 :style="`top: ${vlData.topPosition}px`"
-                                 >
-                                 <div slot="footer">
-                                    <f7-link external
-                                             target="_system"
-                                             :href="'mailto:'+item.data.person_in_charge"
-                                             style="margin-right:5px" 
-                                             >
-                                             {{item.data.person_in_charge}} 
-                                    </f7-link>({{item.data.faculty_in_charge}})
-                                 </div>
-                      <div slot="text" v-html="item.data.description"> </div>
-                   </f7-list-item>
-                </ul>
+          <ul>
+             <f7-list-item media-item
+                           v-for="(item, index) in vlData.items"  
+                           :key="index"
+                           link="#"
+                           :title="item.title"
+                           :header="item.header"
+                           :style="`top: ${vlData.topPosition}px`"
+                           >
+               <div slot="footer">
+                  <f7-link external
+                           target="_system"
+                           :href="'mailto:'+item.data.person_in_charge"
+                           style="margin-right:5px" 
+                           >
+                           {{item.data.person_in_charge}} 
+                  </f7-link>({{item.data.faculty_in_charge}})
+               </div>
+               <div slot="text" v-html="item.data.description"> </div>
+
+               <!-- if images are found, display them. -->
+               <div v-if="item.data.image_id.size > 0">
+                  <f7-button @click="$refs.standalone.open()">Standalone</f7-button>
+               </div>
+               <div>
+               {{item.data.image_id.size}}
+               </div>
+            </f7-list-item>
+          </ul>
        </f7-list>
     </f7-block>
 
@@ -60,6 +71,7 @@ export default {
       return {
          inventories: [],
          items: [],
+         photos: [],
          vlData: {
             items: [],
          },
@@ -71,6 +83,7 @@ export default {
       if( ! self.inventories || self.inventories.length == 0)
       {
          // Get all inventory.
+         console.log( "Fetching inventories ... " );
          self.postWithPromise( '/inventory/list/100').then(
             function(json) 
             {

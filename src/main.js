@@ -6,7 +6,10 @@ import Dropzone from "vue2-dropzone";
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 Vue.component('vue-dropzone', Dropzone);
 
-//
+// Multi uploader.
+import MultipleFileUploader from '@updivision/vue2-multi-uploader'
+Vue.component('v-multifile-uploader', MultipleFileUploader);
+
 // import VueQrcodeReader from "vue-qrcode-reader";
 // Vue.use(VueQrcodeReader);
 // import 'vue-qrcode-reader/dist/vue-qrcode-reader.css';
@@ -17,7 +20,6 @@ import Vue2LeafletLocateControl from 'vue2-leaflet-locatecontrol';
 
 import {Icon} from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-
 
 Vue.component('l-map', LMap);
 Vue.component('l-tile-layer', LTileLayer);
@@ -176,10 +178,11 @@ Vue.mixin({
          const app = self.$f7;
          return app.request.promise.post(self.$store.state.api+'/'+endpoint, self.apiPostData());
       },
-      postToHippo: function(endpoint, data) {
+      promiseWithAuth: function(endpoint, post) {
          const self = this;
          const app = self.$f7;
-         app.request.post(self.$store.state.api+'/'+endpoint);
+         let data = { ...self.apiPostData(), ...post};
+         return app.request.promise.post(self.$store.state.api+'/'+endpoint, data);
       },
       getGoogleMapApiKey: function( ) {
          const self = this;
@@ -224,7 +227,7 @@ Vue.mixin({
             .then( function(json) {
                const res = JSON.parse(json);
                app.dialog.close();
-               return res.status;
+               return;
             }
          );
          setTimeout( () => app.dialog.close(), 1000);

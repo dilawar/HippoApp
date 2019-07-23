@@ -136,7 +136,16 @@
             </f7-list-input>
 
             <f7-list-item>
-               <vue-dropzone id="drop1" :options="dropzoneOptions"></vue-dropzone>
+               <vue-dropzone id="dropzone1" 
+                             ref="inventoryDZ" 
+                             v-on:vdropzone-sending="onImageSendingAddExternalID"
+                             :options="dropzoneOptions"
+                             >
+               </vue-dropzone>
+               <!-- <v-multifile-uploader postURL="http://.."  -->
+                                     <!-- successMessagePath="" -->
+                                     <!-- errorMessagePath=""> -->
+               <!-- </v-multifile-uploader> -->
             </f7-list-item>
 
             <f7-list-item>
@@ -194,9 +203,7 @@
 
 
 <script>
-
 import moment from 'moment';
-
 
 export default {
    data() {
@@ -222,10 +229,14 @@ export default {
             borrower: '',
          },
          dropzoneOptions: {
-            url: 'https://httpbin.org/post',
+            url: self.$store.state.api + '/upload/images',
             thumbnailWidth: 150,
-            maxFilesize: 0.5,
-            headers: { "My-Awesome-Header": "header value" }
+            maxFilesize: 5,
+            resizeWidth: 500,
+            acceptedFiles: "image/*",
+            addRemoveLinks: true,
+            autoProcessQueue: false, // do not upload automatically.
+            headers: self.apiPostData(),
          },
       };
    },
@@ -263,20 +274,32 @@ export default {
       },
       submitNewInventory: function( ) 
       {
-         console.log( 'Adding inventory');
          const self = this;
-         self.sendRequest( 'labinventory/create', self.inventory);
+         self.promiseWithAuth( 'labinventory/create', self.inventory).then(
+            function( json ) {
+               let res = JSON.parse(json)['data'];
+               console.log( "Created inventory", res.id );
+               self.inventory = res;
+
+               // Before we upload, make sure to send inventory_id in $_POST.
+               self.$refs.inventoryDZ.processQueue();
+            });
          self.fetchInventories();
       },
       updateInventory: function(item) {
-         const self = this;
          self.popupAction = 'Update';
          self.inventory = item;
          self.popupOpened = true;
       },
       submitUpdateInventory: function(card) {
          const self = this;
-         self.sendRequest( 'labinventory/update', card);
+         self.promiseWithAuth( 'labinventory/update', card).then(
+            function( json ) {
+               let res = JSON.parse(json)['data'];
+               // Now upload images if any.
+               // Before uploading image, add corresponding inventory id to the image.
+               self.$refs.inventoryDZ.processQueue();
+            });
          self.fetchInventories();
       },
       submitDeleteInventory: function(id) {
@@ -301,7 +324,12 @@ export default {
       submitClearLending: function( inv ) {
          const self = this;
          self.sendRequest('labinventory/gotback/'+inv.id);
-      }
+      },
+      onImageSendingAddExternalID: function(img, xhr, formData) {
+         const self = this;
+         // Add external id to formData.
+         formData.append("inventory_id", self.inventory.id);
+      },
    }
 };
 
