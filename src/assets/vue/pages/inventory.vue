@@ -16,7 +16,7 @@
 
        <f7-block-title> Total {{inventories.count}} items are available. </f7-block-title>
 
-      <f7-photo-browser :photos="photos" ref="standalone">
+      <f7-photo-browser :photos="photos" ref="photobrowser">
       </f7-photo-browser>
 
        <f7-list class="searchbar-not-found">
@@ -49,11 +49,8 @@
                <div slot="text" v-html="item.data.description"> </div>
 
                <!-- if images are found, display them. -->
-               <div v-if="item.data.image_id.size > 0">
-                  <f7-button @click="$refs.standalone.open()">Standalone</f7-button>
-               </div>
-               <div>
-               {{item.data.image_id.size}}
+               <div slot="after" v-if="item.data.image_id.length > 0">
+                  <f7-link @click="fetchAndDisplayPhoto(item.data.image_id)">Images</f7-link>
                </div>
             </f7-list-item>
           </ul>
@@ -145,6 +142,22 @@ export default {
       {
          const self = this;
          self.vlData = vlData;
+      },
+      fetchAndDisplayPhoto: function(ids) {
+         const self = this;
+         // Fetching images.
+         ids = ids.join(',');
+         console.log( "Fetching image ", ids );
+         self.photos = [];
+         self.promiseWithAuth('images/get/'+ids).then( 
+            function( json ) {
+               let res = JSON.parse(json).data[ids];
+               res.forEach( function(k) {
+                  self.photos.push(k);
+               });
+               console.log( self.photos );
+               self.$refs.photobrowser.open();
+            });
       },
    },
 
