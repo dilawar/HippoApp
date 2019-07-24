@@ -16,20 +16,36 @@
 
        <f7-block-title> Total {{inventories.count}} items are available. </f7-block-title>
 
+       <!--
       <f7-photo-browser :photos="photos" ref="photobrowser">
       </f7-photo-browser>
+       -->
+       <f7-popup ref="photobrowser">
+          <f7-page>
+             <f7-navbar title="Inventory browser">
+                <f7-nav-right>
+                   <f7-link popup-close>Close</f7-link>
+                </f7-nav-right>
+             </f7-navbar>
+
+             <f7-card v-for="photo in photos">
+                <f7-card-content class="no-border">
+                   <img :src="photo.src" width="100%"></img>
+                </f7-card-content>
+             </f7-card>
+
+          </f7-page>
+       </f7-popup>
 
        <f7-list class="searchbar-not-found">
           <f7-list-item title="Nothing found"></f7-list-item>
        </f7-list>
 
        <f7-list class="inventory-list"
-                media-list 
                 no-hairlines
                 :virtual-list-params="{items, searchAll, renderExternal}"
                 >
-          <ul>
-             <f7-list-item media-item
+             <f7-list-item 
                            v-for="(item, index) in vlData.items"  
                            :key="index"
                            link="#"
@@ -49,11 +65,11 @@
                <div slot="text" v-html="item.data.description"> </div>
 
                <!-- if images are found, display them. -->
-               <div slot="after" v-if="item.data.image_id > 0">
-                  <f7-link @click="fetchAndDisplayPhoto(item.data.image_id)">Images</f7-link>
+               <div slot="after" v-if="item.data.image_id.length > 0">
+                  <f7-link
+                     @click="fetchAndDisplayPhoto(item.data.image_id)">Photos</f7-link>
                </div>
             </f7-list-item>
-          </ul>
        </f7-list>
     </f7-block>
 
@@ -153,7 +169,7 @@ export default {
             function( json ) {
                let res = JSON.parse(json).data[ids];
                res.forEach( function(k) {
-                  self.photos.push(k);
+                  self.photos.push( {src : k});
                });
                console.log( self.photos );
                self.$refs.photobrowser.open();

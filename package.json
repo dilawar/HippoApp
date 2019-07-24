@@ -59,6 +59,7 @@
     "@lazy-copilot/datetimepicker": "^0.1.47",
     "@mauron85/cordova-plugin-background-geolocation": "^3.0.3",
     "@updivision/vue2-multi-uploader": "^1.6.2",
+    "base64-to-image": "^1.0.2",
     "cordova-android": "^7.1.4",
     "cordova-browser": "^5.0.4",
     "cordova-plugin-browsersync": "^1.1.0",
