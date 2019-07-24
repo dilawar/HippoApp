@@ -14,29 +14,20 @@
       <f7-block>
          <f7-block-title>Swipe left/right to do more.</f7-block-title>
 
-         <f7-list media-list>
-            <f7-list-item media-list 
-                          v-for="(item, index) in inventories.list"
-                          :key="index"
-                          :text="item.description"
-                          media-item
-                          swipeout
-                          >
-                     <div slot="header">
-                        <span style="color:red">{{item.item_condition}}</span>
-                        <span v-if="item.borrowing.borrower" style="color:blue">
-                           Borrowed by {{item.borrowing.borrower}} on
-                           {{item.borrowing.borrowed_on}}
-                        </span>
+         <f7-card v-for="(item, index) in inventories.list" :key="index">
 
-                        <span v-if="item.location" style="float:right">
-                           <f7-icon icon="fa fa-map-marker fa-fw"></f7-icon>
-                           <font style="color:black">{{item.location}}</font>
-                        </span>
-                     </div>
-                    <div slot="title">
-                       {{item.name}}, {{item.scientific_name}}, {{item.quantity_with_unit}}  
-                    </div>
+            <f7-card-header>
+               <span style="color:red">{{item.item_condition}}</span>
+               <span v-if="item.location" style="float:right">
+                  <f7-icon icon="fa fa-map-marker fa-fw"></f7-icon>
+                  <font style="color:gray;font-size:small">{{item.location}}</font>
+               </span>
+            </f7-card-header>
+
+
+           <f7-card-content>
+              <f7-list media-list>
+                 <f7-list-item>
                     <div slot="footer">
                        Person in charge: 
                        <f7-link external :href="'mailto:'+item.person_in_charge">
@@ -44,163 +35,187 @@
                        </f7-link> 
                     </div>
 
-                    <!-- <div slot="media" v-if="item.image_id.length > 0"> -->
-
+                    <div slot="after">
+                       <span v-if="item.borrowing.borrower" style="color:blue">
+                          Borrowed by {{item.borrowing.borrower}} on
+                          {{item.borrowing.borrowed_on}}
+                       </span>
                     </div>
 
-                    <!-- Swipeout actions -->
-                    <f7-swipeout-actions right>
-                       <f7-swipeout-button @click="updateInventory(item)">Edit</f7-swipeout-button>
-                    </f7-swipeout-actions>
-                    <f7-swipeout-actions left>
-                       <f7-swipeout-button @click="lendInventory(item)">Lend</f7-swipeout-button>
-                    </f7-swipeout-actions>
-            </f7-list-item>
-         </f7-list>
+                    <div slot="title">
+                        {{item.name}}, {{item.scientific_name}}, {{item.quantity_with_unit}}  
+                    </div>
+                    <div slot="text">
+                       {{ item.description }}
+                    </div>
+
+                    <div slot="media" v-if="item.thumbnails.length > 0">
+                       <img :src="item.thumbnails[0].base64"></img>
+                    </div>
+
+                 </f7-list-item>
+              </f7-list>
+           </f7-card-content>
+
+           <f7-card-footer>
+              <f7-button small @click="lendInventory(item)">Lend</f7-button>
+              <f7-button small style="float:right" @click="editInventory(item)">Edit</f7-button>
+           </f7-card-footer>
+
+         </f7-card>
+
       </f7-block>
 
-      <f7-popup class="inventory-popup" :opened="popupOpened" @popup:closed="popupOpened = false">
+      <f7-popup :opened="lendPopup" @popup:closed="lendPopup = false">
          <f7-page>
-            <f7-navbar :title="`${popupAction} Inventory`">
+            <f7-navbar title="Lend Inventory">
                <f7-nav-right>
                   <f7-link popup-close>Cancel</f7-link>
                </f7-nav-right>
             </f7-navbar>
 
             <f7-block>
+               <!-- Lending list -->
+               <f7-list media-list no-hairlines>
+                  <div>You are lending {{inventory.name}}, id {{inventory.id}} </div>
 
-            <f7-list no-hairlines-md v-if="popupAction!='Lend'">
+                  <f7-list-input label="Borrower (email)"
+                                 :value="inventory.borrower"
+                                 @input="inventory.borrower = $event.target.value"
+                                 type="email" 
+                                 required
+                                 validate
+                                 >
+                  </f7-list-input>
 
-            <f7-list-input label="Name"
-                           :value="inventory.name"
-                           @input="inventory.name = $event.target.value"
-                           required 
-                           validate
-                           >
-            </f7-list-input>
+                  <f7-list-item>
+                     <f7-button slot="after" raised fill
+                                popup-close
+                                @click="submitLendInventory(inventory)"
+                                > Lend </f7-button>
+                     <f7-button slot="title" raised fill
+                                popup-close
+                                @click="submitClearLending(inventory)"
+                                >Clear Borrowing</f7-button>
+                  </f7-list-item>
+               </f7-list>
+            </f7-block>
+         </f7-page>
+      </f7-popup>
+       <f7-popup :opened="editPopup" @popup:closed="editPopup = false">
+         <f7-page>
+            <f7-navbar title="Edit Inventory">
+               <f7-nav-right>
+                  <f7-link popup-close>Cancel</f7-link>
+               </f7-nav-right>
+            </f7-navbar>
 
-            <f7-list-input label="Scientific Name" 
-                           :value="inventory.scientific_name"
-                           @input="inventory.scientific_name = $event.target.value"
-                           >
-            </f7-list-input>
+            <f7-block>
+               <f7-list no-hairlines-md>
+                  <f7-list-input label="Name"
+                                 :value="inventory.name"
+                                 @input="inventory.name = $event.target.value"
+                                 required 
+                                 validate
+                                 >
+                  </f7-list-input>
 
-            <f7-list-input label="Vendor" 
-                           :value="inventory.vendor"
-                           @input="inventory.vendor=$event.target.value"
-                           required 
-                           >
-            </f7-list-input>
+                  <f7-list-input label="Scientific Name" 
+                                 :value="inventory.scientific_name"
+                                 @input="inventory.scientific_name = $event.target.value"
+                                 >
+                  </f7-list-input>
 
-            <f7-list-input label="Quanity With unit"
-                           :value="inventory.quantity_with_unit"
-                           @input="inventory.quantity_with_unit = $event.target.value"
-                           defaultValue="1 nos"
-                           required
-                           >
-            </f7-list-input>
+                  <f7-list-input label="Vendor" 
+                                 :value="inventory.vendor"
+                                 @input="inventory.vendor=$event.target.value"
+                                 required 
+                                 >
+                  </f7-list-input>
 
-            <f7-list-input label="Location"
-                           :value="inventory.location"
-                           @input="inventory.location = $event.target.value"
-                           required
-                           >
-            </f7-list-input>
+                  <f7-list-input label="Quanity With unit"
+                                 :value="inventory.quantity_with_unit"
+                                 @input="inventory.quantity_with_unit = $event.target.value"
+                                 defaultValue="1 nos"
+                                 required
+                                 >
+                  </f7-list-input>
+
+                  <f7-list-input label="Location"
+                                 :value="inventory.location"
+                                 @input="inventory.location = $event.target.value"
+                                 required
+                                 >
+                  </f7-list-input>
 
 
-            <f7-list-input label="Description"
-                           :value="inventory.description"
-                           @input="inventory.description = $event.target.value"
-                           :resizable="true"
-                           type="textarea" 
-                           >
-            </f7-list-input>
+                  <f7-list-input label="Description"
+                                 :value="inventory.description"
+                                 @input="inventory.description = $event.target.value"
+                                 :resizable="true"
+                                 type="textarea" 
+                                 >
+                  </f7-list-input>
 
-            <f7-list-input label="Condition"
-                           :value="inventory.item_condition"
-                           :defaultValue="inventory.item_condition"
-                           @input="inventory.item_condition = $event.target.value"
-                           type="select"
-                           required
-                           >
-               <option v-for="(cond, key) in inventories.item_conditions" 
-                       :value="cond" :key="key"
-                       >{{cond}}</option>
-            </f7-list-input>
+                  <f7-list-input label="Condition"
+                                 :value="inventory.item_condition"
+                                 :defaultValue="inventory.item_condition"
+                                 @input="inventory.item_condition = $event.target.value"
+                                 type="select"
+                                 required
+                                 >
+                     <option v-for="(cond, key) in inventories.item_conditions" 
+                             :value="cond" :key="key"
+                                >{{cond}}</option>
+                  </f7-list-input>
 
-            <f7-list-input label="Requires booking"
-                           :value="inventory.requires_booking"
-                           :defaultValue="inventory.requires_booking"
-                           @input="inventory.requires_booking = $event.target.value"
-                           type="select"
-                           required
-                           >
-                           <option value="YES">Yes</option>
-                           <option value="NO">No</option>
-            </f7-list-input>
+                  <f7-list-input label="Requires booking"
+                                 :value="inventory.requires_booking"
+                                 :defaultValue="inventory.requires_booking"
+                                 @input="inventory.requires_booking = $event.target.value"
+                                 type="select"
+                                 required
+                                 >
+                                 <option value="YES">Yes</option>
+                                 <option value="NO">No</option>
+                  </f7-list-input>
 
-            <f7-list-item>
-               <vue-dropzone id="dropzone1" 
-                             ref="inventoryDZ" 
-                             v-on:vdropzone-sending="onImageSendingAddExternalID"
-                             :options="dropzoneOptions"
-                             >
-               </vue-dropzone>
-               <!-- <v-multifile-uploader postURL="http://.."  -->
-                                     <!-- successMessagePath="" -->
-                                     <!-- errorMessagePath=""> -->
-               <!-- </v-multifile-uploader> -->
-            </f7-list-item>
+                  <f7-list-item>
+                     <vue-dropzone id="dropzone1" 
+                                   ref="inventoryDZ" 
+                                   v-on:vdropzone-sending="onImageSendingAddExternalID"
+                                   :options="dropzoneOptions"
+                                   >
+                     </vue-dropzone>
+                     <!-- <v-multifile-uploader postURL="http://.."  -->
+                     <!-- successMessagePath="" -->
+                                 <!-- errorMessagePath=""> -->
+                                 <!-- </v-multifile-uploader> -->
+                  </f7-list-item>
 
-            <f7-list-item>
-               <f7-button v-if="popupAction=='New'"
-                          slot="after" raised fill
-                          popup-close
-                          @click="submitNewInventory"
-                          >Add New</f7-button>
+                  <f7-list-item>
+                     <f7-button v-if="popupAction=='New'"
+                                slot="after" raised fill
+                                popup-close
+                                @click="submitNewInventory"
+                                >Add New</f7-button>
 
-               <f7-button v-if="popupAction=='Update'"
-                          slot="title" raised 
-                          popup-close
-                          @click="submitDeleteInventory(inventory.id)"
-                          >Delete</f7-button>
-               <f7-button v-if="popupAction=='Update'"
-                          slot="after" raised fill
-                          popup-close
-                          @click="submitUpdateInventory(inventory)"
-                          >Update</f7-button>
-            </f7-list-item>
-         </f7-list>
+                     <f7-button v-if="popupAction=='Update'"
+                                slot="title" raised 
+                                popup-close
+                                @click="submitDeleteInventory(inventory.id)"
+                                >Delete</f7-button>
+                     <f7-button v-if="popupAction=='Update'"
+                                slot="after" raised fill
+                                popup-close
+                                @click="submitUpdateInventory(inventory)"
+                                >Update</f7-button>
+                  </f7-list-item>
+               </f7-list>
+            </f7-block>
+         </f7-page>
+       </f7-popup>
 
-         <!-- Lending list -->
-         <f7-list media-list no-hairlines v-else>
-            <div>You are lending {{inventory.name}}, id {{inventory.id}} </div>
-
-            <f7-list-input label="Borrower (email)"
-                           :value="inventory.borrower"
-                           @input="inventory.borrower = $event.target.value"
-                           type="email" 
-                           required
-                           validate
-                           >
-            </f7-list-input>
-
-            <f7-list-item>
-               <f7-button slot="after" raised fill
-                          popup-close
-                          @click="submitLendInventory(inventory)"
-                        > Lend </f7-button>
-               <f7-button slot="title" raised fill
-                          popup-close
-                          @click="submitClearLending(inventory)"
-                        >Clear Borrowing</f7-button>
-            </f7-list-item>
-         </f7-list>
-
-      </f7-block>
-   </f7-page>
-
-   </f7-popup>
    </f7-page>
 
 </template>
@@ -213,7 +228,8 @@ export default {
    data() {
       const self = this;
       return {
-         popupOpened: false,
+         lendPopup: false,
+         editPopup: false,
          popupAction: 'New',
          inventories: [],
          inventory: {
@@ -246,7 +262,7 @@ export default {
    },
    mounted: function() {
       const self = this;
-      self.fetchInventories();
+      self.inventories = self.loadStore('me.inventories');
    },
    methods: { 
       fetchInventories: function() {
@@ -281,7 +297,7 @@ export default {
          self.popupAction = "New";
          self.inventory.person_in_charge = self.getLogin();
          self.inventory.status = 'VALID';
-         self.popupOpened = true;
+         self.lendPopup = true;
       },
       submitNewInventory: function( ) 
       {
@@ -296,12 +312,6 @@ export default {
                self.$refs.inventoryDZ.processQueue();
             });
          self.fetchInventories();
-      },
-      updateInventory: function(item) {
-         console.log( "Updating inventory" );
-         self.popupAction = 'Update';
-         //self.inventory = item;
-         self.popupOpened = true;
       },
       submitUpdateInventory: function(card) {
          const self = this;
@@ -325,7 +335,13 @@ export default {
          console.log( "lenging inventory item");
          self.popupAction = "Lend";
          self.inventory = inv;
-         self.popupOpened = true;
+         self.lendPopup = true;
+      },
+      editInventory: function(inv) {
+         console.log( "Updating inventory", inv );
+         self.popupAction = "Edit";
+         self.inventory = inv;
+         self.editPopup = true;
       },
       submitLendInventory: function( inv ) {
          const self = this;
