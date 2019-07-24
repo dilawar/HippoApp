@@ -1,5 +1,5 @@
 <template>
-   <f7-page ptr @ptr:refresh="fetchInventories">
+   <f7-page ptr @ptr:refresh="ptrRefreshInventory">
       <f7-navbar title="Your Lab Inventory" back-link="Back"></f7-navbar>
 
       <f7-fab position="right-bottom" 
@@ -14,8 +14,9 @@
       <f7-block>
          <f7-block-title>Swipe left/right to do more.</f7-block-title>
 
-         <f7-list media-list no-hairlines>
-            <f7-list-item v-for="(item, index) in inventories.list"
+         <f7-list media-list>
+            <f7-list-item media-list 
+                          v-for="(item, index) in inventories.list"
                           :key="index"
                           :text="item.description"
                           media-item
@@ -23,8 +24,7 @@
                           >
                      <div slot="header">
                         <span style="color:red">{{item.item_condition}}</span>
-                        <span v-if="item.borrowing.borrower" style="color:green">
-                           <br />
+                        <span v-if="item.borrowing.borrower" style="color:blue">
                            Borrowed by {{item.borrowing.borrower}} on
                            {{item.borrowing.borrowed_on}}
                         </span>
@@ -44,16 +44,20 @@
                        </f7-link> 
                     </div>
 
+                    <!-- <div slot="media" v-if="item.image_id.length > 0"> -->
+
+                    </div>
+
                     <!-- Swipeout actions -->
                     <f7-swipeout-actions right>
-                       <f7-swipeout-button @click="updateInventory(item)">Update</f7-swipeout-button>
+                       <f7-swipeout-button @click="updateInventory(item)">Edit</f7-swipeout-button>
                     </f7-swipeout-actions>
                     <f7-swipeout-actions left>
                        <f7-swipeout-button @click="lendInventory(item)">Lend</f7-swipeout-button>
                     </f7-swipeout-actions>
             </f7-list-item>
          </f7-list>
-         </f7-block>
+      </f7-block>
 
       <f7-popup class="inventory-popup" :opened="popupOpened" @popup:closed="popupOpened = false">
          <f7-page>
@@ -260,6 +264,13 @@ export default {
             }
          );
       },
+      ptrRefreshInventory: function(event, done) {
+         const self = this;
+         setTimeout( () => {
+            self.fetchInventories();
+            done();
+         }, 1000);
+      },
       inventoryToCard: function(items) {
          const self = this;
          self.cards = [];
@@ -287,8 +298,9 @@ export default {
          self.fetchInventories();
       },
       updateInventory: function(item) {
+         console.log( "Updating inventory" );
          self.popupAction = 'Update';
-         self.inventory = item;
+         //self.inventory = item;
          self.popupOpened = true;
       },
       submitUpdateInventory: function(card) {
