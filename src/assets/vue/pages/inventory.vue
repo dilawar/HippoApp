@@ -28,7 +28,7 @@
                 </f7-nav-right>
              </f7-navbar>
 
-             <f7-card v-for="photo in photos">
+             <f7-card v-for="(photo, key) in photos" :key="key">
                 <f7-card-content class="no-border">
                    <img :src="photo.src" width="100%"></img>
                 </f7-card-content>
@@ -171,7 +171,6 @@ export default {
                res.forEach( function(k) {
                   self.photos.push( {src : k});
                });
-               console.log( self.photos );
                self.$refs.photobrowser.open();
             });
       },

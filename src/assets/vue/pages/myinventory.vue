@@ -12,16 +12,11 @@
       </f7-fab>
 
       <f7-block>
-         <f7-block-title>Swipe left/right to do more.</f7-block-title>
-
          <f7-card v-for="(item, index) in inventories.list" :key="index">
 
             <f7-card-header>
-               <span style="color:red">{{item.item_condition}}</span>
-               <span v-if="item.location" style="float:right">
-                  <f7-icon icon="fa fa-map-marker fa-fw"></f7-icon>
-                  <font style="color:gray;font-size:small">{{item.location}}</font>
-               </span>
+               <span style="color:red; font-size:small">{{item.item_condition}}</span>
+               <span style="float:right">{{item.scientific_name}}</span>
             </f7-card-header>
 
 
@@ -33,17 +28,22 @@
                        <f7-link external :href="'mailto:'+item.person_in_charge">
                           {{item.person_in_charge}}
                        </f7-link> 
-                    </div>
-
-                    <div slot="after">
-                       <span v-if="item.borrowing.borrower" style="color:blue">
-                          Borrowed by {{item.borrowing.borrower}} on
-                          {{item.borrowing.borrowed_on}}
+                       <br />
+                       <span v-if="item.location" style="float:right">
+                          <f7-icon icon="fa fa-map-marker fa-fw"></f7-icon>
+                          <font style="font-size:small">{{item.location}}</font>
                        </span>
+                       <div v-if="item.borrowing.length > 0"
+                          style="color:red; font-size:x-small">
+                          Borrowed by {{item.borrowing[0].borrower}} on
+                          {{item.borrowing[0].borrowed_on}}
+                       </div>
+              <br />
                     </div>
 
-                    <div slot="title">
-                        {{item.name}}, {{item.scientific_name}}, {{item.quantity_with_unit}}  
+
+                    <div slot="title" style="font-size:small">
+                        {{item.name}} - {{item.quantity_with_unit}}  
                     </div>
                     <div slot="text">
                        {{ item.description }}
@@ -77,11 +77,11 @@
             <f7-block>
                <!-- Lending list -->
                <f7-list media-list no-hairlines>
-                  <div>You are lending {{inventory.name}}, id {{inventory.id}} </div>
+                  <div>You are lending '{{inventory.name}}' (id:{{inventory.id}}) </div>
 
                   <f7-list-input label="Borrower (email)"
-                                 :value="inventory.borrower"
-                                 @input="inventory.borrower = $event.target.value"
+                                 :value="inventory.borrowing[0].borrower"
+                                 @input="inventory.borrowing[0].borrower = $event.target.value"
                                  type="email" 
                                  required
                                  validate
@@ -102,16 +102,17 @@
             </f7-block>
          </f7-page>
       </f7-popup>
-       <f7-popup :opened="editPopup" @popup:closed="editPopup = false">
+
+      <!-- Another popup for editing the current inventory item -->
+       <f7-popup :opened="editPopup" ref="edit_popup" @popup:closed="editPopup = false">
          <f7-page>
             <f7-navbar title="Edit Inventory">
                <f7-nav-right>
                   <f7-link popup-close>Cancel</f7-link>
                </f7-nav-right>
             </f7-navbar>
-
             <f7-block>
-               <f7-list no-hairlines-md>
+               <f7-list no-hairlines-md media-list>
                   <f7-list-input label="Name"
                                  :value="inventory.name"
                                  @input="inventory.name = $event.target.value"
@@ -180,17 +181,24 @@
                                  <option value="NO">No</option>
                   </f7-list-input>
 
-                  <f7-list-item>
+                  <!-- Show existing pictures and button to remove them. -->
+                  <f7-list-item v-for="(thumb, key) in inventory.thumbnails" :key="key">
+                     <div slot="media">
+                        <img :src="thumb.base64"> </img>
+                     </div>
+                     <div slot="after">
+                        <f7-button small @click="removeImage(thumb.id)">Remove Image</f7-button>
+                     </div>
+                  </f7-list-item>
+
+                  <!-- Show dropzone to upload files . -->
+                  <f7-list-item no-media>
                      <vue-dropzone id="dropzone1" 
                                    ref="inventoryDZ" 
                                    v-on:vdropzone-sending="onImageSendingAddExternalID"
                                    :options="dropzoneOptions"
                                    >
                      </vue-dropzone>
-                     <!-- <v-multifile-uploader postURL="http://.."  -->
-                     <!-- successMessagePath="" -->
-                                 <!-- errorMessagePath=""> -->
-                                 <!-- </v-multifile-uploader> -->
                   </f7-list-item>
 
                   <f7-list-item>
@@ -200,12 +208,12 @@
                                 @click="submitNewInventory"
                                 >Add New</f7-button>
 
-                     <f7-button v-if="popupAction=='Update'"
-                                slot="title" raised 
+                     <f7-button v-if="popupAction=='Edit'"
+                                slot="title" raised fill
                                 popup-close
                                 @click="submitDeleteInventory(inventory.id)"
                                 >Delete</f7-button>
-                     <f7-button v-if="popupAction=='Update'"
+                     <f7-button v-if="popupAction=='Edit'"
                                 slot="after" raised fill
                                 popup-close
                                 @click="submitUpdateInventory(inventory)"
@@ -246,7 +254,8 @@ export default {
             requires_booking: 'NO',
             item_condition: 'FUNCTIONAL',
             id: '',
-            borrower: '',
+            thumbnails: [],
+            borrowing: [{ borrower : '' }],
          },
          dropzoneOptions: {
             url: self.$store.state.api + '/upload/images',
@@ -276,7 +285,10 @@ export default {
                   self.saveStore('me.inventories', self.inventories);
                }
                else
+               {
+                  console.log( "Failed to fetch inventory");
                   self.inventories = self.loadStore('me.inventories');
+               }
             }
          );
       },
@@ -311,7 +323,7 @@ export default {
                // Before we upload, make sure to send inventory_id in $_POST.
                self.$refs.inventoryDZ.processQueue();
             });
-         self.fetchInventories();
+         setTimeout( () => self.fetchInventories(), 1000);
       },
       submitUpdateInventory: function(card) {
          const self = this;
@@ -322,43 +334,64 @@ export default {
                // Before uploading image, add corresponding inventory id to the image.
                self.$refs.inventoryDZ.processQueue();
             });
-         self.fetchInventories();
+         setTimeout( () => self.fetchInventories(), 1000);
       },
       submitDeleteInventory: function(id) {
          const self = this;
          console.log( "deleting item", id);
-         self.sendRequest( 'labinventory/delete/'+id);
+         setTimeout( () => {
+            self.sendRequest( 'labinventory/delete/'+id);
+         }, 1000);
          self.fetchInventories();
       },
       lendInventory: function(inv) {
          const self = this;
-         console.log( "lenging inventory item");
          self.popupAction = "Lend";
          self.inventory = inv;
+
+         // Make sure to have default fields setup.
+         if(self.inventory.borrowing.length == 0)
+            self.inventory.borrowing.push({ borrower : '' });
+
          self.lendPopup = true;
       },
       editInventory: function(inv) {
-         console.log( "Updating inventory", inv );
+         const self = this;
+         console.log( "Updating inventory" );
+         self.thumbnails = inv.thumbnails;
          self.popupAction = "Edit";
          self.inventory = inv;
+
+         // Make sure to have a borrowing field set.
+         if( self.inventory.borrowing.length == 0)
+            self.inventory.borrowing.push({borrower : '' });
+
          self.editPopup = true;
       },
       submitLendInventory: function( inv ) {
          const self = this;
          self.inventory = inv;
-         console.log( 'Lending inventory' );
          self.sendRequest( 'labinventory/lend', inv);
       },
       submitClearLending: function( inv ) {
          const self = this;
          self.sendRequest('labinventory/gotback/'+inv.id);
+         setTimeout( () => self.fetchInventories(), 1000);
       },
       onImageSendingAddExternalID: function(img, xhr, formData) {
          const self = this;
          // Add external id to formData.
          formData.append("inventory_id", self.inventory.id);
       },
-   }
+      removeImage: function( id ) {
+         const self = this;
+         setTimeout( () => {
+            self.sendRequest('images/delete/' + id );
+            // Remove this thumbnail from the page whether we succeed or not.
+            self.inventory.thumbnails = self.inventory.thumbnails.filter(th =>th.id!=id);
+         }, 1000);
+      },
+   },
 };
 
 </script>
