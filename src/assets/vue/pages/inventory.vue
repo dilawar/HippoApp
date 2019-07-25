@@ -167,10 +167,15 @@ export default {
          self.photos = [];
          self.promiseWithAuth('images/get/'+ids).then( 
             function( json ) {
-               let res = JSON.parse(json).data[ids];
-               res.forEach( function(k) {
-                  self.photos.push( {src : k});
-               });
+               let res = JSON.parse(json);
+               console.log(res);
+               if(res)
+               {
+                  res = res.data[ids];
+                  res.forEach( function(k) {
+                     self.photos.push( {src : k});
+                  });
+               }
                self.$refs.photobrowser.open();
             });
       },
