@@ -2,6 +2,12 @@
     user-select: none;
 }
 
+body {
+    max-width: 600px;
+    align-self: auto;
+    margin: 0px auto;
+}
+
 input {
     user-select: element !important;
 }

@@ -1,10 +1,18 @@
 // Import Vue
 import Vue from 'vue'
 
-//
-import VueQrcodeReader from "vue-qrcode-reader";
-Vue.use(VueQrcodeReader);
-import 'vue-qrcode-reader/dist/vue-qrcode-reader.css';
+// Import css from dropzone.
+import Dropzone from "vue2-dropzone";
+import 'vue2-dropzone/dist/vue2Dropzone.min.css'
+Vue.component('vue-dropzone', Dropzone);
+
+// Multi uploader.
+import MultipleFileUploader from '@updivision/vue2-multi-uploader'
+Vue.component('v-multifile-uploader', MultipleFileUploader);
+
+// import VueQrcodeReader from "vue-qrcode-reader";
+// Vue.use(VueQrcodeReader);
+// import 'vue-qrcode-reader/dist/vue-qrcode-reader.css';
 
 // OSM and leaflet.
 import {LMap, LTileLayer, LMarker, LPolyline, LPopup, LTooltip, LControlLayers} from 'vue2-leaflet';
@@ -32,9 +40,9 @@ Icon.Default.mergeOptions({
 // GoogleMap services.
 import { OpenStreetMapProvider, GoogleProvider } from 'leaflet-geosearch'; 
 
-// Lightweight timeline.
-import LightTimeline from 'vue-light-timeline';
-Vue.use(LightTimeline);
+//// fixme: Lightweight timeline.
+//import LightTimeline from 'vue-light-timeline';
+//Vue.use(LightTimeline);
 
 // Moment 
 import moment from 'moment';
@@ -170,10 +178,11 @@ Vue.mixin({
          const app = self.$f7;
          return app.request.promise.post(self.$store.state.api+'/'+endpoint, self.apiPostData());
       },
-      postToHippo: function(endpoint, data) {
+      promiseWithAuth: function(endpoint, post) {
          const self = this;
          const app = self.$f7;
-         app.request.post(self.$store.state.api+'/'+endpoint);
+         let data = { ...self.apiPostData(), ...post};
+         return app.request.promise.post(self.$store.state.api+'/'+endpoint, data);
       },
       getGoogleMapApiKey: function( ) {
          const self = this;
@@ -218,7 +227,7 @@ Vue.mixin({
             .then( function(json) {
                const res = JSON.parse(json);
                app.dialog.close();
-               return res.status;
+               return;
             }
          );
          setTimeout( () => app.dialog.close(), 1000);

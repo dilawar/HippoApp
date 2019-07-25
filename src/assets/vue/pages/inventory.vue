@@ -14,39 +14,63 @@
 
     <f7-block>
 
-       <f7-block-title> Total {{inventories.count}} items. </f7-block-title>
+       <f7-block-title> Total {{inventories.count}} items are available. </f7-block-title>
 
-    <f7-list class="searchbar-not-found">
-       <f7-list-item title="Nothing found"></f7-list-item>
-    </f7-list>
+       <!--
+      <f7-photo-browser :photos="photos" ref="photobrowser">
+      </f7-photo-browser>
+       -->
+       <f7-popup ref="photobrowser">
+          <f7-page>
+             <f7-navbar title="Inventory browser">
+                <f7-nav-right>
+                   <f7-link popup-close>Close</f7-link>
+                </f7-nav-right>
+             </f7-navbar>
 
-    <f7-list class="inventory-list"
-             media-list 
-             no-hairlines
-             :virtual-list-params="{items, searchAll, renderExternal}"
-             >
-      <ul>
-        <f7-list-item media-item
-                      v-for="(item, index) in vlData.items"  
-                      :key="index"
-                      link="#"
-                      :title="item.title"
-                      :header="item.header"
-                      :style="`top: ${vlData.topPosition}px`"
-                      >
-             <div slot="footer">
-                <f7-link external
-                         target="_system"
-                         :href="'mailto:'+item.data.person_in_charge"
-                         style="margin-right:5px" 
-                  >
-                  {{item.data.person_in_charge}} 
-                </f7-link>({{item.data.faculty_in_charge}})
-             </div>
-             <div slot="text" v-html="item.data.description"> </div>
-        </f7-list-item>
-      </ul>
-    </f7-list>
+             <f7-card v-for="(photo, key) in photos" :key="key">
+                <f7-card-content class="no-border">
+                   <img :src="photo.src" width="100%"></img>
+                </f7-card-content>
+             </f7-card>
+
+          </f7-page>
+       </f7-popup>
+
+       <f7-list class="searchbar-not-found">
+          <f7-list-item title="Nothing found"></f7-list-item>
+       </f7-list>
+
+       <f7-list class="inventory-list"
+                no-hairlines
+                :virtual-list-params="{items, searchAll, renderExternal}"
+                >
+             <f7-list-item 
+                           v-for="(item, index) in vlData.items"  
+                           :key="index"
+                           link="#"
+                           :title="item.title"
+                           :header="item.header"
+                           :style="`top: ${vlData.topPosition}px`"
+                           >
+               <div slot="footer">
+                  <f7-link external
+                           target="_system"
+                           :href="'mailto:'+item.data.person_in_charge"
+                           style="margin-right:5px" 
+                           >
+                           {{item.data.person_in_charge}} 
+                  </f7-link>({{item.data.faculty_in_charge}})
+               </div>
+               <div slot="text" v-html="item.data.description"> </div>
+
+               <!-- if images are found, display them. -->
+               <div slot="after" v-if="item.data.image_id.length > 0">
+                  <f7-link
+                     @click="fetchAndDisplayPhoto(item.data.image_id)">Photos</f7-link>
+               </div>
+            </f7-list-item>
+       </f7-list>
     </f7-block>
 
   </f7-page>
@@ -60,6 +84,7 @@ export default {
       return {
          inventories: [],
          items: [],
+         photos: [],
          vlData: {
             items: [],
          },
@@ -71,6 +96,7 @@ export default {
       if( ! self.inventories || self.inventories.length == 0)
       {
          // Get all inventory.
+         console.log( "Fetching inventories ... " );
          self.postWithPromise( '/inventory/list/100').then(
             function(json) 
             {
@@ -132,6 +158,21 @@ export default {
       {
          const self = this;
          self.vlData = vlData;
+      },
+      fetchAndDisplayPhoto: function(ids) {
+         const self = this;
+         // Fetching images.
+         ids = ids.join(',');
+         console.log( "Fetching image ", ids );
+         self.photos = [];
+         self.promiseWithAuth('images/get/'+ids).then( 
+            function( json ) {
+               let res = JSON.parse(json).data[ids];
+               res.forEach( function(k) {
+                  self.photos.push( {src : k});
+               });
+               self.$refs.photobrowser.open();
+            });
       },
    },
 
