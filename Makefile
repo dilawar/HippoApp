@@ -27,7 +27,7 @@ apk:
 	find platforms -name "*.apk" | xargs -I f du -h f
 
 run:
-	cordova run browser -- --live-reload --port=8090
+	cordova run browser -- --live-reload 
 
 upload :
 	cordova run android
