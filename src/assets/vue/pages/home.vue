@@ -60,17 +60,16 @@
                           title="Accomodations" 
                           footer="Browse/create TO-LET listing"
                           panel-close>
-               <f7-icon slot="media" icon="fa fa-home fa-2x"></f7-icon>
-            </f7-list-item>
+            <f7-icon slot="media" icon="fa fa-home fa-2x"></f7-icon>
 
-            <!--
-            <f7-list-item link="/qr/" 
-                          title="QR code" 
-                          footer="Scan QR code"
-                          panel-close>
-               <f7-icon slot="media" icon="fa fa-qrcode fa-2x"></f7-icon>
-            </f7-list-item>
-            -->
+         </f7-list-item>
+
+         <f7-list-item link="/forum/" 
+                       title="Forum" 
+                       footer="Because you hate to spam mailing list"
+                       panel-close>
+            <f7-icon slot="media" icon="fa fa-comments-o fa-2x"></f7-icon>
+         </f7-list-item>
 
          </f7-list>
       </f7-block>
