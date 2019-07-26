@@ -6,14 +6,15 @@
        <f7-view name="left" url="/userpanel/" ></f7-view>
     </f7-panel>
 
-
     <f7-view main url="/" tab tab-active>
        <!--
           Enable it if we need it to put toolbar on the bottom page. The
           backbutton has started working fine again.
          -->
 
-         <f7-toolbar bottom-md tabber labels>
+         <f7-toolbar bottom-md tabber labels
+                     style="font-size:xx-small"
+                     >
 
             <f7-link text="Back"
                      icon="fa fa-step-backward fa-2x"
@@ -59,11 +60,12 @@
                      </f7-nav-right>
                   </f7-navbar>
                   <f7-block>
-                     <p><strong>Version</strong> 1.3, <tt>build</tt>20190418</p>
+                     <p><strong>Version</strong> {{version}}</p>
 
                      <h3>Development</h3>
-                     Hosted on <f7-link external target="_system" href="https://github.com/dilawar/HippoApp"
-                        >Github</f7-link> and is released under MIT License.
+                     This app is open-source. It is hosted on <f7-link external target="_system" href="https://github.com/dilawar/HippoApp"
+                        >Github</f7-link> and is released under GNU GPLv3
+                     License.
 
                      <p> <strong>Contribution:</strong> 
                      <f7-link extrernal target="_system" href="https://github.com/dilawar/HippoApp/blob/master/CONTRIBUTION.md">Read this.
@@ -110,7 +112,9 @@
 
 <script>
 // Import Routes...
-import routes from './routes.js'
+import routes from './routes.js';
+
+import moment from 'moment';
 
 let theme = 'auto';
 if (document.location.search.indexOf('theme=') >= 0) {
@@ -132,9 +136,11 @@ export default {
          infoPopup: false,
          calendarPopup: false,
          canteenPopup: false,
+         version: moment().format(),
       }
    },
    mounted() {
+      const self = this;
    },
 }
 </script>
