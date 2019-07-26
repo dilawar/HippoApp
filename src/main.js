@@ -281,6 +281,16 @@ Vue.mixin({
          }
          return arr; 
       },  
+      pageBeforeIn: function( ) {
+         const self = this;
+         const app = self.$f7;
+         app.preloader.show();
+      },
+      pageAfterIn: function() {
+         const self = this;
+         const app = self.$f7;
+         app.preloader.hide();
+      },
    },
 });
 

@@ -13,48 +13,38 @@
           backbutton has started working fine again.
          -->
 
-         <f7-toolbar 
-                     inner
-                     no-hairline
-                     position="bottom"
-                     >
+         <f7-toolbar bottom-md tabber labels>
 
-            <f7-link tab-link="#tab-back" 
-                     icon-only 
-                     icon-color="blue"
-                     icon="fa fa-backward fa-2x"
+            <f7-link text="Back"
+                     icon="fa fa-step-backward fa-2x"
                      back
                      >
             </f7-link>
 
-            <f7-link tab-link="#tab-dontknow" 
-                     @click="infoPopup=true"
+            <f7-link @click="infoPopup=true"
                      icon-only 
-                     icon-color="blue"
+                     text="Info"
                      icon="fa fa-info fa-2x"
                      >
             </f7-link>
 
             <f7-link icon-only 
-                     icon-color="blue"
                      href="/map/"
-                     tooltip="Campus Map"
-                     icon="fa fa-map fa-2x"
+                     text="Map"
+                     icon="fa fa-map-o fa-2x"
                      >
             </f7-link>
 
             <f7-link icon-only 
-                     icon-color="blue"
                      href="/canteen/"
-                     tooltip="Canteen"
+                     text="Canteen"
                      icon="fa fa-cutlery fa-2x"
                      >
             </f7-link>
 
             <f7-link icon-only 
-                     icon-color="blue"
                      href="/events/"
-                     tooltip="Public calendar"
+                     text="Calendar"
                      icon="fa fa-calendar fa-2x"
                      >
             </f7-link>
@@ -135,6 +125,9 @@ export default {
             routes,
             id: 'com.dilawar.hippo',
             isBottom: true,
+            toolbar: {
+               hideOnPageScroll: true,
+            },
          },
          infoPopup: false,
          calendarPopup: false,

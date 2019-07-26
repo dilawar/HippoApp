@@ -1,6 +1,8 @@
 <template>
   <f7-page page-content 
            ptr @ptr:refresh="fetchEvents"
+           @page:beforein="pageBeforeIn"
+           @page:afterin="pageAfterIn"
            infinite
            :infinite-preloader="showPreloader" 
            @infinite="loadMore"
@@ -98,7 +100,9 @@ export default {
       self.events = self.loadStore('events');
       self.initVenuesAndClasses();
       if(! self.events || self.events.length == 0)
+      {
          self.fetchEvents();
+      }
       self.eventsToTimeLine(self.events);
    },
    methods: { 
@@ -112,18 +116,16 @@ export default {
       fetchEvents: function( ) {
          const self = this;
          const app = self.$f7;
-         app.dialog.preloader();
+
+         setTimeout( () => {
          self.postWithPromise('/events/latest/100').then(
             function(json) {
                self.events = JSON.parse(json).data;
                self.initVenuesAndClasses();
                self.saveStore('events', self.events);
-               app.dialog.close();
                self.eventsToTimeLine(self.events);
             }
-         );
-
-         setTimeout( () => app.dialog.close(), 1000);
+         )}, 2000);
       },
       eventToTimelinePoint: function(key, ev) 
       {

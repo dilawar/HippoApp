@@ -1,5 +1,8 @@
 <template>
-  <f7-page ptr @ptr:refresh="fetchTransportAgain" page-content>
+   <f7-page ptr @ptr:refresh="fetchTransportAgain" 
+            @page:beforein="pageBeforeIn"
+            @page:afterin="pageAfterIn"
+            page-content>
   <f7-navbar title="Transport" back-link="Back"></f7-navbar>
 
   <f7-fab position="right-bottom" slot="fixed" color="green">
