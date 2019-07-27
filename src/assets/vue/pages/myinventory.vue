@@ -309,7 +309,10 @@ export default {
          self.popupAction = "New";
          self.inventory.person_in_charge = self.getLogin();
          self.inventory.status = 'VALID';
-         self.lendPopup = true;
+
+         if(self.inventory.borrowing.length == 0)
+            self.inventory.borrowing.push({borrower: ''});
+         self.editPopup = true;
       },
       submitNewInventory: function( ) 
       {
@@ -319,6 +322,8 @@ export default {
                let res = JSON.parse(json)['data'];
                console.log( "Created inventory", res.id );
                self.inventory = res;
+               if(self.inventory.borrowing.length == 0)
+                  self.inventory.borrowing.push({borrower: ''});
 
                // Before we upload, make sure to send inventory_id in $_POST.
                self.$refs.inventoryDZ.processQueue();
@@ -357,7 +362,7 @@ export default {
       },
       editInventory: function(inv) {
          const self = this;
-         console.log( "Updating inventory" );
+         console.log( "Updating inventory ", inv.id );
          self.thumbnails = inv.thumbnails;
          self.popupAction = "Edit";
          self.inventory = inv;

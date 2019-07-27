@@ -62,7 +62,7 @@
     "base64-to-image": "^1.0.2",
     "cordova-android": "^7.1.4",
     "cordova-browser": "^5.0.4",
-    "cordova-plugin-browsersync": "^1.1.0",
+    "cordova-custom-config": "^5.1.0",
     "cordova-plugin-camera": "^4.1.0",
     "cordova-plugin-document-viewer": "^0.9.11",
     "cordova-plugin-geolocation": "^4.0.2",
@@ -104,15 +104,13 @@
   "cordova": {
     "plugins": {
       "cordova-plugin-whitelist": {},
-      "cordova-plugin-document-viewer": {},
       "cordova-plugin-inappbrowser": {},
       "cordova-plugin-splashscreen": {},
       "cordova-plugin-geolocation": {},
       "cordova-plugin-mauron85-background-geolocation": {},
       "cordova-plugin-camera": {
         "ANDROID_SUPPORT_V4_VERSION": "27.+"
-      },
-      "cordova-plugin-browsersync": {}
+      }
     },
     "platforms": [
       "android",

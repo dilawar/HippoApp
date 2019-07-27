@@ -1,5 +1,5 @@
 <template>
-  <f7-page ptr @ptr:refresh="fetchInventory">
+   <f7-page ptr @ptr:refresh="fetchInventory">
     <f7-navbar title="Inventories" back-link="Back">
       <f7-subnavbar :inner="false">
          <f7-searchbar
@@ -13,13 +13,6 @@
     </f7-navbar>
 
     <f7-block>
-
-       <f7-block-title> Total {{inventories.count}} items are available. </f7-block-title>
-
-       <!--
-      <f7-photo-browser :photos="photos" ref="photobrowser">
-      </f7-photo-browser>
-       -->
        <f7-popup ref="photobrowser">
           <f7-page>
              <f7-navbar title="Inventory browser">
@@ -33,7 +26,6 @@
                    <img :src="photo.src" width="100%"></img>
                 </f7-card-content>
              </f7-card>
-
           </f7-page>
        </f7-popup>
 
@@ -167,10 +159,15 @@ export default {
          self.photos = [];
          self.promiseWithAuth('images/get/'+ids).then( 
             function( json ) {
-               let res = JSON.parse(json).data[ids];
-               res.forEach( function(k) {
-                  self.photos.push( {src : k});
-               });
+               let res = JSON.parse(json);
+               console.log(res);
+               if(res)
+               {
+                  res = res.data[ids];
+                  res.forEach( function(k) {
+                     self.photos.push( {src : k});
+                  });
+               }
                self.$refs.photobrowser.open();
             });
       },

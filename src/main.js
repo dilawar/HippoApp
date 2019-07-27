@@ -281,6 +281,24 @@ Vue.mixin({
          }
          return arr; 
       },  
+      deleteComment: function(id) {
+         const self = this;
+         self.sendRequest('/comment/delete/'+id);
+      },
+      addComment: function(comment) {
+         const self = this;
+         self.sendRequest('/comment/post', comment);
+      },
+      pageBeforeIn: function( ) {
+         const self = this;
+         const app = self.$f7;
+         app.preloader.show();
+      },
+      pageAfterIn: function() {
+         const self = this;
+         const app = self.$f7;
+         app.preloader.hide();
+      },
    },
 });
 

@@ -23,6 +23,7 @@ import Chat from './assets/vue/pages/chat.vue';
 import SearchPage from './assets/vue/pages/search.vue';
 import Vuex from './assets/vue/pages/vuex.vue';
 import InventoryPage from './assets/vue/pages/inventory.vue';
+import Forum from './assets/vue/pages/forum.vue';
 
 export default [
    {
@@ -119,8 +120,8 @@ export default [
       component: ColorThemes
    },
    {
-      path: '/chat/',
-      component: Chat
+      path: '/forum/',
+      component: Forum
    },
    {
       path: '/vuex/',

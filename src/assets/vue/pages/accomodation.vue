@@ -464,10 +464,6 @@ export default {
          self.sendRequest('/accomodation/comment/post', data);
          self.commentPopupOpened = false;
       },
-      deleteComment: function(id) {
-         const self = this;
-         self.sendRequest('/accomodation/comment/delete/'+id);
-      },
       addToFavoriteAcc: function(id) {
          const self = this;
          self.favouriteAccomodations = self.loadStore('me.favourite.accomodations');
