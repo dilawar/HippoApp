@@ -241,6 +241,7 @@ export default {
             description: '',
             created_by: '',
             tags: [],
+            num_comments: 0,
          },
       };
    },
@@ -250,7 +251,6 @@ export default {
       self.alltags = self.loadStore('forum.alltags');
       if( ! self.forumCards || self.forumCards.length == 0)
       {
-         console.log( "Fetching forum cards ... " );
          setTimeout( () => {
             self.postWithPromise( '/forum/list/100').then(
                function(json) 
@@ -259,14 +259,13 @@ export default {
                   self.saveStore('forum.cards', self.forumCards);
                }
             );
-            self.postWithPromise( '/forum/alltags').then(
+            self.postWithPromise('/forum/alltags').then(
                function(json) {
                   self.alltags = JSON.parse(json).data;
                   self.saveStore('forum.alltags', self.alltags);
                }
             );
          }, 1000);
-      }
    },
    methods: { 
       // METHODS:
@@ -325,12 +324,9 @@ export default {
       },
       postToForumSubmit: function() {
          const self = this;
-         console.log( "Submitting post: ", self.item );
-         self.promiseWithAuth('/forum/post', self.item ).then(
-            function( json ) {
-               let res = JSON.parse(json).data;
-               console.log( 'Returned ', res );
-            });
+         setTimeout(() => self.sendRequest('/forum/post', self.item), 500);
+         self.commentPopup = false;
+         self.item.num_comments += 1;
       },
       updateCard: function(card) {
          const self = this;
