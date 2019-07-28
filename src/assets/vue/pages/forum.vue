@@ -1,8 +1,22 @@
 <template>
    <f7-page ptr @ptr:refresh="refreshForum">
-    <f7-navbar title="Forum" back-link="Back">
+    <f7-navbar title="Notice Board" back-link="Back">
+       <f7-nav-right>
+          <f7-link class="searchbar-enable" 
+                   data-searchbar=".searchbar-notice" 
+                   icon-ios="f7:search" icon-aurora="f7:search" icon-md="material:search"
+                  >
+          </f7-link>
+       </f7-nav-right>
+       <f7-searchbar expandable
+                     class="searchbar-notice"
+                     paceholder="Search in items" 
+                     search-item="div.card"
+                     search-container=".card-list"
+                     search-in=".card-header, .card-content"
+                     >
+       </f7-searchbar>
     </f7-navbar>
-
 
     <f7-fab position="right-bottom" 
             slot="fixed" 
@@ -187,7 +201,11 @@
 
 
     <!-- Show current cards -->
-    <f7-block>
+
+    <f7-block class="card-list">
+       <f7-card class="searchbar-not-found">
+          <f7-card-header>Nothing found</f7-card-header>
+       </f7-card>
        <f7-card v-for="(card, key) in forumCards" :key="key"
                 swipe-to-close
                 :padding="false"
@@ -206,13 +224,13 @@
              <div style="font-size:small"> {{card.title}} </div>
              <div> {{card.description}} </div>
           </f7-card-content>
-          <f7-card-footer no-border>
-             <f7-button @click="updateCard(card)"
+          <f7-card-footer>
+             <f7-button small @click="updateCard(card)"
                           v-if="getLogin() == card.created_by">
                 Update
              </f7-button>
-             <f7-button @click="showCommentPopup(card)" float-right>
-                ({{card.num_comments}}) Comments
+             <f7-button small @click="showCommentPopup(card)" float-right>
+                ({{card.num_comments}}) Comment
              </f7-button>
           </f7-card-footer>
        </f7-card>
