@@ -1,82 +1,107 @@
 <template>
   <f7-page page-content ptr @ptr:refresh="fetchAccomodations">
-  <f7-navbar title="Accomodation" back-link="Back"></f7-navbar>
+     <f7-navbar title="Accomodation" back-link="Back">
+        <f7-nav-right>
+           <f7-link class="searchbar-enable" 
+                    data-searchbar=".searchbar-acc" 
+                    icon-ios="f7:search" icon-aurora="f7:search" icon-md="material:search"
+                                                                 >
+           </f7-link>
+        </f7-nav-right>
+        <f7-searchbar class="searchbar-acc"
+                      expandable
+                      search-container=".search-list-acc"
+                      search-in=".item-title, .acc-content, .accordian-item-content"
+                      >
+        </f7-searchbar>
+     </f7-navbar>
 
-  <f7-block>
-     <f7-photo-browser ref="standalone"></f7-photo-browser>
-     <f7-list accordion-list media-list no-hairlines>
-     <f7-list-item accordion-item 
-                   swipeout
-                   v-for="(acc, key) in accomodations.list" 
-                   :key="key"
-                   >
+     <!-- List of accomodations -->
+     <f7-block>
+        <f7-photo-browser ref="standalone"></f7-photo-browser>
 
-          <f7-icon v-if="favouriteAccomodations.includes(acc.id)"
-               icon="fa fa-bookmark fa-2x"
-               slot="media"
-               >
-          </f7-icon>
+        <f7-list class="searchbar-not-found">
+           <f7-list-item title="Nothing found"></f7-list-item>
+        </f7-list>
 
-          <f7-swipeout-actions left>
-             <f7-swipeout-button v-if="! favouriteAccomodations.includes(acc.id)"
-                @click="addToFavoriteAcc(acc.id)">Favourite</f7-swipeout-button>
-             <f7-swipeout-button v-else 
-                @click="removeFromFavoriteAcc(acc.id)">Unfavorite</f7-swipeout-button>
-          </f7-swipeout-actions>
+        <f7-list accordion-list 
+                 media-list no-hairlines
+                 class="searchbar-found search-list-acc"
+                 >
+           <f7-list-item accordion-item 
+                         swipeout
+                         v-for="(acc, key) in accomodations.list" 
+                         :key="key"
+                         >
+             <f7-icon v-if="favouriteAccomodations.includes(acc.id)"
+                      icon="fa fa-bookmark fa-2x"
+                      slot="media" >
+             </f7-icon>
 
+             <f7-swipeout-actions left>
+                <f7-swipeout-button v-if="! favouriteAccomodations.includes(acc.id)"
+                                    @click="addToFavoriteAcc(acc.id)"
+                                    > Favourite
+                </f7-swipeout-button>
+                <f7-swipeout-button v-else 
+                                    @click="removeFromFavoriteAcc(acc.id)"
+                                    > Unfavorite
+                </f7-swipeout-button>
+             </f7-swipeout-actions>
 
-        <div slot="header" style="font-size:small;margin-left:2px"> 
-           <span style="color:green">{{acc.status }} | {{acc.available_for}}</span>.
-        </div>
-        <div slot="title">
-           {{acc.type}}, {{acc.open_vacancies}} vacancy.
-        </div>
-        <div slot="subtitle">
-           <f7-icon icon="fa fa-map-marker fa-fw"></f7-icon> {{acc.address}}
-        </div>
-        <div slot="footer">
-           Posted by {{acc.created_by}} on {{str2Moment(acc.created_on,
-              'YYYY-MM-DD HH:mm:ss').format('MMM DD')}} 
-        </div>
-        <f7-accordion-content>
-           <f7-block style="background-color:Yellow;">
-              <div> 
-                 <f7-icon icon="fa fa-clock-o fa-fw"></f7-icon>
-                 Available from {{str2Moment(acc.available_from,
-                 'YYYY-MM-DD').format('MMM DD')}}.
-              </div>
+           <div slot="header" style="font-size:small;margin-left:2px"> 
+              <span style="color:green">{{acc.status }} | {{acc.available_for}}</span>.
+           </div>
+           <div slot="title">
+              {{acc.type}}, {{acc.open_vacancies}} vacancy.
+           </div>
+           <div slot="subtitle">
+              <f7-icon icon="fa fa-map-marker fa-fw"></f7-icon> {{acc.address}}
+           </div>
+           <div slot="footer">
+              Posted by {{acc.created_by}}, {{str2Moment(acc.created_on).fromNow()}} 
+           </div>
+           <f7-accordion-content class="acc-content">
+              <f7-block style="background-color:#aaffffaa;font-size:small">
+                 <div> 
+                    <f7-icon icon="fa fa-clock-o fa-fw"></f7-icon>
+                    Available from {{str2Moment(acc.available_from,
+                    'YYYY-MM-DD').format('MMM DD')}}.
+                 </div>
 
-              <span v-for="(val, key) in acc">
-                 <span v-if="showKeys.find(k => k===key) && val.length > 0">
-                    <span style="font-size:x-small">{{formatKey(key)}}</span>
-                    <span style="margin-right:2ex;font-size:medium">{{val}}</span>
-                    <br />
+                 <span v-for="(val, key) in acc">
+                    <span v-if="showKeys.find(k => k===key) && val.length > 0">
+                       <span style="font-size:70%">{{formatKey(key)}}</span>
+                       <span style="margin-right:2ex;">{{val}}</span>
+                       <br />
+                    </span>
                  </span>
-              </span>
-              <div v-if="acc.last_modified_on" style="color:green;text-align:right">
-                 <f7-icon icon="fa fa-bell fa-fw"></f7-icon>
-                 Last changed: {{str2Moment(acc.last_modified_on, 'YYYY-MM-DD HH:mm:ss').fromNow()}}
-              </div>
+                 <div v-if="acc.last_modified_on" style="color:green;text-align:right">
+                    <f7-icon icon="fa fa-bell fa-fw"></f7-icon>
+                    Last changed: {{str2Moment(acc.last_modified_on, 'YYYY-MM-DD HH:mm:ss').fromNow()}}
+                 </div>
 
-              <f7-row style="margin-top:1ex;font-size:medium">
-                 <f7-col v-if="acc.created_by===getLogin()">
-                    <f7-link @click="updateAction(acc)" >Update </f7-link>
-                 </f7-col>
-                 <f7-col>
-                    <f7-link :href="'/osm/accomodation/'+acc.id+'/'">Locate</f7-link>
-                 </f7-col>
-                 <f7-col>
-                    <f7-link v-if="isUserAuthenticated()" 
-                             style="float:right"
-                             @click="addComment(acc)"
-                             >Comment ({{acc.num_comments}})
-                    </f7-link>
-                 </f7-col>
+                 <f7-row style="margin-top:1ex;font-size:medium">
+                    <f7-col v-if="acc.created_by===getLogin()">
+                       <f7-link @click="updateAction(acc)" >Update </f7-link>
+                    </f7-col>
+                    <f7-col>
+                       <f7-link :href="'/osm/accomodation/'+acc.id+'/'">Locate</f7-link>
+                    </f7-col>
+                    <f7-col>
+                       <f7-link v-if="isUserAuthenticated()" 
+                                style="float:right"
+                                @click="addComment(acc)"
+                                >Comment ({{acc.num_comments}})
+                       </f7-link>
+                    </f7-col>
               </f7-row>
+
            </f7-block>
-        </f7-accordion-content>
-     </f7-list-item>
+           </f7-accordion-content>
+           </f7-list-item>
      </f7-list>
+
   </f7-block>
 
   <!-- FAB to create accomodation -->
@@ -99,8 +124,8 @@
 
 
         <f7-block>
-           <!-- Submit comment. -->
 
+           <!-- Submit comment. -->
            <f7-list media-list no-hairlines>
 
               <f7-list-item v-if="thisAccomodation"
@@ -130,6 +155,7 @@
               </f7-list-item>
            </f7-list>
         </f7-block>
+
         <f7-block>
            <f7-block-title small>Existing comments</f7-block-title>
            <f7-list media-list no-hairlines>
@@ -140,10 +166,12 @@
                             :footer="'By ' + c.commenter"
                             style="background-color:Ivory"
                             >
-                            <f7-link v-if="c.commenter===getLogin()"
-                                     slot="after"
-                                     @click="deleteComment(c.id)"
-                                     >Delete</f7-link>
+                   <f7-link v-if="c.commenter===getLogin()"
+                            slot="after"
+                            @click="deleteComment(c.id)"
+                            >
+                            Delete
+                   </f7-link>
               </f7-list-item>
            </f7-list>
         </f7-block>
@@ -171,7 +199,9 @@
                              required 
                              validate
                              >
-                             <option v-for="typ in accomodations.types" :value="typ">{{typ}}</option>
+                  <option v-for="typ in accomodations.types" :value="typ">
+                     {{typ}}
+                  </option>
               </f7-list-input>
 
               <f7-list-input label="Available From" :input="false">
@@ -203,14 +233,14 @@
                           > {{val}} </option>
               </f7-list-input>
 
-              <f7-list-input label="Address"
-                             type="text"
-                             :input="false"
-                             >
-                     <input id="autocomplete-dropdown-expand"  
-                            :value="accomodation.address"
-                            slot="input" type="text" />
-              </f7-list-input>
+                 <f7-list-input label="Address"
+                                type="text"
+                                :input="false" 
+                                >
+                    <input id="autocomplete-dropdown-expand"  
+                           :value="accomodation.address"
+                           slot="input" type="text" />
+                 </f7-list-input>
 
               <f7-list-input label="Description"
                              :value="accomodation.description"
