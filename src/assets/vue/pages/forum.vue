@@ -13,7 +13,9 @@
     </f7-fab>
 
     <!-- Popup for updating. . -->
-    <f7-popup :opened="updatePopup" ref="update_popup" @popup:closed="updatePopup = false">
+    <f7-popup :opened="updatePopup" 
+              ref="update_popup" 
+              @popup:closed="updatePopup = false">
       <f7-page>
          <f7-navbar title="Post to forum">
             <f7-nav-right>
@@ -190,7 +192,7 @@
                 swipe-to-close
                 :padding="false"
                 >
-          <f7-card-header style="font-size:small">
+          <f7-card-header :style="`font-size:small;background-color:${stringToColour(card.tags[0])}`">
              <div>
                 <span v-for="(tag,key) in card.tags"
                         :key="key"><strong>r/{{tag}}</strong>&nbsp;</span>
