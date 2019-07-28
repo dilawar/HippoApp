@@ -253,8 +253,7 @@ export default {
       {
          setTimeout( () => {
             self.postWithPromise( '/forum/list/100').then(
-               function(json) 
-               {
+               function(json) {
                   self.forumCards = JSON.parse(json).data;
                   self.saveStore('forum.cards', self.forumCards);
                }
@@ -266,6 +265,7 @@ export default {
                }
             );
          }, 1000);
+      }
    },
    methods: { 
       // METHODS:
