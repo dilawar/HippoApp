@@ -65,10 +65,10 @@
          </f7-list-item>
 
          <f7-list-item link="/forum/" 
-                       title="Forum" 
+                       title="Notice Board" 
                        footer="Because you hate to spam mailing list"
                        panel-close>
-            <f7-icon slot="media" icon="fa fa-comments-o fa-2x"></f7-icon>
+            <f7-icon slot="media" icon="fa fa-bullhorn fa-2x"></f7-icon>
          </f7-list-item>
 
          </f7-list>

@@ -1,8 +1,22 @@
 <template>
    <f7-page ptr @ptr:refresh="refreshForum">
-    <f7-navbar title="Forum" back-link="Back">
+    <f7-navbar title="Notice Board" back-link="Back">
+       <f7-nav-right>
+          <f7-link class="searchbar-enable" 
+                   data-searchbar=".searchbar-notice" 
+                   icon-ios="f7:search" icon-aurora="f7:search" icon-md="material:search"
+                  >
+          </f7-link>
+       </f7-nav-right>
+       <f7-searchbar expandable
+                     class="searchbar-notice"
+                     paceholder="Search in items" 
+                     search-item="div.card"
+                     search-container=".card-list"
+                     search-in=".card-header, .card-content"
+                     >
+       </f7-searchbar>
     </f7-navbar>
-
 
     <f7-fab position="right-bottom" 
             slot="fixed" 
@@ -13,7 +27,9 @@
     </f7-fab>
 
     <!-- Popup for updating. . -->
-    <f7-popup :opened="updatePopup" ref="update_popup" @popup:closed="updatePopup = false">
+    <f7-popup :opened="updatePopup" 
+              ref="update_popup" 
+              @popup:closed="updatePopup = false">
       <f7-page>
          <f7-navbar title="Post to forum">
             <f7-nav-right>
@@ -185,12 +201,16 @@
 
 
     <!-- Show current cards -->
-    <f7-block>
+
+    <f7-block class="card-list">
+       <f7-card class="searchbar-not-found">
+          <f7-card-header>Nothing found</f7-card-header>
+       </f7-card>
        <f7-card v-for="(card, key) in forumCards" :key="key"
                 swipe-to-close
                 :padding="false"
                 >
-          <f7-card-header style="font-size:small">
+          <f7-card-header :style="`font-size:small;background-color:${stringToColour(card.tags[0])}`">
              <div>
                 <span v-for="(tag,key) in card.tags"
                         :key="key"><strong>r/{{tag}}</strong>&nbsp;</span>
@@ -204,13 +224,13 @@
              <div style="font-size:small"> {{card.title}} </div>
              <div> {{card.description}} </div>
           </f7-card-content>
-          <f7-card-footer no-border>
-             <f7-button @click="updateCard(card)"
+          <f7-card-footer>
+             <f7-button small @click="updateCard(card)"
                           v-if="getLogin() == card.created_by">
                 Update
              </f7-button>
-             <f7-button @click="showCommentPopup(card)" float-right>
-                ({{card.num_comments}}) Comments
+             <f7-button small @click="showCommentPopup(card)" float-right>
+                ({{card.num_comments}}) Comment
              </f7-button>
           </f7-card-footer>
        </f7-card>
@@ -241,6 +261,7 @@ export default {
             description: '',
             created_by: '',
             tags: [],
+            num_comments: 0,
          },
       };
    },
@@ -250,16 +271,14 @@ export default {
       self.alltags = self.loadStore('forum.alltags');
       if( ! self.forumCards || self.forumCards.length == 0)
       {
-         console.log( "Fetching forum cards ... " );
          setTimeout( () => {
             self.postWithPromise( '/forum/list/100').then(
-               function(json) 
-               {
+               function(json) {
                   self.forumCards = JSON.parse(json).data;
                   self.saveStore('forum.cards', self.forumCards);
                }
             );
-            self.postWithPromise( '/forum/alltags').then(
+            self.postWithPromise('/forum/alltags').then(
                function(json) {
                   self.alltags = JSON.parse(json).data;
                   self.saveStore('forum.alltags', self.alltags);
@@ -325,12 +344,9 @@ export default {
       },
       postToForumSubmit: function() {
          const self = this;
-         console.log( "Submitting post: ", self.item );
-         self.promiseWithAuth('/forum/post', self.item ).then(
-            function( json ) {
-               let res = JSON.parse(json).data;
-               console.log( 'Returned ', res );
-            });
+         setTimeout(() => self.sendRequest('/forum/post', self.item), 500);
+         self.commentPopup = false;
+         self.item.num_comments += 1;
       },
       updateCard: function(card) {
          const self = this;
