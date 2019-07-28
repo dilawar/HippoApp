@@ -11,7 +11,7 @@
         <f7-searchbar class="searchbar-acc"
                       expandable
                       search-container=".search-list-acc"
-                      search-in=".item-title, .acc-content, .accordian-item-content"
+                      search-in=".item-title,.item-subtitle,.item-footer,.acc-content,.accordian-item-content"
                       >
         </f7-searchbar>
      </f7-navbar>
