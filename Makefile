@@ -13,6 +13,7 @@ init:
 	cordova plugin add cordova-plugin-inappbrowser || echo "A"
 	cordova plugin add cordova-plugin-mauron85-background-geolocation || echo "B"
 	cordova plugin add cordova-plugin-geolocation || echo "C"
+	cordova plugin add cordova-plugin-local-notifications || echo "D"
 
 build : 
 	@cordova run android 

@@ -6,6 +6,16 @@
          <f7-block-title>Welcome {{username}} </f7-block-title>
 
          <f7-list no-hairlines>
+
+            <f7-list-item link="/notification/" 
+                          target="_blank"
+                          view=".view-main"
+                          title="Notifications"
+                          panel-close
+                          >
+               <f7-icon slot="media" icon="fa fa-bell"></f7-icon>
+            </f7-list-item>
+
             <f7-list-item link="/myprofile/" 
                           target="_blank"
                           view=".view-main"
@@ -43,6 +53,7 @@
                <f7-icon slot="media" icon="fa fa-archive fa-fw"></f7-icon>
             </f7-list-item>
 
+
          </f7-list>
 
    </f7-page>
@@ -55,6 +66,7 @@
             username: 'Guest',
             alreadyLoggedIn: false,
             profile: [],
+            notifications: [],
          };
       },
       mounted()
