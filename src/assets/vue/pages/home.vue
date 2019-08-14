@@ -225,7 +225,13 @@
          // Fetch notifications.
          setTimeout( () => {
             self.fetchNotifications();
+            // Popup notification.
+            let nots = self.loadStore('notifications');
+            console.log('notifications', nots);
+            cordova.plugins.notification.local.schedule(nots);
          }, 1000);
+
+
       },
       methods: {
          signIn: function()
