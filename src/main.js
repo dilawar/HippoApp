@@ -335,6 +335,10 @@ export default new Vue({
       const self = this;
       document.addEventListener("deviceready", onDeviceReady, false);
 
+      // add cordova plugin 
+      cordova.plugins.notification.local.on("click", function(notification) {
+         console.log( "Disable notification here");
+      });
    },
    methods: 
    { 
