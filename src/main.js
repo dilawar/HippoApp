@@ -271,6 +271,19 @@ Vue.mixin({
          console.log('type is ', ret);
          return ret;
       },
+      fetchNotifications: function() {
+         const self = this;
+         console.log( "Fetching notifications for user" );
+         self.postWithPromise( 'notifications/get' ).then(
+            function(json) {
+               console.log(json);
+               let notifications = JSON.parse(json).data;
+               self.saveStore("notifications", notifications);
+            }
+         );
+         console.log( "Fetching notifications..");
+         console.log( self.$store.notifications );
+      },
       removeFromArray: function(arr) {
          var what, a = arguments, L = a.length, ax;
          while (L > 1 && arr.length) {

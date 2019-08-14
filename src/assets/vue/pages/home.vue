@@ -210,15 +210,22 @@
             , 1000);
 
          // Fetch the transport as well.
-         app.request.post( self.$store.state.api+'/transport'
-            , self.apiPostData()
-            , function(json) 
-            {
-               const res = JSON.parse(json);
-               if( res.status=='ok')
-                  self.$localStorage.set('transport', JSON.stringify(res.data));
-            }
-         );
+         setTimeout( () => {
+            app.request.post( self.$store.state.api+'/transport'
+               , self.apiPostData()
+               , function(json) 
+               {
+                  const res = JSON.parse(json);
+                  if( res.status=='ok')
+                     self.$localStorage.set('transport', JSON.stringify(res.data));
+               }
+            );
+         }, 2000);
+
+         // Fetch notifications.
+         setTimeout( () => {
+            self.fetchNotifications();
+         }, 1000);
       },
       methods: {
          signIn: function()
