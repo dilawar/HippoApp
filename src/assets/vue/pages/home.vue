@@ -225,10 +225,19 @@
          // Fetch notifications.
          setTimeout( () => {
             self.fetchNotifications();
+
             // Popup notification.
-            let nots = self.loadStore('notifications');
+            let data = self.loadStore('notifications');
+
+            let nots = [];
+            data.forEach( function(e) {
+               nots.push({ 'id': e.id, 'title' : e.title });
+            });
             if(nots.length > 0)
+            {
+               console.log( "Notifications are " , nots);
                cordova.plugins.notification.local.schedule(nots);
+            }
          }, 2000);
 
 
