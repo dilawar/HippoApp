@@ -227,9 +227,9 @@
             self.fetchNotifications();
             // Popup notification.
             let nots = self.loadStore('notifications');
-            console.log('notifications', nots);
-            cordova.plugins.notification.local.schedule(nots);
-         }, 1000);
+            if(nots.length > 0)
+               cordova.plugins.notification.local.schedule(nots);
+         }, 2000);
 
 
       },
