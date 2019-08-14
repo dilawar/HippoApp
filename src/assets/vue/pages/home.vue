@@ -222,25 +222,29 @@
             );
          }, 2000);
 
-         // Fetch notifications.
-         setTimeout( () => {
-            self.fetchNotifications();
-
-            // Popup notification.
-            let data = self.loadStore('notifications');
-
-            let nots = [];
-            data.forEach( function(e) {
-               nots.push({ 'id': e.id, 'title' : e.title });
-            });
-            if(nots.length > 0)
-            {
-               console.log( "Notifications are " , nots);
-               cordova.plugins.notification.local.schedule(nots);
+         // Display notifications. In main.js, I am calling fetchNotifications 
+         // repeatedly.
+         // setTimeout(() => {self.displayNotifications();}, 500);
+         // Call fetchNotifications in the background. every minutes.
+         // FIXME:  Make it very 10 minutes later.
+         setInterval( function() {
+            console.log("Fetching notitication");
+            try {
+               self.fetchNotifications()
+            } catch (e) {
+               /* handle error */
+               console.log( "Could not fetch notifications.");
             }
-         }, 2000);
+         }, 60*1000);
 
-
+         setInterval( function() {
+            try {
+               self.displayNotifications()
+            } catch (e) {
+               /* handle error */
+               console.log("Could not display notifications.");
+            }
+         }, 60*1000);
       },
       methods: {
          signIn: function()

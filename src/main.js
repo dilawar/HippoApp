@@ -281,6 +281,15 @@ Vue.mixin({
             }
          );
       },
+      displayNotifications: function() {
+         const self = this;
+         // Popup notification.
+         // See https://github.com/katzer/cordova-plugin-local-notifications#properties
+         // for available properties.
+         let data = self.loadStore('notifications');
+         if( data.length > 0)
+            cordova.plugins.notification.local.schedule(data);
+      },
       removeFromArray: function(arr) {
          var what, a = arguments, L = a.length, ax;
          while (L > 1 && arr.length) {
@@ -323,7 +332,9 @@ export default new Vue({
       HippoApiKey : ''
    },
    mounted() {
+      const self = this;
       document.addEventListener("deviceready", onDeviceReady, false);
+
    },
    methods: 
    { 

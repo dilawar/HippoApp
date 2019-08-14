@@ -139,7 +139,7 @@ export default {
          version: moment().format(),
       }
    },
-   mounted() {
+   mounted: function() {
       const self = this;
    },
 }
