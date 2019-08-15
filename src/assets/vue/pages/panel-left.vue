@@ -13,7 +13,7 @@
                           title="Notifications"
                           panel-close
                           >
-               <span slot="media" class="fa-stack" v-if="notifications.length>0">
+               <span slot="media" class="fa-stack" v-if="notifications.length>=0">
                   <i class="fa fa-bell-o fa-stack-2x"></i>
                   <i class="fa fa-stack circle-red">{{notifications.length}}</i>
                </span>
@@ -76,11 +76,11 @@
       mounted()
       {
          const self = this;
+         self.notifications = self.loadStore('notifications').filter(x =>false==x.is_read);
          self.username = self.$localStorage.get('HIPPO-LOGIN');
          self.alreadyLoggedIn = self.isUserAuthenticated();
          self.fetchProfile();
          self.profile = JSON.parse(self.$localStorage.get('me.profile', '[]'));
-         self.notifications = self.loadStore('notifications').filter(x => x.is_read==false);
       },
       methods : {
          refreshData: function( ) {

@@ -61,7 +61,7 @@
                               @input="item.title = $event.target.value"
                               required 
                               validate
-                              >
+                     >
                </f7-list-input>
 
 
@@ -222,21 +222,27 @@
              :key="key"
              >
        <f7-card-header 
-          :style="`font-size:small;background-color:${stringToColour(card.tags[0])}`"
+             :style="`background-color:${stringToColour(card.tags[0])}`"
           >
           <div>
              <span v-for="(tag,key) in card.tags" :key="key">
                 <f7-link :href="'/noticeboards/'+tag"> b/{{tag}}</f7-link>&nbsp;
              </span>
+             <span style="color:gray; font-size:small">
+                /Posted by <tt>{{card.created_by}}</tt>
+                {{datetime2Moment(card.created_on).fromNow()}}
+             </span>
+             <span style="font-size:small;color:gray"
+                   v-if="card.last_modified_on!=card.created_on"
+                   >
+                /Modified {{datetime2Moment(card.last_modified_on).fromNow()}}.
+             </span>
           </div>
-          <span style="color:gray">
-             Posted by <tt>{{card.created_by}}</tt>
-             {{datetime2Moment(card.created_on).fromNow()}}
-          </span>
        </f7-card-header>
        <f7-card-content :padding="false" style="padding-left:5px">
           <div style="font-size:large"> {{card.title}} </div>
           <span v-html="card.description"></span>
+
 
           <f7-row>
              <f7-col>
