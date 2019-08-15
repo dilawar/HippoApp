@@ -24,7 +24,7 @@ import Chat from './assets/vue/pages/chat.vue';
 import SearchPage from './assets/vue/pages/search.vue';
 import Vuex from './assets/vue/pages/vuex.vue';
 import InventoryPage from './assets/vue/pages/inventory.vue';
-import Forum from './assets/vue/pages/forum.vue';
+import NoticeBoards from './assets/vue/pages/noticeboards.vue';
 
 export default [
    {
@@ -121,12 +121,8 @@ export default [
       component: SearchPage
    },
    {
-      path: '/color-themes/',
-      component: ColorThemes
-   },
-   {
-      path: '/forum/',
-      component: Forum
+      path: '/noticeboards/:board',
+      component: NoticeBoards
    },
    {
       path: '/vuex/',

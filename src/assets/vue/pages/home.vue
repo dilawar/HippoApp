@@ -64,7 +64,7 @@
 
          </f7-list-item>
 
-         <f7-list-item link="/forum/" 
+         <f7-list-item link="/noticeboards/all" 
                        title="Notice Board" 
                        footer="Because you hate to spam mailing list"
                        panel-close>
@@ -235,7 +235,7 @@
                /* handle error */
                console.log( "Could not fetch notifications.");
             }
-         }, 60*1000);
+         }, 30*60*1000);
 
          setInterval( function() {
             try {
@@ -244,7 +244,7 @@
                /* handle error */
                console.log("Could not display notifications.");
             }
-         }, 60*1000);
+         }, 60*60*1000);
       },
       methods: {
          signIn: function()

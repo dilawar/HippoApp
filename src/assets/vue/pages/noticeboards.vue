@@ -1,6 +1,6 @@
 <template>
    <f7-page ptr @ptr:refresh="refreshForum">
-    <f7-navbar title="Notice Board" back-link="Back">
+    <f7-navbar :title="'Notice Board b/' + board + ''" back-link="Back">
        <f7-nav-right>
           <f7-link class="searchbar-enable" 
                    data-searchbar=".searchbar-notice" 
@@ -8,6 +8,7 @@
                   >
           </f7-link>
        </f7-nav-right>
+
        <f7-searchbar expandable
                      class="searchbar-notice"
                      paceholder="Search in items" 
@@ -46,12 +47,12 @@
                                  , pageTitle: 'Tags for your post'
                                  , routableModals: false
                              }" 
-                             >
-                             <select name="tags" v-model="item.tags" multiple>
-                                <option v-for="tag in alltags" :value="tag">{{tag}}</option>
-                             </select>
-                     <div slot="title" style="font-size:x-small"
-                        >Select at leasst one tag</div>
+                     >
+                    <select name="tags" v-model="item.tags" multiple>
+                       <option v-for="tag in alltags" :value="tag">{{tag}}</option>
+                    </select>
+                  <div slot="title" style="font-size:x-small"
+                     >Select at least one tag</div>
                </f7-list-item>
 
                <f7-list-input title="Informative title"
@@ -69,7 +70,7 @@
                               placeholder="Optional description"
                               @input="item.description = $event.target.value"
                               :resizable="true"
-                              type="textarea" 
+                              type="text" 
                               >
                </f7-list-input>
 
@@ -108,12 +109,12 @@
                                  , pageTitle: 'Tags for your post'
                                  , routableModals: false
                              }" 
-                             >
-                             <select name="tags" v-model="item.tags" multiple>
-                                <option v-for="tag in alltags" :value="tag">{{tag}}</option>
-                             </select>
-                     <div slot="title" style="font-size:x-small"
-                        >Select at leasst one tag</div>
+                     >
+                    <select name="tags" v-model="item.tags" multiple>
+                       <option v-for="tag in alltags" :value="tag">{{tag}}</option>
+                    </select>
+                    <div slot="title" style="font-size:x-small"
+                       >Select at least one tag</div>
                </f7-list-item>
 
                <f7-list-input title="Informative title"
@@ -131,7 +132,7 @@
                               placeholder="Optional description"
                               @input="item.description = $event.target.value"
                               :resizable="true"
-                              type="textarea" 
+                              type="text" 
                               >
                </f7-list-input>
 
@@ -162,7 +163,7 @@
                              @input="thisComment.comment = $event.target.value"
                              :resizable="true"
                              required
-                             type="textarea" 
+                             type="text" 
                              >
               </f7-list-input>
               <f7-list-item>
@@ -188,10 +189,11 @@
                             :footer="'By ' + c.commenter"
                             style="background-color:Ivory"
                             >
-                            <f7-link v-if="c.commenter===getLogin()"
-                                     slot="after"
-                                     @click="deleteComment(c.id)"
-                                     >Delete</f7-link>
+                <f7-link v-if="c.commenter===getLogin()"
+                         slot="after"
+                         @click="deleteComment(c.id)"
+                         >Delete
+                </f7-link>
               </f7-list-item>
            </f7-list>
         </f7-block>
@@ -201,19 +203,33 @@
 
 
     <!-- Show current cards -->
-
+    <f7-block-title strong v-if="board!='all'"> 
+       <f7-button small raised 
+                  v-if="! subscriptions.includes(board)"
+                  @click="subcribeToForum(board)"
+                  style="float:right"
+                  >Subscribe
+       </f7-button>
+       <f7-button small raised 
+                  v-else
+                  @click="unsubcribeToForum(board)"
+                  style="float:right"
+                  >Unsubscribe
+       </f7-button>
+    </f7-block-title>
     <f7-block class="card-list">
        <f7-card class="searchbar-not-found">
           <f7-card-header>Nothing found</f7-card-header>
        </f7-card>
-       <f7-card v-for="(card, key) in forumCards" :key="key"
-                swipe-to-close
-                :padding="false"
-                >
-          <f7-card-header :style="`font-size:small;background-color:${stringToColour(card.tags[0])}`">
+
+       <f7-card v-for="(card, key) in filterCards(forumCards)" :key="key">
+          <f7-card-header 
+             :style="`font-size:small;background-color:${stringToColour(card.tags[0])}`"
+             >
              <div>
-                <span v-for="(tag,key) in card.tags"
-                        :key="key"><strong>r/{{tag}}</strong>&nbsp;</span>
+                <span v-for="(tag,key) in card.tags" :key="key">
+                   <f7-link :href="'/noticeboards/'+tag"> b/{{tag}}</f7-link>&nbsp;
+                </span>
              </div>
              <span style="color:gray">
                 Posted by <tt>{{card.created_by}}</tt>
@@ -221,8 +237,8 @@
              </span>
           </f7-card-header>
           <f7-card-content>
-             <div style="font-size:small"> {{card.title}} </div>
-             <div> {{card.description}} </div>
+             <div style="font-size:large"> {{card.title}} </div>
+             <div style="font-size:small" v-html="card.description"></div>
           </f7-card-content>
           <f7-card-footer>
              <f7-button small @click="updateCard(card)"
@@ -244,9 +260,12 @@ import moment from 'moment';
 
 export default {
    data() {
+      const self = this;
       return {
+         board: self.$f7route.params.board,
          forumCards: [],
          postPopup: false,
+         subscriptions: [],  // Subscriptions
          commentPopup: false,
          updatePopup: false,
          thisComment: { 
@@ -267,32 +286,21 @@ export default {
    },
    mounted() {
       const self = this;
-      self.forumCards = self.loadStore('forum.cards');
-      self.alltags = self.loadStore('forum.alltags');
-      if( ! self.forumCards || self.forumCards.length == 0)
-      {
-         setTimeout( () => {
-            self.postWithPromise( '/forum/list/100').then(
-               function(json) {
-                  self.forumCards = JSON.parse(json).data;
-                  self.saveStore('forum.cards', self.forumCards);
-               }
-            );
-            self.postWithPromise('/forum/alltags').then(
-               function(json) {
-                  self.alltags = JSON.parse(json).data;
-                  self.saveStore('forum.alltags', self.alltags);
-               }
-            );
-         }, 1000);
-      }
+      if(self.forumCards.length == 0)
+         setTimeout(() => self.getAllForumTags(), 500);
+
+      if(self.alltags.length == 0)
+         setTimeout(() => self.getForumPosts(), 1000);
+
+      if(self.subscriptions.length == 0)
+         setTimeout(() => self.getSubscriptions(), 500);
    },
    methods: { 
       // METHODS:
       getForumPosts: function() {
-         console.log( "Fetching lists." );
+         console.log( "Fetching forum posts." );
          const self = this;
-         self.promiseWithAuth( "/forum/list/20", []).then(
+         self.promiseWithAuth( "/forum/list/100", []).then(
             function(json) {
                var res = JSON.parse(json).data;
                self.forumCards = res;
@@ -300,26 +308,61 @@ export default {
             }
          )
       },
-      refreshForum: function(ev, done) {
+      getSubscriptions: function() {
          const self = this;
-         setTimeout( () =>  {
-            self.getForumPosts();
-            self.fetchAllTags();
-            done();
-         }, 1000);
+         console.log( "Getting user subscriptions..." );
+         self.promiseWithAuth( "/forum/subscriptions", []).then(
+            function(json) {
+               var res = JSON.parse(json).data;
+               self.subscriptions = res;
+               self.saveStore('forum.subscriptions', self.subscriptions);
+            }
+         )
+      },
+      filterCards: function() {
+         const self = this;
+         if(self.board == 'all')
+            return self.forumCards;
+         return self.forumCards.filter(x => x.tags.includes(self.board) );
+      },
+      getAllForumTags: function() {
+         console.log( "Getting forum tags." );
+         const self = this;
+         self.promiseWithAuth("/forum/alltags", []).then(
+            function(json) {
+               var res = JSON.parse(json).data;
+               self.alltags = res;
+               self.saveStore('forum.alltags', self.alltags);
+            }
+         );
       },
       fetchAllTags: function() {
          const self = this;
-         self.postWithPromise( '/forum/alltags').then(
+         self.postWithPromise('/forum/alltags').then(
             function(json) {
                self.alltags = JSON.parse(json).data;
                self.saveStore('forum.alltags', self.alltags);
             }
          );
       },
+      refreshForum: function(ev, done) {
+         const self = this;
+         setTimeout( () =>  {
+            self.getForumPosts();
+            self.fetchAllTags();
+            self.getSubscriptions();
+            done();
+         }, 1000);
+      },
       postToForum: function() {
          const self = this;
          self.postPopup = true;
+      },
+      postToForumSubmit: function() {
+         const self = this;
+         setTimeout(() => self.sendRequest('/forum/post', self.item), 500);
+         self.commentPopup = false;
+         setTimeout(() => self.getForumPosts(), 1000);
       },
       showCommentPopup: function( item ) {
          const self = this;
@@ -342,15 +385,31 @@ export default {
             self.promiseWithAuth("/comment/post", self.thisComment)
          }, 1000);
       },
-      postToForumSubmit: function() {
+      subcribeToForum: function(boardName) {
          const self = this;
-         setTimeout(() => self.sendRequest('/forum/post', self.item), 500);
-         self.commentPopup = false;
-         self.item.num_comments += 1;
+         console.log('Subscribing to ' + boardName);
+         self.sendRequest('/forum/subscribe/'+boardName);
+         self.subscriptions.push(boardName);
+      },
+      unsubcribeToForum: function(boardName) {
+         const self = this;
+         const app = self.$f7;
+         if( boardName != 'emergency')
+         {
+            console.log('Unsubscribing from ' + boardName);
+            self.sendRequest('/forum/unsubscribe/'+boardName);
+            self.subscriptions = self.subscriptions.filter(x => x != boardName);
+         }
+         else
+         {
+            app.dialog.alert("You can't unsubscribe emergency", "OK");
+            return;
+         }
       },
       updateCard: function(card) {
          const self = this;
          self.item = card;
+         console.log("Updating card ", card);
          self.updatePopup = true;
       },
       deleteCard: function(cid) {
