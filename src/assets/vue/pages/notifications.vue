@@ -2,9 +2,9 @@
    <f7-page ptr @ptr:refresh="refreshNotification">
     <f7-navbar title="Notifications" back-link="Back">
     </f7-navbar>
-    <span style="font-size:small">Swipe left/right to do more.</span>
+    <span style="font-size:small;float:right;">Swipe left/right to do more.</span>
 
-    <f7-block-title>Unread notifications</f7-block-title>
+    <!-- <f7-block-title>Unread notifications</f7-block-title> -->
     <f7-block style="background-color:red">
     <f7-list media-list>
       <f7-list-item v-for="(item, key) in notifications.filter(x=>x.is_read==false)"

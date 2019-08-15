@@ -13,9 +13,9 @@
                           title="Notifications"
                           panel-close
                           >
-               <span slot="media" class="fa-stack">
+               <span slot="media" class="fa-stack" v-if="notifications.length>0">
                   <i class="fa fa-bell-o fa-stack-2x"></i>
-                  <i class="fa fa-stack-1x circle-red">1</i>
+                  <i class="fa fa-stack circle-red">{{notifications.length}}</i>
                </span>
             </f7-list-item>
 
@@ -65,6 +65,7 @@
 <script>
    export default {
       data() {
+         const self = this;
          return {
             username: 'Guest',
             alreadyLoggedIn: false,
@@ -79,10 +80,10 @@
          self.alreadyLoggedIn = self.isUserAuthenticated();
          self.fetchProfile();
          self.profile = JSON.parse(self.$localStorage.get('me.profile', '[]'));
+         self.notifications = self.loadStore('notifications').filter(x => x.is_read==false);
       },
       methods : {
          refreshData: function( ) {
-            console.log('Calling refreshData');
             const self = this;
             self.alreadyLoggedIn = self.isUserAuthenticated();
          },

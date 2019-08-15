@@ -248,13 +248,14 @@ input {
 .circle-red {
     background: rgba(255,0,0,0.5);
     width: 20px;
-    height: 30px;
+    height: 20px;
     border-radius: 50%;
     display: flex;
     justify-content: center;
-    font-size: 80%;
+    text-align: center;
+    font-size: small;
     position: absolute;
     left: 50%;
-    top: -40%;
+    top: -10%;
 }
 

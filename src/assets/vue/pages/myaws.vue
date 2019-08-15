@@ -1,5 +1,5 @@
 <template>
-   <f7-page page-content ptr @ptr:refresh="fetchAws">
+   <f7-page page-content ptr @ptr:refresh="refreshAWS">
       <f7-navbar title="My AWS" back-link="Back"></f7-navbar>
 
       <f7-block>
@@ -7,15 +7,6 @@
 
          </f7-list>
       </f7-block>
-
-      <!-- 
-      <f7-fab position="right-bottom" slot="fixed" color="blue">
-         <f7-icon ios="f7:add" aurora="f7:add" md="material:add"></f7-icon>
-         <f7-icon ios="f7:close" aurora="f7:close" md="material:close"></f7-icon>
-         <f7-fab-buttons position="top">
-         </f7-fab-buttons>
-      </f7-fab>
-      -->
 
       <f7-block>
          <f7-block-title>Annual Work Seminar</f7-block-title>
@@ -49,13 +40,11 @@
          const self = this;
          self.awses = self.loadStore('me.aws');
          if(! self.awses )
-            self.fetchAws();
+            setTimeout( () => self.fetchAws(), 1000);
       },
       methods: {
-         fetchAws: function( ) {
+         fetchAws: function() {
             const self = this;
-            const app = self.$f7;
-            app.dialog.preloader();
             self.postWithPromise('/me/aws').then( function(json) {
                let res = JSON.parse(json);
                if(res.status == 'ok')
@@ -63,9 +52,12 @@
                else
                   console.log( 'Failed to fetch data');
                self.awses = self.loadStore('me.aws');
-               self.dialog.close();
             });
-            setTimeout( () => self.dialog.close(), 1000);
+         },
+         refreshAWS: function(e, done) {
+            const self = this;
+            setTimeout( () => self.fetchAws(), 1000);
+            done();
          },
       },
    }

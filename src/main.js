@@ -365,7 +365,7 @@ export default new Vue({
          ///////////////////////////////////////////////////////////////
          cordova.plugins.notification.local.on("click", function(not) {
             // On click show notification page.
-            app.$f7router.navigate('/notifications');
+            self.$f7router.navigate('/notifications');
          }, self);
          cordova.plugins.notification.local.on("clear", function(not) {
             setTimeout( () => {
