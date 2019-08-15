@@ -13,7 +13,10 @@
                           title="Notifications"
                           panel-close
                           >
-               <f7-icon slot="media" icon="fa fa-bell"></f7-icon>
+               <span slot="media" class="fa-stack">
+                  <i class="fa fa-bell-o fa-stack-2x"></i>
+                  <i class="fa fa-stack-1x circle-red">1</i>
+               </span>
             </f7-list-item>
 
             <f7-list-item link="/myprofile/" 
@@ -22,7 +25,7 @@
                           title="My Profile" 
                           panel-close
                           >
-               <f7-icon slot="media" icon="fa fa-user fa-fw"></f7-icon>
+               <f7-icon slot="media" icon="fa fa-user fa-2x"></f7-icon>
             </f7-list-item>
 
             <f7-list-item v-if="profile.eligible_for_aws"
@@ -32,7 +35,7 @@
                           title="My AWS" 
                           panel-close
                           >
-             <f7-icon slot="media" icon="fa fa-graduation-cap fa-fw"></f7-icon>
+             <f7-icon slot="media" icon="fa fa-graduation-cap fa-2x"></f7-icon>
             </f7-list-item>
 
             <f7-list-item link="/mybooking/" 
@@ -41,7 +44,7 @@
                           title="My Bookings" 
                           panel-close
                           >
-               <f7-icon slot="media" icon="fa fa-edit fa-fw"></f7-icon>
+               <f7-icon slot="media" icon="fa fa-edit fa-2x"></f7-icon>
             </f7-list-item>
 
             <f7-list-item link="/myinventory/" 
@@ -50,7 +53,7 @@
                           title="Lab Inventory"
                           panel-close
                           >
-               <f7-icon slot="media" icon="fa fa-archive fa-fw"></f7-icon>
+               <f7-icon slot="media" icon="fa fa-archive fa-2x"></f7-icon>
             </f7-list-item>
 
 
