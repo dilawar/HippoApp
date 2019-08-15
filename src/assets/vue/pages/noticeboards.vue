@@ -203,54 +203,58 @@
 
 
     <!-- Show current cards -->
-    <f7-block-title strong v-if="board!='all'"> 
+    <f7-card v-if="board!='all'" no-border no-shadow :padding="false"> 
        <f7-button small raised 
+                  slot="content"
                   v-if="! subscriptions.includes(board)"
                   @click="subcribeToForum(board)"
-                  style="float:right"
                   >Subscribe
        </f7-button>
        <f7-button small raised 
+                  slot="content"
                   v-else
                   @click="unsubcribeToForum(board)"
-                  style="float:right"
                   >Unsubscribe
        </f7-button>
-    </f7-block-title>
-    <f7-block class="card-list">
-       <f7-card class="searchbar-not-found">
-          <f7-card-header>Nothing found</f7-card-header>
-       </f7-card>
+    </f7-card>
 
-       <f7-card v-for="(card, key) in filterCards(forumCards)" :key="key">
-          <f7-card-header 
-             :style="`font-size:small;background-color:${stringToColour(card.tags[0])}`"
+    <f7-card v-for="(card, key) in filterCards(forumCards)" 
+             :key="key"
+             :padding="false"
              >
-             <div>
-                <span v-for="(tag,key) in card.tags" :key="key">
-                   <f7-link :href="'/noticeboards/'+tag"> b/{{tag}}</f7-link>&nbsp;
-                </span>
-             </div>
-             <span style="color:gray">
-                Posted by <tt>{{card.created_by}}</tt>
-                {{datetime2Moment(card.created_on).fromNow()}}
+       <f7-card-header 
+          :style="`font-size:small;background-color:${stringToColour(card.tags[0])}`"
+          >
+          <div>
+             <span v-for="(tag,key) in card.tags" :key="key">
+                <f7-link :href="'/noticeboards/'+tag"> b/{{tag}}</f7-link>&nbsp;
              </span>
-          </f7-card-header>
-          <f7-card-content>
-             <div style="font-size:large"> {{card.title}} </div>
-             <div style="font-size:small" v-html="card.description"></div>
-          </f7-card-content>
-          <f7-card-footer>
-             <f7-button small @click="updateCard(card)"
-                          v-if="getLogin() == card.created_by">
-                Update
-             </f7-button>
-             <f7-button small @click="showCommentPopup(card)" float-right>
-                ({{card.num_comments}}) Comment
-             </f7-button>
-          </f7-card-footer>
-       </f7-card>
-    </f7-block>
+          </div>
+          <span style="color:gray">
+             Posted by <tt>{{card.created_by}}</tt>
+             {{datetime2Moment(card.created_on).fromNow()}}
+          </span>
+       </f7-card-header>
+       <f7-card-content :padding="false">
+          <div style="font-size:large"> {{card.title}} </div>
+          <div style="font-size:small" v-html="card.description"></div>
+
+          <f7-row>
+             <f7-col>
+                <f7-button small @click="updateCard(card)"
+                           v-if="getLogin() == card.created_by"
+                     >
+                   Update
+                </f7-button>
+             </f7-col>
+             <f7-col>
+                <f7-button small @click="showCommentPopup(card)" float-right>
+                   ({{card.num_comments}}) Comment
+                </f7-button>
+             </f7-col>
+          </f7-row>
+       </f7-card-content>
+    </f7-card>
 
   </f7-page>
 </template>
