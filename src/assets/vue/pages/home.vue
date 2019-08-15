@@ -225,7 +225,6 @@
          // Get notification now and display them.
          setTimeout(() => {self.fetchNotifications();}, 500);
          setTimeout(() => {self.displayNotifications();}, 500);
-
          // Call fetchNotifications in the background. every minutes.
          // FIXME:  Make it very 10 minutes later.
          setInterval( function() {

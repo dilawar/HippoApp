@@ -273,7 +273,6 @@ Vue.mixin({
       },
       fetchNotifications: function() {
          const self = this;
-         console.log( "Fetching notifications for user" );
          self.postWithPromise( 'notifications/get' ).then(
             function(json) {
                let notifications = JSON.parse(json).data;
@@ -287,8 +286,9 @@ Vue.mixin({
          // See https://github.com/katzer/cordova-plugin-local-notifications#properties
          // for available properties.
          let data = self.loadStore('notifications');
-         if( data.length > 0)
-            cordova.plugins.notification.local.schedule(data);
+         const nots = data.filter( x => x.is_read == false);
+         if( nots.length > 0)
+            cordova.plugins.notification.local.schedule(nots);
       },
       removeFromArray: function(arr) {
          var what, a = arguments, L = a.length, ax;
@@ -333,12 +333,7 @@ export default new Vue({
    },
    mounted() {
       const self = this;
-      document.addEventListener("deviceready", onDeviceReady, false);
-
-      // add cordova plugin 
-      cordova.plugins.notification.local.on("click", function(notification) {
-         console.log( "Disable notification here");
-      });
+      document.addEventListener("deviceready", self.onDeviceReady, false);
    },
    methods: 
    { 
@@ -360,6 +355,23 @@ export default new Vue({
          } 
          else 
             app.views.main.router.back();
+      },
+
+      onDeviceReady : function(x) {
+         const self = this;
+         console.log( "Add onDeviceReady callback here.");
+         ///////////////////////////////////////////////////////////////
+         // Notifications 
+         ///////////////////////////////////////////////////////////////
+         cordova.plugins.notification.local.on("click", function(not) {
+            // On click show notification page.
+            app.$f7router.navigate('/notifications');
+         }, self);
+         cordova.plugins.notification.local.on("clear", function(not) {
+            setTimeout( () => {
+               self.postWithPromise('/notifications/dismiss/' + not.id);
+            }, 500);
+         }, self);
       },
    },
 });

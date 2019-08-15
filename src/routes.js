@@ -1,6 +1,7 @@
 import Home from './assets/vue/pages/home.vue';
 import AboutPage from './assets/vue/pages/about.vue';
 import ProfilePage from './assets/vue/pages/myprofile.vue';
+import NotificationPage from './assets/vue/pages/notifications.vue';
 import AccomodationPage from './assets/vue/pages/accomodation.vue';
 import CanteenPage from './assets/vue/pages/canteen.vue';
 import AWSPage from './assets/vue/pages/myaws.vue';
@@ -41,6 +42,10 @@ export default [
    {
       path: '/myprofile/',
       component: ProfilePage
+   },
+   {
+      path: '/notifications/',
+      component: NotificationPage
    },
    {
       path: '/myaws/',

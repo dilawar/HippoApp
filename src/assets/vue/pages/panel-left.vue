@@ -7,7 +7,7 @@
 
          <f7-list no-hairlines>
 
-            <f7-list-item link="/notification/" 
+            <f7-list-item link="/notifications/" 
                           target="_blank"
                           view=".view-main"
                           title="Notifications"
