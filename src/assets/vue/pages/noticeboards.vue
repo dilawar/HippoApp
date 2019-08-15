@@ -1,6 +1,6 @@
 <template>
    <f7-page ptr @ptr:refresh="refreshForum">
-    <f7-navbar :title="'Notice Board b/' + board + ''" back-link="Back">
+    <f7-navbar title="Notice Board" back-link="Back">
        <f7-nav-right>
           <f7-link class="searchbar-enable" 
                    data-searchbar=".searchbar-notice" 
@@ -70,7 +70,7 @@
                               placeholder="Optional description"
                               @input="item.description = $event.target.value"
                               :resizable="true"
-                              type="text" 
+                              type="textarea" 
                               >
                </f7-list-input>
 
@@ -132,7 +132,7 @@
                               placeholder="Optional description"
                               @input="item.description = $event.target.value"
                               :resizable="true"
-                              type="text" 
+                              type="textarea" 
                               >
                </f7-list-input>
 
@@ -163,7 +163,7 @@
                              @input="thisComment.comment = $event.target.value"
                              :resizable="true"
                              required
-                             type="text" 
+                             type="textarea" 
                              >
               </f7-list-input>
               <f7-list-item>
@@ -220,7 +220,6 @@
 
     <f7-card v-for="(card, key) in filterCards(forumCards)" 
              :key="key"
-             :padding="false"
              >
        <f7-card-header 
           :style="`font-size:small;background-color:${stringToColour(card.tags[0])}`"
@@ -235,9 +234,9 @@
              {{datetime2Moment(card.created_on).fromNow()}}
           </span>
        </f7-card-header>
-       <f7-card-content :padding="false">
+       <f7-card-content :padding="false" style="padding-left:5px">
           <div style="font-size:large"> {{card.title}} </div>
-          <div style="font-size:small" v-html="card.description"></div>
+          <span v-html="card.description"></span>
 
           <f7-row>
              <f7-col>
@@ -247,6 +246,7 @@
                    Update
                 </f7-button>
              </f7-col>
+             <f7-col></f7-col>
              <f7-col>
                 <f7-button small @click="showCommentPopup(card)" float-right>
                    ({{card.num_comments}}) Comment

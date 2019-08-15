@@ -372,6 +372,9 @@ export default new Vue({
                self.postWithPromise('/notifications/dismiss/' + not.id);
             }, 500);
          }, self);
+
+         // Open link in external browser
+         window.open = cordova.InAppBrowser.open;
       },
    },
 });
