@@ -7,13 +7,13 @@ create:
 	    --template cordova-template-framework7-vue-webpack
 
 init:
-	cordova platform add android  || echo "Failed to add android platform"
-	cordova platform add browser || echo "Failed to add browser"
-	npm install
+	mkdir -p www
+	cordova platform add android@8.0.0  || echo "Failed to add android platform"
+	cordova platform add browser@6.0.0 || echo "Failed to add browser"
 	cordova plugin add cordova-plugin-inappbrowser || echo "A"
-	cordova plugin add cordova-plugin-mauron85-background-geolocation || echo "B"
-	cordova plugin add cordova-plugin-geolocation || echo "C"
-	cordova plugin add cordova-plugin-local-notifications || echo "D"
+	cordova plugin add https://github.com/dilawar/cordova-plugin-background-geolocation --save 
+	cordova plugin add cordova-plugin-local-notification --save || echo "D"
+	npm install
 
 build : 
 	@cordova run android 
