@@ -2,6 +2,12 @@
     user-select: none;
 }
 
+body {
+    max-width: 600px;
+    align-self: auto;
+    margin: 0px auto;
+}
+
 input {
     user-select: element !important;
 }
@@ -213,7 +219,7 @@ input {
 
 .google-calendar {
     position: relative;
-    padding-bottom: 150%; // This is the aspect ratio
+    padding-bottom: 100%; // This is the aspect ratio
     padding-left: 5px;
     padding-right: 10px;
     height: 0;
@@ -227,3 +233,29 @@ input {
     height: 100% !important;
     border: 0px;
 }
+
+.location-head-icon {
+    min-width: 25px;
+    min-height: 25px;
+    display: flex;
+    background-color: yellow;
+    vertical-align: middle;
+    justify-content: center;
+    align-items:center;
+    border-radius: 50%;
+}
+
+.circle-red {
+    background: rgba(255,0,0,0.5);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    font-size: small;
+    position: absolute;
+    left: 50%;
+    top: -10%;
+}
+

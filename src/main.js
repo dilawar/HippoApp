@@ -1,9 +1,23 @@
 // Import Vue
 import Vue from 'vue'
 
+// Import css from dropzone.
+import Dropzone from "vue2-dropzone";
+import 'vue2-dropzone/dist/vue2Dropzone.min.css'
+Vue.component('vue-dropzone', Dropzone);
+
+// Multi uploader.
+import MultipleFileUploader from '@updivision/vue2-multi-uploader'
+Vue.component('v-multifile-uploader', MultipleFileUploader);
+
+// import VueQrcodeReader from "vue-qrcode-reader";
+// Vue.use(VueQrcodeReader);
+// import 'vue-qrcode-reader/dist/vue-qrcode-reader.css';
+
 // OSM and leaflet.
-import {LMap, LTileLayer, LMarker, LPopup, LTooltip, LControlLayers} from 'vue2-leaflet';
+import {LMap, LTileLayer, LMarker, LPolyline, LPopup, LTooltip, LControlLayers} from 'vue2-leaflet';
 import Vue2LeafletLocateControl from 'vue2-leaflet-locatecontrol';
+
 import {Icon} from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
@@ -12,6 +26,7 @@ Vue.component('l-tile-layer', LTileLayer);
 Vue.component('l-marker', LMarker);
 Vue.component('l-popup', LPopup);
 Vue.component('l-tooltip', LTooltip);
+Vue.component('l-polyline', LPolyline);
 Vue.component('l-control-layers', LControlLayers);
 Vue.component('v-locatecontrol', Vue2LeafletLocateControl);
 
@@ -22,10 +37,12 @@ Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png')
 });
 
+// GoogleMap services.
+import { OpenStreetMapProvider, GoogleProvider } from 'leaflet-geosearch'; 
 
-// Lightweight timeline.
-import LightTimeline from 'vue-light-timeline';
-Vue.use(LightTimeline);
+//// fixme: Lightweight timeline.
+//import LightTimeline from 'vue-light-timeline';
+//Vue.use(LightTimeline);
 
 // Moment 
 import moment from 'moment';
@@ -71,6 +88,16 @@ Vue.use(VueLocalStorage)
 
 // Global function.
 Vue.mixin({
+   data: function() {
+      return {
+         googleMapProvider: new GoogleProvider({
+            params: {
+               key: this.loadStoreStr('GOOGLE-MAP-API-KEY'), 
+               client: 'HippoAndroidApp',
+            },
+         }),
+      };
+   },
    methods : {
       dbDate: function( date ) {
          return moment(date).format("YYYY-MM-DD");
@@ -81,7 +108,7 @@ Vue.mixin({
       toNow: function(date, time){
          let b = moment(date + ' ' + time, 'YYYY-MM-DD HH:mm:ss');
          let a = moment();
-         return b.toNow(a);
+         return b.toNow(a, true);
       },
       dbTime: function(date, addminutes=0) {
          return moment(date, "HH:MM").add(addminutes, 'm').format("HH:mm");
@@ -97,6 +124,9 @@ Vue.mixin({
       dbDateTime: function(date) {
          return moment(date).format('YYYY-MM-DDTHH:mm');
       },
+      datetime2Moment: function(timestamp) {
+         return moment(timestamp, 'YYYY-MM-DD HH:mm:ss');
+      },
       toDate: function(dateStr) {
          return moment(dateStr).toDate();
       },
@@ -106,20 +136,20 @@ Vue.mixin({
       addToCalendar: function(ev) {
          createCalendar(ev);
       },
-      stringToColour: function(str) {
+      stringToColour: function(str, trans='ff') {
          if(! str)
             return '';
          var hash = 0;
          for (var i = 0; i < str.length; i++) {
             hash = str.charCodeAt(i) + ((hash << 5) - hash);
          }
-         var colour = '#';
+         var colour = '#'+trans;
          for (var i = 0; i < 3; i++) 
          {
             var value = (hash >> (i * 8)) & 0xFF;
             colour += ('00' + value.toString(16)).substr(-2);
-            return colour;
          }
+         return colour;
       },
       apiPostData: function() {
          const self = this;
@@ -148,6 +178,16 @@ Vue.mixin({
          const app = self.$f7;
          return app.request.promise.post(self.$store.state.api+'/'+endpoint, self.apiPostData());
       },
+      promiseWithAuth: function(endpoint, post) {
+         const self = this;
+         const app = self.$f7;
+         let data = { ...self.apiPostData(), ...post};
+         return app.request.promise.post(self.$store.state.api+'/'+endpoint, data);
+      },
+      getGoogleMapApiKey: function( ) {
+         const self = this;
+         return this.$store.state.google_map_api_key;
+      },
       fetchAndStore: function(endpoint, key) {
          const self = this;
          const app = self.$f7;
@@ -167,18 +207,41 @@ Vue.mixin({
          const self=this;
          self.$localStorage.set(key, JSON.stringify(data));
       },
+      saveStoreStr: function(key, data) {
+         const self=this;
+         self.$localStorage.set(key, data);
+      },
       loadStore: function(key) {
          const self=this;
          return JSON.parse(self.$localStorage.get(key, '[]'));
       },
+      loadStoreStr: function(key) {
+         return this.$localStorage.get(key, '');
+      },
       sendRequest: function(endpoint, post) {
          const self = this;
          const app = self.$f7;
+         app.dialog.preloader();
          let data = { ...self.apiPostData(), ...post};
-         app.request.post(self.$store.state.api+'/'+endpoint
-            , data
-            , function(json)
-            {
+         app.request.promise.post(self.$store.state.api+'/'+endpoint, data)
+            .then( function(json) {
+               const res = JSON.parse(json);
+               app.dialog.close();
+               return;
+            }
+         );
+         setTimeout( () => app.dialog.close(), 1000);
+      },
+      sendCoordinates: function(endpoint, coords) {
+         const self = this;
+         const app = self.$f7;
+         let data = {};
+
+         // Construct a object for JSON.
+         for(let k in coords)
+            data[k] = coords[k];
+         app.request.promise.post(self.$store.state.api+'/'+endpoint, data)
+            .then( function(json) {
                const res = JSON.parse(json);
                return res.status;
             }
@@ -186,7 +249,6 @@ Vue.mixin({
       },
       fetchVenues: function() {
          const self = this;
-         const app = self.$f7;
          self.fetchAndStore( '/venue/list/all', 'venues');
       },
       fetchProfile: function() {
@@ -209,8 +271,55 @@ Vue.mixin({
          console.log('type is ', ret);
          return ret;
       },
+      fetchNotifications: function() {
+         const self = this;
+         self.postWithPromise( 'notifications/get' ).then(
+            function(json) {
+               let notifications = JSON.parse(json).data;
+               self.saveStore("notifications", notifications);
+            }
+         );
+      },
+      displayNotifications: function() {
+         const self = this;
+         // Popup notification.
+         // See https://github.com/katzer/cordova-plugin-local-notifications#properties
+         // for available properties.
+         let data = self.loadStore('notifications');
+         const nots = data.filter( x => x.is_read == false);
+         if( nots.length > 0)
+            cordova.plugins.notification.local.schedule(nots);
+      },
+      removeFromArray: function(arr) {
+         var what, a = arguments, L = a.length, ax;
+         while (L > 1 && arr.length) {
+            what = a[--L];
+            while ((ax= arr.indexOf(what)) !== -1) {
+               arr.splice(ax, 1);
+            }
+         }
+         return arr; 
+      },  
+      deleteComment: function(id) {
+         const self = this;
+         self.sendRequest('/comment/delete/'+id);
+      },
+      addComment: function(comment) {
+         const self = this;
+         self.sendRequest('/comment/post', comment);
+      },
+      pageBeforeIn: function( ) {
+         const self = this;
+         const app = self.$f7;
+         app.preloader.show();
+      },
+      pageAfterIn: function() {
+         const self = this;
+         const app = self.$f7;
+         app.preloader.hide();
+      },
    },
-})
+});
 
 // Init Vue App
 export default new Vue({
@@ -223,7 +332,8 @@ export default new Vue({
       HippoApiKey : ''
    },
    mounted() {
-      document.addEventListener("deviceready", onDeviceReady, false);
+      const self = this;
+      document.addEventListener("deviceready", self.onDeviceReady, false);
    },
    methods: 
    { 
@@ -245,6 +355,26 @@ export default new Vue({
          } 
          else 
             app.views.main.router.back();
+      },
+
+      onDeviceReady : function(x) {
+         const self = this;
+         console.log( "Add onDeviceReady callback here.");
+         ///////////////////////////////////////////////////////////////
+         // Notifications 
+         ///////////////////////////////////////////////////////////////
+         cordova.plugins.notification.local.on("click", function(not) {
+            // On click show notification page.
+            self.$f7router.navigate('/notifications');
+         }, self);
+         cordova.plugins.notification.local.on("clear", function(not) {
+            setTimeout( () => {
+               self.postWithPromise('/notifications/dismiss/' + not.id);
+            }, 500);
+         }, self);
+
+         // Open link in external browser
+         window.open = cordova.InAppBrowser.open;
       },
    },
 });

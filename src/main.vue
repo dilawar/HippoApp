@@ -6,48 +6,46 @@
        <f7-view name="left" url="/userpanel/" ></f7-view>
     </f7-panel>
 
-
     <f7-view main url="/" tab tab-active>
        <!--
           Enable it if we need it to put toolbar on the bottom page. The
           backbutton has started working fine again.
          -->
 
-         <f7-toolbar 
-                     inner
-                     no-hairline
-                     position="bottom"
+         <f7-toolbar bottom-md tabber labels
+                     style="font-size:xx-small"
                      >
 
-            <f7-link tab-link="#tab-back" 
-                     icon-only 
-                     icon-color="blue"
-                     icon="fa fa-backward fa-2x"
+            <f7-link text="Back"
+                     icon="fa fa-step-backward fa-2x"
                      back
                      >
             </f7-link>
 
-            <f7-link tab-link="#tab-dontknow" 
-                     @click="infoPopup=true"
+            <f7-link @click="infoPopup=true"
                      icon-only 
-                     icon-color="blue"
+                     text="Info"
                      icon="fa fa-info fa-2x"
                      >
             </f7-link>
 
             <f7-link icon-only 
-                     icon-color="blue"
+                     href="/map/"
+                     text="Map"
+                     icon="fa fa-map-o fa-2x"
+                     >
+            </f7-link>
+
+            <f7-link icon-only 
                      href="/canteen/"
-                     tooltip="Canteen"
+                     text="Canteen"
                      icon="fa fa-cutlery fa-2x"
                      >
             </f7-link>
 
-            <f7-link tab-link="#tab-calendar" 
-                     icon-only 
-                     icon-color="blue"
-                     @click="calendarPopup=true"
-                     tooltip="Public calendar"
+            <f7-link icon-only 
+                     href="/events/"
+                     text="Calendar"
                      icon="fa fa-calendar fa-2x"
                      >
             </f7-link>
@@ -62,25 +60,24 @@
                      </f7-nav-right>
                   </f7-navbar>
                   <f7-block>
-                     <p><strong>Version</strong> 1.1, <tt>build</tt> 20190406</p>
+                     <p><strong>Version</strong> {{version}}</p>
 
                      <h3>Development</h3>
-                     Hosted on <f7-link external
-                        href="https://github.com/dilawar/HippoApp">Github</f7-link>
-                     and is released under MIT License.
-                     <p>
-                     <strong>Contribution:</strong> <f7-link 
-                        extrernal href="https://github.com/dilawar/HippoApp/blob/master/CONTRIBUTION.md"
-                        >Read this.</f7-link>
-                     </p>
+                     This app is open-source. It is hosted on <f7-link external target="_system" href="https://github.com/dilawar/HippoApp"
+                        >Github</f7-link> and is released under GNU GPLv3
+                     License.
+
+                     <p> <strong>Contribution:</strong> 
+                     <f7-link extrernal target="_system" href="https://github.com/dilawar/HippoApp/blob/master/CONTRIBUTION.md">Read this.
+                     </f7-link></p>
 
 
                      <h3>Credit</h3>
 
-                     Logo is designed by <f7-link external
-                        href="https://github.com/nunojesus">Nuno
-                        Jesus.</f7-link> NCBS IT section provided server for
-                     backend services.</p>
+                     Logo is designed by <f7-link external href="https://github.com/nunojesus">Nuno
+                        Jesus.</f7-link> Art work in splash screen is created by Sweety Meel.
+                     NCBS IT section provided server for backend services.
+                     </p>
 
                      <small> <p> &copy; Dilawar Singh 
                         (github: <f7-link external href="https://github.com/dilawar">@dilawar</f7-link>):
@@ -88,11 +85,10 @@
                      </small>
 
                      <h3>Disclaimer</h3>
-                     This is <strong>NOT</strong> an official NCBS app. Though I
-                     curate the information provided on this app, developer(s)
-                     is/are not repsonsible for any discrepencies which may arise over the
-                     course of time. You may please report such discrepency by
-                     writing to developers/maintainers.
+                     This is <strong>NOT</strong> an official NCBS app. 
+                     Developer(s) is/are not repsonsible for any discrepencies 
+                     which may arise over the course of time. You may please report 
+                     discrepency by writing to developers/maintainers.
 
                   </f7-block>
                </f7-page>
@@ -106,23 +102,6 @@
                      </f7-nav-right>
                   </f7-navbar>
                </f7-page>
-
-               <!-- Menu -->
-            </f7-popup>
-
-            <f7-popup :opened="calendarPopup" @popup:closed="calendarPopup = false">
-               <f7-page>
-                  <f7-navbar title="Calendar">
-                     <f7-nav-right>
-                        <f7-link popup-close>Close</f7-link>
-                     </f7-nav-right>
-                  </f7-navbar>
-                  <f7-block>
-                     <div class="google-calendar">
-<iframe src="https://calendar.google.com/calendar/embed?showTitle=0&amp;showPrint=0&amp;showCalendars=0&amp;showTz=0&amp;mode=AGENDA&amp;;wkst=1&amp;bgcolor=%23FFFFFF&amp;src=d2jud2r7bsj0i820k0f6j702qo%40group.calendar.google.com&amp;color=%236B3304&amp;ctz=Asia%2FKolkata"></iframe>
-                     </div>
-                  </f7-block>
-               </f7-page>
             </f7-popup>
 
     </f7-view>
@@ -133,7 +112,9 @@
 
 <script>
 // Import Routes...
-import routes from './routes.js'
+import routes from './routes.js';
+
+import moment from 'moment';
 
 let theme = 'auto';
 if (document.location.search.indexOf('theme=') >= 0) {
@@ -148,14 +129,18 @@ export default {
             routes,
             id: 'com.dilawar.hippo',
             isBottom: true,
+            toolbar: {
+               hideOnPageScroll: true,
+            },
          },
          infoPopup: false,
          calendarPopup: false,
          canteenPopup: false,
+         version: moment().format(),
       }
    },
-   mounted() {
-
+   mounted: function() {
+      const self = this;
    },
 }
 </script>

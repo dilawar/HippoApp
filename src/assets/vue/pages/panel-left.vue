@@ -6,13 +6,26 @@
          <f7-block-title>Welcome {{username}} </f7-block-title>
 
          <f7-list no-hairlines>
+
+            <f7-list-item link="/notifications/" 
+                          target="_blank"
+                          view=".view-main"
+                          title="Notifications"
+                          panel-close
+                          >
+               <span slot="media" class="fa-stack" v-if="notifications.length>=0">
+                  <i class="fa fa-bell-o fa-stack-2x"></i>
+                  <i class="fa fa-stack circle-red">{{notifications.length}}</i>
+               </span>
+            </f7-list-item>
+
             <f7-list-item link="/myprofile/" 
                           target="_blank"
                           view=".view-main"
                           title="My Profile" 
                           panel-close
                           >
-               <f7-icon slot="media" icon="fa fa-user fa-fw"></f7-icon>
+               <f7-icon slot="media" icon="fa fa-user fa-2x"></f7-icon>
             </f7-list-item>
 
             <f7-list-item v-if="profile.eligible_for_aws"
@@ -22,7 +35,7 @@
                           title="My AWS" 
                           panel-close
                           >
-             <f7-icon slot="media" icon="fa fa-graduation-cap fa-fw"></f7-icon>
+             <f7-icon slot="media" icon="fa fa-graduation-cap fa-2x"></f7-icon>
             </f7-list-item>
 
             <f7-list-item link="/mybooking/" 
@@ -31,8 +44,19 @@
                           title="My Bookings" 
                           panel-close
                           >
-               <f7-icon slot="media" icon="fa fa-edit fa-fw"></f7-icon>
+               <f7-icon slot="media" icon="fa fa-edit fa-2x"></f7-icon>
             </f7-list-item>
+
+            <f7-list-item link="/myinventory/" 
+                          target="_blank"
+                          view=".view-main"
+                          title="Lab Inventory"
+                          panel-close
+                          >
+               <f7-icon slot="media" icon="fa fa-archive fa-2x"></f7-icon>
+            </f7-list-item>
+
+
          </f7-list>
 
    </f7-page>
@@ -41,15 +65,18 @@
 <script>
    export default {
       data() {
+         const self = this;
          return {
             username: 'Guest',
             alreadyLoggedIn: false,
             profile: [],
+            notifications: [],
          };
       },
       mounted()
       {
          const self = this;
+         self.notifications = self.loadStore('notifications').filter(x =>false==x.is_read);
          self.username = self.$localStorage.get('HIPPO-LOGIN');
          self.alreadyLoggedIn = self.isUserAuthenticated();
          self.fetchProfile();
@@ -57,7 +84,6 @@
       },
       methods : {
          refreshData: function( ) {
-            console.log('Calling refreshData');
             const self = this;
             self.alreadyLoggedIn = self.isUserAuthenticated();
          },

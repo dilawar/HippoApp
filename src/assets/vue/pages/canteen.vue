@@ -6,8 +6,10 @@
      <f7-row noGap v-model="selectedDay">
         <f7-col v-for="d in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']" :key="'col'+d">
            <f7-button  small
-              :key="d" :fill="(d==selectedDay)?true:false" 
-              @click="changeDay(d)"> 
+                       :key="d" 
+                       :fill="(d==selectedDay)?true:false" 
+                       @click="changeDay(d)"
+                       > 
               <font><small>{{d}}</small></font>
            </f7-button>
         </f7-col>
@@ -15,11 +17,35 @@
   </f7-block>
 
   <f7-block>
-     <f7-card v-for="(card, key) in cards">
-        <f7-card-header> {{ card.title }} </f7-card-header>
-        <f7-card-content> {{ card.content }} </f7-card-content>
+     <f7-card v-for="(card, key) in cards" :key="key">
+        <f7-card-header> 
+           <span style="color:gray">{{card.title}}</span> 
+        </f7-card-header>
+        <f7-card-content> 
+           <span v-for="(item, key) in card.menuItems" style="margin-right:10px">
+              <f7-link @click="updateMenuItem(item)"
+                       v-if="isUserAuthenticated()"
+                       style="font-variant:small-caps"
+                       > 
+                       {{item.name}} 
+              </f7-link>
+              <f7-link v-else>{{item.name}}</f7-link>
+              <sup>₹{{parseFloat(item.price)}}</sup>
+           </span>
+        </f7-card-content>
         <f7-card-footer> 
-           <span style="font-size:x-small">Recent contributors: {{ card.footer }} </span>
+           <span style=""> 
+              <f7-button small 
+                         raised  fill
+                         v-if="isUserAuthenticated()"
+                         @click="addItemToMenu(card)"
+                 >Add</f7-button>
+           </span>
+           <span style="font-size:x-small">
+              Recent contributors: {{ card.footer }}
+              <br />
+               Last Modified: {{ card.modified_on}} 
+           </span>
         </f7-card-footer>
      </f7-card>
   </f7-block>
@@ -34,21 +60,31 @@
   </f7-fab>
 
 
-  <f7-popup class="accomodation-popup" :opened="popupOpened" @popup:closed="popupOpened = false">
+  <f7-popup class="canteen-popup" :opened="popupOpened" @popup:closed="popupOpened = false">
      <f7-page>
-        <f7-navbar :title="`${popupAction} Canteen`">
+        <f7-navbar>
+           <span slot="title" v-if="popupAction == 'Add'">Adding item to menu</span>
+           <span slot="title" v-else> Updating menu</span>
            <f7-nav-right>
               <f7-link popup-close>Cancel</f7-link>
            </f7-nav-right>
         </f7-navbar>
 
         <f7-block>
-
            <f7-list no-hairlines-md inset>
+
+
               <f7-list-input label="Name"
                              :value="menu_item.name"
-                             @input="menu_item.type = $event.target.value"
+                             @input="menu_item.name = $event.target.value"
                              required 
+                             >
+              </f7-list-input>
+
+              <f7-list-input label="Price (per unit)"
+                             :value="menu_item.price"
+                             @input="menu_item.price = $event.target.value"
+                             type="int" 
                              >
               </f7-list-input>
 
@@ -62,14 +98,12 @@
               <f7-list-input label="Which meal?"
                              :value="menu_item.which_meal"
                              @input="menu_item.which_meal = $event.target.value"
+                             type="select"
+                             required
                              >
+                       <option v-for="(meal,key) in menu.meals" :value="meal" :key="key"> {{meal}} </option>
               </f7-list-input>
-              <f7-list-input label="Price (per unit)"
-                             :value="menu_item.price"
-                             @input="menu_item.price = $event.target.value"
-                             type="int" 
-                             >
-              </f7-list-input>
+
               <f7-list-input label="Available From"
                              :value="menu_item.available_from"
                              @input="menu_item.available_from = $event.target.value"
@@ -84,28 +118,34 @@
                              >
               </f7-list-input>
 
-
-              <f7-list-input label="Change status"
-                             :value="menu_item.status"
-                             @input="menu_item.status = $event.target.value"
+              <f7-list-input label="Canteen name"
                              type="select"
-                             :defaultValue="menu_item.status"
-                             info="To cancel change this field"
+                             required 
+                             @input="menu_item.canteen_name = $event.target.value"
+                             :defaultValue="menu_item.canteen_name"
                              >
-                    <option v-for="st in menu.status" :value="st">{{st}}</option>
+                     <option v-for="(cant, key) in menu.canteens" :key="key" :value="cant">{{cant}}</option>
               </f7-list-input>
 
               <f7-list-item>
-                 <f7-button v-if="popupAction=='New'"
-                            slot="after" raised fill
-                            popup-close
-                            @click="submitAccomodation"
-                            >Submit</f7-button>
-                 <f7-button v-if="popupAction=='Update'"
-                            slot="after" raised fill
-                            popup-close
-                            @click="updateAccomodation(menu_item.id)"
-                            >Submit</f7-button>
+                    <f7-button v-if="popupAction == 'New'" 
+                              slot="after" raised fill
+                               popup-close
+                               @click="submitNewMenuItem(menu_item)"
+                               >Submit</f7-button>
+                    <f7-button v-if="popupAction == 'Update'"
+                               slot="media" 
+                               popup-close
+                               @click="submitDeleteMenuItem(menu_item.id)"
+                               >Delete
+                    </f7-button>
+                    <f7-button v-if="popupAction == 'Update'"
+                               slot="after" raised fill
+                               popup-close
+                               @click="submitUpdateMenuItem(menu_item)"
+                               >Update
+                    </f7-button>
+                 </div>
               </f7-list-item>
 
            </f7-list>
@@ -127,14 +167,14 @@ export default {
          selectedDay: moment().format('ddd'),
          menu: [],
          popupOpened: false,
-         hideKeys: ["id", "url", "type", "available_from", "open_vacancies", "status","created_by","created_on"],
+         hideKeys: [],
          popupAction: 'New',
          photos: [],
          menu_item: {
             id: '',
             name: '',
             print: '',
-            day: self.selectedDay,
+            day: moment().format('ddd'),
             which_meal: '',
             available_from: '',
             available_upto: '',
@@ -150,8 +190,8 @@ export default {
          function(json) {
             let res = JSON.parse(json);
             if( res.status == 'ok') {
-               self.saveStore('menu', self.menu);
                self.menu = res.data;
+               self.saveStore('menu', res.data);
                self.menuToCards(self.menu.list);
             }
          }
@@ -172,42 +212,17 @@ export default {
                self.menuToCards(self.menu.list);
             }
          );
+         self.$f7.ptr.done();
       },
       changeDay: function(day) {
          this.selectedDay = day;
          this.fetchMenu();
-      },
-      submitAccomodation: function() {
-         const self = this;
-         console.log( "submitting accomodation");
-         // Save it before it goes away.
-         self.$localStorage.set('me.accomodation', self.accomodation);
-         self.accomodation.available_from = moment(self.accomodation.available_from).format('YYYY-MM-DD')
-         let res = self.sendRequest('/accomodation/create', self.accomodation);
-         if( res == 'ok')
-            self.$localStorage.delete('me.accomodation');
       },
       updateAction: function(acc) {
          const self = this;
          self.accomodation = acc;
          self.popupAction = 'Update';
          self.popupOpened = true;
-      },
-      updateAccomodation: function(id) 
-      {
-         const self = this;
-         self.popupAction = 'New';
-         console.log( 'Updating id: ', id);
-         self.accomodation.available_from = self.dbDate(self.accomodation.available_from);
-         self.sendRequest('/accomodation/update/id', self.accomodation);
-         return;
-      },
-      readMore: function(obj) {
-         const self = this;
-         console.log( obj );
-      },
-      getNumVotes: function(externalID) {
-         return 0;
       },
       showPics: function(acc) {
          const self = this;
@@ -230,17 +245,70 @@ export default {
          for(var k in groupItems)
          {
             let items = groupItems[k];
-            console.log( 'items', items);
-            let menuItems = items.map(x => x.name).join(', ');
-            let contributors = [... new Set(items.map(x=>x.modified_by))].join(', ');
+            let content = items.map(x => x.name).join(', ');
+            let contributors = [...new Set(items.map(x =>x.modified_by))].join(',');
+            let modifiedOn = moment.max(items.map(x => 
+               moment(x.modified_on, 'YYYY-MM-DD HH:mm:ss')
+            ));
+
+            items.sort((x, y)=> x.name > y.name);
             self.cards.push({
                title: k
+               , canteen_name: items[0].canteen_name
+               , which_meal: items[0].which_meal
+               , available_from: items[0].available_from
+               , available_upto: items[0].available_upto
                , count: items.length
-               , content: menuItems
+               , content: content
+               , menuItems: items
+               , modified_on: modifiedOn.fromNow()
                , footer: contributors}
             );
          }
       },
+      addItemToMenu: function(card) 
+      {
+         const self = this;
+         self.popupAction = "New";
+
+         // Clear object.
+         for(const prop of Object.keys(self.menu_item)){
+            delete self.menu_item[prop];
+         }
+
+         self.menu_item.canteen_name = card.canteen_name;
+         self.menu_item.which_meal = card.which_meal;
+         self.menu_item.day = moment().format('ddd');
+         self.menu_item.available_upto = card.available_upto;
+         self.menu_item.available_from = card.available_from;
+         self.menu_item.status = 'AVAILABLE';
+         self.menu_item.day = self.selectedDay;
+         self.popupOpened = true;
+      },
+      submitNewMenuItem: function(card) {
+         const self = this;
+         const app = self.$f7;
+         self.sendRequest( 'menu/create', card);
+         self.fetchMenu();
+      },
+      updateMenuItem: function(card) {
+         const self = this;
+         self.popupAction = 'Update';
+         self.menu_item = card;
+         self.popupOpened = true;
+      },
+      submitUpdateMenuItem: function(card) {
+         const self = this;
+         console.log( "Updating menu");
+         self.sendRequest( 'menu/update', card);
+         self.fetchMenu();
+      },
+      submitDeleteMenuItem: function(id) {
+         const self = this;
+         console.log( "deleting item", id);
+         self.sendRequest( 'menu/delete/'+id);
+         self.fetchMenu();
+      }
    },
 };
 </script>

@@ -1,59 +1,185 @@
 <template>
   <f7-page page-content ptr @ptr:refresh="fetchAccomodations">
+     <f7-navbar title="Accomodation" back-link="Back">
+        <f7-nav-right>
+           <f7-link class="searchbar-enable" 
+                    data-searchbar=".searchbar-acc" 
+                    icon-ios="f7:search" icon-aurora="f7:search" icon-md="material:search"
+                                                                 >
+           </f7-link>
+        </f7-nav-right>
+        <f7-searchbar class="searchbar-acc"
+                      expandable
+                      search-container=".search-list-acc"
+                      search-in=".item-title,.item-subtitle,.item-footer,.acc-content,.accordian-item-content"
+                      >
+        </f7-searchbar>
+     </f7-navbar>
 
-  <f7-navbar title="Accomodation" back-link="Back"></f7-navbar>
-  <f7-block-title>Total listings: {{accomodations.count}}</f7-block-title>
+     <!-- List of accomodations -->
+     <f7-block>
+        <f7-photo-browser ref="standalone"></f7-photo-browser>
 
-  <f7-block>
-     <f7-photo-browser ref="standalone"></f7-photo-browser>
-     <f7-card 
-        v-for="(acc, key) in accomodations.list" :key="key">
-        <f7-card-header
-              >
-           <div style="font-size:x-small;color:gray;">
-              Posted by {{acc.created_by}} on {{str2Moment(acc.created_on,
-              'YYYY-MM-DD HH:mm:ss').format('MMM DD')}}
+        <f7-list class="searchbar-not-found">
+           <f7-list-item title="Nothing found"></f7-list-item>
+        </f7-list>
+
+        <f7-list accordion-list 
+                 media-list no-hairlines
+                 class="searchbar-found search-list-acc"
+                 >
+           <f7-list-item accordion-item 
+                         swipeout
+                         v-for="(acc, key) in accomodations.list" 
+                         :key="key"
+                         >
+             <f7-icon v-if="favouriteAccomodations.includes(acc.id)"
+                      icon="fa fa-bookmark fa-2x"
+                      slot="media" >
+             </f7-icon>
+
+             <f7-swipeout-actions left>
+                <f7-swipeout-button v-if="! favouriteAccomodations.includes(acc.id)"
+                                    @click="addToFavoriteAcc(acc.id)"
+                                    > Favourite
+                </f7-swipeout-button>
+                <f7-swipeout-button v-else 
+                                    @click="removeFromFavoriteAcc(acc.id)"
+                                    > Unfavorite
+                </f7-swipeout-button>
+             </f7-swipeout-actions>
+
+           <div slot="header" style="font-size:small;margin-left:2px"> 
+              <span style="color:green">{{acc.status }} | {{acc.available_for}}</span>.
            </div>
-           <div style="font-size:small"> 
-              {{acc.type}} is available from {{str2Moment(acc.available_from,
-              'YYYY-MM-DD').format('MMM DD, YY')}} for
-              {{acc.open_vacancies}} person(s).
+           <div slot="title">
+              {{acc.type}}, {{acc.open_vacancies}} vacancy.
            </div>
-        </f7-card-header>
-        <f7-card-content>
-           <span v-for="(val, key) in acc">
-              <span v-if="! hideKeys.find(k=> k===key)">
-                 <span style="color:gray;font-size:xx-small">{{formatKey(key)}}</span>
-                 <span style="font-size:small">{{val}}</span>
-                 <br />
-              </span>
-           </span>
-        </f7-card-content>
-        </f7-card-content>
-        <f7-card-footer>
-           <f7-link v-if="acc.created_by===getLogin()"
-                    @click="updateAction(acc)"
-              >Update</f7-link>
-           <f7-link v-else>+1</f7-link>
-           <!-- TODO 
-           <f7-link raised @click="showPics(acc)">Pics</f7-link>
-           -->
-           <f7-link disabled>Comment</f7-link>
-        </f7-card-footer>
-     </f7-card>
+           <div slot="subtitle">
+              <f7-icon icon="fa fa-map-marker fa-fw"></f7-icon> {{acc.address}}
+           </div>
+           <div slot="footer">
+              Posted by {{acc.created_by}}, {{str2Moment(acc.created_on).fromNow()}} 
+           </div>
+           <f7-accordion-content class="acc-content">
+              <f7-block style="background-color:#aaffffaa;font-size:small">
+                 <div> 
+                    <f7-icon icon="fa fa-clock-o fa-fw"></f7-icon>
+                    Available from {{str2Moment(acc.available_from,
+                    'YYYY-MM-DD').format('MMM DD')}}.
+                 </div>
+
+                 <span v-for="(val, key) in acc">
+                    <span v-if="showKeys.find(k => k===key) && val.length > 0">
+                       <span style="font-size:70%">{{formatKey(key)}}</span>
+                       <span style="margin-right:2ex;">{{val}}</span>
+                       <br />
+                    </span>
+                 </span>
+                 <div v-if="acc.last_modified_on" style="color:green;text-align:right">
+                    <f7-icon icon="fa fa-bell fa-fw"></f7-icon>
+                    Last changed: {{str2Moment(acc.last_modified_on, 'YYYY-MM-DD HH:mm:ss').fromNow()}}
+                 </div>
+
+                 <f7-row style="margin-top:1ex;font-size:medium">
+                    <f7-col v-if="acc.created_by===getLogin()">
+                       <f7-link @click="updateAction(acc)" >Update </f7-link>
+                    </f7-col>
+                    <f7-col>
+                       <f7-link :href="'/osm/accomodation/'+acc.id+'/'">Locate</f7-link>
+                    </f7-col>
+                    <f7-col>
+                       <f7-link v-if="isUserAuthenticated()" 
+                                style="float:right"
+                                @click="addComment(acc)"
+                                >Comment ({{acc.num_comments}})
+                       </f7-link>
+                    </f7-col>
+              </f7-row>
+
+           </f7-block>
+           </f7-accordion-content>
+           </f7-list-item>
+     </f7-list>
+
   </f7-block>
 
   <!-- FAB to create accomodation -->
   <f7-fab v-if="isUserAuthenticated()"
-          position="right-bottom" 
+          position="right-top" 
           slot="fixed" 
           @click="popupOpened=true"
-          color="red">
+          color="green"
+          >
      <f7-icon ios="f7:add" aurora="f7:add" md="material:add"></f7-icon>
   </f7-fab>
 
+  <f7-popup :opened="commentPopupOpened" @popup:closed="commentPopupOpened = false">
+     <f7-page>
+        <f7-navbar title="Comments">
+           <f7-nav-right>
+              <f7-link popup-close>Cancel</f7-link>
+           </f7-nav-right>
+        </f7-navbar>
 
-  <f7-popup class="accomodation-popup" :opened="popupOpened" @popup:closed="popupOpened = false">
+
+        <f7-block>
+
+           <!-- Submit comment. -->
+           <f7-list media-list no-hairlines>
+
+              <f7-list-item v-if="thisAccomodation"
+                            :footer="'Created by ' + thisAccomodation.created_by"
+                            :text="thisAccomodation.type+' at '+ thisAccomodation.address"
+                            >
+              </f7-list-item>
+
+              <f7-list-input label="Comment"
+                             :value="thisComment"
+                             @input="thisComment = $event.target.value"
+                             :resizable="true"
+                             required
+                             type="textarea" 
+                             >
+              </f7-list-input>
+              <f7-list-item>
+                 <f7-button raised 
+                            popup-close
+                            fill 
+                            @click="submitComment(thisAccomodation.id)" 
+                            slot="after"
+                            >
+                            Submit
+                 </f7-button>
+                 <f7-button raised popup-close slot="title">Cancel</f7-button>
+              </f7-list-item>
+           </f7-list>
+        </f7-block>
+
+        <f7-block>
+           <f7-block-title small>Existing comments</f7-block-title>
+           <f7-list media-list no-hairlines>
+              <!-- Existing comments. -->
+              <f7-list-item v-for="(c, key) in comments"
+                            :key="key"
+                            :text="c.comment"
+                            :footer="'By ' + c.commenter"
+                            style="background-color:Ivory"
+                            >
+                   <f7-link v-if="c.commenter===getLogin()"
+                            slot="after"
+                            @click="deleteComment(c.id)"
+                            >
+                            Delete
+                   </f7-link>
+              </f7-list-item>
+           </f7-list>
+        </f7-block>
+
+     </f7-page>
+  </f7-popup>
+
+  <f7-popup :opened="popupOpened" @popup:closed="popupOpened = false">
      <f7-page>
         <f7-navbar :title="`${popupAction} Accomodation`">
            <f7-nav-right>
@@ -73,7 +199,9 @@
                              required 
                              validate
                              >
-                             <option v-for="typ in accomodations.types" :value="typ">{{typ}}</option>
+                  <option v-for="typ in accomodations.types" :value="typ">
+                     {{typ}}
+                  </option>
               </f7-list-input>
 
               <f7-list-input label="Available From" :input="false">
@@ -87,25 +215,32 @@
                   </date-picker>
               </f7-list-input>
 
-              <f7-list-input label="Open Vacancies" :input="false" >
-                 <f7-range slot="input" 
-                           :value="accomodation.open_vacancies"
-                           @input="accomodation.open_vacancies=$event.target.value"
-                           :min="1" :max="5" :step="1"
-                           :label="true"
-                           required 
-                           >
-                 </f7-range>
-              </f7-list-input>
-
-              <f7-list-input label="Address"
-                             :value="accomodation.address"
-                             @input="accomodation.address = $event.target.value"
-                             type="textarea" 
-                             :resizable="true"
+              <f7-list-input label="Open Vacancies"
+                             @input="accomodation.open_vacancies=$event.target.value"
+                             type="int"
+                             :defaultValue="1"
                              required
                              >
               </f7-list-input>
+
+              <f7-list-input label="Available For (Gender)"
+                             @input="accomodation.available_for=$event.target.value"
+                             type="select"
+                             required
+                             >
+                  <option v-for="(val, key) in accomodations.available_for" 
+                          :value="val" :key="key"
+                          > {{val}} </option>
+              </f7-list-input>
+
+                 <f7-list-input label="Address"
+                                type="text"
+                                :input="false" 
+                                >
+                    <input id="autocomplete-dropdown-expand"  
+                           :value="accomodation.address"
+                           slot="input" type="text" />
+                 </f7-list-input>
 
               <f7-list-input label="Description"
                              :value="accomodation.description"
@@ -146,23 +281,16 @@
                              pattern="[0-9]{3,7}"
                              >
               </f7-list-input>
-                 
-              <f7-list-input label="Link to photos"
-                             :value="accomodation.url"
-                             @input="accomodation.url = $event.target.value"
-                             type="url" 
-                             validate
-                             >
-              </f7-list-input>
 
-              <f7-list-input label="Change status"
+              <f7-list-input v-if="popupAction == 'Update'"
+                             label="Change status"
                              :value="accomodation.status"
                              @input="accomodation.status = $event.target.value"
                              type="select"
                              :defaultValue="accomodation.status"
                              info="To cancel change this field"
                              >
-                    <option v-for="st in accomodations.status" :value="st">{{st}}</option>
+                             <option v-for="st in accomodations.status" :value="st">{{st}}</option>
               </f7-list-input>
 
               <f7-list-item>
@@ -189,20 +317,28 @@
 
 <script>
 import moment from 'moment';
+import { OpenStreetMapProvider, GoogleProvider } from 'leaflet-geosearch'; 
 
 export default {
    data() {
       const self = this;
       return {
          accomodations: [],
+         favouriteAccomodations: self.loadStore('me.favourite.accomodations'),
          popupOpened: false,
-         hideKeys: ["id", "url", "type", "available_from", "open_vacancies", "status","created_by","created_on"],
+         showKeys: "description,rent,advance,extra,owner_contact".split(','),
          popupAction: 'New',
          photos: [],
+         locationMap : {
+            center: L.latLng(13.071081, 77.58025),
+            bounds: null,
+            zoom: 16,
+         },
          accomodation: {
             type: '',
             status: 'AVAILABLE',
             available_from: '',
+            available_for: '',
             open_vacancies: 1,
             address: '',
             description: '',
@@ -212,28 +348,92 @@ export default {
             advance: 0,
             url: '',
          },
+         // Comments.
+         thisComment: '',
+         comments: [],
+         thisAccomodation: '',
+         commentPopupOpened: false,
+         mapProvider: new GoogleProvider({
+            params: {
+               key: self.loadStoreStr('GOOGLE-MAP-API-KEY'), 
+               client: 'HippoAndroidApp',
+            },
+         }),
       };
    },
    mounted() {
       const self = this;
+      const app = self.$f7;
 
       // Get all accomodations.
       self.postWithPromise( '/accomodation/list').then(
          function(json) {
             self.accomodations = JSON.parse(json).data;
             self.saveStore('accomodations', self.accomodations);
+         }
+      );
+
+      // Autocomplete.
+      app.autocomplete.create({
+         inputEl : '#autocomplete-dropdown-expand',
+         openIn: 'dropdown',
+         valueProperty: 'address',
+         limit: 5,
+
+         source: function(q, render) {
+            var autocomplete = this;
+            if(q.length === 0)
+            {
+               render(results);
+               return;
+            }
+            autocomplete.preloaderShow();
+            var res = [];
+            self.accomodation.address = q;
+            self.mapProvider.search({query: q}).then( (results) => {
+               console.log(results);
+               //render(results);
+               res = results.map(x => x.label);
+               autocomplete.preloaderHide();
+               render(res);
+            });
+         },
+         on: {
+            change: function(val) {
+               console.log('Changed to ', val);
+               self.accomodation.address = val[0];
+            },
+         },
       });
    },
    methods: { 
       fetchAccomodations: function() {
          const self = this;
          const app = self.$f7;
-         setTimeout( () => {
-            self.fetchAndStore( '/accomodation/list', 'accomodations');
-            self.accomodations = JSON.parse(self.$localStorage.get('accomodations', '[]'));
-            return;
-         }, 1000);
+         app.dialog.preloader();
+         self.postWithPromise( '/accomodation/list' ).then( 
+            function(json) 
+            {
+               let res = JSON.parse(json);
+               if(res.status == "ok")
+               {
+                  self.accomodations = res.data;
+                  self.saveStore('accomodations', self.accomodations);
+               }
+               else
+                  self.accomodations = self.loadStore('accomodations');
+               app.dialog.close();
+            });
+         setTimeout( () => app.dialog.close(), 1000);
          app.ptr.done();
+      },
+      locateAddress: function(event) {
+         const self = this;
+         let addr = event.target.value;
+         event.preventDefault();
+         //self.mapProvider.search({query: addr}).then( (results) => {
+         //   console.log(results);
+         //});
       },
       submitAccomodation: function() {
          const self = this;
@@ -271,6 +471,59 @@ export default {
          const self = this;
          self.$refs.standalone.photos = [ acc.url ];
          self.$refs.standalone.open();
+      },
+      // COMMENT SECTION.
+      addComment: function(acc) {
+         const self = this;
+         const app = self.$f7;
+         self.thisAccomodation = acc;
+
+         self.postWithPromise('/accomodation/comment/list/'+acc.id).then(
+            function(json) {
+               let res = JSON.parse(json);
+               if(res.status == 'ok')
+                  self.comments = res.data.comments;
+            });
+
+         self.commentPopupOpened = true;
+      },
+      submitComment: function(id) {
+         const self = this;
+         let data =  {id:id, comment:self.thisComment};
+         console.log('Sending data: ', data);
+         self.sendRequest('/accomodation/comment/post', data);
+         self.commentPopupOpened = false;
+      },
+      addToFavoriteAcc: function(id) {
+         const self = this;
+         self.favouriteAccomodations = self.loadStore('me.favourite.accomodations');
+         if( ! self.favouriteAccomodations )
+            self.favouriteAccomodations = [];
+
+         if(! self.favouriteAccomodations.includes(id))
+            self.favouriteAccomodations.push(id);
+         self.saveStore('me.favourite.accomodations', self.favouriteAccomodations);
+         console.log( 'Added ' + id + ' to favourite accomodations.');
+      },
+      removeFromFavoriteAcc: function(id) {
+            const self = this;
+            self.favouriteAccomodations = self.loadStore('me.favourite.accomodations');
+            if(self.favouriteAccomodations.includes(id))
+               self.removeFromArray(self.favouriteAccomodations, id);
+            self.saveStore('me.favourite.accomodations', self.favouriteAccomodations);
+      },
+      refreshMap: function() {
+         //const map = this.$refs.accmap.mapObject;
+         //this.venues.map( x => x );
+      },
+      zoomUpdated (zoom) {
+         const self = this;
+      },
+      centerUpdated (center) {
+         this.locationMap.center = center;
+      },
+      boundsUpdated (bounds) {
+         this.locationMap.bounds = bounds;
       },
    },
 };

@@ -92,7 +92,7 @@ export default {
    },
    actions: {
       bookingPopup: function(data) {
-         console.log(data);
+         console.log('popup');
       },
    },
    watch : {
@@ -103,18 +103,24 @@ export default {
       // Fetch the available classes of booking. 
       const self = this;
       const app = this.$f7;
+
       // Currently only NOPUBLIC type of bookings are allowed.
-      app.request.post(self.$store.state.api+'/config/bookmyvenue.nopublic.class'
-         , self.apiPostData()
-         , function(json) 
+      self.postWithPromise('/config/bookmyvenue.nopublic.class')
+      .then(
+         function(json) 
          {
             const res = JSON.parse(json);
-            self.venues = res.data;
             if( res.status=='ok')
-               self.$localStorage.set('classes', res.data.value);
+            {
+               self.classes = res.data;
+               self.saveStore('classes', res.data.value);
+            }
+            else
+               self.classes = self.loadStore('classes');
          }
       );
-      self.venues = self.fetchVenues();
+      self.fetchVenues();
+      self.venues = self.loadStore('venues');
    },
    methods: { 
       venueToStr: function(venueID)

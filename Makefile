@@ -1,6 +1,6 @@
 KEYSTORE:=$(HOME)/Work/APPS/KeyStore/dilawar.jks
 
-all : apk
+all : run
 
 create:
 	cordova create . com.dilawar.hippo Hippo \
@@ -9,12 +9,17 @@ create:
 init:
 	cordova platform add android  || echo "Failed to add android platform"
 	cordova platform add browser || echo "Failed to add browser"
-	npm install 
+	npm install
+	cordova plugin add cordova-plugin-inappbrowser || echo "A"
+	cordova plugin add cordova-plugin-mauron85-background-geolocation || echo "B"
+	cordova plugin add cordova-plugin-geolocation || echo "C"
+	cordova plugin add cordova-plugin-local-notifications || echo "D"
 
 build : 
 	@cordova run android 
 
 apk: 
+	mkdir -p www
 	cordova build android --release \
 	    -- --keystore=$(KEYSTORE) \
 	    --storePassword=$(KEYSTORE_PASSWORD) \
@@ -23,7 +28,7 @@ apk:
 	find platforms -name "*.apk" | xargs -I f du -h f
 
 run:
-	cordova run browser -- --live-reload
+	cordova run browser -- --live-reload 
 
 upload :
 	cordova run android

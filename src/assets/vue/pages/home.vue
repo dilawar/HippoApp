@@ -29,31 +29,16 @@
          <f7-list media-list no-hairlines>
             <f7-list-item v-if="alreadyLoggedIn" 
                           link="/whatwherewhen/"
-                          title="What Where When" panel-close
-                          footer="Browse what is going on different venues?"
+                          title="What? Where? When?" panel-close
+                          footer="What is going on at different venues?"
                           panel-close>
-               <f7-icon slot="media" icon="fa fa-calendar-o fa-2x"></f7-icon>
+               <f7-icon slot="media" icon="fa fa-calendar fa-2x"></f7-icon>
             </f7-list-item>
-            <!--
-               <f7-list-item v-else
-               link="/events/" title="Event Calendar" panel-close>
-               <f7-icon slot="media" icon="fa fa-calendar-check-o fa-2x"></f7-icon>
-               </f7-list-item>
-            -->
-
             <f7-list-item link="/transport/" 
                           title="Transport" 
                           footer="Timetable of shuttle and buggy"
                           panel-close>
                <f7-icon slot="media" icon="fa fa-bus fa-2x"></f7-icon>
-            </f7-list-item>
-
-            <f7-list-item link="/map/" 
-                          title="Map" 
-                          footer="Synapse, LH2! Where are they?"
-                          panel-close
-                          >
-                          <f7-icon slot="media" icon="fa fa-map-o fa-2x"></f7-icon>
             </f7-list-item>
 
             <f7-list-item v-if="alreadyLoggedIn" 
@@ -66,7 +51,7 @@
             <f7-list-item v-if="alreadyLoggedIn"
                           link="/inventory/" 
                           title="Inventory" 
-                          footer="So that other can search and borrow"
+                          footer="Search and borrow"
                           panel-close>
                <f7-icon slot="media" icon="fa fa-archive fa-2x"></f7-icon>
             </f7-list-item>
@@ -75,9 +60,16 @@
                           title="Accomodations" 
                           footer="Browse/create TO-LET listing"
                           panel-close>
-               <f7-icon slot="media" icon="fa fa-home fa-2x"></f7-icon>
-            </f7-list-item>
+            <f7-icon slot="media" icon="fa fa-home fa-2x"></f7-icon>
 
+         </f7-list-item>
+
+         <f7-list-item link="/noticeboards/all" 
+                       title="Notice Board" 
+                       footer="Because you hate to spam mailing list"
+                       panel-close>
+            <f7-icon slot="media" icon="fa fa-bullhorn fa-2x"></f7-icon>
+         </f7-list-item>
 
          </f7-list>
       </f7-block>
@@ -218,40 +210,65 @@
             , 1000);
 
          // Fetch the transport as well.
-         app.request.post( self.$store.state.api+'/transport'
-            , self.apiPostData()
-            , function(json) 
-            {
-               const res = JSON.parse(json);
-               if( res.status=='ok')
-                  self.$localStorage.set('transport', JSON.stringify(res.data));
+         setTimeout( () => {
+            app.request.post( self.$store.state.api+'/transport'
+               , self.apiPostData()
+               , function(json) 
+               {
+                  const res = JSON.parse(json);
+                  if( res.status=='ok')
+                     self.$localStorage.set('transport', JSON.stringify(res.data));
+               }
+            );
+         }, 2000);
+
+         // Get notification now and display them.
+         setTimeout(() => {self.fetchNotifications();}, 500);
+         setTimeout(() => {self.displayNotifications();}, 500);
+         // Call fetchNotifications in the background. every minutes.
+         // FIXME:  Make it very 10 minutes later.
+         setInterval( function() {
+            console.log("Fetching notitication");
+            try {
+               self.fetchNotifications()
+            } catch (e) {
+               /* handle error */
+               console.log( "Could not fetch notifications.");
             }
-         );
+         }, 30*60*1000);
+
+         setInterval( function() {
+            try {
+               self.displayNotifications()
+            } catch (e) {
+               /* handle error */
+               console.log("Could not display notifications.");
+            }
+         }, 60*60*1000);
       },
       methods: {
          signIn: function()
          {
             const self = this;
             const app = self.$f7;
-
             app.dialog.preloader("Loging in ...");
-            app.request.post(self.$store.state.api + '/authenticate'
-               , {'login':self.username, 'password': btoa(self.password)}
-               , function(json) 
-               {
+            app.request.promise.post( self.$store.state.api+"/authenticate"
+               , {"login":self.username, "password": btoa(self.password)}
+               ).then( function(json) {
                   var res = JSON.parse(json);
                   if( res.status =='ok' && res.data.apikey != '')
                   {
                      self.$localStorage.set('HIPPO-API-KEY', res.data.apikey);
+                     self.$localStorage.set('GOOGLE-MAP-API-KEY', res.data.gmapapikey);
                      self.$localStorage.set('HIPPO-LOGIN', self.username);
                      self.isUserAuthenticated = true;
                      self.$f7router.refreshPage();
                   }
                   else
                      app.dialog.alert("Failed to login. Try again.", "Error");
-               }
-            );
-            setTimeout(() => app.dialog.close(), 200);
+                  app.dialog.close();
+               });
+            setTimeout(() => app.dialog.close(), 2000);
          },
          signOut: function() {
             const self = this;

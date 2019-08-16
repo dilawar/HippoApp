@@ -1,5 +1,8 @@
 <template>
   <f7-page page-content 
+           ptr @ptr:refresh="fetchEvents"
+           @page:beforein="pageBeforeIn"
+           @page:afterin="pageAfterIn"
            infinite
            :infinite-preloader="showPreloader" 
            @infinite="loadMore"
@@ -38,12 +41,33 @@
      </f7-actions-group>
   </f7-actions>
 
+  <!--
   <light-timeline v-model="items" :items='items'>
      <template slot='tag' slot-scope='{ item }'>
-        <span v-html="item.tag"
-           ></span>
+        <span v-html="item.tag" style="color:black"></span>
      </template>
   </light-timeline>
+  -->
+
+  <f7-block>
+     <f7-block-title small>Cancelled events are not shown.</f7-block-title>
+
+     <f7-list accordion-list media-list no-hairlines>
+
+        <f7-list-item :accordion-item="item.data.description.length>80"
+              v-for="(item, key) in items"
+              :key="key"
+              >
+              <div slot="title" v-html="item.data.title"></div>
+              <div slot="footer" v-html="genTimeline(item.data)"></div>
+              <div slot="header" v-html="genWhereline(item.data)"></div>
+
+              <f7-accordion-content style="background-color:Ivory"
+                                    v-html="item.data.title+'<br/>'+item.data.description">
+              </f7-accordion-content>
+        </f7-list-item>
+     </f7-list>
+  </f7-block>
 
 
 
@@ -65,44 +89,63 @@ export default {
          venues: [],
          selectedVenue: 'ALL',
          selectedClass: 'ALL',
-         events: JSON.parse(self.$localStorage.get('events', '[]')),
+         events: self.loadStore('events'),
          venueEvents: [],
          items: [],
       }
    },
    mounted: function() {
       const self = this;
-      // Wait for event to get stored into the localStorage.
-      self.postWithPromise('/events/latest/100').then(
-         function(json) {
-            self.events = JSON.parse(json).data;
-            self.eventTypes = [... new Set( self.events.map(x=>x.class))];
-            self.eventTypes.push('ALL');
-            self.venues = [... new Set(self.events.map(x=>x.venue))];
-            self.venues.push('ALL');
-            self.eventsToTimeLine(self.events);
-            console.log( 'Got ', self.events.length, ' events.');
-            self.saveStore('events', self.events);
-         }
-      );
+      // Only fetch when nothing is available in the store.
+      self.events = self.loadStore('events');
+      self.initVenuesAndClasses();
+      if(! self.events || self.events.length == 0)
+      {
+         self.fetchEvents();
+      }
+      self.eventsToTimeLine(self.events);
    },
    methods: { 
+      initVenuesAndClasses: function( ) {
+         const self = this;
+         self.eventTypes = [... new Set( self.events.map(x=>x.class))];
+         self.eventTypes.push('ALL');
+         self.venues = [... new Set(self.events.map(x=>x.venue))];
+         self.venues.push('ALL');
+      },
+      fetchEvents: function( ) {
+         const self = this;
+         const app = self.$f7;
+
+         setTimeout( () => {
+         self.postWithPromise('/events/latest/100').then(
+            function(json) {
+               self.events = JSON.parse(json).data;
+               self.initVenuesAndClasses();
+               self.saveStore('events', self.events);
+               self.eventsToTimeLine(self.events);
+            }
+         )}, 2000);
+      },
       eventToTimelinePoint: function(key, ev) 
       {
          const self = this;
          var color = self.stringToColour(ev.class)
+         let status = (ev.status == 'PENDING')?' (Pending Approval)':'';
          return { id:key
-            , class:ev.class
+            , class: ev.class
             , color : color
+            , data: ev
             , group: ev.venue
             , tag: self.toNow(ev.date, ev.start_time) + '<br /> ' 
-                  + self.str2Moment(ev.start_time,'HH:mm:ss').format('HH:mm A') + '<br />' 
-                  + self.str2Moment(ev.end_time,'HH:mm:ss').format('HH:mm A')
+                  + self.str2Moment(ev.date, 'YYYY-MM-DD').format('MMM DD')+'<br/>'
+                  + self.str2Moment(ev.start_time,'HH:mm:ss').format('HH:mm')+'-' 
+                  + self.str2Moment(ev.end_time,'HH:mm:ss').format('HH:mm')
             , htmlMode: true
-            , content:  `<span style="font-size:10px;color:green;margin-left:-1rem">${ev.venue}</span> `+
-                        `<span style="font-size:8px;color:gray;">${ev.class}</span>`+
-                        `<br/><span style="font-size:small;color:black;margin:-1rem">${ev.title} </span>` +
-                        `<br/><span style="font-size:9px;color:green;margin:-1rem">${ev.created_by}</span>`
+            , content:  `<span style="font-size:12px;color:green;margin-left:0rem">${ev.venue}</span> `+
+                        `<span style="font-size:10px;color:gray;">${ev.class} ${status}</span>`+
+                        `<br/><span style="color:black;margin:0rem">${ev.title} </span>` +
+                        `<br/><span style="font-size:9px;color:green;margin:0rem">${ev.created_by}</span>`
 
          };
       },
@@ -118,8 +161,6 @@ export default {
                continue;
             self.items.push(self.eventToTimelinePoint(key, ev));
          }
-         if(self.items.length == 0)
-            self.items.push({tag:'Nothing found.', content:'Pull to refresh!'});
       },
       loadMore: function() {
          const self = this;
@@ -181,6 +222,28 @@ export default {
             }
          );
          self.eventsToTimeLine(filteredEvents);
+      },
+      genTimeline: function( ev ) 
+      {
+         const self = this;
+
+         let whereWhere = '';
+
+         whereWhere += moment(ev.date, 'YYYY-MM-DD').format('ddd, MMM DD') +
+            ', ' + moment(ev.start_time, 'HH:mm:ss').format('h:mm A')
+         return whereWhere;
+      },
+      genWhereline: function(ev) 
+      {
+         const self = this;
+         let content =  `<span style="color:green">${ev.venue}</span> `+
+                        `<span style="color:gray;">${ev.class} ${status}</span>`;
+         if( self.str2Moment(ev.date, 'YYYY-MM-DD').diff(moment(), 'days') < 1)
+         {
+            let fromNow = self.str2Moment(ev.date + ' ' + ev.start_time , 'YYYY-MM-DD HH:mm:ss').fromNow();
+            content = '<span style="float:right">'+fromNow+'</span>' + content;
+         }
+         return content;
       },
    },
 }; 
