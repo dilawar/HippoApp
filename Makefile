@@ -9,11 +9,11 @@ create:
 init:
 	cordova platform add android  || echo "Failed to add android platform"
 	cordova platform add browser || echo "Failed to add browser"
-	npm install
 	cordova plugin add cordova-plugin-inappbrowser || echo "A"
 	cordova plugin add cordova-plugin-mauron85-background-geolocation || echo "B"
-	cordova plugin add cordova-plugin-geolocation || echo "C"
-	cordova plugin add cordova-plugin-local-notifications || echo "D"
+	cordova plugin add cordova-plugin-local-notification@0.9.0-beta.2 || echo "D"
+	cordova plugin add cordova-plugin-firebase || echo "E"
+	npm install
 
 build : 
 	@cordova run android 
