@@ -128,7 +128,7 @@ export default {
    data() {
       const self = this;
       return {
-         today: moment().format('ddd'),
+         thisDay: moment().format('ddd'),
          pickup: self.loadStoreStr('lastPickup') || 'NCBS',
          drop : self.loadStoreStr('lastDrop') || 'Mandara',
          nowTime: moment(),
@@ -152,7 +152,7 @@ export default {
    methods: { 
       upcomingTrip: function(t) {
          const self = this;
-         if(t.day.toLowerCase() === self.today.toLowerCase())
+         if(t.day.toLowerCase() === self.thisDay.toLowerCase())
             if(self.str2Moment(t.trip_start_time, 'HH:mm:ss') >= self.str2Moment())
                return true;
          return false;
