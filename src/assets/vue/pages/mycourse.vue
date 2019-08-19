@@ -84,6 +84,8 @@
                      <span v-if="course.grade" style="color:blue;font-weight:500">
                         ({{course.grade}})
                      </span>
+                  </div>
+                  <div slot="after">
                      <span style="float:right"><strong>{{course.type}}</strong></span>
                   </div>
                   <div slot="footer">

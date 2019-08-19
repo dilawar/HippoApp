@@ -235,13 +235,13 @@ input {
 }
 
 .location-head-icon {
-    min-width: 25px;
-    min-height: 25px;
+    min-width: 20px;
+    min-height: 30px;
     display: flex;
     background-color: yellow;
-    vertical-align: middle;
+    vertical-align: top;
     justify-content: center;
-    align-items:center;
+    align-items:bottom;
     border-radius: 50%;
 }
 

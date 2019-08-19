@@ -5,13 +5,12 @@
             page-content>
   <f7-navbar title="Transport" back-link="Back"></f7-navbar>
 
-  <f7-fab position="right-bottom" slot="fixed" color="green">
-     <f7-icon icon="fa fa-map-marker fa-2x"></f7-icon>
+  <f7-fab position="right-bottom" 
+          slot="fixed" 
+          color="green"
+          href="/osm/liveroute/60"
+     >
      <f7-icon icon="fa fa-map fa-2x"></f7-icon>
-     <f7-fab-buttons>
-        <f7-fab-button href="/osm/liveroute/30/">Live</f7-fab-button>
-        <f7-fab-button @click="trackMe()">{{tracking}}</f7-fab-button>
-     </f7-fab-buttons>
   </f7-fab>
 
   <f7-link external 

@@ -26,9 +26,9 @@
              <l-polyline v-for="(arr, key) in hotlines" 
                          :lat-lngs="arr" 
                          :key="key"
-                         color="green"
-                         :weight="5"
-                         :smoothFactor="2.0"
+                         color="blue"
+                         :weight="8"
+                         :smoothFactor="3.0"
                          >
              </l-polyline>
 
@@ -179,7 +179,7 @@ export default {
       fetchLatestRoute: function() {
          const self = this;
 
-         self.postWithPromise("/geolocation/latest/10")
+         self.postWithPromise("/geolocation/latest/60")
             .then(function(json) {
                let res = JSON.parse(json);
                if(res.status !== "ok") 
@@ -201,8 +201,7 @@ export default {
                      html: self.str2Moment(pts[0].timestamp, 'YYYY-MM-DD HH:mm:ss').fromNow(),
                      options: { 
                         icon: L.divIcon({
-                           className : 'location-head-icon',
-                           html: '<i class="fa fa-map-pin fa-2x"></i>'
+                           html: '<i class="fa fa-bus fa-2x"></i>'
                            }),
                         },
                      });
