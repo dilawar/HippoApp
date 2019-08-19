@@ -13,9 +13,10 @@
                           >
 
                <div slot="header">
-                  Slot {{course.slot}}, {{course.venue}}, <tt>{{course.course_id}}</tt>
+                  Credits {{metadata[course.course_id].credits}},
+                  Slot {{course.slot}} @{{course.venue}}, <tt>{{course.course_id}}</tt>
                </div>
-               <div slot="media" v-if="alreadyRegistered(course.id)">
+               <div slot="after" v-if="alreadyRegistered(course.id)">
                   <f7-icon> {{alreadyRegistered(course.id)}}</f7-icon>
                </div>
                <div slot="footer">
@@ -34,7 +35,8 @@
                      v-html="metadata[course.course_id].description"></p>
                   <div>
                      <p><strong>Instructor(s)</strong></p>
-                     <p v-html="metadata[course.course_id].instructors"></p>
+                     <p v-html="
+                                metadata[course.course_id].instructors"></p>
                   </div>
 
                   <f7-row>
@@ -78,7 +80,7 @@
                           :title="course.name"
                           >
                   <div slot="header">
-                     {{course.year}}, {{course.semester}} 
+                     {{course.year}}, {{course.semester}},
                      <span v-if="course.grade" style="color:blue;font-weight:500">
                         ({{course.grade}})
                      </span>
