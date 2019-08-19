@@ -38,6 +38,15 @@
              <f7-icon slot="media" icon="fa fa-graduation-cap fa-2x"></f7-icon>
             </f7-list-item>
 
+            <f7-list-item link="/mycourse/" 
+                          target="_blank"
+                          view=".view-main"
+                          title="My Courses" 
+                          panel-close
+                          >
+             <f7-icon slot="media" icon="fa fa-book fa-2x"></f7-icon>
+            </f7-list-item>
+
             <f7-list-item link="/mybooking/" 
                           target="_blank"
                           view=".view-main"

@@ -121,6 +121,9 @@ Vue.mixin({
          var t = moment(time, "hh:mm:ss").format("hh:mm A");
          return d+', '+t;
       },
+      today : function() {
+         return moment().format();
+      },
       dbDateTime: function(date) {
          return moment(date).format('YYYY-MM-DDTHH:mm');
       },
