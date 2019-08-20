@@ -6,6 +6,17 @@ import Dropzone from "vue2-dropzone";
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 Vue.component('vue-dropzone', Dropzone);
 
+// linkify
+import linkify from 'vue-linkify';
+Vue.directive('linkified', linkify);
+
+// Vue filter for parsing phone numbers.
+Vue.filter('phone', function (phone) {
+    return phone.replace(/([+]91|0)?(\d{3})(\d{3})(\d{4})/
+       , '<a href="tel:$1$2$3$4"><i class="fa fa-phone"></i>$1$2$3$4</a>'
+    );
+});
+
 // Multi uploader.
 import MultipleFileUploader from '@updivision/vue2-multi-uploader'
 Vue.component('v-multifile-uploader', MultipleFileUploader);
