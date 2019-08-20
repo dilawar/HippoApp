@@ -11,23 +11,16 @@
                           v-for="(course, key) in runningCourses" 
                           :key="key"
                           >
-
                <div slot="header">
                   Credits {{metadata[course.course_id].credits}},
                   Slot {{course.slot}} @{{course.venue}}, <tt>{{course.course_id}}</tt>
                </div>
-               <div slot="after" v-if="alreadyRegistered(course.id)">
-                  <f7-icon> {{alreadyRegistered(course.id)}}</f7-icon>
+               <div slot="media" v-if="alreadyRegistered(course.id)" >
+                    <f7-icon icon="fa fa-bookmark fa-2x"></f7-icon>
                </div>
-               <div slot="footer">
-                  Timeline: {{course.start_date}}  to {{course.end_date}}
-               </div>
-               <div slot="title">
-                  {{metadata[course.course_id].name}}
-               </div>
-               <div slot="footer">
-                  {{course.note}}
-               </div>
+               <div slot="footer"> Timeline: {{course.start_date}}  to {{course.end_date}} </div>
+               <div slot="title"> {{metadata[course.course_id].name}} </div>
+               <div slot="footer"> {{course.note}} </div>
 
                <f7-accordion-content>
                   <f7-block>
@@ -41,10 +34,11 @@
 
                   <f7-row>
                      <f7-col> 
-                        <f7-button small raised fill
-                           v-if="alreadyRegistered(course.id) != 'CREDIT'"
-                           @click="registerCourse(course, 'CREDIT')"
-                        >Credit</f7-button> 
+                        <f7-button small raised fill color="red"
+                                   v-if="(today()<=dbDate(course.allow_deregistraction_until))
+                                         && alreadyRegistered(course.id)"
+                                          @click="registerCourse(course, 'DROP')"
+                                   >Drop</f7-button>
                      </f7-col>
                      <f7-col>
                         <f7-button small raised fill 
@@ -54,13 +48,10 @@
                      </f7-col>
                      <f7-col> 
                         <f7-button small raised fill
-                                   v-if="(today() <= dbDate(course.allow_deregistraction_until)) 
-                                         && (alreadyRegistered(course.id)!='DROPPED')"
-                                   @click="registerCourse(course, 'DROPPED')"
-                                   >Drop</f7-button>
-                        <f7-button small v-else disable>Drop
-                        </f7-button> 
-                        </f7-col>
+                           v-if="alreadyRegistered(course.id) != 'CREDIT'"
+                           @click="registerCourse(course, 'CREDIT')"
+                        >Credit</f7-button> 
+                     </f7-col>
                   </f7-row>
 
                   </f7-block>
