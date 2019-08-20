@@ -54,8 +54,9 @@
                      </f7-col>
                      <f7-col> 
                         <f7-button small raised fill
-                                   v-if="today() <= dbDate(course.allow_deregistraction_until)"
-                                   @click="registerCourse(course, 'DROP')"
+                                   v-if="(today() <= dbDate(course.allow_deregistraction_until)) 
+                                         && (alreadyRegistered(course.id)!='DROPPED')"
+                                   @click="registerCourse(course, 'DROPPED')"
                                    >Drop</f7-button>
                         <f7-button small v-else disable>Drop
                         </f7-button> 
