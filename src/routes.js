@@ -126,7 +126,7 @@ export default [
       component: SearchPage
    },
    {
-      path: '/noticeboards/',
+      path: '/noticeboards/:boardName',
       component: NoticeBoards
    },
    {

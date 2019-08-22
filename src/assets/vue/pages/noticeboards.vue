@@ -272,7 +272,7 @@ export default {
    data() {
       const self = this;
       return {
-         board: self.$f7route.params.board,
+         board: self.$f7route.params.boardName,
          forumCards: [],
          postPopup: false,
          subscriptions: [],  // Subscriptions

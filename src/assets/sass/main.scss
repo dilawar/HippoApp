@@ -259,3 +259,13 @@ input {
     top: -10%;
 }
 
+div.watermark {
+    position:absolute;
+    right: -10%;
+    bottom: 25%;
+    z-index:0;
+    display:flex;
+    color:lightred;
+    font-size:50px;
+    transform:rotate(-90deg);
+}
