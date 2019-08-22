@@ -3,9 +3,9 @@
       <f7-navbar title="My Courses" back-link="Back"></f7-navbar>
 
       <f7-block>
-         <f7-block-title>Currently Running Courses</f7-block-title>
+         <f7-block-title>Running Courses</f7-block-title>
 
-         <f7-list accordion-list>
+         <f7-list accordion-list no-hairlines>
 
             <f7-list-item accordion-item 
                           v-for="(course, key) in runningCourses" 
@@ -126,6 +126,9 @@
       methods: {
          fetchCourses: function() {
             const self = this;
+            const app = self.$f7;
+            app.preloader.show();
+
             console.log("Fetching courses..");
             self.postWithPromise('/me/course').then( function(json) {
                let res = JSON.parse(json);
@@ -139,7 +142,9 @@
                   console.log( 'Failed to fetch data');
                   self.courses = self.loadStore('me.course');
                }
+               app.preloader.hide();
             });
+            setTimeout((), app.preloader.hide(), 5000);
          },
          fetchCoursesMetadata: function() {
             const self = this;
@@ -174,23 +179,29 @@
          },
          registerCourse: function(course, regType='CREDIT') {
             const self = this;
+            const app = self.$f7;
+
             /* console.log( regType + "ing course " + course.id ); */
             // NOTE:course.id can have characters which are not allowed in URL at
             // server.
-            self.postWithPromise( "/courses/register/"+btoa(course.id)+"/"+regType).then( function(json) {
-               let res = JSON.parse(json);
-               if( res.status == 'ok')
-               {
-                  /* console.log( "Successfully registered "); */
-                  // Refresh my couses.
-                  self.fetchCourses();
-               }
-               else
-               {
-                  // Notify user.
-                  console.log( "Failed to register");
-               }
+            app.preloader.show();
+            self.postWithPromise( "/courses/register/"+btoa(course.id)+"/"+regType)
+               .then(function(json) {
+                  let res = JSON.parse(json);
+                  if( res.status == 'ok')
+                  {
+                     /* console.log( "Successfully registered "); */
+                     // Refresh my couses.
+                     self.fetchCourses();
+                  }
+                  else
+                  {
+                     // Notify user.
+                     console.log( "Failed to register");
+                  }
+                  app.preloader.hide();
             });
+            setTimeout( () => app.preloader.hide(), 5000);
          },
          alreadyRegistered: function(cid) {
             const self = this;

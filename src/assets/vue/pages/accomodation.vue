@@ -78,7 +78,7 @@
   </f7-block>
 
   <f7-block>
-     <f7-block-title>Non-avilable Accomodations</f7-block-title>
+     <f7-block-title>Unavailable Accomodations</f7-block-title>
         <f7-card v-for="(acc, key) in accomodations.list" 
                  :key="key"
                  v-if="acc.status!='AVAILABLE'"
