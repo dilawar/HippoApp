@@ -1,12 +1,11 @@
 <template>
    <f7-page page-content ptr @ptr:refresh="refreshCourses">
-      <f7-navbar title="My Courses" back-link="Back"></f7-navbar>
+      <f7-navbar title="Courses" back-link="Back"></f7-navbar>
 
       <f7-block>
          <f7-block-title>Running Courses</f7-block-title>
 
          <f7-list accordion-list no-hairlines>
-
             <f7-list-item accordion-item 
                           v-for="(course, key) in runningCourses" 
                           :key="key"
@@ -53,42 +52,75 @@
                         >Credit</f7-button> 
                      </f7-col>
                   </f7-row>
-
                   </f7-block>
-
                </f7-accordion-content>
-
             </f7-list-item>
-
          </f7-list>
-
       </f7-block>
 
+      <!-- POPUP for giving feedback -->
+      <f7-popup :opened="feedbackPopup" @popup:closed="feedbackPopup=false">
+         <f7-page>
+            <f7-navbar title="Feedback">
+               <f7-nav-right>
+                  <f7-link popup-close>Close</f7-link>
+               </f7-nav-right>
+            </f7-navbar>
+
+            <f7-block>
+               <f7-block-title small>{{thisCourse.name}}</f7-block-title>
+
+               <f7-block v-for="(catQues, key) in questions" :key="key">
+                  <f7-block-title>{{key}}</f7-block-title>
+                  <f7-list>
+                     <f7-list-item v-for="(que,id) in catQues">
+                          <div style="font-size:small"
+                               slot="root-start"
+                               v-html="que.question"
+                               >
+                          </div>
+
+                             <f7-row>
+                                <f7-col v-for="(choice,chid) in que.choices.split(',')"
+                                        :key="chid">
+                                   <f7-radio :name="que.id" :value="choice"></f7-radio>
+                                   <span style="font-size:xx-small">{{choice}}</span>
+                                </f7-col>
+                             </f7-row>
+                     </f7-list-item>
+                  </f7-list>
+
+               </f7-block>
+
+            </f7-block>
+         </f7-page>
+      </f7-popup>
+
       <f7-block>
-         <f7-block-title>My Courses</f7-block-title>
-         <f7-list accodion-list no-hairlines>
-            <f7-list-item accordion-item 
-                          v-for="(course, key) in courses" :key="key"
+         <f7-block-title>My courses</f7-block-title>
+         <f7-list media-list no-hairlines>
+            <f7-list-item v-for="(course, key) in courses" :key="key"
                           :title="course.name"
+                          @click="giveFeedback(course)"
                           >
-                  <div slot="header">
-                     {{course.year}}, {{course.semester}},
-                     <span v-if="course.grade" style="color:blue;font-weight:500">
-                        ({{course.grade}})
-                     </span>
-                  </div>
-                  <div slot="after">
-                     <span style="float:right"><strong>{{course.type}}</strong></span>
-                  </div>
-                  <div slot="footer">
-                     <span>
-                        Registered on {{course.registered_on}}
-                     </span>
-                     <br />
-                     <span v-if="course.grade">
-                        Grade assigned on: {{course.grade_is_given_on}}
-                     </span>
-                  </div>
+               <div slot="header">
+                  {{course.year}}, {{course.semester}},
+                  <span v-if="course.grade" style="color:blue;font-weight:500">
+                     ({{course.grade}})
+                  </span>
+               </div>
+               <div slot="after">
+                  <span style="float:right"><strong>{{course.type}}</strong></span>
+               </div>
+               <div slot="footer">
+                  <span>
+                     Registered on {{course.registered_on}}
+                  </span>
+                  <br />
+                  <span v-if="course.grade">
+                     Grade assigned on: {{course.grade_is_given_on}}
+                  </span>
+               </div>
             </f7-list-item>
          </f7-list>
       </f7-block>
@@ -105,6 +137,10 @@
             courses: [],
             runningCourses: [],
             metadata: [],
+            thisCourse: {},
+            feedbackPopup: false,
+            questions: [],
+            feedback: null, 
          };
       },
       mounted()
@@ -204,12 +240,37 @@
          },
          alreadyRegistered: function(cid) {
             const self = this;
-            /* console.log("Checking if " + cid + " is in my list."); */
             let res = self.courses.filter(x => cid == x.course_id+"-"+x.semester+"-"+x.year);
             /* console.log(res, 'register', cid); */
             if(res.length==1)
                return res[0].type;
             return "";
+         },
+         giveFeedback: function(course)
+         {
+            const self = this;
+            const app = self.$f7;
+
+            console.log( "Giving feedback for ", course);
+            self.thisCourse = course;
+
+            app.preloader.show();
+            self.postWithPromise('/courses/feedback/questions')
+               .then( function(json) {
+                  self.questions = JSON.parse(json).data;
+               });
+
+            console.log(course);
+            let cid = course.course_id + '-' + course.semester + '-' + course.year;
+            self.postWithPromise('/courses/getfeedback/'+btoa(cid))
+               .then( function(json) {
+                  console.log("Getting old feedback for ",cid);
+                  let data = JSON.parse(json).data;
+                  self.feedback = data;
+                  app.preloader.hide();
+               });
+            setTimeout(() => app.preloader.hide(), 3000);
+            self.feedbackPopup = true;
          },
       },
    }
