@@ -124,13 +124,10 @@
 
       },
       methods: {
-         fetchCourses: function() {
+         fetchCoursesPromise: function() {
             const self = this;
             const app = self.$f7;
-            app.preloader.show();
-
-            console.log("Fetching courses..");
-            self.postWithPromise('/me/course').then( function(json) {
+            return self.postWithPromise('/me/course').then( function(json) {
                let res = JSON.parse(json);
                if(res.status == 'ok')
                {
@@ -142,9 +139,17 @@
                   console.log( 'Failed to fetch data');
                   self.courses = self.loadStore('me.course');
                }
+            });
+         },
+         fetchCourses: function() {
+            const self = this;
+            const app = self.$f7;
+            console.log("Fetching courses..");
+            app.preloader.show();
+            self.fetchCoursesPromise().then( function(x) {
                app.preloader.hide();
             });
-            setTimeout((), app.preloader.hide(), 5000);
+            setTimeout(() => app.preloader.hide(), 5000);
          },
          fetchCoursesMetadata: function() {
             const self = this;
@@ -189,17 +194,11 @@
                .then(function(json) {
                   let res = JSON.parse(json);
                   if( res.status == 'ok')
-                  {
-                     /* console.log( "Successfully registered "); */
-                     // Refresh my couses.
-                     self.fetchCourses();
-                  }
+                     self.fetchCoursesPromise().then(function(x) {
+                        app.preloader.hide();
+                     });
                   else
-                  {
-                     // Notify user.
-                     console.log( "Failed to register");
-                  }
-                  app.preloader.hide();
+                     navigator.notification.alert("Failed to update course", null , "Course", "OK");
             });
             setTimeout( () => app.preloader.hide(), 5000);
          },
