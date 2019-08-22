@@ -47,10 +47,13 @@
             <span slot="footer"> {{ nextTrip(route) }}</span>
 
            <f7-accordion-content>
-
-              <f7-list media-list inner>
+              <f7-list media-list inner
+                       style="padding:0px;margin:0px"
+                 >
               <f7-list-item v-for="(t, key) in thisRouteTimetable(route)"
                             :key="key"
+                            v-if="isUpcomingTrip(t)"
+                            style="padding:0px;margin:0px"
                             swipeout
                             >
                  <f7-swipeout-actions right>
@@ -65,7 +68,7 @@
                      :icon="transportIcon(t.vehicle,t.trip_start_time,t.day)">
                   </f7-icon>
 
-                  <span slot='after' v-if="upcomingTrip(t)">
+                  <span slot='after' v-if="isUpcomingTrip(t)">
                     {{ str2Moment(t.trip_start_time, 'HH:mm:ss').fromNow() }}
                  </span>
 
@@ -150,11 +153,14 @@ export default {
       self.filterTransport();
    },
    methods: { 
-      upcomingTrip: function(t) {
+      isUpcomingTrip: function(t) {
          const self = this;
+         console.log('x', t.day, self.thisDay );
          if(t.day.toLowerCase() === self.thisDay.toLowerCase())
             if(self.str2Moment(t.trip_start_time, 'HH:mm:ss') >= self.str2Moment())
                return true;
+         if(self.str2Moment(t.day,"ddd") > self.str2Moment(self.thisDay,"ddd"))
+            return true;
          return false;
       },
       transportIcon: function(vehicle, startTime, day) {
@@ -168,13 +174,13 @@ export default {
          else
             icon += ' fa-bus';
 
-         if(self.isUpcomingTrip(startTime, day))
+         if(self.isNextTrip(startTime, day))
             icon += ' fa-spin fa-pulse fa-2x';
 
          icon += ' fa-fw';
          return icon;
       },
-      isUpcomingTrip: function(startTime, day)
+      isNextTrip: function(startTime, day)
       {
          const self = this;
          if( self.selectedDay != day )
