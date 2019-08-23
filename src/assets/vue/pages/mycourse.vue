@@ -76,17 +76,24 @@
                      <f7-list-item v-for="(que,id) in catQues">
                           <div style="font-size:small"
                                slot="root-start"
-                               v-html="que.question"
-                               >
+                               v-html="que.question">
                           </div>
-
-                             <f7-row>
-                                <f7-col v-for="(choice,chid) in que.choices.split(',')"
-                                        :key="chid">
-                                   <f7-radio :name="que.id" :value="choice"></f7-radio>
-                                   <span style="font-size:xx-small">{{choice}}</span>
-                                </f7-col>
-                             </f7-row>
+                          <f7-row v-if="que.choices">
+                             <f7-col v-for="(choice,chid) in que.choices.split(',')"
+                                     :key="chid">
+                                <f7-radio :name="que.id" 
+                                     :value="choice" 
+                                     :checked="choice==oldResponse(que.id, false)"
+                                     ></f7-radio>
+                                <span style="font-size:xx-small">{{choice}}</span>
+                             </f7-col>
+                          </f7-row>
+                          <f7-row v-else>
+                             <f7-list-input type="text"
+                                            :value="oldResponse(que.id, ',')"
+                                >
+                             </f7-list-input>
+                          </f7-row>
                      </f7-list-item>
                   </f7-list>
 
@@ -140,7 +147,7 @@
             thisCourse: {},
             feedbackPopup: false,
             questions: [],
-            feedback: null, 
+            feedback: {}, 
          };
       },
       mounted()
@@ -240,7 +247,9 @@
          },
          alreadyRegistered: function(cid) {
             const self = this;
-            let res = self.courses.filter(x => cid == x.course_id+"-"+x.semester+"-"+x.year);
+            let res = self.courses.filter(x => 
+               cid == (x.course_id+"-"+x.semester+"-"+x.year)
+            );
             /* console.log(res, 'register', cid); */
             if(res.length==1)
                return res[0].type;
@@ -262,7 +271,7 @@
 
             console.log(course);
             let cid = course.course_id + '-' + course.semester + '-' + course.year;
-            self.postWithPromise('/courses/getfeedback/'+btoa(cid))
+            self.postWithPromise('/courses/feedback/get/'+btoa(cid))
                .then( function(json) {
                   console.log("Getting old feedback for ",cid);
                   let data = JSON.parse(json).data;
@@ -271,6 +280,19 @@
                });
             setTimeout(() => app.preloader.hide(), 3000);
             self.feedbackPopup = true;
+         },
+         oldResponse: function(qid, _default=null){
+            const self = this;
+            if(! self.feedback)
+               return _default;
+            else if(self.feedback.length == 0)
+               return _default;
+            else if( null == self.feedback)
+               return _default;
+
+            if(qid in self.feedback)
+               return self.feedback[qid]['response'];
+            return _default;
          },
       },
    }

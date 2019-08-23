@@ -332,6 +332,15 @@ Vue.mixin({
          const app = self.$f7;
          app.preloader.hide();
       },
+      _get: function(obj, key, o=null) {
+         if(! obj)
+            return o;
+         else if(obj == null)
+            return o;
+         else if(obj.length == 0)
+            return o;
+         return obj.includes(key)?obj[key]:o;
+      },
    },
 });
 
