@@ -69,10 +69,9 @@
 
             <f7-block>
                <f7-block-title small>{{thisCourse.name}}</f7-block-title>
-
                <f7-block v-for="(catQues, key) in questions" :key="key">
                   <f7-block-title>{{key}}</f7-block-title>
-                  <f7-list>
+                  <f7-list media-list>
                      <f7-list-item v-for="(que,id) in catQues">
                           <div style="font-size:small"
                                slot="root-start"
@@ -88,17 +87,19 @@
                                 <span style="font-size:xx-small">{{choice}}</span>
                              </f7-col>
                           </f7-row>
-                          <f7-row v-else>
+                          <f7-row v-else :no-gap="true">
+                             <f7-col :no-gap="true" width="100">
                              <f7-list-input type="text"
                                             :value="oldResponse(que.id, ',')"
                                 >
                              </f7-list-input>
+                           </f7-col>
                           </f7-row>
                      </f7-list-item>
                   </f7-list>
-
                </f7-block>
-
+               <f7-button fill raised @click="submitFeedback()" > Submit </f7-button>
+               </div>
             </f7-block>
          </f7-page>
       </f7-popup>
@@ -108,7 +109,7 @@
          <f7-list media-list no-hairlines>
             <f7-list-item v-for="(course, key) in courses" :key="key"
                           :title="course.name"
-                          @click="giveFeedback(course)"
+                          @click="showFeedback(course)"
                           >
                <div slot="header">
                   {{course.year}}, {{course.semester}},
@@ -146,8 +147,8 @@
             metadata: [],
             thisCourse: {},
             feedbackPopup: false,
-            questions: [],
-            feedback: {}, 
+            questions: {},
+            feedback: {},
          };
       },
       mounted()
@@ -255,21 +256,29 @@
                return res[0].type;
             return "";
          },
-         giveFeedback: function(course)
+         showFeedback: function(course)
          {
             const self = this;
             const app = self.$f7;
 
             console.log( "Giving feedback for ", course);
             self.thisCourse = course;
-
             app.preloader.show();
             self.postWithPromise('/courses/feedback/questions')
                .then( function(json) {
                   self.questions = JSON.parse(json).data;
+                  // Populate feedback so we can bind values.
+                  Object.keys(self.questions).map(
+                     function(k, i) {
+                        Object.keys(self.questions[k]).map(
+                           function(i, e) {
+                              const qid = self.questions[k][i].id;
+                              self.feedback[qid] = {"response": ""};
+                           });
+                     });
+                  console.log("init feedback", self.feedback);
                });
 
-            console.log(course);
             let cid = course.course_id + '-' + course.semester + '-' + course.year;
             self.postWithPromise('/courses/feedback/get/'+btoa(cid))
                .then( function(json) {
@@ -294,6 +303,10 @@
                return self.feedback[qid]['response'];
             return _default;
          },
+         submitFeedback: function( ) {
+            const self = this;
+            console.log( "data is ", self.feedback);
+         }
       },
    }
 </script>
