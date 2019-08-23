@@ -82,7 +82,8 @@
                                      :key="chid">
                                 <f7-radio :name="que.id" 
                                      :value="choice" 
-                                     :checked="choice==oldResponse(que.id, false)"
+                                     :checked="choice===oldResponse(que.id, false)"
+                                     @change="(e) => {if (e.target.checked) feedback[que.id].response = choice}"
                                      ></f7-radio>
                                 <span style="font-size:xx-small">{{choice}}</span>
                              </f7-col>
@@ -90,7 +91,8 @@
                           <f7-row v-else :no-gap="true">
                              <f7-col :no-gap="true" width="100">
                              <f7-list-input type="text"
-                                            :value="oldResponse(que.id, ',')"
+                                :value="oldResponse(que.id, '')"
+                                @input="feedback[que.id].response=$event.target.value"
                                 >
                              </f7-list-input>
                            </f7-col>
@@ -267,7 +269,9 @@
             self.postWithPromise('/courses/feedback/questions')
                .then( function(json) {
                   self.questions = JSON.parse(json).data;
-                  // Populate feedback so we can bind values.
+ 
+                  // Populate feedback so we can bind values. This is bit
+                  // contrived.
                   Object.keys(self.questions).map(
                      function(k, i) {
                         Object.keys(self.questions[k]).map(
@@ -275,10 +279,8 @@
                               const qid = self.questions[k][i].id;
                               self.feedback[qid] = {"response": ""};
                            });
-                     });
-                  console.log("init feedback", self.feedback);
+                     })
                });
-
             let cid = course.course_id + '-' + course.semester + '-' + course.year;
             self.postWithPromise('/courses/feedback/get/'+btoa(cid))
                .then( function(json) {
