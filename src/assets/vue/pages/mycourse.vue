@@ -67,42 +67,45 @@
                </f7-nav-right>
             </f7-navbar>
 
-            <f7-block>
-               <f7-block-title small>{{thisCourse.name}}</f7-block-title>
-               <f7-block v-for="(catQues, key) in questions" :key="key">
-                  <f7-block-title>{{key}}</f7-block-title>
-                  <f7-list media-list>
-                     <f7-list-item v-for="(que,id) in catQues">
-                          <div style="font-size:small"
-                               slot="root-start"
-                               v-html="que.question">
-                          </div>
-                          <f7-row v-if="que.choices">
-                             <f7-col v-for="(choice,chid) in que.choices.split(',')"
-                                     :key="chid">
-                                <f7-radio :name="que.id" 
-                                     :value="choice" 
-                                     :checked="choice===oldResponse(que.id, false)"
-                                     @change="(e) => {if (e.target.checked) feedback[que.id].response = choice}"
-                                     ></f7-radio>
-                                <span style="font-size:xx-small">{{choice}}</span>
-                             </f7-col>
-                          </f7-row>
-                          <f7-row v-else :no-gap="true">
-                             <f7-col :no-gap="true" width="100">
-                             <f7-list-input type="text"
-                                :value="oldResponse(que.id, '')"
-                                @input="feedback[que.id].response=$event.target.value"
-                                >
-                             </f7-list-input>
-                           </f7-col>
-                          </f7-row>
-                     </f7-list-item>
-                  </f7-list>
-               </f7-block>
-               <f7-button fill raised @click="submitFeedback()" > Submit </f7-button>
-               </div>
-            </f7-block>
+            <f7-swiper pagination scrollbar navigation>
+               <template v-for="(catQues, key) in questions">
+                  <f7-swiper-slide v-for="(que,index) in catQues">
+                     <f7-card>
+                        <f7-card-header>
+                           {{catQues[0].category}}
+                           <span style="font-size:small;float:right">
+                              Question {{1+index}}/{{questions.length}}
+                           </span>
+                        </f7-card-header>
+                        <f7-card-content>
+                           <div style="font-size:small" v-html="que.question"></div>
+                           <f7-row v-if="que.choices">
+                              <f7-col v-for="(choice,chid) in que.choices.split(',')"
+                                      :key="chid">
+                                 <f7-radio :name="que.id" 
+                                      :value="choice" 
+                                      :checked="choice===oldResponse(que.id, false)"
+                                      @change="(e) => {if (e.target.checked) feedback[que.id].response = choice}"
+                                      ></f7-radio>
+                                 <span style="font-size:xx-small">{{choice}}</span>
+                              </f7-col>
+                           </f7-row>
+                           <f7-row v-else :no-gap="true">
+                              <f7-col :no-gap="true" width="100">
+                                 <f7-list-input type="text"
+                                                :value="oldResponse(que.id, '')"
+                                                @input="feedback[que.id].response=$event.target.value"
+                                                >
+                                 </f7-list-input>
+                              </f7-col>
+                           </f7-row>
+                           <f7-button fill raised @click="submitFeedback()" > Submit </f7-button>
+                        </f7-card-content>
+                     </f7-card>
+                  </f7-swiper-slide>
+               </template>
+            </f7-swiper>
+
          </f7-page>
       </f7-popup>
 
