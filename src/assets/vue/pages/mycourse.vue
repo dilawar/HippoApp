@@ -67,18 +67,15 @@
                </f7-nav-right>
             </f7-navbar>
 
-            <f7-swiper pagination scrollbar navigation>
+            <f7-swiper navigation>
                <template v-for="(catQues, key) in questions">
                   <f7-swiper-slide v-for="(que,index) in catQues">
-                     <f7-card>
+                     <f7-card style="padding:20px">
                         <f7-card-header>
                            {{catQues[0].category}}
-                           <span style="font-size:small;float:right">
-                              Question {{1+index}}/{{questions.length}}
-                           </span>
                         </f7-card-header>
                         <f7-card-content>
-                           <div style="font-size:small" v-html="que.question"></div>
+                           <div v-html="que.question"></div>
                            <f7-row v-if="que.choices">
                               <f7-col v-for="(choice,chid) in que.choices.split(',')"
                                       :key="chid">
@@ -99,13 +96,18 @@
                                  </f7-list-input>
                               </f7-col>
                            </f7-row>
-                           <f7-button fill raised @click="submitFeedback()" > Submit </f7-button>
                         </f7-card-content>
+                        <f7-card-footer>
+                           <f7-button raised 
+                                      fill 
+                                      @click="submitFeedback()"
+                                      style="padding:10px;"
+                                      >Submit</f7-button>
+                        </f7-card-footer>
                      </f7-card>
                   </f7-swiper-slide>
                </template>
             </f7-swiper>
-
          </f7-page>
       </f7-popup>
 
