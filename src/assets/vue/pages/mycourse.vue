@@ -61,53 +61,54 @@
       <!-- POPUP for giving feedback -->
       <f7-popup :opened="feedbackPopup" @popup:closed="feedbackPopup=false">
          <f7-page>
+
             <f7-navbar title="Feedback">
                <f7-nav-right>
                   <f7-link popup-close>Close</f7-link>
                </f7-nav-right>
             </f7-navbar>
 
-            <f7-swiper navigation>
-               <template v-for="(catQues, key) in questions">
-                  <f7-swiper-slide v-for="(que,index) in catQues">
-                     <f7-card style="padding:20px">
-                        <f7-card-header>
-                           {{catQues[0].category}}
-                        </f7-card-header>
-                        <f7-card-content>
-                           <div v-html="que.question"></div>
-                           <f7-row v-if="que.choices">
-                              <f7-col v-for="(choice,chid) in que.choices.split(',')"
-                                      :key="chid">
-                                 <f7-radio :name="que.id" 
-                                      :value="choice" 
-                                      :checked="choice===oldResponse(que.id, false)"
-                                      @change="(e) => {if (e.target.checked) feedback[que.id].response = choice}"
-                                      ></f7-radio>
-                                 <span style="font-size:xx-small">{{choice}}</span>
-                              </f7-col>
-                           </f7-row>
-                           <f7-row v-else :no-gap="true">
-                              <f7-col :no-gap="true" width="100">
-                                 <f7-list-input type="text"
-                                                :value="oldResponse(que.id, '')"
-                                                @input="feedback[que.id].response=$event.target.value"
-                                                >
-                                 </f7-list-input>
-                              </f7-col>
-                           </f7-row>
-                        </f7-card-content>
-                        <f7-card-footer>
-                           <f7-button raised 
-                                      fill 
-                                      @click="submitFeedback()"
-                                      style="padding:10px;"
-                                      >Submit</f7-button>
-                        </f7-card-footer>
-                     </f7-card>
-                  </f7-swiper-slide>
-               </template>
-            </f7-swiper>
+            <template v-for="(catQues, key) in questions">
+            <div v-for="(que,index) in catQues">
+               <f7-card>
+               <f7-card-content>
+                  <div style="font-size:x-small;float:right">{{catQues[0].category}}</div>
+                  <div v-html="que.question"></div>
+
+                  <!-- Course spesific question has one answer. -->
+                  <template v-for="i in (thisCourse.instructors.length)">
+                  <f7-row v-if="que.choices">
+                     <f7-col v-for="(choice,chid) in que.choices.split(',')"
+                             :key="chid">
+                        <f7-radio :name="que.id" 
+                             :value="choice" 
+                             :checked="choice===oldResponse(que.id, false)"
+                             @change="(e) => {if (e.target.checked) feedback[que.id].response = choice}"
+                             ></f7-radio>
+                        <span style="font-size:xx-small">{{choice}}</span>
+                     </f7-col>
+                  </f7-row>
+                  <f7-row v-else>
+                     <f7-col :no-gap="true">
+                        <f7-list-input type="text"
+                                       :value="oldResponse(que.id, '')"
+                                       placeholder="Type here"
+                                       @input="feedback[que.id].response=$event.target.value"
+                                       >
+                        </f7-list-input>
+                     </f7-col>
+                  </f7-row>
+                  </template>
+
+               </f7-card-content>
+               </f7-card>
+            </div>
+            </template>
+
+            <div style="padding:10px">
+               <f7-button raised fill @click="submitFeedback">Submit</f7-button>
+            </div>
+
          </f7-page>
       </f7-popup>
 
@@ -163,15 +164,15 @@
          const self = this;
          self.courses = self.loadStore('me.course');
          if(self.courses.length == 0)
-            setTimeout( () => self.fetchCourses(), 1000);
+            setTimeout(() => self.fetchCourses(), 1000);
 
          self.runningCourses = self.loadStore('courses.running');
          if(self.runningCourses.length == 0)
-            setTimeout( () => self.fetchRunningCourses(), 1000);
+            setTimeout(() => self.fetchRunningCourses(), 1000);
 
          self.metadata = self.loadStore('courses.metadata');
          if(self.metadata.length == 0)
-            setTimeout( () => self.fetchCoursesMetadata(), 1000);
+            setTimeout(() => self.fetchCoursesMetadata(), 1000);
 
       },
       methods: {
@@ -265,9 +266,11 @@
          },
          showFeedback: function(course)
          {
+            // NOTE: Disabling feedback from the app.
             const self = this;
-            const app = self.$f7;
+            return;
 
+            const app = self.$f7;
             console.log( "Giving feedback for ", course);
             self.thisCourse = course;
             app.preloader.show();
@@ -313,6 +316,13 @@
          submitFeedback: function( ) {
             const self = this;
             console.log( "data is ", self.feedback);
+            let cid = self.thisCourse.id;
+            self.postWithPromise('/courses/feedback/submit/'+btoa(cid))
+               .then( function(json) {
+                  console.log("Submitting  feedback for ",cid);
+                  app.preloader.hide();
+               });
+            setTimeout(() => app.preloader.hide(), 3000);
          }
       },
    }
