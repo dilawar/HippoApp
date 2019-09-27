@@ -35,7 +35,17 @@
                           title="My AWS" 
                           panel-close
                           >
-             <f7-icon slot="media" icon="fa fa-graduation-cap fa-2x"></f7-icon>
+                <f7-icon slot="media" icon="fa fa-graduation-cap fa-2x"></f7-icon>
+            </f7-list-item>
+
+            <f7-list-item v-if="profile.jc && profile.jc.length > 0"
+                          link="/myjc/" 
+                          target="_blank"
+                          view=".view-main"
+                          title="My Journal Clubs" 
+                          panel-close
+                          >
+                <f7-icon slot="media" icon="fa fa-graduation-cap fa-2x"></f7-icon>
             </f7-list-item>
 
             <f7-list-item link="/mycourse/" 
@@ -89,11 +99,13 @@
          self.username = self.$localStorage.get('HIPPO-LOGIN');
          self.alreadyLoggedIn = self.isUserAuthenticated();
          self.fetchProfile();
-         self.profile = JSON.parse(self.$localStorage.get('me.profile', '[]'));
+         self.profile = self.loadStore('me.profile');
       },
       methods : {
          refreshData: function( ) {
             const self = this;
+            self.fetchProfile();
+            self.profile = self.loadStore("me.profile");
             self.alreadyLoggedIn = self.isUserAuthenticated();
          },
       },
