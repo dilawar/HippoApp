@@ -8,9 +8,10 @@ create:
 
 init:
 	mkdir -p www
-	cordova platform add android@8.0.0  || echo "Failed to add android platform"
-	cordova platform add browser@6.0.0 || echo "Failed to add browser"
+	cordova platform add android  || echo "Failed to add android platform"
+	cordova platform add browser || echo "Failed to add browser"
 	cordova plugin add cordova-plugin-inappbrowser || echo "A"
+	cordova plugin add cordova-plugin-browsersync || echo "B"
 	cordova plugin add https://github.com/dilawar/cordova-plugin-background-geolocation --save 
 	cordova plugin add cordova-plugin-local-notification --save || echo "D"
 	npm install

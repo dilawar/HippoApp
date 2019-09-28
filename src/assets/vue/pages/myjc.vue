@@ -13,16 +13,41 @@
             <div slot="title"> {{jc.title}} </div>
             <f7-accordion-content style="background-color:Ivory">
               <span inset style="font-size:small" v-html="jc.description"></span>
-              <f7-button>DUM</f7-button>
+
+              <div style="background-color:white">
+              <f7-row>
+                <f7-col v-if="isPresenterMe(jc.presenter) && jc.acknowledged==='NO'">
+                  <f7-button small raise>Acknowledge</f7-button>
+                </f7-col>
+                <f7-col v-if="amIJCAdmin(jc.jc_id)">
+                  <f7-button small raise>Remove</f7-button>
+                </f7-col>
+                <f7-col v-if="isPresenterMe(jc.presenter) || amIJCAdmin(jc.jc_id)">
+                  <f7-button small raise @click="editJC(jc)">Edit</f7-button>
+                </f7-col>
+              </f7-row>
+              </div>
+
             </f7-accordion-content>
           </f7-list-item>
         </f7-list>
+
+        <!-- POPUP -->
+        <f7-popup :opened="popupOpened" @popup:closed="popupOpened = false">
+          <f7-page>
+            <f7-navbar :title="popupTitle">
+              <f7-nav-right>
+                <f7-link popup-close>Close</f7-link>
+              </f7-nav-right>
+            </f7-navbar>
+            <f7-block>
+
+            </f7-block>
+          </f7-page>
+        </f7-popup>
+
       </f7-block>
 
-      <f7-block>
-        <f7-list accodion-list no-hairlines>
-        </f7-list>
-      </f7-block>
 
    </f7-page>
 
@@ -36,6 +61,9 @@
        return {
          jcs: [],
          myjcs: [],
+         popupOpened: false,
+         popupTitle: 'Invalid title',
+         thisJC: null,
        };
      },
      mounted()
@@ -47,7 +75,7 @@
        fetchJC: function() 
        {
          const self = this;
-         self.myjcs = Object.keys(self.loadStore('me.profile').jcs);
+         self.myjcs = self.loadStore('me.profile').jcs;
          console.log( "My JCS ", self.myjcs);
          self.postWithPromise('/me/jc').then( function(json) {
            let res = JSON.parse(json);
@@ -71,8 +99,24 @@
        isMyJC: function(jc) {
          const self = this;
          if(self.myjcs)
-           return self.myjcs.includes(jc);
+           return Object.keys(self.myjcs).includes(jc);
          return false;
+       },
+       isPresenterMe: function(presenter) {
+         const self = this;
+         return presenter === self.whoAmI();
+       },
+       amIJCAdmin: function(jcid) {
+         const self = this;
+         if( ! Object.keys(self.myjcs).includes(jcid))
+           return false;
+         return self.myjcs[jcid]['subscription_type'] === 'ADMIN';
+       },
+       editJC: function(jc) {
+         const self = this;
+         self.thisJC = jc;
+         self.popupTitle = 'Editing JC entry';
+         self.popupOpened = true;
        },
      },
    }

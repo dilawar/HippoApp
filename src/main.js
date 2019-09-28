@@ -184,6 +184,10 @@ Vue.mixin({
             return true;
          return false;
       },
+      whoAmI: function() {
+         const self = this;
+         return self.$localStorage.get('HIPPO-LOGIN');
+      },
       formatKey: function(key) {
          return key.split('_').join(' ').toUpperCase();
       },
