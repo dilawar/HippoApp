@@ -17,10 +17,10 @@
               <div style="background-color:white">
               <f7-row>
                 <f7-col v-if="isPresenterMe(jc.presenter) && jc.acknowledged==='NO'">
-                  <f7-button small raise>Acknowledge</f7-button>
+                  <f7-button small raise @click="acknowledgeJC(jc.id)">Acknowledge</f7-button>
                 </f7-col>
                 <f7-col v-if="amIJCAdmin(jc.jc_id)">
-                  <f7-button small raise>Remove</f7-button>
+                  <f7-button small raise @click="removeJC(jc.id)">Remove</f7-button>
                 </f7-col>
                 <f7-col v-if="isPresenterMe(jc.presenter) || amIJCAdmin(jc.jc_id)">
                   <f7-button small raise @click="editJC(jc)">Edit</f7-button>
@@ -100,7 +100,6 @@
      mounted()
      {
        const self = this;
-       setTimeout(() => self.fetchJC(), 1000);
      },
      methods: {
        fetchJC: function() 
@@ -110,21 +109,13 @@
          console.log( "My JCS ", self.myjcs);
          self.postWithPromise('/me/jc').then( function(json) {
            let res = JSON.parse(json);
-           if(res.status == 'ok')
-           {
-             self.jcs = res.data;
-             self.saveStore('me.jcs', res.data);
-           }
-           else
-           {
-             console.log( 'Failed to fetch JC. Loading old data...');
-             self.jcs = self.loadStore('me.jcs');
-           }
-         });
+           self.jcs = res.data;
+           self.saveStore('me.jcs', res.data);
+           });
        },
        refreshJC: function(e, done) {
          const self = this;
-         setTimeout( () => self.fetchJC(), 1000);
+         setTimeout(() => self.fetchJC(), 500);
          done();
        },
        isMyJC: function(jc) {
@@ -153,11 +144,26 @@
          self.popupOpened = true;
        },
        submitJCChanges: function() {
-          const self = this;
-          self.popupOpened = false;
-          setTimeout(self.sendRequest('/jc/update', self.thisJC), 1000);
-          setTimeout(self.fetchJC(), 1000);
+         const self = this;
+         self.popupOpened = false;
+         self.promiseWithAuth('/jc/update', self.thisJC).then(
+           function(json) {
+             self.fetchJC();
+           });
        },
-     },
-   }
+       acknowledgeJC: function(jcid) {
+         const self = this;
+         setTimeout( () => {
+           self.sendRequest('/jc/acknowledge/' + jcid)
+           self.fetchJC();
+         }, 1000);
+       },
+       removeJC: function(jcid) {
+         const self = this;
+         setTimeout( () => {
+           self.sendRequest('/jc/remove/' + jcid)
+           self.fetchJC();
+         }, 1000);
+       },
+    }
 </script>
