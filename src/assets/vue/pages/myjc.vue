@@ -42,6 +42,33 @@
             </f7-navbar>
             <f7-block>
 
+               <f7-list media-list>
+                  <f7-list-input label="Title"
+                                 resizable
+                                 @input="thisJC.title = $event.target.value"
+                                 :value="thisJC.title"
+                                 >
+                  </f7-list-input>
+
+                  <f7-list-input label="Description"
+                                 resizable
+                                 :value="thisJC.description"
+                                 @input="thisJC.description = $event.target.value"
+                                 type="textarea"
+                                 >
+                  </f7-list-input>
+
+                  <f7-list-input label="Paper URL"
+                                 :value="thisJC.url"
+                                 @input="thisJC.url = $event.target.value"
+                                 >
+                  </f7-list-input>
+
+                  <f7-button small raised fill
+                             @click="submitJCChanges()"
+                     >Submit</f7-button>
+               </f7-list>
+
             </f7-block>
           </f7-page>
         </f7-popup>
@@ -63,7 +90,11 @@
          myjcs: [],
          popupOpened: false,
          popupTitle: 'Invalid title',
-         thisJC: null,
+         thisJC: { title: ''
+            , description: '' 
+            , url: ''
+            , paperurl: ''
+         },
        };
      },
      mounted()
@@ -108,6 +139,8 @@
        },
        amIJCAdmin: function(jcid) {
          const self = this;
+         if(! self.myjcs)
+            return false;
          if( ! Object.keys(self.myjcs).includes(jcid))
            return false;
          return self.myjcs[jcid]['subscription_type'] === 'ADMIN';
@@ -115,8 +148,15 @@
        editJC: function(jc) {
          const self = this;
          self.thisJC = jc;
+         console.log('This JC: ', self.thisJC);
          self.popupTitle = 'Editing JC entry';
          self.popupOpened = true;
+       },
+       submitJCChanges: function() {
+          const self = this;
+          self.popupOpened = false;
+          setTimeout(self.sendRequest('/jc/update', self.thisJC), 1000);
+          setTimeout(self.fetchJC(), 1000);
        },
      },
    }
