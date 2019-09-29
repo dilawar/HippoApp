@@ -2,12 +2,24 @@
    <f7-page page-content ptr @ptr:refresh="refreshJC">
       <f7-navbar title="Journal Clubs" back-link="Back"></f7-navbar>
 
+      <f7-block :v-if="isAdminOfAnyJC()">
+        <f7-block-title>Admin Interface</f7-block-title>
+        <f7-row>
+          <f7-col>
+            <f7-link >Manage Presentations</f7-link>
+          </f7-col>
+          <f7-col>
+            <f7-link >Manage Subscription</f7-link>
+          </f7-col>
+        </f7-row>
+      </f7-block>
+
       <f7-block>
+        <f7-block-title>Upcoming Journal Clubs</f7-block-title>
         <f7-list media-list no-hairlines accordion-list>
           <f7-list-item v-for="(jc, key) in jcs" :key="key" accordion-item>
             <div slot="footer">By {{jc.presenter}} |  Acknowleged: {{jc.acknowledged}} </div>
             <div slot="header"> 
-                <span v-if="isMyJC(jc.jc_id)" style="float:right">(subscribed)</span>
                 {{jc.jc_id}} | {{humanReadableDateTime(jc.date,jc.time)}} at {{jc.venue}}
             </div>
             <div slot="title"> {{jc.title}} </div>
@@ -27,7 +39,6 @@
                 </f7-col>
               </f7-row>
               </div>
-
             </f7-accordion-content>
           </f7-list-item>
         </f7-list>
@@ -41,7 +52,6 @@
               </f7-nav-right>
             </f7-navbar>
             <f7-block>
-
                <f7-list media-list>
                   <f7-list-input label="Title"
                                  resizable
@@ -68,14 +78,10 @@
                              @click="submitJCChanges()"
                      >Submit</f7-button>
                </f7-list>
-
             </f7-block>
           </f7-page>
         </f7-popup>
-
       </f7-block>
-
-
    </f7-page>
 
 </template>
@@ -100,6 +106,7 @@
      mounted()
      {
        const self = this;
+       self.fetchJC();
      },
      methods: {
        fetchJC: function() 
@@ -128,6 +135,15 @@
          const self = this;
          return presenter === self.whoAmI();
        },
+       isAdminOfAnyJC: function() {
+         const self = this;
+         Object.keys(self.myjcs).forEach( function(key) {
+           console.log('jc key', self.myjcs[key]);
+           if(self.myjcs[key]['subscription_type'] === 'ADMIN')
+             return true;
+         });
+         return false;
+       },
        amIJCAdmin: function(jcid) {
          const self = this;
          if(! self.myjcs)
@@ -149,7 +165,8 @@
          self.promiseWithAuth('/jc/update', self.thisJC).then(
            function(json) {
              self.fetchJC();
-           });
+           }
+         );
        },
        acknowledgeJC: function(jcid) {
          const self = this;
@@ -165,5 +182,6 @@
            self.fetchJC();
          }, 1000);
        },
-    }
+     },
+   }
 </script>
