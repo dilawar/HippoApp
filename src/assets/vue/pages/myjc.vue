@@ -195,11 +195,15 @@
               </f7-col>
             </f7-row>
 
+            <f7-block-title>
+              Subscription list for {{thisJCSubscrptions[0].jd_id}}
+            </f7-block-title>wa
+
             <f7-list no-hairlines>
               <f7-list-item v-for="(sub, key) in thisJCSubscrptions" :key="key">
-                <div slot="title"> {{sub.login}} </div>
-                <div slot="after">
-                  <f7-button 
+                <div slot="header"> {{sub.login}} </div>
+                <div slot="footer">
+                  <f7-button  small raised
                     @click="unsubscribe(sub.login, sub.jc_id)">
                     Unsubsribe
                   </f7-button>
