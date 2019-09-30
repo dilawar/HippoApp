@@ -91,7 +91,8 @@
           </f7-navbar>
 
           <f7-block>
-             <f7-list media-list no-hairlines>
+             <f7-list form no-hairlines>
+
                 <!-- list of USER jc for which she is admin -->
                 <f7-list-input label="Your JC"
                                type="select"
@@ -120,6 +121,18 @@
                                :required="true"
                                >
                 </f7-list-input>
+                -->
+
+                <f7-list-item>
+                  <date-picker lang="en" 
+                               placeholder="Date"
+                               value-type="format"
+                               type="date"
+                               format="YYYY-MM-DD" 
+                               v-model="thisJC.date"
+                               >
+                  </date-picker>
+                </f7-list-item>
 
                 <f7-list-input label="Time"
                                type="time"
@@ -127,28 +140,19 @@
                                @input="thisJC.time = $event.target.value"
                                >
                 </f7-list-input>
-                -->
-                <f7-list-item>
-                  <date-picker lang="en" 
-                               placeholder="Date"
-                               type="date"
-                               format="YYYY-MM-DD" 
-                               :value="thisJC.date"
-                               v-model="thisJC.date"
-                               >
-                  </date-picker>
-                </f7-list-item>
 
+                <!--
                 <f7-list-item>
-                  <date-picker lang="en" 
-                               placeholder="Time"
-                               type="time"
-                               format="HH:mm A" 
-                               v-model="thisJC.time"
-                               :time-select-options="{step: '00:15'}"
-                               >
-                  </date-picker>
+                   <date-picker v-model="thisJC.time" 
+                                v-bind:value="thisJC.time"
+                                lang="en"
+                                placeholder="Time"
+                                :minute-step="15"
+                                format="HH:mm A"
+                                type="time">
+                   </date-picker>
                 </f7-list-item>
+                -->
 
                 <f7-list-input label="Venue" 
                                type="select"
@@ -218,6 +222,7 @@
          const self = this;
          self.myjcs = self.loadStore('me.profile').jcs;
          console.log( "My JCS ", self.myjcs);
+
          self.postWithPromise('/me/jc').then( function(json) {
            let res = JSON.parse(json);
            self.jcs = res.data;
@@ -237,26 +242,21 @@
          self.thisJC.jc_id = jcid;
 
          self.postWithPromise('/jc/info/'+jcid)
-           .then( function(json) {
+           .then(function(json) {
              let res = JSON.parse(json);
              self.thisJC.info = res.data;
              // Add time.
              self.thisJC.time = self.thisJC.info.time;
              self.thisJC.venue = self.thisJC.info.venue;
-           });
 
-         if(! self.subscriptions.hasOwnProperty(jcid)) 
-         {
-           self.postWithPromise('/jc/subscriptions/'+jcid)
-             .then( function(json) {
-               let res = JSON.parse(json);
-               self.subscriptions[jcid] = res.data;
-             });
-         }
-         // self.thisJCSubscrptionsListStr = JSON.stringify(Object.keys(self.subscriptions)
-         //   .forEach( key => { return self.subscriptions[key].login; })
-         // );
-         // console.log('subscriptions', self.thisJCSubscrptionsListStr);
+             if(! self.subscriptions.hasOwnProperty(jcid)) {
+               self.postWithPromise('/jc/subscriptions/'+jcid)
+                 .then( function(json) {
+                   let res = JSON.parse(json);
+                   self.subscriptions[jcid] = res.data;
+                 });
+             }
+           });
        },
        refreshJC: function(e, done) {
          const self = this;
@@ -331,12 +331,12 @@
        },
        assignPresenter: function() {
          const self = this;
-         console.log('Submitting', self.thisJC);
-         //self.promiseWithAuth('/jc/assign', self.thisJC).then(
-         //  function(json) {
-         //    self.fetchJC();
-         //  });
-         //self.jcAdminPopup = false;
+         // console.log('Submitting', self.thisJC);
+         self.promiseWithAuth('/jc/assign', self.thisJC)
+          .then( function(json) {
+             self.fetchJC();
+          });
+           self.jcAdminPopup = false;
        },
      },
    }
