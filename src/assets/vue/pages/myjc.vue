@@ -3,18 +3,16 @@
       <f7-navbar title="Journal Clubs" back-link="Back"></f7-navbar>
 
       <f7-block :v-if="isAdminOfAnyJC()">
-        <f7-block-title>Admin Interface</f7-block-title>
+        <!-- <f7-block-title>Admin Interface</f7-block-title> -->
         <f7-row>
           <f7-col>
-            <f7-link >Manage Presentations</f7-link>
+            <f7-link @click="managePresentation()">Manage Presentations</f7-link>
           </f7-col>
           <f7-col>
-            <f7-link >Manage Subscription</f7-link>
+            <f7-link @click="manageSubscription()">Manage Subscription</f7-link>
           </f7-col>
         </f7-row>
-      </f7-block>
 
-      <f7-block>
         <f7-block-title>Upcoming Journal Clubs</f7-block-title>
         <f7-list media-list no-hairlines accordion-list>
           <f7-list-item v-for="(jc, key) in jcs" :key="key" accordion-item>
@@ -42,46 +40,138 @@
             </f7-accordion-content>
           </f7-list-item>
         </f7-list>
-
-        <!-- POPUP -->
-        <f7-popup :opened="popupOpened" @popup:closed="popupOpened = false">
-          <f7-page>
-            <f7-navbar :title="popupTitle">
-              <f7-nav-right>
-                <f7-link popup-close>Close</f7-link>
-              </f7-nav-right>
-            </f7-navbar>
-            <f7-block>
-               <f7-list media-list>
-                  <f7-list-input label="Title"
-                                 resizable
-                                 @input="thisJC.title = $event.target.value"
-                                 :value="thisJC.title"
-                                 >
-                  </f7-list-input>
-
-                  <f7-list-input label="Description"
-                                 resizable
-                                 :value="thisJC.description"
-                                 @input="thisJC.description = $event.target.value"
-                                 type="textarea"
-                                 >
-                  </f7-list-input>
-
-                  <f7-list-input label="Paper URL"
-                                 :value="thisJC.url"
-                                 @input="thisJC.url = $event.target.value"
-                                 >
-                  </f7-list-input>
-
-                  <f7-button small raised fill
-                             @click="submitJCChanges()"
-                     >Submit</f7-button>
-               </f7-list>
-            </f7-block>
-          </f7-page>
-        </f7-popup>
       </f7-block>
+
+      <!-- POPUP -->
+      <f7-popup :opened="popupOpened" @popup:closed="popupOpened = false">
+        <f7-page>
+          <f7-navbar :title="popupTitle">
+            <f7-nav-right>
+              <f7-link popup-close>Close</f7-link>
+            </f7-nav-right>
+          </f7-navbar>
+          <f7-block>
+             <f7-list media-list>
+                <f7-list-input label="Title"
+                               resizable
+                               @input="thisJC.title = $event.target.value"
+                               :value="thisJC.title"
+                               >
+                </f7-list-input>
+
+                <f7-list-input label="Description"
+                               resizable
+                               :value="thisJC.description"
+                               @input="thisJC.description = $event.target.value"
+                               type="textarea"
+                               >
+                </f7-list-input>
+
+                <f7-list-input label="Paper URL"
+                               :value="thisJC.url"
+                               @input="thisJC.url = $event.target.value"
+                               >
+                </f7-list-input>
+
+                <f7-button small raised fill
+                           @click="submitJCChanges()"
+                   >Submit</f7-button>
+             </f7-list>
+          </f7-block>
+        </f7-page>
+      </f7-popup>
+
+      <!-- ADMIN POPUP -->
+      <f7-popup :opened="jcAdminPopup" @popup:closed="jcAdminPopup=false">
+        <f7-page>
+          <f7-navbar :title="popupTitle">
+            <f7-nav-right>
+              <f7-link popup-close>Close</f7-link>
+            </f7-nav-right>
+          </f7-navbar>
+
+          <f7-block>
+             <f7-list media-list no-hairlines>
+                <!-- list of USER jc for which she is admin -->
+                <f7-list-input label="Your JC"
+                               type="select"
+                               @input="fetchJCInfo($event.target.value)"
+                               >
+                     <option value="None">Please choose ... </option>
+                     <option v-for="(jcid, key) in myJCWithAdminRights()"
+                             :value="jcid"
+                             >{{jcid}}
+                     </option>
+                </f7-list-input>
+
+                <f7-list-input label="Presenter"
+                               :value="thisJC.presenter"
+                               @input="thisJC.presenter = $event.target.value"
+                               :required="true"
+                               >
+                </f7-list-input>
+
+                <!--
+                <f7-list-input label="Date"
+                               type="date" 
+                               placeholder="Select date" 
+                               :value="thisJC.date"
+                               @input="thisJC.date = $event.target.value"
+                               :required="true"
+                               >
+                </f7-list-input>
+
+                <f7-list-input label="Time"
+                               type="time"
+                               :value="thisJC.time"
+                               @input="thisJC.time = $event.target.value"
+                               >
+                </f7-list-input>
+                -->
+                <f7-list-item>
+                  <date-picker lang="en" 
+                               placeholder="Date"
+                               type="date"
+                               format="YYYY-MM-DD" 
+                               :value="thisJC.date"
+                               v-model="thisJC.date"
+                               >
+                  </date-picker>
+                </f7-list-item>
+
+                <f7-list-item>
+                  <date-picker lang="en" 
+                               placeholder="Time"
+                               type="time"
+                               format="HH:mm A" 
+                               v-model="thisJC.time"
+                               :time-select-options="{step: '00:15'}"
+                               >
+                  </date-picker>
+                </f7-list-item>
+
+                <f7-list-input label="Venue" 
+                               type="select"
+                               @input="thisJC.venue = $event.target.value"
+                               >
+                  <option :value="thisJC.venue" selected> 
+                    {{thisJC.info.venue}}
+                  </option>
+                  <option v-for="(venue, id) in venues" 
+                          :key="id" :value="venue.id"
+                          >
+                    {{venue.id}}
+                  </option>
+                </f7-list-input>
+
+                <f7-button small raised @click="assignPresenter()">
+                  Assign
+                </f7-button>
+             </f7-list>
+          </f7-block>
+
+        </f7-page>
+      </f7-popup>
    </f7-page>
 
 </template>
@@ -93,19 +183,33 @@
        const self = this;
        return {
          jcs: [],
+         venues: {},
          myjcs: [],
          popupOpened: false,
+         jcAdminPopup: false,
          popupTitle: 'Invalid title',
+         subscriptions: {},
+         thisJCSubscrptionsListStr: "",
          thisJC: { title: ''
-            , description: '' 
-            , url: ''
-            , paperurl: ''
+           , jc_id: ''
+           , presenter: ''
+           , description: '' 
+           , url: ''
+           , paperurl: ''
+           , date: ''
+           , time: ''
+           , venue: ''
+           , info: {venue: '', time:''}  // Store default parameters and other info.
          },
        };
      },
      mounted()
      {
        const self = this;
+       if(! self.venues)
+         self.fetchVenues();
+       else
+         self.venues = self.loadStore('venues');
        self.fetchJC();
      },
      methods: {
@@ -119,6 +223,40 @@
            self.jcs = res.data;
            self.saveStore('me.jcs', res.data);
            });
+       },
+       myJCWithAdminRights: function() {
+         const self = this;
+         var adminJCS = Object.keys(self.myjcs).filter( 
+           x => self.myjcs[x]['subscription_type'] === 'ADMIN'
+         );
+         return adminJCS;
+       },
+       fetchJCInfo: function(jcid)
+       {
+         const self = this;
+         self.thisJC.jc_id = jcid;
+
+         self.postWithPromise('/jc/info/'+jcid)
+           .then( function(json) {
+             let res = JSON.parse(json);
+             self.thisJC.info = res.data;
+             // Add time.
+             self.thisJC.time = self.thisJC.info.time;
+             self.thisJC.venue = self.thisJC.info.venue;
+           });
+
+         if(! self.subscriptions.hasOwnProperty(jcid)) 
+         {
+           self.postWithPromise('/jc/subscriptions/'+jcid)
+             .then( function(json) {
+               let res = JSON.parse(json);
+               self.subscriptions[jcid] = res.data;
+             });
+         }
+         // self.thisJCSubscrptionsListStr = JSON.stringify(Object.keys(self.subscriptions)
+         //   .forEach( key => { return self.subscriptions[key].login; })
+         // );
+         // console.log('subscriptions', self.thisJCSubscrptionsListStr);
        },
        refreshJC: function(e, done) {
          const self = this;
@@ -138,7 +276,6 @@
        isAdminOfAnyJC: function() {
          const self = this;
          Object.keys(self.myjcs).forEach( function(key) {
-           console.log('jc key', self.myjcs[key]);
            if(self.myjcs[key]['subscription_type'] === 'ADMIN')
              return true;
          });
@@ -181,6 +318,25 @@
            self.sendRequest('/jc/remove/' + jcid)
            self.fetchJC();
          }, 1000);
+       },
+       managePresentation: function() {
+         const self = this;
+         self.popupTitle = "Assign presenter";
+         self.jcAdminPopup = true;
+       },
+       manageSubscription: function() {
+         const self = this;
+         self.popupTitle = "Manage subscription";
+         self.jcAdminPopup = true;
+       },
+       assignPresenter: function() {
+         const self = this;
+         console.log('Submitting', self.thisJC);
+         //self.promiseWithAuth('/jc/assign', self.thisJC).then(
+         //  function(json) {
+         //    self.fetchJC();
+         //  });
+         //self.jcAdminPopup = false;
        },
      },
    }
