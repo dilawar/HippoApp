@@ -81,8 +81,8 @@
         </f7-page>
       </f7-popup>
 
-      <!-- ADMIN POPUP -->
-      <f7-popup :opened="jcAdminPopup" @popup:closed="jcAdminPopup=false">
+      <!-- ADMIN MANAGE PRESENTATIONS POPUP -->
+      <f7-popup :opened="jcAdminPresentationPopup" @popup:closed="jcAdminPresentationPopup=false">
         <f7-page>
           <f7-navbar :title="popupTitle">
             <f7-nav-right>
@@ -176,6 +176,40 @@
 
         </f7-page>
       </f7-popup>
+
+
+      <!-- ADMIN MANAGE SUBSCRIPTION POPUP -->
+      <f7-popup :opened="jcAdminSubscriptionPopup" @popup:closed="jcAdminSubscriptionPopup=false">
+        <f7-page>
+
+          <f7-navbar :title="popupTitle">
+            <f7-nav-right>
+              <f7-link popup-close>Close</f7-link>
+            </f7-nav-right>
+          </f7-navbar>
+
+          <f7-block>
+            <f7-row>
+              <f7-col v-for="(jc, id) in myjcs" :key="id">
+                <f7-link @click="fetchSubscriptions(jc.jc_id)"> {{jc.jc_id}} </f7-link>
+              </f7-col>
+            </f7-row>
+
+            <f7-list no-hairlines>
+              <f7-list-item v-for="(sub, key) in thisJCSubscrptions" :key="key">
+                <div slot="title"> {{sub.login}} </div>
+                <div slot="after">
+                  <f7-button 
+                    @click="unsubscribe(sub.login, sub.jc_id)">
+                    Unsubsribe
+                  </f7-button>
+                </div>
+              </f7-list-item>
+            </f7-list>
+          </f7-block>
+        </f7-page>
+      </f7-popup>
+
    </f7-page>
 
 </template>
@@ -190,10 +224,11 @@
          venues: {},
          myjcs: [],
          popupOpened: false,
-         jcAdminPopup: false,
+         jcAdminPresentationPopup: false,
+         jcAdminSubscriptionPopup: false,
          popupTitle: 'Invalid title',
          subscriptions: {},
-         thisJCSubscrptionsListStr: "",
+         thisJCSubscrptions: [],
          thisJC: { title: ''
            , jc_id: ''
            , presenter: ''
@@ -236,6 +271,16 @@
          );
          return adminJCS;
        },
+       fetchSubscriptions: function(jcid) 
+       {
+         const self = this;
+         self.postWithPromise('/jc/subscriptions/'+jcid)
+           .then( function(json) {
+             let res = JSON.parse(json);
+             self.thisJCSubscrptions = res.data;
+             self.subscriptions[jcid] = res.data;
+           });
+       },
        fetchJCInfo: function(jcid)
        {
          const self = this;
@@ -249,13 +294,8 @@
              self.thisJC.time = self.thisJC.info.time;
              self.thisJC.venue = self.thisJC.info.venue;
 
-             if(! self.subscriptions.hasOwnProperty(jcid)) {
-               self.postWithPromise('/jc/subscriptions/'+jcid)
-                 .then( function(json) {
-                   let res = JSON.parse(json);
-                   self.subscriptions[jcid] = res.data;
-                 });
-             }
+             if(! self.subscriptions.hasOwnProperty(jcid))
+               self.fetchSubscriptions(jcid);
            });
        },
        refreshJC: function(e, done) {
@@ -322,12 +362,12 @@
        managePresentation: function() {
          const self = this;
          self.popupTitle = "Assign presenter";
-         self.jcAdminPopup = true;
+         self.jcAdminPresentationPopup = true;
        },
        manageSubscription: function() {
          const self = this;
          self.popupTitle = "Manage subscription";
-         self.jcAdminPopup = true;
+         self.jcAdminSubscriptionPopup = true;
        },
        assignPresenter: function() {
          const self = this;
@@ -336,7 +376,7 @@
           .then( function(json) {
              self.fetchJC();
           });
-           self.jcAdminPopup = false;
+           self.jcAdminPresentationPopup = false;
        },
      },
    }
