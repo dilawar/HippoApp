@@ -2,7 +2,7 @@
    <f7-page page-content ptr @ptr:refresh="refreshJC">
       <f7-navbar title="Journal Clubs" back-link="Back"></f7-navbar>
 
-      <f7-block :v-if="isAdminOfAnyJC()">
+      <f7-block v-if="isAdminOfAnyJC()">
         <!-- <f7-block-title>Admin Interface</f7-block-title> -->
         <f7-row>
           <f7-col>
@@ -12,8 +12,10 @@
             <f7-link @click="manageSubscription()">Manage Subscription</f7-link>
           </f7-col>
         </f7-row>
+      </f7-block>
 
-        <f7-block-title>Upcoming JC Presentations</f7-block-title>
+      <f7-block-title>Upcoming JC Presentations</f7-block-title>
+      <f7-block>
         <f7-list media-list no-hairlines accordion-list>
           <f7-list-item v-for="(jc, key) in jcs" :key="key" accordion-item>
             <div slot="footer">By {{jc.presenter}} |  Acknowleged: {{jc.acknowledged}} </div>
@@ -360,6 +362,7 @@
        isAdminOfAnyJC: function() {
          const self = this;
          Object.keys(self.myjcs).forEach( function(key) {
+           console.log('Subs type ', self.myjcs[key]['subscription_type']);
            if(self.myjcs[key]['subscription_type'] === 'ADMIN')
              return true;
          });
