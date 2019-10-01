@@ -13,7 +13,7 @@
           </f7-col>
         </f7-row>
 
-        <f7-block-title>Upcoming Journal Clubs</f7-block-title>
+        <f7-block-title>Upcoming JC Presentations</f7-block-title>
         <f7-list media-list no-hairlines accordion-list>
           <f7-list-item v-for="(jc, key) in jcs" :key="key" accordion-item>
             <div slot="footer">By {{jc.presenter}} |  Acknowleged: {{jc.acknowledged}} </div>
