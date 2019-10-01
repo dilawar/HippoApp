@@ -100,6 +100,7 @@
                                >
                      <option value="None">Please choose ... </option>
                      <option v-for="(jcid, key) in myJCWithAdminRights()"
+                             :selected="(jcid==thisJC.jc_id)?true:false"
                              :value="jcid"
                              >{{jcid}}
                      </option>
@@ -188,27 +189,25 @@
             </f7-nav-right>
           </f7-navbar>
 
-          <f7-list>
-            <f7-list-item>
-              <f7-col v-for="(jc, id) in myjcs" :key="id">
-                <f7-button small 
-                           :fill="(jc.jc_id === thisJC.jc_id)?true:false" 
-                           raised 
-                           @click="fetchSubscriptions(jc.jc_id)"
-                           >
-                           {{jc.jc_id}}
-                </f7-button>
-              </f7-col>
-            </f7-list-item>
-          </f7-list>
+          <f7-row>
+            <f7-col v-for="(jc, id) in myjcs" :key="id">
+              <f7-button small 
+                         :fill="(jc.jc_id === thisJC.jc_id)?true:false" 
+                         raised 
+                         @click="fetchSubscriptions(jc.jc_id)"
+                         >
+                         {{jc.jc_id}}
+              </f7-button>
+            </f7-col>
+          </f7-row>
 
-          <f7-block v-if="thisJC.jc_id">
-
-            <f7-block-title>Selected JC: {{thisJC.jc_id}}. Total {{thisJCSubscrptions.length}}.
-            </f7-block-title>
-
-            <f7-list>
-              <f7-list-item>
+          <!-- SUBSCRIPTION -->
+          <f7-block-title v-if="thisJC.jc_id">
+            Total subscription found for {{thisJC.jc_id}} {{thisJCSubscrptions.length}}.
+          </f7-block-title>
+          <f7-block strong tabs v-if="thisJC.jc_id" no-hairlines>
+            <f7-list no-hairlines>
+              <f7-list-item style="background-color:lightyellow">
                   <f7-col>
                     <f7-list-input type="text"
                                    placeholder="Login"
@@ -230,18 +229,24 @@
                 <div slot="title"> {{sub.login}} </div>
                 <f7-swipeout-actions right>
                   <f7-swipeout-button delete
-                                      confirm-text="Unnsubscribe him/her from JC?"
-                                      :data-confirm-title="'Unsubscribe from '+thisJC.jc_id"
-                                      >
-                                      Unsubscribe
+                          :confirm-text="`${sub.login} from ${thisJC.jc_id}?`"
+                          confirm-title="Unsubscribe?"
+                          >
+                          Unsubscribe
                   </f7-swipeout-button>
                 </f7-swipeout-actions>
                 <f7-swipeout-actions left>
-                  <f7-swipeout-button>Assign</f7-swipeout-button>
+                  <f7-swipeout-button
+                    @click="assignPresentationDateSwiper(sub.login, thisJC.jc_id)"
+                    >
+                    Assign presentation date
+                  </f7-swipeout-button>
                 </f7-swipeout-actions>
               </f7-list-item>
             </f7-list>
-
+          </f7-block>
+          <f7-block v-else>
+            Please select a JC.
           </f7-block>
 
         </f7-page>
@@ -426,10 +431,31 @@
        },
        subscribeToJC: function(login, jcid) {
          const self = this;
+         const app = self.$f7;
          self.promiseWithAuth('/jc/subscribe/'+jcid+'/'+login)
           .then( function(json) {
-             self.fetchSubscriptions(jcid);
+            let res = JSON.parse(json).data;
+            if(res.success)
+            {
+              app.alert(res.msg, "Success", null);
+              self.fetchSubscriptions(jcid);
+            }
+            else
+              app.alert(res.msg, "Failed", null);
           });
+       },
+       assignPresentationDateSwiper: function(login, jcid) 
+       {
+         const self = this;
+         console.log("Assigning " + login + " to " + jcid );
+         self.jcAdminSubscriptionPopup = false;
+         self.popupTitle = "Assigning " + login + " a presentation date";
+         self.fetchJCInfo(jcid);
+         setTimeout( () => {
+           self.thisJC.presenter = login;
+           self.thisJC.jc_id = jcid;
+           self.jcAdminPresentationPopup = true;
+         }, 500);
        },
      },
    }
