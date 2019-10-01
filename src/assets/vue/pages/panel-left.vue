@@ -28,6 +28,15 @@
                <f7-icon slot="media" icon="fa fa-user fa-2x"></f7-icon>
             </f7-list-item>
 
+            <f7-list-item link="/mybooking/" 
+                          target="_blank"
+                          view=".view-main"
+                          title="My Bookings" 
+                          panel-close
+                          >
+               <f7-icon slot="media" icon="fa fa-edit fa-2x"></f7-icon>
+            </f7-list-item>
+
             <f7-list-item v-if="profile.eligible_for_aws"
                           link="/myaws/" 
                           target="_blank"
@@ -35,7 +44,16 @@
                           title="My AWS" 
                           panel-close
                           >
-             <f7-icon slot="media" icon="fa fa-graduation-cap fa-2x"></f7-icon>
+                <f7-icon slot="media" icon="fa fa-graduation-cap fa-2x"></f7-icon>
+            </f7-list-item>
+
+            <f7-list-item link="/myjc/" 
+                          target="_blank"
+                          view=".view-main"
+                          title="Journal Clubs" 
+                          panel-close
+                          >
+                <f7-icon slot="media" icon="fa fa-users fa-2x"></f7-icon>
             </f7-list-item>
 
             <f7-list-item link="/mycourse/" 
@@ -47,14 +65,6 @@
              <f7-icon slot="media" icon="fa fa-book fa-2x"></f7-icon>
             </f7-list-item>
 
-            <f7-list-item link="/mybooking/" 
-                          target="_blank"
-                          view=".view-main"
-                          title="My Bookings" 
-                          panel-close
-                          >
-               <f7-icon slot="media" icon="fa fa-edit fa-2x"></f7-icon>
-            </f7-list-item>
 
             <f7-list-item link="/myinventory/" 
                           target="_blank"
@@ -89,11 +99,13 @@
          self.username = self.$localStorage.get('HIPPO-LOGIN');
          self.alreadyLoggedIn = self.isUserAuthenticated();
          self.fetchProfile();
-         self.profile = JSON.parse(self.$localStorage.get('me.profile', '[]'));
+         self.profile = self.loadStore('me.profile');
       },
       methods : {
          refreshData: function( ) {
             const self = this;
+            self.fetchProfile();
+            self.profile = self.loadStore("me.profile");
             self.alreadyLoggedIn = self.isUserAuthenticated();
          },
       },

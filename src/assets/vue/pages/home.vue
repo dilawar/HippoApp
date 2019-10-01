@@ -257,16 +257,17 @@
                ).then( function(json) {
                   var res = JSON.parse(json);
                   if( res.status =='ok' && res.data.apikey != '')
-                  {
-                     self.$localStorage.set('HIPPO-API-KEY', res.data.apikey);
-                     self.$localStorage.set('GOOGLE-MAP-API-KEY', res.data.gmapapikey);
-                     self.$localStorage.set('HIPPO-LOGIN', self.username);
-                     self.isUserAuthenticated = true;
-                     self.$f7router.refreshPage();
-                  }
-                  else
-                     app.dialog.alert("Failed to login. Try again.", "Error");
-                  app.dialog.close();
+                 {
+                   self.$localStorage.set('HIPPO-API-KEY', res.data.apikey);
+                   self.$localStorage.set('GOOGLE-MAP-API-KEY', res.data.gmapapikey);
+                   self.$localStorage.set('HIPPO-LOGIN', self.username);
+                   self.isUserAuthenticated = true;
+                   self.fetchProfile();
+                   self.$f7router.refreshPage();
+                 }
+                 else
+                   app.dialog.alert("Failed to login. Try again.", "Error");
+                 app.dialog.close();
                });
             setTimeout(() => app.dialog.close(), 2000);
          },
@@ -279,7 +280,6 @@
             self.$f7router.refreshPage();
          },
          reinit: function() {
-            console.log( "Calling reinit on home" );
             const self = this;
             self.isUserAuthenticated();
             console.log( "User logged in " + self.alreadyLoggedIn );

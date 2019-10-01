@@ -5,6 +5,7 @@ import NotificationPage from './assets/vue/pages/notifications.vue';
 import AccomodationPage from './assets/vue/pages/accomodation.vue';
 import CanteenPage from './assets/vue/pages/canteen.vue';
 import AWSPage from './assets/vue/pages/myaws.vue';
+import JCPage from './assets/vue/pages/myjc.vue';
 import CoursePage from './assets/vue/pages/mycourse.vue';
 import PanelLeftPage from './assets/vue/pages/panel-left.vue';
 import PanelTimelinePage from './assets/vue/pages/panel-right-timeline.vue';
@@ -51,6 +52,10 @@ export default [
    {
       path: '/myaws/',
       component: AWSPage
+   },
+   {
+      path: '/myjc/',
+      component: JCPage
    },
    {
       path: '/mycourse/',
