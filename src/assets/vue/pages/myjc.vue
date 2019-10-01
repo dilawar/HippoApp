@@ -2,21 +2,21 @@
    <f7-page page-content ptr @ptr:refresh="refreshJC">
       <f7-navbar title="Journal Clubs" back-link="Back"></f7-navbar>
 
-      <f7-block v-if="isAdminOfAnyJC()">
-        <!-- <f7-block-title>Admin Interface</f7-block-title> -->
+      <f7-block v-if="isAdminOfAnyJC()"
+                style="margin:1pt; padding:10pt; align:center"
+                >
         <f7-row>
           <f7-col>
-            <f7-link @click="managePresentation()">Manage Presentations</f7-link>
+            <f7-link @click="managePresentation()">Assign Presentations</f7-link>
           </f7-col>
           <f7-col>
-            <f7-link @click="manageSubscription()">Manage Subscription</f7-link>
+            <f7-link @click="manageSubscription()">Manage Subscriptions</f7-link>
           </f7-col>
         </f7-row>
       </f7-block>
 
-      <f7-block-title>Upcoming JC Presentations</f7-block-title>
       <f7-block>
-        <f7-list media-list no-hairlines accordion-list>
+        <f7-list  accordion-list>
           <f7-list-item v-for="(jc, key) in jcs" :key="key" accordion-item>
             <div slot="footer">By {{jc.presenter}} |  Acknowleged: {{jc.acknowledged}} </div>
             <div slot="header"> 
@@ -29,17 +29,19 @@
               <div style="background-color:white">
               <f7-row>
                 <f7-col v-if="isPresenterMe(jc.presenter) && jc.acknowledged==='NO'">
-                  <f7-button small raise @click="acknowledgeJC(jc.id)">Acknowledge</f7-button>
+                  <f7-button small @click="acknowledgeJC(jc.id)">Acknowledge</f7-button>
                 </f7-col>
                 <f7-col v-if="amIJCAdmin(jc.jc_id)">
-                  <f7-button small raise @click="removeJC(jc.id)">Remove</f7-button>
+                  <f7-button small color="red" @click="removeJC(jc.id)">Remove</f7-button>
                 </f7-col>
                 <f7-col v-if="isPresenterMe(jc.presenter) || amIJCAdmin(jc.jc_id)">
-                  <f7-button small raise @click="editJC(jc)">Edit</f7-button>
+                  <f7-button small @click="editJC(jc)">Edit</f7-button>
                 </f7-col>
               </f7-row>
               </div>
             </f7-accordion-content>
+          </f7-list-item>
+          <f7-list-item>
           </f7-list-item>
         </f7-list>
       </f7-block>
@@ -361,12 +363,13 @@
        },
        isAdminOfAnyJC: function() {
          const self = this;
+         let isAdmin = false;
          Object.keys(self.myjcs).forEach( function(key) {
            console.log('Subs type ', self.myjcs[key]['subscription_type']);
            if(self.myjcs[key]['subscription_type'] === 'ADMIN')
-             return true;
+             isAdmin = true;
          });
-         return false;
+         return isAdmin;
        },
        amIJCAdmin: function(jcid) {
          const self = this;
@@ -401,10 +404,10 @@
        },
        removeJC: function(jcid) {
          const self = this;
-         setTimeout( () => {
-           self.sendRequest('/jc/remove/' + jcid)
-           self.fetchJC();
-         }, 1000);
+         self.promiseWithAuth('/jcadmin/remove/' + jcid)
+           .then( function(json) {
+             self.fetchJC();
+           });
        },
        managePresentation: function() {
          const self = this;
@@ -413,13 +416,13 @@
        },
        manageSubscription: function() {
          const self = this;
-         self.popupTitle = "Manage subscription";
+         self.popupTitle = "Manage subscriptions";
          self.jcAdminSubscriptionPopup = true;
        },
        assignPresenter: function() {
          const self = this;
          // console.log('Submitting', self.thisJC);
-         self.promiseWithAuth('/jc/assign', self.thisJC)
+         self.promiseWithAuth('/jcadmin/assign', self.thisJC)
           .then( function(json) {
              self.fetchJC();
           });
@@ -427,7 +430,7 @@
        },
        unsubscribeFromJC: function(login, jcid) {
          const self = this;
-         self.promiseWithAuth('/jc/unsubscribe/'+jcid+'/'+login)
+         self.promiseWithAuth('/jcadmin/unsubscribe/'+jcid+'/'+login)
           .then( function(json) {
              self.fetchSubscriptions(jcid);
           });
@@ -435,7 +438,7 @@
        subscribeToJC: function(login, jcid) {
          const self = this;
          const app = self.$f7;
-         self.promiseWithAuth('/jc/subscribe/'+jcid+'/'+login)
+         self.promiseWithAuth('/jcadmin/subscribe/'+jcid+'/'+login)
           .then( function(json) {
             let res = JSON.parse(json).data;
             if(res.success)
