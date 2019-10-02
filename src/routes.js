@@ -29,6 +29,9 @@ import Vuex from './assets/vue/pages/vuex.vue';
 import InventoryPage from './assets/vue/pages/inventory.vue';
 import NoticeBoards from './assets/vue/pages/noticeboards.vue';
 
+// BMV ADMIN
+import BmvBookingRequests from './assets/vue/pages/bmv_booking_requests.vue';
+
 export default [
    {
       path: '/',
@@ -45,6 +48,10 @@ export default [
    {
       path: '/adminpanel/',
       component: PanelRightPage
+   },
+   {
+      path: '/bmvadmin/bookingrequests/',
+      component: BmvBookingRequests
    },
    {
       path: '/myprofile/',
