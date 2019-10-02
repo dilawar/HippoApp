@@ -3,8 +3,16 @@
 
       <f7-navbar>
          <f7-nav-left>
-            <f7-link v-if="alreadyLoggedIn" panel-open="left" icon="fa fa-bars fw"> </f7-link>
-            <f7-link v-else icon="fa fa-bars" @click="youAreNotLoggedIn"> </f7-link>
+            <!-- LEFT PANEL -->
+            <f7-link v-if="alreadyLoggedIn" 
+                     panel-open="left" 
+                     icon="fa fa-bars fw"
+                     >
+            </f7-link>
+            <!-- <f7-link v-else  -->
+                     <!-- icon="fa fa-bars"  -->
+                     <!-- @click="youAreNotLoggedIn"> -->
+            <!-- </f7-link> -->
          </f7-nav-left>
          <f7-nav-title>Hippo</f7-nav-title>
          <f7-nav-right>
@@ -22,6 +30,18 @@
                      header="Close"
                      slot="media">
             </f7-link>
+
+            <!-- RIGHT PANEL -->
+            <f7-link v-if="alreadyLoggedIn && isAdmin()" 
+                     panel-open="right" 
+                     icon="fa fa-bars fw"
+                     color="red"
+                     >
+            </f7-link>
+            <!-- <f7-link v-else  -->
+                     <!-- icon="fa fa-bars"  -->
+                     <!-- @click="youAreNotLoggedIn"> -->
+            <!-- </f7-link> -->
          </f7-nav-right>
       </f7-navbar>
 
@@ -66,7 +86,7 @@
 
          <f7-list-item link="/noticeboards/all" 
                        title="Notice Board" 
-                       footer="Because you hate to spam mailing list"
+                       footer="Because you hate spamming mailing list"
                        panel-close>
             <f7-icon slot="media" icon="fa fa-bullhorn fa-2x"></f7-icon>
          </f7-list-item>
@@ -287,6 +307,17 @@
          youAreNotLoggedIn: function() {
             const app = this.$f7;
             app.dialog.alert("Access denied. Login first.", "Prohibited");
+         },
+         isAdmin: function() 
+         {
+            const self = this;
+            var roles = self.getRoles();
+            if(roles.includes("ADMIN") 
+               || roles.includes("BOOKMYVENU_ADMIN") 
+               || roles.includes("ACAD_ADMIN")
+               )
+               return true;
+            return false;
          },
          shutdown: function() {
             navigator.app.exitApp();

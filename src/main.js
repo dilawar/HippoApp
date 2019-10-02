@@ -274,6 +274,10 @@ Vue.mixin({
          const app = self.$f7;
          self.fetchAndStore('/me/profile', 'me.profile');
       },
+      getRoles: function() {
+         const self = this;
+         return self.loadStore('me.profile').roles.split(",");
+      },
       filterSchema: function(schema, toremove) 
       {
          toremove = toremove.split(',');
