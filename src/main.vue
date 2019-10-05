@@ -5,6 +5,9 @@
     <f7-panel left cover>
        <f7-view name="left" url="/userpanel/" ></f7-view>
     </f7-panel>
+    <f7-panel right cover>
+       <f7-view name="right" url="/adminpanel/" ></f7-view>
+    </f7-panel>
 
     <f7-view main url="/" tab tab-active>
        <!--

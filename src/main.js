@@ -10,13 +10,6 @@ Vue.component('vue-dropzone', Dropzone);
 import linkify from 'vue-linkify';
 Vue.directive('linkified', linkify);
 
-// Vue filter for parsing phone numbers.
-Vue.filter('phone', function (phone) {
-    return phone.replace(/([+]91|0)?(\d{3})(\d{3})(\d{4})/
-       , '<a href="tel:$1$2$3$4"><i class="fa fa-phone"></i>$1$2$3$4</a>'
-    );
-});
-
 // Multi uploader.
 import MultipleFileUploader from '@updivision/vue2-multi-uploader'
 Vue.component('v-multifile-uploader', MultipleFileUploader);
@@ -274,6 +267,14 @@ Vue.mixin({
          const app = self.$f7;
          self.fetchAndStore('/me/profile', 'me.profile');
       },
+      getRoles: function() {
+         const self = this;
+         var profile = self.loadStore('me.profile');
+         if('roles' in profile)
+            return profile.roles.split(",");
+         else
+            return [];
+      },
       filterSchema: function(schema, toremove) 
       {
          toremove = toremove.split(',');
@@ -344,6 +345,20 @@ Vue.mixin({
          else if(obj.length == 0)
             return o;
          return obj.includes(key)?obj[key]:o;
+      },
+   },
+   // Vue filter for parsing phone numbers.
+   'filters' : {
+      'phone' : function (phone) {
+         return phone.replace(/([+]91|0)?(\d{3})(\d{3})(\d{4})/
+            , '<a href="tel:$1$2$3$4"><i class="fa fa-phone"></i>$1$2$3$4</a>'
+         );
+      },
+      'clockTime' : function(time) {
+         return moment(time, 'HH:mm:ss').format('HH:mm A');
+      },
+      'date' : function(time) {
+         return moment(time, 'YYYY-MM-DD').format('(ddd) MMM DD');
       },
    },
 });

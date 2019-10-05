@@ -8,6 +8,7 @@ import AWSPage from './assets/vue/pages/myaws.vue';
 import JCPage from './assets/vue/pages/myjc.vue';
 import CoursePage from './assets/vue/pages/mycourse.vue';
 import PanelLeftPage from './assets/vue/pages/panel-left.vue';
+import PanelRightPage from './assets/vue/pages/panel-right.vue';
 import PanelTimelinePage from './assets/vue/pages/panel-right-timeline.vue';
 import WhatWhereWhenPage from './assets/vue/pages/whatwherewhen.vue';
 import FormPage from './assets/vue/pages/form.vue';
@@ -28,6 +29,9 @@ import Vuex from './assets/vue/pages/vuex.vue';
 import InventoryPage from './assets/vue/pages/inventory.vue';
 import NoticeBoards from './assets/vue/pages/noticeboards.vue';
 
+// BMV ADMIN
+import BmvBookingRequests from './assets/vue/pages/bmv_booking_requests.vue';
+
 export default [
    {
       path: '/',
@@ -40,6 +44,14 @@ export default [
    {
       path: '/userpanel/',
       component: PanelLeftPage
+   },
+   {
+      path: '/adminpanel/',
+      component: PanelRightPage
+   },
+   {
+      path: '/bmvadmin/bookingrequests/',
+      component: BmvBookingRequests
    },
    {
       path: '/myprofile/',
