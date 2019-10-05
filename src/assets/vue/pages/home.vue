@@ -67,11 +67,20 @@
          <f7-list-item link="/noticeboards/all" 
                        title="Notice Board" 
                        footer="Because you hate to spam mailing list"
-                       panel-close>
+                       panel-close
+                       >
             <f7-icon slot="media" icon="fa fa-bullhorn fa-2x"></f7-icon>
          </f7-list-item>
 
-         </f7-list>
+         <f7-list-item v-if="alreadyLoggedIn">
+           <f7-swiper :params="{width: '50px', autoplay: { delay : 5000} }" >
+             <f7-swiper-slide v-for="(flash, key) in flashes" :key="key">
+               <span style="background-color:Ivory"> {{flash.title}} </span>
+             </f7-swiper-slide>
+           </f7-swiper>
+         </f7-list-item>
+
+       </f7-list>
       </f7-block>
 
       <f7-block v-if="! alreadyLoggedIn">
@@ -95,19 +104,19 @@
             </f7-list-item>
          </f7-list>
       </f7-block>
+
       <f7-block v-else></f7-block>
 
       <!-- FAB Right Bottom (Blue) -->
-      <f7-fab v-if="alreadyLoggedIn" position="right-bottom" slot="fixed" color="green">
-         <f7-icon ios="f7:add" aurora="f7:add" md="material:add"></f7-icon>
-         <f7-icon ios="f7:close" aurora="f7:close" md="material:close"></f7-icon>
-         <f7-fab-buttons position="left">
-            <f7-fab-button fab-extended
-                           href="/booking/" fab-close 
-                           tooltip="Create new booking" >
-                  <f7-icon icon="fa fa-calendar-plus-o fa-fw"></f7-icon>
-            </f7-fab-button>
-         </f7-fab-buttons>
+      <f7-fab v-if="alreadyLoggedIn" 
+              tooltip="book a venue"
+              position="right-bottom"
+              slot="fixed" 
+              color="green"
+              href="/booking/" 
+              fab-close
+              >
+        <f7-icon ios="f7:add" aurora="f7:add" md="material:add"></f7-icon>
       </f7-fab>
 
       <!-- LOGIN SCREEN  -->
@@ -155,142 +164,143 @@
 </template>
 
 <script>
-   export default {
-      data() {
-         return {
-            alreadyLoggedIn: false,
-            isHippoAlive: false,
-            username: '',
-            password: '',
-         };
-      },
-      mounted()
-      {
-         const self = this;
-         const app = self.$f7;
-         var $$ = this.$$;
+export default {
+  data() {
+    return {
+      alreadyLoggedIn: false,
+      isHippoAlive: false,
+      username: '',
+      password: '',
+      flashes: { a: {title:'a'}, b: {title:'b'}},
+    };
+  },
+  mounted()
+  {
+    const self = this;
+    const app = self.$f7;
+    var $$ = this.$$;
 
-         // Listen to Cordova's backbutton event
-         document.addEventListener('backbutton', function navigateBack() {
-            // Use Framework7's router to navigate back
-            var mainView = app.views.main;
+    // Listen to Cordova's backbutton event
+    document.addEventListener('backbutton', function navigateBack() {
+      // Use Framework7's router to navigate back
+      var mainView = app.views.main;
 
-            var leftp = app.panel.left && app.panel.left.opened;
-            var rightp = app.panel.right && app.panel.right.opened;
+      var leftp = app.panel.left && app.panel.left.opened;
+      var rightp = app.panel.right && app.panel.right.opened;
 
-            if (leftp || rightp) {
+      if (leftp || rightp) {
 
-               app.panel.close();
-               return false;
-            } else if ($$('.modal-in').length > 0) {
+        app.panel.close();
+        return false;
+      } else if ($$('.modal-in').length > 0) {
 
-               app.dialog.close();
-               app.popup.close();
-               return false;
-            } else if (app.views.main.router.url == '/') {
-               navigator.app.exitApp();
-            } else {
-               mainView.router.back();
-            }
-         }, false);
+        app.dialog.close();
+        app.popup.close();
+        return false;
+      } else if (app.views.main.router.url == '/') {
+        navigator.app.exitApp();
+      } else {
+        mainView.router.back();
+      }
+    }, false);
 
-         self.alreadyLoggedIn = self.isUserAuthenticated();
+    self.alreadyLoggedIn = self.isUserAuthenticated();
 
-         // Check if hippo is alive
-         setTimeout( () =>
-            app.request.post(self.$store.state.api + '/status'
-               , function(json) 
-               {
-                  var res = JSON.parse(json);
-                  if( res.status =='ok' && res.data.status == 'alive')
-                  {
-                     self.isHippoAlive = true;
-                  }
-               })
-            , 1000);
+    // Check if hippo is alive
+    setTimeout( () =>
+      app.request.post(self.$store.state.api + '/status'
+        , function(json) 
+        {
+          var res = JSON.parse(json);
+          if( res.status =='ok' && res.data.status == 'alive')
+          {
+            self.isHippoAlive = true;
+          }
+        })
+      , 1000);
 
-         // Fetch the transport as well.
-         setTimeout( () => {
-            app.request.post( self.$store.state.api+'/transport'
-               , self.apiPostData()
-               , function(json) 
-               {
-                  const res = JSON.parse(json);
-                  if( res.status=='ok')
-                     self.$localStorage.set('transport', JSON.stringify(res.data));
-               }
-            );
-         }, 2000);
+    // Fetch the transport as well.
+    setTimeout( () => {
+      app.request.post( self.$store.state.api+'/transport'
+        , self.apiPostData()
+        , function(json) 
+        {
+          const res = JSON.parse(json);
+          if( res.status=='ok')
+            self.$localStorage.set('transport', JSON.stringify(res.data));
+        }
+      );
+    }, 2000);
 
-         // Get notification now and display them.
-         setTimeout(() => {self.fetchNotifications();}, 500);
-         setTimeout(() => {self.displayNotifications();}, 500);
-         // Call fetchNotifications in the background. every minutes.
-         // FIXME:  Make it very 10 minutes later.
-         setInterval( function() {
-            console.log("Fetching notitication");
-            try {
-               self.fetchNotifications()
-            } catch (e) {
-               /* handle error */
-               console.log( "Could not fetch notifications.");
-            }
-         }, 30*60*1000);
+    // Get notification now and display them.
+    setTimeout(() => {self.fetchNotifications();}, 500);
+    setTimeout(() => {self.displayNotifications();}, 500);
+    // Call fetchNotifications in the background. every minutes.
+    // FIXME:  Make it very 10 minutes later.
+    setInterval( function() {
+      console.log("Fetching notitication");
+      try {
+        self.fetchNotifications()
+      } catch (e) {
+        /* handle error */
+        console.log( "Could not fetch notifications.");
+      }
+    }, 30*60*1000);
 
-         setInterval( function() {
-            try {
-               self.displayNotifications()
-            } catch (e) {
-               /* handle error */
-               console.log("Could not display notifications.");
-            }
-         }, 60*60*1000);
-      },
-      methods: {
-         signIn: function()
-         {
-            const self = this;
-            const app = self.$f7;
-            app.dialog.preloader("Loging in ...");
-            app.request.promise.post( self.$store.state.api+"/authenticate"
-               , {"login":self.username, "password": btoa(self.password)}
-               ).then( function(json) {
-                  var res = JSON.parse(json);
-                  if( res.status =='ok' && res.data.apikey != '')
-                 {
-                   self.$localStorage.set('HIPPO-API-KEY', res.data.apikey);
-                   self.$localStorage.set('GOOGLE-MAP-API-KEY', res.data.gmapapikey);
-                   self.$localStorage.set('HIPPO-LOGIN', self.username);
-                   self.isUserAuthenticated = true;
-                   self.fetchProfile();
-                   self.$f7router.refreshPage();
-                 }
-                 else
-                   app.dialog.alert("Failed to login. Try again.", "Error");
-                 app.dialog.close();
-               });
-            setTimeout(() => app.dialog.close(), 2000);
-         },
-         signOut: function() {
-            const self = this;
-            console.log( "Signing out.");
-            self.$localStorage.set('HIPPO-API-KEY', '');
-            self.$localStorage.set('HIPPO-LOGIN', '');
-            self.isUserAuthenticated = false;
-            self.$f7router.refreshPage();
-         },
-         reinit: function() {
-            const self = this;
-            self.isUserAuthenticated();
-            console.log( "User logged in " + self.alreadyLoggedIn );
-         },
-         youAreNotLoggedIn: function() {
-            const app = this.$f7;
-            app.dialog.alert("Access denied. Login first.", "Prohibited");
-         },
-         shutdown: function() {
-            navigator.app.exitApp();
-         },
-      },
-   }
+    setInterval( function() {
+      try {
+        self.displayNotifications()
+      } catch (e) {
+        /* handle error */
+        console.log("Could not display notifications.");
+      }
+    }, 60*60*1000);
+  },
+  methods: {
+    signIn: function()
+    {
+      const self = this;
+      const app = self.$f7;
+      app.dialog.preloader("Loging in ...");
+      app.request.promise.post( self.$store.state.api+"/authenticate"
+        , {"login":self.username, "password": btoa(self.password)}
+      ).then( function(json) {
+        var res = JSON.parse(json);
+        if( res.status =='ok' && res.data.apikey != '')
+        {
+          self.$localStorage.set('HIPPO-API-KEY', res.data.apikey);
+          self.$localStorage.set('GOOGLE-MAP-API-KEY', res.data.gmapapikey);
+          self.$localStorage.set('HIPPO-LOGIN', self.username);
+          self.isUserAuthenticated = true;
+          self.fetchProfile();
+          self.$f7router.refreshPage();
+        }
+        else
+          app.dialog.alert("Failed to login. Try again.", "Error");
+        app.dialog.close();
+      });
+      setTimeout(() => app.dialog.close(), 2000);
+    },
+    signOut: function() {
+      const self = this;
+      console.log( "Signing out.");
+      self.$localStorage.set('HIPPO-API-KEY', '');
+      self.$localStorage.set('HIPPO-LOGIN', '');
+      self.isUserAuthenticated = false;
+      self.$f7router.refreshPage();
+    },
+    reinit: function() {
+      const self = this;
+      self.isUserAuthenticated();
+      console.log( "User logged in " + self.alreadyLoggedIn );
+    },
+    youAreNotLoggedIn: function() {
+      const app = this.$f7;
+      app.dialog.alert("Access denied. Login first.", "Prohibited");
+    },
+    shutdown: function() {
+      navigator.app.exitApp();
+    },
+  },
+}
 </script>

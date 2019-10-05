@@ -3,10 +3,9 @@
       <f7-navbar title="Hippo"></f7-navbar>
       <!-- More information here -->
 
-         <f7-block-title>Welcome {{username}} </f7-block-title>
+         <f7-block-title>Welcome {{username}}. </f7-block-title>
 
          <f7-list no-hairlines>
-
             <f7-list-item link="/notifications/" 
                           target="_blank"
                           view=".view-main"
