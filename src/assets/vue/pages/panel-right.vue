@@ -1,6 +1,6 @@
 <template>
    <f7-page @page:init="refreshData" @page:refresh="refreshData">
-      <f7-navbar title="Hippo" back-link="Back"></f7-navbar>
+      <f7-navbar title="Admin panel" back-link="Back"></f7-navbar>
 
       <!-- More information here -->
 

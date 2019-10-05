@@ -46,19 +46,46 @@
               <f7-card-header>{{thisRequest.title}}</f7-card-header>
               <f7-card-content>
                 <span v-html="thisRequest.description"></span>
+                When: 
+                <strong> {{thisRequest.date | date}}, 
+                  {{thisRequest.start_time | clockTime}} to 
+                  {{thisRequest.end_time | clockTime }}
+                </strong>
+                <br />
+                Where: 
+                <strong> 
+                  {{thisRequest.venue}}
+                </strong>
               </f7-card-content>
               <f7-card-footer>
                 Created by {{thisRequest.created_by}}
               </f7-card-footer>
             </f7-card>
+
+            <f7-card>
+              <f7-card-content>
+                <f7-row v-if="thisRequest.clashes.length == 0">
+                  <f7-col >
+                    Hurray! This request is clean.
+                  </f7-col>
+                </f7-row>
+                <f7-row v-else>
+                  <f7-col v-for="(clash, key) in thisRequest.clashes" :key="key">
+                    {{clash.title}}
+                  </f7-col>
+                </f7-row>
+              </f7-card-content>
+            </f7-card>
+
             <f7-row>
               <f7-col>
-                <f7-button fill color="red">Reject</f7-button>
+                <f7-button fill color="red" @click="onReject">Reject</f7-button>
               </f7-col>
               <f7-col>
-                <f7-button fill>Approve</f7-button>
+                <f7-button fill @click="onApprove">Approve</f7-button>
               </f7-col>
             </f7-row>
+
           </f7-block>
         </f7-page>
       </f7-popup>
@@ -72,7 +99,7 @@
       const self = this;
       return {
         requests: [],
-        thisRequest: [],
+        thisRequest: { clashes: [] },
         reviewPopup: false,
       };
     },
@@ -97,7 +124,54 @@
       {
         const self = this;
         self.thisRequest = request;
+        self.thisRequest.clashes = [];
+        setTimeout(() => self.checkRequest(request), 100);
         self.reviewPopup = true;
+      },
+      checkRequest: function(request) 
+      {
+        const self = this;
+        self.promiseWithAuth('bmvadmin/request/clash', request)
+          .then( function(json) {
+            self.thisRequest.clashes = JSON.parse(json).data;
+            console.log(data);
+          });
+      },
+      onReject: function() {
+        const self = this;
+        const app = self.$f7;
+        app.dialog.prompt("Reason for rejection ...", "Rejecting.."
+          , function(value) 
+          {
+            console.log("Rejecting with reason:", value);
+            if(value.length < 8)
+            {
+              app.dialog.alert("Please give a decent reason.."
+                , "Min 8 chars required", null);
+              return;
+            }
+            // Else reject.
+            this.promiseWithAuth('bmvadmin/request/reject/', request)
+              .then( function(json) {
+                console.log("Rejected request ... ");
+              });
+            this.reviewPopup = false;
+          }
+          , function(value)
+          {
+            console.log( "User cancelled");
+
+          }, "");
+
+      },
+      onApprove: function() {
+        const self = this;
+        self.log("Approving request ...");
+        this.promiseWithAuth('bmvadmin/request/approve', request)
+          .then( function(json) {
+            console.log("Rejected request ... ");
+          });
+        self.thisRequest = false;
       },
     },
   }
