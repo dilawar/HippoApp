@@ -151,27 +151,25 @@
               return;
             }
             // Else reject.
-            this.promiseWithAuth('bmvadmin/request/reject/', request)
+            self.promiseWithAuth('bmvadmin/request/reject/', self.thisRequest)
               .then( function(json) {
                 console.log("Rejected request ... ");
               });
-            this.reviewPopup = false;
+            self.reviewPopup = false;
           }
           , function(value)
           {
             console.log( "User cancelled");
-
           }, "");
 
       },
       onApprove: function() {
         const self = this;
-        self.log("Approving request ...");
-        this.promiseWithAuth('bmvadmin/request/approve', request)
+        self.promiseWithAuth('bmvadmin/request/approve', self.thisRequest)
           .then( function(json) {
-            console.log("Rejected request ... ");
+            console.log("Approving request ...");
           });
-        self.thisRequest = false;
+        self.reviewPopup = false;
       },
     },
   }
