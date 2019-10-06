@@ -321,6 +321,7 @@ export default {
          {
             const self = this;
             var roles = self.getRoles();
+            console.log("Roles are", roles);
             if(roles.includes("ADMIN") 
                || roles.includes("BOOKMYVENU_ADMIN") 
                || roles.includes("ACAD_ADMIN")

@@ -70,6 +70,9 @@
                   </f7-col>
                 </f7-row>
                 <f7-row v-else>
+                  This booking request is not clean. It might clash with
+                  following JC/Labmeets in future. Please make sure that this is not the
+                  face.
                   <f7-col v-for="(clash, key) in thisRequest.clashes" :key="key">
                     {{clash.title}}
                   </f7-col>
@@ -134,7 +137,7 @@
         self.promiseWithAuth('bmvadmin/request/clash', request)
           .then( function(json) {
             self.thisRequest.clashes = JSON.parse(json).data;
-            console.log(data);
+            console.log('Clasesh: ', self.thisRequest.clashes);
           });
       },
       onReject: function() {
@@ -154,6 +157,9 @@
             self.promiseWithAuth('bmvadmin/request/reject/', self.thisRequest)
               .then( function(json) {
                 console.log("Rejected request ... ");
+                // Update list.
+                self.fetchPendingRequests();
+                console.log(self.requests);
               });
             self.reviewPopup = false;
           }
@@ -168,6 +174,7 @@
         self.promiseWithAuth('bmvadmin/request/approve', self.thisRequest)
           .then( function(json) {
             console.log("Approving request ...");
+            self.fetchPendingRequests();
           });
         self.reviewPopup = false;
       },

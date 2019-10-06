@@ -4,7 +4,7 @@
 
       <!-- More information here -->
 
-      <f7-block v-if="getRoles().includes('BOOKMYVENUE_ADMIN')">
+      <f7-block v-if="roles.includes('BOOKMYVENUE_ADMIN')">
       <f7-block-title>BookMyVenue Admin</f7-block-title>
         <f7-list no-hairlines>
 
@@ -44,12 +44,13 @@
         alreadyLoggedIn: false,
         profile: [],
         notifications: [],
+        roles: [],
       };
     },
     mounted()
     {
       const self = this;
-
+      self.roles = self.getRoles();
     },
     methods : {
       refreshData: function(ev, done) {
