@@ -13,21 +13,19 @@
                         accordion-item
                         :bg-color="(request.is_public_event=='YES')?'yellow':''"
                         >
-            <div slot="header"> {{request.venue}} | {{request.class}} </div>
             <div slot="header"> Created by {{request.created_by}} </div>
-            <div slot="title"> {{request.title}} </div>
+            <div slot="text"> {{request.title}} </div>
             <div slot="footer">
               {{request.date | date}} |
               {{request.start_time | clockTime}} to 
               {{request.end_time | clockTime }}
             </div>
-            <f7-accordion-content>
-               <div v-html="request.description"> </div>
-               <f7-button small raised fill @click="openReviewPopup(request)">
-                 Review Request
-               </f7-button>
-            </f7-accordion-content>
+            <div slot="title"> {{request.class}} @{{request.venue}} </div>
+            <div slot="after">
+               <f7-link @click="openReviewPopup(request)">Review</f7-link>
+            </div>
           </f7-list-item>
+
         </f7-list>
 
       </f7-block>
@@ -35,7 +33,7 @@
       <!-- Review POPUP -->
       <f7-popup :opened="reviewPopup" @popup:close="reviewPopup = false">
         <f7-page>
-          <f7-navbar title="Popup Title">
+          <f7-navbar :title="popupTitle">
             <f7-nav-right>
               <f7-link popup-close>Close</f7-link>
             </f7-nav-right>
@@ -43,51 +41,59 @@
           <f7-block>
             <!-- POPUP ACTION -->
             <f7-card>
-              <f7-card-header>{{thisRequest.title}}</f7-card-header>
+              <f7-card-header>
+                {{thisRequest.title}} 
+                <span style="font-size:small; float:right">Created by {{thisRequest.created_by}} </span>
+              </f7-card-header>
               <f7-card-content>
                 <span v-html="thisRequest.description"></span>
-                When: 
-                <strong> {{thisRequest.date | date}}, 
-                  {{thisRequest.start_time | clockTime}} to 
-                  {{thisRequest.end_time | clockTime }}
-                </strong>
-                <br />
-                Where: 
-                <strong> 
-                  {{thisRequest.venue}}
-                </strong>
               </f7-card-content>
               <f7-card-footer>
-                Created by {{thisRequest.created_by}}
+                {{thisRequest.date | date}}, 
+                {{thisRequest.start_time | clockTime}} to 
+                {{thisRequest.end_time | clockTime }}
+                <br />
+                {{thisRequest.venue}}
               </f7-card-footer>
             </f7-card>
 
-            <f7-card>
-              <f7-card-content>
-                <f7-row v-if="thisRequest.clashes.length == 0">
-                  <f7-col >
-                    Hurray! This request is clean.
+            <f7-list media-list no-hairlines>
+              <f7-list-item v-if="thisRequest.clashes && thisRequest.clashes.length > 0">
+                <div slot="text">
+                  <strong>
+                    This booking request is not clean. It might clash with
+                    following JC/Labmeets in future. Please make sure that this is not the
+                    face.
+                    <f7-col v-for="(clash, key) in thisRequest.clashes" :key="key">
+                      {{clash.title}}
+                    </f7-col>
+                  </strong>
+                </div>
+              </f7-list-item>
+              <f7-list-item v-else title="STATUS">
+                <div slot="text">
+                  Hurray! This request looks clean.
+                </div>
+              </f7-list-item>
+              <f7-list-item v-if="thisRequest.is_public_event=='NO'"
+                            checkbox
+                            title="Mark as PUBLIC EVENT"
+                            text="By marking it as PUBLIC EVENT, you are putting
+                                  it on NCBS Public Calendar."
+                            @change="changeRequestPublic"
+                            >
+              </f7-list-item>
+              <f7-list-item>
+                <f7-row>
+                  <f7-col>
+                    <f7-button small fill color="red" @click="onReject">Reject</f7-button>
+                  </f7-col>
+                  <f7-col>
+                    <f7-button small fill @click="onApprove">Approve</f7-button>
                   </f7-col>
                 </f7-row>
-                <f7-row v-else>
-                  This booking request is not clean. It might clash with
-                  following JC/Labmeets in future. Please make sure that this is not the
-                  face.
-                  <f7-col v-for="(clash, key) in thisRequest.clashes" :key="key">
-                    {{clash.title}}
-                  </f7-col>
-                </f7-row>
-              </f7-card-content>
-            </f7-card>
-
-            <f7-row>
-              <f7-col>
-                <f7-button fill color="red" @click="onReject">Reject</f7-button>
-              </f7-col>
-              <f7-col>
-                <f7-button fill @click="onApprove">Approve</f7-button>
-              </f7-col>
-            </f7-row>
+              </f7-list-item>
+            </f7-list>
 
           </f7-block>
         </f7-page>
@@ -104,6 +110,7 @@
         requests: [],
         thisRequest: { clashes: [] },
         reviewPopup: false,
+        popupTitle: 'Review request',
       };
     },
     mounted()
@@ -135,9 +142,8 @@
       {
         const self = this;
         self.promiseWithAuth('bmvadmin/request/clash', request)
-          .then( function(json) {
+          .then(function(json) {
             self.thisRequest.clashes = JSON.parse(json).data;
-            console.log('Clasesh: ', self.thisRequest.clashes);
           });
       },
       onReject: function() {
@@ -159,7 +165,6 @@
                 console.log("Rejected request ... ");
                 // Update list.
                 self.fetchPendingRequests();
-                console.log(self.requests);
               });
             self.reviewPopup = false;
           }
@@ -177,6 +182,14 @@
             self.fetchPendingRequests();
           });
         self.reviewPopup = false;
+      },
+      changeRequestPublic: function(value) 
+      {
+        const self = this;
+        if(value.target.checked)
+          self.thisRequest.is_public_event = "YES";
+        else
+          self.thisRequest.is_public_event = "NO";
       },
     },
   }
