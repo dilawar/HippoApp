@@ -31,6 +31,7 @@ import NoticeBoards from './assets/vue/pages/noticeboards.vue';
 
 // BMV ADMIN
 import BmvBookingRequests from './assets/vue/pages/bmv_booking_requests.vue';
+import BmvEvents from './assets/vue/pages/bmv_events.vue';
 
 export default [
    {
@@ -52,6 +53,10 @@ export default [
    {
       path: '/bmvadmin/bookingrequests/',
       component: BmvBookingRequests
+   },
+   {
+      path: '/bmvadmin/events/',
+      component: BmvEvents
    },
    {
       path: '/myprofile/',

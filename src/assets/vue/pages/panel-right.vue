@@ -6,12 +6,20 @@
 
       <f7-block v-if="roles.includes('BOOKMYVENUE_ADMIN')">
       <f7-block-title>BookMyVenue Admin</f7-block-title>
-        <f7-list no-hairlines>
+        <f7-list>
 
           <f7-list-item link="/bmvadmin/bookingrequests/" 
                         target="_blank"
                         view=".view-main"
                         title="Booking Requests" 
+                        panel-close
+                        >
+          </f7-list-item>
+
+          <f7-list-item link="/bmvadmin/events/" 
+                        target="_blank"
+                        view=".view-main"
+                        title="Booked Events" 
                         panel-close
                         >
           </f7-list-item>
