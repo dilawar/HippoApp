@@ -1,5 +1,5 @@
 <template>
-   <f7-page @page:init="refreshData" @page:refresh="refreshData">
+   <f7-page infinite @infinite="loadMore">
       <f7-navbar title="Events" back-link="Back">
       </f7-navbar>
 
@@ -120,6 +120,7 @@
         theseEvents: [],
         eventPopup: false,
         popupTitle: 'Review request',
+        allowInfinite: true,
       };
     },
     mounted()
@@ -134,10 +135,35 @@
       fetchUpcomingEvents: function() 
       {
         const self = this;
-        self.promiseWithAuth('bmvadmin/events/upcoming').then(
+        self.promiseWithAuth('bmvadmin/events/upcoming/0/10').then(
           function(json) {
             self.eventsGrouped = JSON.parse(json).data;
           });
+      },
+      loadMore: function()
+      {
+        const self = this;
+        if(! self.allowInfinite)
+          return;
+        self.allowInfinite = false;
+
+        const app = self.$f7;
+        var from = self.eventsGrouped['num_events'];
+        var to = from + 10;
+        app.dialog.preloader();
+
+        setTimeout( () => {
+          self.promiseWithAuth('bmvadmin/events/upcoming/'+from+'/'+to).then(
+            function(json) {
+              var moreE = JSON.parse(json).data;
+              self.eventsGrouped = {...self.eventsGrouped, ...moreE}
+              self.eventsGrouped['num_events'] += 10;
+              self.allowInfinite = true;
+              app.dialog.close();
+            });
+          app.dialog.close();
+          self.allowInfinite = true;
+        }, 1000);
       },
       openEventPopup: function(events) 
       {
