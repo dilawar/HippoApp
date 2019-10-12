@@ -91,6 +91,7 @@
             <f7-icon slot="media" icon="fa fa-bullhorn fa-2x"></f7-icon>
          </f7-list-item>
 
+         <!--
          <f7-list-item v-if="alreadyLoggedIn">
            <f7-swiper :params="{width: '50px', autoplay: { delay : 5000} }" >
              <f7-swiper-slide v-for="(flash, key) in flashes" :key="key">
@@ -98,6 +99,7 @@
              </f7-swiper-slide>
            </f7-swiper>
          </f7-list-item>
+         -->
 
        </f7-list>
       </f7-block>

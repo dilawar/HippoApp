@@ -29,6 +29,24 @@
 
       <f7-block v-if="getRoles().includes('ACAD_ADMIN')">
       <f7-block-title>Acad Admin</f7-block-title>
+        <f7-list>
+          <f7-list-item link="/acadadmin/aws/" 
+                        target="_blank"
+                        view=".view-main"
+                        title="Manage AWSs" 
+                        panel-close
+                        >
+          </f7-list-item>
+
+          <f7-list-item link="/acadadmin/awsroster/" 
+                        target="_blank"
+                        view=".view-main"
+                        title="AWS Roster" 
+                        panel-close
+                        >
+          </f7-list-item>
+        </f7-list>
+
       </f7-block>
 
       <f7-block v-if="getRoles().includes('SERVICES_ADMIN')">
