@@ -76,7 +76,12 @@
               <div v-html="aws.description"></div>
               <f7-row>
                 <f7-col>
-                  <f7-button small fill color="red">Cancel</f7-button>
+                  <f7-button small 
+                             fill 
+                             @click="cancelAWS(aws)"
+                             color="red">
+                    Cancel
+                  </f7-button>
                 </f7-col>
                 <f7-col></f7-col>
                 <f7-col>
@@ -197,7 +202,22 @@
             app.dialog.close();
           });
       },
+      cancelAWS: function(aws) 
+      {
+        const self = this;
+        const app = self.$f7;
+        app.dialog.confirm("Are you sure?"
+          , "Cancelling AWS ..."
+          , function(ev) {
+            console.log('OK');
+            self.promiseWithAuth('acadadmin/aws/cancel', self.thisAWS)
+              .then( function(json) {
+                console.log('cancelled');
+              });
+          }, function(ev) {
+            console.log( 'NAH');
+          });
+      },
     },
-
   }
 </script>
