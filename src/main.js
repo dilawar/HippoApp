@@ -262,6 +262,11 @@ Vue.mixin({
          const self = this;
          self.fetchAndStore( '/venue/list/all', 'venues');
       },
+      venueInfo: function(vid) {
+         const self = this;
+         var venue = self.loadStore('venues')[vid];
+         return venue.name;
+      },
       fetchProfile: function() {
          const self = this;
          const app = self.$f7;
