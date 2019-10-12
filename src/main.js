@@ -265,7 +265,9 @@ Vue.mixin({
       venueInfo: function(vid) {
          const self = this;
          var venue = self.loadStore('venues')[vid];
-         return venue.name;
+         if(venue)
+            return venue.name;
+         return vid;
       },
       fetchProfile: function() {
          const self = this;

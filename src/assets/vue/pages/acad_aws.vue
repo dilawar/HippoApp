@@ -3,6 +3,9 @@
       <f7-navbar title="Annual Work Seminar" back-link="Back">
       </f7-navbar>
 
+      <!-- POPUP -->
+
+
       <f7-block-title small>Upcoming Annual Work Seminars</f7-block-title>
       <f7-block>
 
