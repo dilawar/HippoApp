@@ -10,6 +10,7 @@
         <f7-list no-hairlines media-list accordion-list>
 
           <f7-list-item v-for="(request, id) in requests"
+                        :key="id"
                         accordion-item
                         :bg-color="(request.is_public_event=='YES')?'yellow':''"
                         >

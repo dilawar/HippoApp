@@ -44,10 +44,6 @@ Icon.Default.mergeOptions({
 // GoogleMap services.
 import { OpenStreetMapProvider, GoogleProvider } from 'leaflet-geosearch'; 
 
-//// fixme: Lightweight timeline.
-//import LightTimeline from 'vue-light-timeline';
-//Vue.use(LightTimeline);
-
 // Moment 
 import moment from 'moment';
 
@@ -183,6 +179,10 @@ Vue.mixin({
       },
       formatKey: function(key) {
          return key.split('_').join(' ').toUpperCase();
+      },
+      getAPIUrl: function() {
+         const self = this;
+         return self.$store.state.api;
       },
       postWithPromise: function(endpoint) {
          const self = this;

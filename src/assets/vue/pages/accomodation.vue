@@ -258,14 +258,14 @@
                           > {{val}} </option>
               </f7-list-input>
 
-                 <f7-list-input label="Address"
-                                type="text"
-                                :input="false" 
-                                >
-                    <input id="autocomplete-dropdown-expand"  
-                           :value="accomodation.address"
-                           slot="input" type="text" />
-                 </f7-list-input>
+               <f7-list-input label="Address"
+                              type="text"
+                              :input="false" 
+                              >
+                  <input id="autocomplete-dropdown-expand"  
+                         :value="accomodation.address"
+                         slot="input" type="text" />
+               </f7-list-input>
 
               <f7-list-input label="Description"
                              :value="accomodation.description"
