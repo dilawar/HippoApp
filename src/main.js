@@ -10,6 +10,10 @@ Vue.component('vue-dropzone', Dropzone);
 import linkify from 'vue-linkify';
 Vue.directive('linkified', linkify);
 
+// Editor
+import { VueEditor, Quill } from 'vue2-editor';
+Vue.component('vue-editor', VueEditor);
+
 // Multi uploader.
 import MultipleFileUploader from '@updivision/vue2-multi-uploader'
 Vue.component('v-multifile-uploader', MultipleFileUploader);
