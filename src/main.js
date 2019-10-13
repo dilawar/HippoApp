@@ -10,12 +10,9 @@ Vue.component('vue-dropzone', Dropzone);
 import linkify from 'vue-linkify';
 Vue.directive('linkified', linkify);
 
-// Vue filter for parsing phone numbers.
-Vue.filter('phone', function (phone) {
-    return phone.replace(/([+]91|0)?(\d{3})(\d{3})(\d{4})/
-       , '<a href="tel:$1$2$3$4"><i class="fa fa-phone"></i>$1$2$3$4</a>'
-    );
-});
+// Editor
+import { VueEditor, Quill } from 'vue2-editor';
+Vue.component('vue-editor', VueEditor);
 
 // Multi uploader.
 import MultipleFileUploader from '@updivision/vue2-multi-uploader'
@@ -50,10 +47,6 @@ Icon.Default.mergeOptions({
 
 // GoogleMap services.
 import { OpenStreetMapProvider, GoogleProvider } from 'leaflet-geosearch'; 
-
-//// fixme: Lightweight timeline.
-//import LightTimeline from 'vue-light-timeline';
-//Vue.use(LightTimeline);
 
 // Moment 
 import moment from 'moment';
@@ -191,6 +184,10 @@ Vue.mixin({
       formatKey: function(key) {
          return key.split('_').join(' ').toUpperCase();
       },
+      getAPIUrl: function() {
+         const self = this;
+         return self.$store.state.api;
+      },
       postWithPromise: function(endpoint) {
          const self = this;
          const app = self.$f7;
@@ -236,6 +233,12 @@ Vue.mixin({
       loadStoreStr: function(key) {
          return this.$localStorage.get(key, '');
       },
+      isMobileApp: function() {
+         // From  https://stackoverflow.com/a/13252184/1805129
+         return (window.cordova || window.PhoneGap || window.phonegap) 
+             && /^file:\/{3}[^\/]/i.test(window.location.href) 
+             && /ios|iphone|ipod|ipad|android/i.test(navigator.userAgent);
+      },
       sendRequest: function(endpoint, post) {
          const self = this;
          const app = self.$f7;
@@ -269,10 +272,25 @@ Vue.mixin({
          const self = this;
          self.fetchAndStore( '/venue/list/all', 'venues');
       },
+      venueInfo: function(vid) {
+         const self = this;
+         var venue = self.loadStore('venues')[vid];
+         if(venue)
+            return venue.name;
+         return vid;
+      },
       fetchProfile: function() {
          const self = this;
          const app = self.$f7;
          self.fetchAndStore('/me/profile', 'me.profile');
+      },
+      getRoles: function() {
+         const self = this;
+         var profile = self.loadStore('me.profile');
+         if('roles' in profile)
+            return profile.roles.split(",");
+         else
+            return [];
       },
       filterSchema: function(schema, toremove) 
       {
@@ -344,6 +362,23 @@ Vue.mixin({
          else if(obj.length == 0)
             return o;
          return obj.includes(key)?obj[key]:o;
+      },
+   },
+   // Vue filter for parsing phone numbers.
+   'filters' : {
+      'phone' : function (phone) {
+         return phone.replace(/([+]91|0)?(\d{3})(\d{3})(\d{4})/
+            , '<a href="tel:$1$2$3$4"><i class="fa fa-phone"></i>$1$2$3$4</a>'
+         );
+      },
+      'clockTime' : function(time) {
+         return moment(time, 'HH:mm:ss').format('HH:mm A');
+      },
+      'date' : function(time) {
+         return moment(time, 'YYYY-MM-DD').format('(ddd) MMM DD');
+      },
+      'name' : function(login) {
+         return login.first_name + ' ' + login.last_name;
       },
    },
 });

@@ -1,6 +1,6 @@
 <template>
   <f7-page page-content 
-           ptr @ptr:refresh="fetchEvents"
+           ptr @ptr:refresh="refreshFetchEvents"
            @page:beforein="pageBeforeIn"
            @page:afterin="pageAfterIn"
            infinite
@@ -53,24 +53,20 @@
      <f7-block-title small>Cancelled events are not shown.</f7-block-title>
 
      <f7-list accordion-list media-list no-hairlines>
-
-        <f7-list-item :accordion-item="item.data.description.length>80"
+       <f7-list-item :accordion-item="item.data.description.length>80"
               v-for="(item, key) in items"
               :key="key"
               >
-              <div slot="title" v-html="item.data.title"></div>
-              <div slot="footer" v-html="genTimeline(item.data)"></div>
-              <div slot="header" v-html="genWhereline(item.data)"></div>
-
-              <f7-accordion-content style="background-color:Ivory"
-                                    v-html="item.data.title+'<br/>'+item.data.description">
-              </f7-accordion-content>
+          <div slot="header" v-html="genWhereline(item.data)"></div>
+          <div slot="title" v-html="item.data.title"></div>
+          <div slot="footer" v-html="genTimeline(item.data)"></div>
+          <div slot="after" v-html="item.created_by"></div>
+          <f7-accordion-content style="background-color:Ivory"
+                                v-html="item.data.title+'<br/>'+item.data.description">
+          </f7-accordion-content>
         </f7-list-item>
      </f7-list>
   </f7-block>
-
-
-
   </f7-page>
 </template>
 
@@ -100,151 +96,152 @@ export default {
       self.events = self.loadStore('events');
       self.initVenuesAndClasses();
       if(! self.events || self.events.length == 0)
-      {
          self.fetchEvents();
-      }
       self.eventsToTimeLine(self.events);
    },
    methods: { 
-      initVenuesAndClasses: function( ) {
-         const self = this;
-         self.eventTypes = [... new Set( self.events.map(x=>x.class))];
-         self.eventTypes.push('ALL');
-         self.venues = [... new Set(self.events.map(x=>x.venue))];
-         self.venues.push('ALL');
-      },
-      fetchEvents: function( ) {
-         const self = this;
-         const app = self.$f7;
+     initVenuesAndClasses: function( ) {
+       const self = this;
+       self.eventTypes = [... new Set( self.events.map(x=>x.class))];
+       self.eventTypes.push('ALL');
+       self.venues = [... new Set(self.events.map(x=>x.venue))];
+       self.venues.push('ALL');
+     },
+     fetchEvents: function( ) {
+       const self = this;
+       self.postWithPromise('/events/latest/100').then(
+         function(json) {
+           self.events = JSON.parse(json).data;
+           self.initVenuesAndClasses();
+           self.eventsToTimeLine(self.events);
+           self.saveStore('events', self.events);
+         });
+     },
+     refreshFetchEvents: function(event, done) 
+     {
+       const self = this;
+       setTimeout( () => {
+         self.fetchEvents();
+         done();
+       });
+     },
+     eventToTimelinePoint: function(key, ev) 
+     {
+       const self = this;
+       var color = self.stringToColour(ev.class)
+       let status = (ev.status == 'PENDING')?' (Pending Approval)':'';
+       return { id:key
+         , class: ev.class
+         , color : color
+         , data: ev
+         , group: ev.venue
+         , created_by: ev.created_by
+         , tag: self.toNow(ev.date, ev.start_time) + '<br /> ' 
+         + self.str2Moment(ev.date, 'YYYY-MM-DD').format('MMM DD')+'<br/>'
+         + self.str2Moment(ev.start_time,'HH:mm:ss').format('HH:mm')+'-' 
+         + self.str2Moment(ev.end_time,'HH:mm:ss').format('HH:mm')
+         , htmlMode: true
+         , content:  `<span style="font-size:12px;color:green;margin-left:0rem">${ev.venue}</span> `+
+         `<span style="font-size:10px;color:gray;">${ev.class} ${status}</span>`+
+         `<br/><span style="color:black;margin:0rem">${ev.title} </span>` +
+         `<br/><span style="font-size:9px;color:green;margin:0rem">${ev.created_by}</span>`
 
-         setTimeout( () => {
-         self.postWithPromise('/events/latest/100').then(
-            function(json) {
-               self.events = JSON.parse(json).data;
-               self.initVenuesAndClasses();
-               self.saveStore('events', self.events);
-               self.eventsToTimeLine(self.events);
-            }
-         )}, 2000);
-      },
-      eventToTimelinePoint: function(key, ev) 
-      {
-         const self = this;
-         var color = self.stringToColour(ev.class)
-         let status = (ev.status == 'PENDING')?' (Pending Approval)':'';
-         return { id:key
-            , class: ev.class
-            , color : color
-            , data: ev
-            , group: ev.venue
-            , tag: self.toNow(ev.date, ev.start_time) + '<br /> ' 
-                  + self.str2Moment(ev.date, 'YYYY-MM-DD').format('MMM DD')+'<br/>'
-                  + self.str2Moment(ev.start_time,'HH:mm:ss').format('HH:mm')+'-' 
-                  + self.str2Moment(ev.end_time,'HH:mm:ss').format('HH:mm')
-            , htmlMode: true
-            , content:  `<span style="font-size:12px;color:green;margin-left:0rem">${ev.venue}</span> `+
-                        `<span style="font-size:10px;color:gray;">${ev.class} ${status}</span>`+
-                        `<br/><span style="color:black;margin:0rem">${ev.title} </span>` +
-                        `<br/><span style="font-size:9px;color:green;margin:0rem">${ev.created_by}</span>`
+       };
+     },
+     eventsToTimeLine: function(events) 
+     {
+       const self = this;
+       self.items = [];
+       for(var key in events)
+       {
+         var ev = events[key];
+         if(moment(ev.date + " " + ev.start_time, "YYYY-MM-DD HH:mm:ss") <= moment())
+           continue;
+         self.items.push(self.eventToTimelinePoint(key, ev));
+       }
+    },
+    loadMore: function() 
+    {
+       const self = this;
+       const app = this.$f7;
 
-         };
-      },
-      eventsToTimeLine: function(events) 
-      {
-         const self = this;
-         // console.log( 'Drawing timeline from ', events.length );
-         self.items = [];
-         for(var key in events)
-         {
-            var ev = events[key];
-            if(moment(ev.date + ' ' + ev.start_time, 'YYYY-MM-DD HH:mm:ss') <= moment() )
-               continue;
-            self.items.push(self.eventToTimelinePoint(key, ev));
-         }
-      },
-      loadMore: function() {
-         const self = this;
-         const app = this.$f7;
-
-         if(!self.allowInfinite) 
-            return;
-         self.allowInfinite = false;
-
-         if(self.events.length >= 500) 
-         {
-            self.preloader = false;
-            let alert = app.notification.create({
-               title: 'Please stop!',
-               text: "I won't fetch more items."
-            }).open();
-            setTimeout(()=> alert.close(), 500);
-            return;
-         }
-
-         // now fetch 20 more starting from offset.
-         app.request.post(self.$store.state.api+'/events/latest/20'+'/'+self.events.length.toString()
-            , self.apiPostData()
-            , function(json) 
-            {
-               const res = JSON.parse(json);
-               if(res.status=='ok')
-               {
-                  self.events.push(...res.data);
-                  self.filterTimeline(self.selectedVenue, self.selectedClass);
-                  self.$localStorage.set('events', JSON.stringify(self.events));
-               }
-            }
-         );
-         setTimeout(() => {self.allowInfinite = true; }, 200);
-         self.eventTypes = [... new Set( self.events.map(x=>x.class))];
-         self.eventTypes.push('ALL');
-         self.venues = [... new Set(self.events.map(x=>x.venue))];
-         self.venues.push('ALL');
+       if(!self.allowInfinite) 
          return;
-      },
-      filterTimeline: function(venue, cls) 
-      {
-         const self = this;
-         const app = self.$f7;
+       self.allowInfinite = false;
 
-         // Preserve the previous venue, cls because they will be reset on
-         // ptr, refresh or infinite events.
-         self.selectedVenue = venue;
-         self.selectedClass = cls;
-         console.log( 'Filter using '+venue+ ' and '+cls);
-         var filteredEvents = self.events.filter(x => {
-            if(venue)
-               return (venue=='ALL' || x.venue==self.selectedVenue)
-            else if(cls)
-               return (cls=='ALL' || x.class==self.selectedClass)
-            else
-               return true;
-            }
-         );
-         self.eventsToTimeLine(filteredEvents);
-      },
-      genTimeline: function( ev ) 
-      {
-         const self = this;
+       if(self.events.length >= 500) 
+       {
+         self.preloader = false;
+         let alert = app.notification.create({
+           title: 'Please stop!',
+           text: "I won't fetch more items."
+         }).open();
+         setTimeout(()=> alert.close(), 500);
+         return;
+       }
 
-         let whereWhere = '';
-
-         whereWhere += moment(ev.date, 'YYYY-MM-DD').format('ddd, MMM DD') +
-            ', ' + moment(ev.start_time, 'HH:mm:ss').format('h:mm A')
-         return whereWhere;
-      },
-      genWhereline: function(ev) 
-      {
-         const self = this;
-         let content =  `<span style="color:green">${ev.venue}</span> `+
-                        `<span style="color:gray;">${ev.class} ${status}</span>`;
-         if( self.str2Moment(ev.date, 'YYYY-MM-DD').diff(moment(), 'days') < 1)
+       // now fetch 20 more starting from offset.
+       app.request.post(self.$store.state.api+'/events/latest/20'+'/'+self.events.length.toString()
+         , self.apiPostData()
+         , function(json) 
          {
-            let fromNow = self.str2Moment(ev.date + ' ' + ev.start_time , 'YYYY-MM-DD HH:mm:ss').fromNow();
-            content = '<span style="float:right">'+fromNow+'</span>' + content;
+           const res = JSON.parse(json);
+           if(res.status=='ok')
+           {
+             self.events.push(...res.data);
+             self.filterTimeline(self.selectedVenue, self.selectedClass);
+             self.$localStorage.set('events', JSON.stringify(self.events));
+           }
          }
-         return content;
-      },
+       );
+       setTimeout(() => {self.allowInfinite = true; }, 200);
+       self.eventTypes = [... new Set( self.events.map(x=>x.class))];
+       self.eventTypes.push('ALL');
+       self.venues = [... new Set(self.events.map(x=>x.venue))];
+       self.venues.push('ALL');
+       return;
+     },
+     filterTimeline: function(venue, cls) 
+     {
+       const self = this;
+       const app = self.$f7;
+
+       // Preserve the previous venue, cls because they will be reset on
+       // ptr, refresh or infinite events.
+       self.selectedVenue = venue;
+       self.selectedClass = cls;
+       console.log( 'Filter using '+venue+ ' and '+cls);
+       var filteredEvents = self.events.filter(x => {
+         if(venue)
+           return (venue=='ALL' || x.venue==self.selectedVenue)
+         else if(cls)
+           return (cls=='ALL' || x.class==self.selectedClass)
+         else
+           return true;
+       }
+       );
+       self.eventsToTimeLine(filteredEvents);
+     },
+     genTimeline: function( ev ) 
+     {
+       const self = this;
+       let whereWhere = '';
+       whereWhere += moment(ev.date, 'YYYY-MM-DD').format('ddd, MMM DD') +
+         ', ' + moment(ev.start_time, 'HH:mm:ss').format('h:mm A')
+       return whereWhere;
+     },
+     genWhereline: function(ev) 
+     {
+       const self = this;
+       let content =  `<span style="color:green">${ev.venue}</span> `+
+         `<span style="color:gray;">${ev.class} ${status}</span>`;
+       if( self.str2Moment(ev.date, 'YYYY-MM-DD').diff(moment(), 'days') < 1)
+       {
+         let fromNow = self.str2Moment(ev.date + ' ' + ev.start_time , 'YYYY-MM-DD HH:mm:ss').fromNow();
+         content = '<span style="float:right">'+fromNow+'</span>' + content;
+       }
+       return content;
+     },
    },
 }; 
 

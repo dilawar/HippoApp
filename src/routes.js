@@ -8,7 +8,7 @@ import AWSPage from './assets/vue/pages/myaws.vue';
 import JCPage from './assets/vue/pages/myjc.vue';
 import CoursePage from './assets/vue/pages/mycourse.vue';
 import PanelLeftPage from './assets/vue/pages/panel-left.vue';
-import PanelTimelinePage from './assets/vue/pages/panel-right-timeline.vue';
+import PanelRightPage from './assets/vue/pages/panel-right.vue';
 import WhatWhereWhenPage from './assets/vue/pages/whatwherewhen.vue';
 import FormPage from './assets/vue/pages/form.vue';
 import DynamicRoutePage from './assets/vue/pages/dynamic-route.vue';
@@ -28,6 +28,14 @@ import Vuex from './assets/vue/pages/vuex.vue';
 import InventoryPage from './assets/vue/pages/inventory.vue';
 import NoticeBoards from './assets/vue/pages/noticeboards.vue';
 
+// BMV ADMIN
+import BmvBookingRequests from './assets/vue/pages/bmv_booking_requests.vue';
+import BmvEvents from './assets/vue/pages/bmv_events.vue';
+
+// ACAD ADMIN 
+import AcadAdminAWSRoster from './assets/vue/pages/acad_aws_roster.vue';
+import AcadAdminAWS from './assets/vue/pages/acad_aws.vue';
+
 export default [
    {
       path: '/',
@@ -40,6 +48,26 @@ export default [
    {
       path: '/userpanel/',
       component: PanelLeftPage
+   },
+   {
+      path: '/adminpanel/',
+      component: PanelRightPage
+   },
+   {
+      path: '/bmvadmin/bookingrequests/',
+      component: BmvBookingRequests
+   },
+   {
+      path: '/bmvadmin/events/',
+      component: BmvEvents
+   },
+   {
+      path: '/acadadmin/aws/',
+      component: AcadAdminAWS
+   },
+   {
+      path: '/acadadmin/awsroster/',
+      component: AcadAdminAWSRoster
    },
    {
       path: '/myprofile/',
@@ -76,10 +104,6 @@ export default [
    {
       path: '/myinventory/',
       component: MyInventoryPage
-   },
-   {
-      path: '/timelinepanel/:venue',
-      component: PanelTimelinePage
    },
    {
       path: '/whatwherewhen/',
@@ -123,19 +147,11 @@ export default [
       component: FormPage
    },
    {
-      path: '/dynamic-route/blog/:blogId/post/:postId/',
-      component: DynamicRoutePage
-   },
-   {
       path: '/search/',
       component: SearchPage
    },
    {
       path: '/noticeboards/:boardName',
       component: NoticeBoards
-   },
-   {
-      path: '/vuex/',
-      component: Vuex
    },
 ]
