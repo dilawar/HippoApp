@@ -377,6 +377,9 @@ Vue.mixin({
       'date' : function(time) {
          return moment(time, 'YYYY-MM-DD').format('(ddd) MMM DD');
       },
+      'name' : function(login) {
+         return login.first_name + ' ' + login.last_name;
+      },
    },
 });
 
