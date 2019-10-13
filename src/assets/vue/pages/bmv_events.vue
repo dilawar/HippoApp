@@ -5,35 +5,20 @@
 
       <f7-block v-if="getRoles().includes('BOOKMYVENUE_ADMIN')">
         <f7-list no-hairlines media-list accordion-list>
-          <f7-list-item v-for="(events, key) in Object.values(eventsGrouped)" :key="key"
+          <f7-list-item v-for="(event, key) in events" :key="key"
                         accordion-item
-                        :bg-color="(events[0].is_public_event=='YES')?'yellow':''"
+                        :bg-color="(event.is_public_event=='YES')?'yellow':''"
+                        @click="openEventPopup(event)"
                         >
-            <div slot="header"> Created by {{events[0].created_by}} </div>
-            <div slot="text"> {{events[0].title}} </div>
-            <div slot="footer"> 
-              {{events[0].date | date}} |
-              {{events[0].start_time | clockTime}} to 
-              {{events[0].end_time | clockTime }}
-              (#Events {{events.length}})
+            <div slot="header"> Created by {{event.created_by}} </div>
+            <div slot="title"> {{event.title}} </div>
+            <div slot="text"> 
+              {{event.date | date}} |
+              {{event.start_time | clockTime}} to 
+              {{event.end_time | clockTime }}
+              (#Events {{event.total}})
             </div>
-            <div slot="title"> {{events[0].class}} @{{events[0].venue}} </div>
-            <div slot="after">
-              <f7-link @click="openEventPopup(events)">Update</f7-link>
-            </div>
-            <!--
-            <f7-accordion-content>
-              <f7-list no-hairlines v-if="events.length > 1">
-                <f7-list-item v-for="(event, key) in events" :key="key">
-                  <div slot="header">
-                    {{events[0].date | date}} |
-                    {{events[0].start_time | clockTime}} to 
-                    {{events[0].end_time | clockTime }}
-                  </div>
-                </f7-list-item>
-              </f7-list>
-            </f7-accordion-content>
-            -->
+            <div slot="subtitle"> {{event.class}} @{{event.venue}} </div>
           </f7-list-item>
         </f7-list>
       </f7-block>
@@ -61,18 +46,32 @@
                   <div v-html="thisEvent.description"></div>
                 </small>
               </f7-card-content>
+              <f7-card-footer>
+                <f7-col>
+                  <f7-button close-popup
+                    color="red" @click="deleteGroup(thisEvent.gid)">
+                    Delete Group
+                  </f7-button>
+                </f7-col>
+                  <f7-button close-popup 
+                    @click="toggleIsPublicEventGroup(thisEvent.gid)">
+                    Toggle PUBLIC EVENT group
+                  </f7-button>
+              </f7-card-footer>
             </f7-card>
 
+            <!-- If on mobile apps -->
             <f7-block>
-              <div>Swipe left to mark/unmark <tt>PUBLIC EVENT</tt>.
+              <div v-if="isMobileApp()">
+                Swipe left to mark/unmark <tt>PUBLIC EVENT</tt>.
                 Swipe right to <strong>CANCEL</strong> the event.
               </div>
-              <f7-list inset>
+              <f7-list inset media-list>
                 <f7-list-item v-for="(event, key) in theseEvents" :key="key"
                               swipeout
                               @swipeout:delete="deleteEvent(event)"
                               >
-                  <div slot="title">
+                  <div slot="text">
                     {{event.date | date}}, 
                     {{event.start_time | clockTime}} to 
                     {{event.end_time | clockTime }}
@@ -80,25 +79,41 @@
                   <div slot="footer" v-if="event.is_public_event==='YES'">
                     PUBLIC EVENT
                   </div>
-                  <f7-swipeout-actions right>
-                    <f7-swipeout-button delete 
-                                        confirm-text="Are you sure to cancel this event"
-                                        >
-                                        Cancel
-                    </f7-swipeout-button>
-                  </f7-swipeout-actions>
-                  <f7-swipeout-actions left>
-                    <f7-swipeout-button v-if="event.is_public_event==='NO'"
-                                        @click="toggleIsPublicEvent(event)"
-                                        >
-                      Mark PUBLIC Event
-                    </f7-swipeout-button>
-                    <f7-swipeout-button v-else 
-                                        @click="toggleIsPublicEvent(event)"
-                                        >
-                      Mark NON-PUBLIC Event
-                    </f7-swipeout-button>
-                  </f7-swipeout-actions>
+                  <div v-if="isMobileApp()"> <!-- MOBILE -->
+                    <f7-swipeout-actions right>
+                      <f7-swipeout-button delete 
+                                          confirm-text="Are you sure to cancel this event"
+                                          >
+                                          Cancel
+                      </f7-swipeout-button>
+                    </f7-swipeout-actions>
+                    <f7-swipeout-actions left>
+                      <f7-swipeout-button v-if="event.is_public_event==='NO'"
+                                          @click="toggleIsPublicEvent(event)"
+                                          >
+                                          Mark PUBLIC Event
+                      </f7-swipeout-button>
+                        <f7-swipeout-button v-else 
+                                            @click="toggleIsPublicEvent(event)"
+                                            >
+                                            Mark NON-PUBLIC Event
+                        </f7-swipeout-button>
+                    </f7-swipeout-actions>
+                  </div>
+                  <div slot="footer" v-else> <!-- BROWSER -->
+                    <f7-row>
+                      <f7-col>
+                        <f7-button small raised color="red"
+                          @click="deleteEvent(event)">Delete</f7-button>
+                      </f7-col>
+                      <f7-col>
+                          <f7-button small raised
+                                     @click="toggleIsPublicEvent(event)">
+                            toggle PUBLIC EVENT
+                          </f7-button>
+                      </f7-col>
+                    </f7-row>
+                  </div>
                 </f7-list-item>
               </f7-list>
             </f7-block>
@@ -116,6 +131,7 @@
       const self = this;
       return {
         eventsGrouped: [],
+        events: [],
         thisEvent: [],
         theseEvents: [],
         eventPopup: false,
@@ -137,7 +153,7 @@
         const self = this;
         self.promiseWithAuth('bmvadmin/events/upcoming/0/10').then(
           function(json) {
-            self.eventsGrouped = JSON.parse(json).data;
+            self.events = JSON.parse(json).data;
           });
       },
       loadMore: function()
@@ -145,32 +161,31 @@
         const self = this;
         if(! self.allowInfinite)
           return;
+
         self.allowInfinite = false;
 
         const app = self.$f7;
-        var from = self.eventsGrouped['num_events'];
+        var from = Object.keys(self.events).length;
         var to = from + 10;
-        app.dialog.preloader();
-
-        setTimeout( () => {
-          self.promiseWithAuth('bmvadmin/events/upcoming/'+from+'/'+to).then(
-            function(json) {
-              var moreE = JSON.parse(json).data;
-              self.eventsGrouped = {...self.eventsGrouped, ...moreE}
-              self.eventsGrouped['num_events'] += 10;
-              self.allowInfinite = true;
-              app.dialog.close();
-            });
-          app.dialog.close();
-          self.allowInfinite = true;
-        }, 1000);
+        console.log("Fetching from ", from, " to ", to );
+        self.promiseWithAuth('bmvadmin/events/upcoming/'+from+'/'+to).then(
+          function(json) {
+            var moreE = JSON.parse(json).data;
+            for(var o in moreE)
+              self.events.push(moreE[o]);
+            self.allowInfinite = true;
+          });
       },
-      openEventPopup: function(events) 
+      openEventPopup: function(event) 
       {
         const self = this;
-        self.theseEvents = events;
-        self.thisEvent = events[0];
-        self.eventPopup = true;
+        self.thisEvent = event;
+        // Fetch all events for this gid.
+        self.promiseWithAuth('bmvadmin/events/gid/'+event.gid)
+          .then( function(json) {
+            self.theseEvents = JSON.parse(json).data;
+            self.eventPopup = true;
+          });
       },
       selectEvent: function(e)
       {
@@ -204,6 +219,21 @@
         console.log('Deleting event: ', event);
         event['status'] = 'CANCELLED';
         self.updateEvent(event);
+      },
+      deleteGroup: function(gid) 
+      {
+        const self = this;
+        const app = self.$f7;
+        console.log('Deleting event: group ', gid);
+        app.dialog.prompt("Reason...", "Cancelling whole group..."
+          , function(value) {
+            self.promiseWithAuth('bmvadmin/events/cancel/'+gid, {reason:value})
+              .then( function(json){
+                self.eventPopup = false;
+                console.log('Cancelled group');
+                self.fetchUpcomingEvents();
+              });
+          }, '');
       },
     },
   }

@@ -13,6 +13,7 @@
                         :key="id"
                         accordion-item
                         :bg-color="(request.is_public_event=='YES')?'yellow':''"
+                        @click="openReviewPopup(request)"
                         >
             <div slot="header"> Created by {{request.created_by}} </div>
             <div slot="text"> {{request.title}} </div>
@@ -22,9 +23,6 @@
               {{request.end_time | clockTime }}
             </div>
             <div slot="title"> {{request.class}} @{{request.venue}} </div>
-            <div slot="after">
-               <f7-link @click="openReviewPopup(request)">Review</f7-link>
-            </div>
           </f7-list-item>
 
         </f7-list>

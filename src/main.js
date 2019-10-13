@@ -233,6 +233,12 @@ Vue.mixin({
       loadStoreStr: function(key) {
          return this.$localStorage.get(key, '');
       },
+      isMobileApp: function() {
+         // From  https://stackoverflow.com/a/13252184/1805129
+         return (window.cordova || window.PhoneGap || window.phonegap) 
+             && /^file:\/{3}[^\/]/i.test(window.location.href) 
+             && /ios|iphone|ipod|ipad|android/i.test(navigator.userAgent);
+      },
       sendRequest: function(endpoint, post) {
          const self = this;
          const app = self.$f7;

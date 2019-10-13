@@ -11,7 +11,7 @@
           <f7-list-item link="/bmvadmin/bookingrequests/" 
                         target="_blank"
                         view=".view-main"
-                        title="Booking Requests" 
+                        title="Pending Requests" 
                         panel-close
                         >
           </f7-list-item>
@@ -19,7 +19,7 @@
           <f7-list-item link="/bmvadmin/events/" 
                         target="_blank"
                         view=".view-main"
-                        title="Booked Events" 
+                        title="Confirmed Events" 
                         panel-close
                         >
           </f7-list-item>
@@ -33,7 +33,7 @@
           <f7-list-item link="/acadadmin/aws/" 
                         target="_blank"
                         view=".view-main"
-                        title="Manage AWSs" 
+                        title="Upcoming AWSs" 
                         panel-close
                         >
           </f7-list-item>
@@ -41,7 +41,7 @@
           <f7-list-item link="/acadadmin/awsroster/" 
                         target="_blank"
                         view=".view-main"
-                        title="AWS Roster" 
+                        title="List of AWS speakers" 
                         panel-close
                         >
           </f7-list-item>
