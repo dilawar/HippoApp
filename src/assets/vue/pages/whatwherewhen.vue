@@ -6,8 +6,17 @@
            infinite
            :infinite-preloader="showPreloader" 
            @infinite="loadMore"
-           >
-  <f7-navbar title="What Where When" back-link="Back"></f7-navbar>
+    >
+  <f7-navbar title="What Where When" back-link="Back">
+    <!-- Search bar -->
+    <f7-subnavbar :inner="false">
+      <f7-searchbar
+        search-container=".search-list"
+        search-in=".item-title, .item-header, .item-footer, .item-after"
+        :disable-button="!$theme.aurora"
+        ></f7-searchbar>
+    </f7-subnavbar>
+  </f7-navbar>
 
   <!-- Filter by venue should be a floating button. -->
   <f7-fab position="right-top" 
@@ -41,18 +50,12 @@
      </f7-actions-group>
   </f7-actions>
 
-  <!--
-  <light-timeline v-model="items" :items='items'>
-     <template slot='tag' slot-scope='{ item }'>
-        <span v-html="item.tag" style="color:black"></span>
-     </template>
-  </light-timeline>
-  -->
-
   <f7-block>
      <f7-block-title small>Cancelled events are not shown.</f7-block-title>
 
-     <f7-list accordion-list media-list no-hairlines>
+     <f7-list accordion-list media-list no-hairlines
+              class="search-list"
+              >
        <f7-list-item :accordion-item="item.data.description.length>80"
               v-for="(item, key) in items"
               :key="key"

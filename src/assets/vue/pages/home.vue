@@ -130,7 +130,7 @@
 
       <!-- FAB Right Bottom (Blue) -->
       <f7-fab v-if="alreadyLoggedIn" 
-              tooltip="book a venue"
+              text="BOOK"
               position="right-bottom"
               slot="fixed" 
               color="green"
