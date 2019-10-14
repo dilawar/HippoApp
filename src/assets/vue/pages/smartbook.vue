@@ -86,12 +86,14 @@
       </f7-list-item>
 
       <!-- Speaker -->
-      <f7-list-input :input="false" label="Speaker (type to search)">
+      <f7-list-input :input="false"
+                     label="Speaker (type to search)"
+                     v-if="isSpeakerRequired()"
+                     >
         <input slot="input"
                type="text" 
                class="input-item-wrap"
                :value="thisSpeaker.email"
-               @input="thisSpeaker.id=0"
                id="autocomplete_speaker"
                />
       </f7-list-input>
@@ -121,9 +123,7 @@ export default {
       classes: [],
       venues: [], 
       openSpeakerPopup: false,
-      thisEvent: { 
-        type: 'TALK'
-      },
+      thisEvent: { type: 'UNKNOWN' },
       createNewSpeaker: false,
       thisSpeaker: {
         id: -1,

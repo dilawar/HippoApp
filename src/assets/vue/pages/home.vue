@@ -278,62 +278,65 @@ export default {
          }, 60*60*1000);
       },
       methods: {
-         signIn: function()
-         {
-            const self = this;
-            const app = self.$f7;
-            app.dialog.preloader("Loging in ...");
-            app.request.promise.post( self.$store.state.api+"/authenticate"
-               , {"login":self.username, "password": btoa(self.password)}
-               ).then( function(json) {
-                  var res = JSON.parse(json);
-                  if( res.status =='ok' && res.data.apikey != '')
-                 {
-                   self.$localStorage.set('HIPPO-API-KEY', res.data.apikey);
-                   self.$localStorage.set('GOOGLE-MAP-API-KEY', res.data.gmapapikey);
-                   self.$localStorage.set('HIPPO-LOGIN', self.username);
-                   self.isUserAuthenticated = true;
-                   self.fetchProfile();
-                   self.$f7router.refreshPage();
-                 }
-                 else
-                   app.dialog.alert("Failed to login. Try again.", "Error");
-                 app.dialog.close();
-               });
-            setTimeout(() => app.dialog.close(), 2000);
-         },
-         signOut: function() {
-            const self = this;
-            console.log( "Signing out.");
-            self.$localStorage.set('HIPPO-API-KEY', '');
-            self.$localStorage.set('HIPPO-LOGIN', '');
-            self.isUserAuthenticated = false;
-            self.$f7router.refreshPage();
-         },
-         reinit: function() {
-            const self = this;
-            self.isUserAuthenticated();
-            console.log( "User logged in " + self.alreadyLoggedIn );
-         },
-         youAreNotLoggedIn: function() {
-            const app = this.$f7;
-            app.dialog.alert("Access denied. Login first.", "Prohibited");
-         },
-         isAdmin: function() 
-         {
-            const self = this;
-            var roles = self.getRoles();
-            console.log("Roles are", roles);
-            if(roles.includes("ADMIN") 
-               || roles.includes("BOOKMYVENU_ADMIN") 
-               || roles.includes("ACAD_ADMIN")
-               )
-               return true;
-            return false;
-         },
-         shutdown: function() {
-            navigator.app.exitApp();
-         },
+        signIn: function()
+        {
+          const self = this;
+          const app = self.$f7;
+          app.dialog.preloader("Loging in ...");
+          app.request.promise.post( self.$store.state.api+"/authenticate"
+            , {"login":self.username, "password": btoa(self.password)}
+          ).then( function(json) {
+            var res = JSON.parse(json);
+            if( res.status =='ok' && res.data.apikey != '')
+            {
+              self.$localStorage.set('HIPPO-API-KEY', res.data.apikey);
+              self.$localStorage.set('GOOGLE-MAP-API-KEY', res.data.gmapapikey);
+              self.$localStorage.set('HIPPO-LOGIN', self.username);
+              self.isUserAuthenticated = true;
+              self.fetchProfile();
+              self.$f7router.refreshPage();
+            }
+            else
+              app.dialog.alert("Failed to login. Try again.", "Error");
+            app.dialog.close();
+          });
+          setTimeout(() => app.dialog.close(), 2000);
+        },
+        signOut: function() {
+          const self = this;
+          console.log( "Signing out.");
+          self.$localStorage.set('HIPPO-API-KEY', '');
+          self.$localStorage.set('HIPPO-LOGIN', '');
+          self.isUserAuthenticated = false;
+          self.$f7router.refreshPage();
+        },
+        reinit: function() {
+          const self = this;
+          self.isUserAuthenticated();
+          console.log( "User logged in " + self.alreadyLoggedIn );
+        },
+        youAreNotLoggedIn: function() {
+          const app = this.$f7;
+          app.dialog.alert("Access denied. Login first.", "Prohibited");
+        },
+        isAdmin: function() 
+        {
+          const self = this;
+          self.promiseWithAuth('/me/profile')
+            .then( function(json) {
+              var profile = JSON.parse(json).data;
+              var roles = profile.roles;
+              if(roles.includes("ADMIN") 
+                || roles.includes("BOOKMYVENU_ADMIN") 
+                || roles.includes("ACAD_ADMIN")
+              )
+                return true;
+              return false;
+            });
+        },
+        shutdown: function() {
+          navigator.app.exitApp();
+        },
       },
    }
 </script>
