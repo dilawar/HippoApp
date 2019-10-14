@@ -15,9 +15,8 @@ import { VueEditor, Quill } from 'vue2-editor';
 Vue.component('vue-editor', VueEditor);
 
 // Multi uploader.
-import MultipleFileUploader from '@updivision/vue2-multi-uploader'
-Vue.component('v-multifile-uploader', MultipleFileUploader);
-
+// import MultipleFileUploader from '@updivision/vue2-multi-uploader'
+// Vue.component('v-multifile-uploader', MultipleFileUploader);
 // import VueQrcodeReader from "vue-qrcode-reader";
 // Vue.use(VueQrcodeReader);
 // import 'vue-qrcode-reader/dist/vue-qrcode-reader.css';
@@ -288,7 +287,12 @@ Vue.mixin({
          const self = this;
          var profile = self.loadStore('me.profile');
          if(! 'roles' in profile)
+         {
             self.fetchProfile();
+            setTimeout(() => { 
+               return profile.roles.split(',');
+            }, 500);
+         }
          return profile.roles.split(",");
       },
       filterSchema: function(schema, toremove) 
@@ -378,6 +382,9 @@ Vue.mixin({
       },
       'name' : function(login) {
          return login.first_name + ' ' + login.last_name;
+      },
+      'tt' : function(text) {
+         return "<tt>" + text + "</tt>";
       },
    },
 });

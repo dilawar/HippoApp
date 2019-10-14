@@ -13,6 +13,7 @@ import WhatWhereWhenPage from './assets/vue/pages/whatwherewhen.vue';
 import FormPage from './assets/vue/pages/form.vue';
 import DynamicRoutePage from './assets/vue/pages/dynamic-route.vue';
 import BookingPage from './assets/vue/pages/booking.vue';
+import SmartBookingPage from './assets/vue/pages/smartbook.vue';
 import MyBookingPage from './assets/vue/pages/mybooking.vue';
 import MyInventoryPage from './assets/vue/pages/myinventory.vue';
 import BookThisVenuePage from './assets/vue/pages/bookthisvenue.vue';
@@ -112,6 +113,10 @@ export default [
    {
       path: '/booking/',
       component: BookingPage
+   },
+   {
+      path: '/smartbook/',
+      component: SmartBookingPage
    },
    {
       path: '/map/',

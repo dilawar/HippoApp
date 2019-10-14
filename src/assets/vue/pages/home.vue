@@ -134,7 +134,7 @@
               position="right-bottom"
               slot="fixed" 
               color="green"
-              href="/booking/" 
+              href="/smartbook/" 
               fab-close
               >
         <f7-icon ios="f7:add" aurora="f7:add" md="material:add"></f7-icon>
