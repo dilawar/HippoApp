@@ -18,7 +18,6 @@
     <f7-block>
     <f7-list no-hairlines>
       <f7-list-input :input="false"
-             floating-label 
              label="Email">
         <input :value="thisSpeaker.email" 
              slot="input"
@@ -30,25 +29,25 @@
       <f7-list-input :value="thisSpeaker.name" 
               required
               @change="thisSpeaker.name = $event.target.value"
-              floating-label label="Name">
+              label="Name">
       </f7-list-input>
 
       <f7-list-input :value="thisSpeaker.homepage"
              type="url" 
              @change="thisSpeaker.homepage = $event.target.value"
-             floating-label label="Homepage">
+             label="Homepage">
       </f7-list-input>
 
       <f7-list-input :value="thisSpeaker.department"
               @change="thisSpeaker.department = $event.target.value"
-              floating-label label="Department">
+              label="Department">
       </f7-list-input>
 
       <f7-list-input :value="thisSpeaker.institute"
              type="text"
              required
              @change="thisSpeaker.institute = $event.target.value"
-             floating-label label="Institute">
+             label="Institute">
       </f7-list-input>
     </f7-list>
     <f7-row>
@@ -84,37 +83,26 @@
       </f7-list-item>
     </f7-list>
 
-    <!-- Speaker is required -->
-    <f7-block v-if="isSpeakerRequired()">
-    <f7-list no-hairlines>
-      <!--
-      <f7-list-input :input="false"
-                     label="Speaker (type to search)"
-                     >
-        <input slot="input"
-               type="text" 
-               class="input-item-wrap"
-               :value="thisSpeaker.email"
-               id="autocomplete_speaker"
-               />
-      </f7-list-input>
-      -->
+    <f7-list v-if="isTalkOrSeminar()">
+      <!-- SPEAKER -->
       <f7-list-input :input="false">
-      <v-autocomplete  slot="input"
-               v-if="isSpeakerRequired()"
-               ref="id_autocomplete"
-               results-property="email"
-               results-display="name"
-               :request-headers="apiPostData()"
-               method="post"
-               @selected="onSpeakerSelected"
-               @results="foundSpeakersOnSearch"
-               :source="searchSpeakerURI">
-      </v-autocomplete>
+        <v-autocomplete  slot="input"
+                         placeholder="Search for speaker"
+                         inputClass="item-input-wrap"
+                         results-property="email"
+                         results-display="name"
+                         :request-headers="apiPostData()"
+                         method="post"
+                         @selected="onSpeakerSelected"
+                         @results="foundSpeakersOnSearch"
+                         @noResults="createNewSpeaker=true"
+                         :source="searchSpeakerURI">
+        </v-autocomplete>
       </f7-list-input>
       <f7-list-item v-if="parseInt(thisSpeaker.id) > 0">
-        <div slot="header">Found speaker id: {{thisSpeaker.id}} </div>
-        <div slot="footer" v-html="thisSpeaker.html"></div>
+        <!-- <div slot="header">Found speaker id: {{thisSpeaker.id}} </div> -->
+        <div slot="header" v-html="thisSpeaker.html"></div>
+        <f7-link slot="footer" @click="openSpeakerPopup=true" >Update</f7-link>
       </f7-list-item>
       <f7-list-item v-if="createNewSpeaker">
         <div slot="header">No one is found..</div>
@@ -122,9 +110,16 @@
                    @click="openSpeakerPopup=true"
           > Add new Speaker </f7-button>
       </f7-list-item>
-    </f7-list>
-    </f7-block>
 
+      <!-- Talk tile and description -->
+      <f7-list-input v-if="parseInt(thisTalk.speaker_id) > 0"
+                     @input="thisTalk.title = $event.target.value"
+                     label="Title"
+                     type="textarea" resizable required 
+                     :value="thisTalk.title">
+      </f7-list-input>
+
+    </f7-list>
   </f7-block>
   </f7-page>
 
@@ -140,10 +135,10 @@ export default {
       venues: [], 
       potentialSpeakers: [],
       openSpeakerPopup: false,
-      thisEvent: { type: 'UNKNOWN' },
+      thisEvent: { type: 'TALK' },
       createNewSpeaker: false,
       thisSpeaker: {
-        id: -1,
+        id: '-1',
         honorific: '',
         email: '',
         first_name: '',
@@ -153,6 +148,16 @@ export default {
         homepage: '',
         department: '',
         institute: '',
+      },
+      thisTalk: {
+        speaker_id: '1'
+        , title: ''
+        , description: ''
+      },
+      thisBooking: {
+        date: ''
+        , time: ''
+        , venue: ''
       },
     };
   },
@@ -202,7 +207,7 @@ export default {
       const self = this;
       console.log( "Selected type is", self.thisEvent.type);
     },
-    isSpeakerRequired: function() {
+    isTalkOrSeminar: function() {
       const self = this;
       if(self.thisEvent.type.includes("TALK"))
         return true;
@@ -216,11 +221,30 @@ export default {
       console.log('Selected ', spkr);
       console.log('Available ', self.potentialSpeakers);
       self.thisSpeaker = self.potentialSpeakers.find(x=> x.id === spkr.value);
+
+      // Assign this speaker to the talk.
+      self.thisTalk.speaker_id = self.thisSpeaker.id;
     },
     foundSpeakersOnSearch: function(res)
     {
       const self = this;
       self.potentialSpeakers = res.results;
+      self.createNewSpeaker = false;
+    },
+    submitSpeaker: function(speaker) 
+    {
+      const self = this;
+      const app = self.$f7;
+      console.log('Adding ', speaker);
+      app.dialog.preloader();
+      self.promiseWithAuth('people/speaker/add', speaker)
+        .then( function(json) {
+          var data = JSON.parse(json).data;
+          self.thisSpeaker = data.data;
+          app.dialog.close();
+          console.log( 'Added ', self.thisSpeaker);
+        });
+      setTimeout(() => app.dialog.close(), 500);
     },
   },
 }; 
