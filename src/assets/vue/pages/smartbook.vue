@@ -66,7 +66,7 @@
 
 
   <f7-block>
-    <f7-list no-hairlines>
+    <f7-list form no-hairlines>
       <!-- Ask user for what purpose they are booking -->
       <f7-list-item title="Type of event?"
                     smart-select
@@ -83,12 +83,12 @@
       </f7-list-item>
     </f7-list>
 
-    <f7-list v-if="isTalkOrSeminar()">
+    <f7-list form v-if="isTalkOrSeminar()">
       <!-- SPEAKER -->
       <f7-list-input :input="false">
         <v-autocomplete  slot="input"
-                         placeholder="Search for speaker"
-                         inputClass="item-input-wrap"
+                         input-class="item-input"
+                         placeholder="Speaker"
                          results-property="email"
                          results-display="name"
                          :request-headers="apiPostData()"
@@ -96,11 +96,10 @@
                          @selected="onSpeakerSelected"
                          @results="foundSpeakersOnSearch"
                          @noResults="createNewSpeaker=true"
-                         :source="searchSpeakerURI">
+                         :source="(q)=>searchPeopleURI(q, 'speaker')">
         </v-autocomplete>
       </f7-list-input>
       <f7-list-item v-if="parseInt(thisSpeaker.id) > 0">
-        <!-- <div slot="header">Found speaker id: {{thisSpeaker.id}} </div> -->
         <div slot="header" v-html="thisSpeaker.html"></div>
         <f7-link slot="footer" @click="openSpeakerPopup=true" >Update</f7-link>
       </f7-list-item>
@@ -114,9 +113,45 @@
       <!-- Talk tile and description -->
       <f7-list-input v-if="parseInt(thisTalk.speaker_id) > 0"
                      @input="thisTalk.title = $event.target.value"
-                     label="Title"
+                     floating-label label="Title" outline
                      type="textarea" resizable required 
                      :value="thisTalk.title">
+      </f7-list-input>
+
+      <f7-list-input :input="false">
+        <vue-editor ref="description" 
+                    slot="input"
+                    placeholder="Description of this talk"
+                    v-model="thisTalk.description">
+        </vue-editor>
+      </f7-list-input>
+
+      <f7-list-input :input="false" required>
+        <v-autocomplete  slot="input"
+                         input-class="item-input"
+                         results-property="email"
+                         results-display="name"
+                         results-value="email"
+                         placeholder="Host email"
+                         :request-headers="apiPostData()"
+                         method="post"
+                         @selected="(v)=>thisTalk.host=v.selectedObject.email"
+                         :source="(q)=>searchPeopleURI(q, 'host')">
+        </v-autocomplete>
+      </f7-list-input>
+
+      <f7-list-input :input="false">
+        <v-autocomplete  slot="input"
+                         input-class="item-input"
+                         results-property="email"
+                         results-display="name"
+                         results-value="email"
+                         placeholder="Coordination email"
+                         :request-headers="apiPostData()"
+                         method="post"
+                         @selected="(v)=>thisTalk.coordinator=v.selectedObject.email"
+                         :source="(q)=>searchPeopleURI(q, 'login')">
+        </v-autocomplete>
       </f7-list-input>
 
     </f7-list>
@@ -153,6 +188,9 @@ export default {
         speaker_id: '1'
         , title: ''
         , description: ''
+        , host: ''
+        , coordinator: ''
+        
       },
       thisBooking: {
         date: ''
@@ -194,9 +232,9 @@ export default {
         return '('+v.strength+') ' + v.summary;
       return 'Info not available.';
     },
-    searchSpeakerURI: function(q) {
+    searchPeopleURI: function(q, what) {
       const self = this;
-      return self.getAPIUrl() + '/search/speaker/'+encodeURIComponent(q);
+      return self.getAPIUrl() + '/search/'+what+'/'+encodeURIComponent(q);
     },
     onEventSelect: function(type) 
     {
@@ -215,14 +253,10 @@ export default {
         return true;
       return false;
     },
-    onSpeakerSelected: function(spkr) 
+    onSpeakerSelected: function(val) 
     {
       const self = this;
-      console.log('Selected ', spkr);
-      console.log('Available ', self.potentialSpeakers);
-      self.thisSpeaker = self.potentialSpeakers.find(x=> x.id === spkr.value);
-
-      // Assign this speaker to the talk.
+      self.thisSpeaker = val.selectedObject;
       self.thisTalk.speaker_id = self.thisSpeaker.id;
     },
     foundSpeakersOnSearch: function(res)
