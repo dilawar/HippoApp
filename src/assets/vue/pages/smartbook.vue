@@ -1,6 +1,6 @@
 <template>
   <f7-page>
-  <f7-navbar title="Book a venue" back-link="Back"></f7-navbar>
+  <f7-navbar title="Booking Events" back-link="Back"></f7-navbar>
 
   <!-- SPEAKER POPUP -->
   <!-- POPUP  -->
@@ -13,8 +13,8 @@
       </f7-navbar>
 
     <!-- Once the CLASS is known, expand the speaker card. -->
-    <f7-block-title small>Your search was futile. 
-      Add a new speaker now.</f7-block-title>
+    <f7-block-title small>Your search was futile.  Add a new speaker...
+    </f7-block-title>
     <f7-block>
     <f7-list no-hairlines>
       <f7-list-input :input="false"
@@ -64,11 +64,13 @@
     </f7-page>
   </f7-popup>
 
-
   <f7-block>
     <f7-list form no-hairlines>
+      <!-- If there is any unscheduled talks, show them here for booking.
+      -->
+
       <!-- Ask user for what purpose they are booking -->
-      <f7-list-item title="Type of event?"
+      <f7-list-item title="Select the TYPE of event to continue..."
                     smart-select
                     @smartselect:closed="onEventTypeSelection()"
                     :smart-select-params="{openIn:'popup', searchbar: true, closeOnSelect:true, searchbarPlaceholder:'Search Class'}">
@@ -83,8 +85,37 @@
       </f7-list-item>
     </f7-list>
 
-    <f7-list form v-if="isTalkOrSeminar()">
-      <!-- SPEAKER -->
+    <f7-card v-if="isTalkOrSeminar() && myUnscheduledTalks.length > 0">
+      <f7-card-header>
+        Unscheduled events
+        <f7-button small href="/me/talks">SCHEDULE/EDIT/CANCEL</f7-button>
+      </f7-card-header>
+      <f7-card-content style="font-size:small">
+        <f7-list>
+          <f7-list-item v-for="(talk, key) in myUnscheduledTalks">
+            <div slot="header">
+              {{talk.class}} by {{talk.speaker}} | {{talk.title}}
+            </div>
+            <div slot="footer">
+              Created on: {{talk.created_on | date}}
+            </div>
+          </f7-list-item>
+        </f7-list>
+      </f7-card-content>
+    </f7-card>
+
+    <!-- SPEAKER -->
+    <f7-list form no-hairlines>
+    <f7-list-group v-if="isTalkOrSeminar()">
+      <f7-list-item >
+        <div slot="header">
+          <tt>{{thisEvent.type}}</tt> must have a speaker. 
+        </div>
+        <div slot="footer">
+          If no one is found in my database, I will ask you
+          to fill-in speaker's details.
+        </div>
+      </f7-list-item>
       <f7-list-input :input="false">
         <v-autocomplete  slot="input"
                          input-class="item-input"
@@ -109,8 +140,16 @@
                    @click="openSpeakerPopup=true"
           > Add new Speaker </f7-button>
       </f7-list-item>
+    </f7-list-group>
 
-      <!-- Talk tile and description -->
+    <!-- WHEN SPEAKER IS SET, SHOW THE TALK SECTION -->
+    <f7-list-group v-if="parseInt(thisTalk.speaker_id)>0">
+      <f7-list-item>
+        <div slot="header">
+          Cool! Now a valid speaker has been found, please fill-in 
+          the details of your <tt>{{thisEvent.type}}</tt>.
+        </div>
+      </f7-list-item>
       <f7-list-input v-if="parseInt(thisTalk.speaker_id) > 0"
                      @input="thisTalk.title = $event.target.value"
                      floating-label label="Title" outline
@@ -132,7 +171,7 @@
                          results-property="email"
                          results-display="name"
                          results-value="email"
-                         placeholder="Host email"
+                         placeholder="Host/PI"
                          :request-headers="apiPostData()"
                          method="post"
                          @selected="(v)=>thisTalk.host=v.selectedObject.email"
@@ -141,21 +180,71 @@
       </f7-list-input>
 
       <f7-list-input :input="false">
-        <v-autocomplete  slot="input"
-                         input-class="item-input"
-                         results-property="email"
-                         results-display="name"
-                         results-value="email"
-                         placeholder="Coordination email"
-                         :request-headers="apiPostData()"
-                         method="post"
-                         @selected="(v)=>thisTalk.coordinator=v.selectedObject.email"
-                         :source="(q)=>searchPeopleURI(q, 'login')">
+        <v-autocomplete slot="input"
+            input-class="item-input"
+            results-property="email"
+            results-display="name"
+            results-value="email"
+            placeholder="Coordination email"
+            :request-headers="apiPostData()"
+            method="post"
+            @selected="(v)=>thisTalk.coordinator=v.selectedObject.email"
+            :source="(q)=>searchPeopleURI(q, 'login')">
         </v-autocomplete>
       </f7-list-input>
 
+      <!-- VENUE AND TIME -->
+      <f7-list-input label="Start Date/Time" :input="false">
+        <date-picker slot="input" 
+             v-model="thisBooking.startDateTime"
+             placeholder="Select datetime"
+             type="datetime" 
+             lang="en"
+             format="YYYY-MM-DD hh:mm a" 
+             :minute-step="15">
+        </date-picker>
+      </f7-list-input>
+
+      <f7-list-input label="End Time" :input="false">
+        <date-picker slot="input" 
+             v-model="thisBooking.endTime"
+             placeholder="End time"
+             type="time" 
+             lang="en"
+             format="hh:mm a" 
+             :minute-step="15">
+        </date-picker>
+      </f7-list-input>
+
+      <f7-list-item title="Select a venue"
+          smart-select
+          :smart-select-params="{closeOnSelect:true}"
+          @smartselect:closed="onEventTypeSelection()">
+        <select @change="thisBooking.venue=$event.target.value"
+            :value="thisEvent.venue">
+          <option v-for="(venue, key) in venues" :key="key" :value="venue.id">
+              {{venue.id}}
+          </option>
+        </select>
+      </f7-list-item>
+
+      <!-- SUBMIT BUTTON -->
+      <f7-list-item>
+        <f7-button v-if="isTalkValid()" 
+                   @click="registerTalk()"
+                   slot="after">
+          Register This Talk
+        </f7-button>
+        <div slot="after" v-else>Missing details...</div>
+      </f7-list-item>
+
+      <!-- PROVIDE SOME SPACE AT BOTTOM -->
+      <f7-list-item></f7-list-item>
+
+    </f7-list-group>
     </f7-list>
   </f7-block>
+
   </f7-page>
 
 </template>
@@ -165,15 +254,17 @@ import moment from 'moment';
 
 export default {
   data() {
+    const self = this;
     return {
       classes: [],
-      venues: [], 
+      venues: self.loadStore('venues'),
       potentialSpeakers: [],
       openSpeakerPopup: false,
-      thisEvent: { type: 'TALK' },
+      thisEvent: { type: 'TALK' }, // Change to UNKNOWN
       createNewSpeaker: false,
+      myUnscheduledTalks : [],
       thisSpeaker: {
-        id: '-1',
+        id: '1',            // CHANGE TO -1
         honorific: '',
         email: '',
         first_name: '',
@@ -185,17 +276,15 @@ export default {
         institute: '',
       },
       thisTalk: {
-        speaker_id: '1'
+        speaker_id: '1'     // CHANGE TO -1
         , title: ''
         , description: ''
         , host: ''
         , coordinator: ''
-        
       },
       thisBooking: {
-        date: ''
-        , time: ''
-        , venue: ''
+        startDateTime: moment()
+        , endTime: moment().add(1, 'hours')
       },
     };
   },
@@ -203,10 +292,6 @@ export default {
     bookingPopup: function(data) {
       console.log('popup');
     },
-  },
-  watch : {
-    startDateTime: function(data){ this.startTimeStamp = moment(data).format('X');}, 
-    endDateTime: function(data){ this.endTimeStamp = moment(data).format('X');},
   },
   mounted: function() {
     // Fetch the available classes of booking. 
@@ -220,8 +305,12 @@ export default {
         self.classes = JSON.parse(json).data;
         app.dialog.close();
       });
-    self.fetchVenues();
-    self.venues = self.loadStore('venues');
+
+    // Get this user talks.
+    self.postWithPromise('/me/talk/unscheduled')
+      .then( function(json) {
+        self.myUnscheduledTalks = JSON.parse(json).data;
+      });
   },
   methods: { 
     venueToStr: function(venueID)
@@ -279,6 +368,39 @@ export default {
           console.log( 'Added ', self.thisSpeaker);
         });
       setTimeout(() => app.dialog.close(), 500);
+    },
+    registerTalk: function() 
+    {
+      const self = this;
+      const app = self.$f7;
+      console.log("Registering talk.", self.thisTalk);
+      app.dialog.preloader();
+      self.thisTalk.class = self.thisEvent.type;
+      self.promiseWithAuth('me/talk/register', self.thisTalk)
+        .then(function(json) {
+          let res = JSON.parse(json).data;
+          if('id' in res)
+          {
+            app.dialog.alert('Created talk with ID ' + res.id);
+            // Refresh page.
+            self.$f7router.refreshPage();
+          }
+          else
+            navigator.notification.alert('I could not register your talk!', null);
+          app.dialog.close();
+        });
+      setTimeout(()=> app.dialog.close(), 500);
+    },
+    isTalkValid: function()
+    {
+      const self = this;
+      if(parseInt(self.thisTalk.speaker_id) < 1)
+        return false;
+      if(self.thisTalk.title.length < 4)
+        return false;
+      if(!(self.thisTalk.host && self.thisTalk.host.includes('@')))
+        return false;
+      return true;
     },
   },
 }; 
