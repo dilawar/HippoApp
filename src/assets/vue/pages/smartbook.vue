@@ -22,8 +22,7 @@
              label="Email">
         <input :value="thisSpeaker.email" 
              slot="input"
-             type="email" 
-             required
+             type="email" required
              @change="thisSpeaker.email=$event.target.value"
              />
       </f7-list-input>
@@ -69,7 +68,6 @@
 
   <f7-block>
     <f7-list no-hairlines>
-
       <!-- Ask user for what purpose they are booking -->
       <f7-list-item title="Type of event?"
                     smart-select
@@ -84,11 +82,14 @@
           </option>
         </select>
       </f7-list-item>
+    </f7-list>
 
-      <!-- Speaker -->
+    <!-- Speaker is required -->
+    <f7-block v-if="isSpeakerRequired()">
+    <f7-list no-hairlines>
+      <!--
       <f7-list-input :input="false"
                      label="Speaker (type to search)"
-                     v-if="isSpeakerRequired()"
                      >
         <input slot="input"
                type="text" 
@@ -96,6 +97,20 @@
                :value="thisSpeaker.email"
                id="autocomplete_speaker"
                />
+      </f7-list-input>
+      -->
+      <f7-list-input :input="false">
+      <v-autocomplete  slot="input"
+               v-if="isSpeakerRequired()"
+               ref="id_autocomplete"
+               results-property="email"
+               results-display="name"
+               :request-headers="apiPostData()"
+               method="post"
+               @selected="onSpeakerSelected"
+               @results="foundSpeakersOnSearch"
+               :source="searchSpeakerURI">
+      </v-autocomplete>
       </f7-list-input>
       <f7-list-item v-if="parseInt(thisSpeaker.id) > 0">
         <div slot="header">Found speaker id: {{thisSpeaker.id}} </div>
@@ -107,8 +122,9 @@
                    @click="openSpeakerPopup=true"
           > Add new Speaker </f7-button>
       </f7-list-item>
-
     </f7-list>
+    </f7-block>
+
   </f7-block>
   </f7-page>
 
@@ -122,6 +138,7 @@ export default {
     return {
       classes: [],
       venues: [], 
+      potentialSpeakers: [],
       openSpeakerPopup: false,
       thisEvent: { type: 'UNKNOWN' },
       createNewSpeaker: false,
@@ -162,42 +179,6 @@ export default {
       });
     self.fetchVenues();
     self.venues = self.loadStore('venues');
-
-    // Autocomplete.
-    app.autocomplete.create({
-      inputEl : '#autocomplete_speaker',
-      openIn: 'dropdown',
-      valueProperty: 'email',
-      textProperty: 'name',
-      source: function(q, render)
-      {
-        const autocomplete = this;
-        var results = [];
-        if(2 >= q.length)
-        {
-          render(results);
-          return;
-        }
-
-        autocomplete.preloaderShow();
-        self.promiseWithAuth('search/speaker/'+encodeURIComponent(q))
-          .then( (json) => {
-            results = JSON.parse(json).data;
-            autocomplete.preloaderHide();
-            render(results);
-            self.createNewSpeaker = (results.length == 0)?true:false;
-            self.openSpeakerPopup = self.createNewSpeaker;
-          });
-      },
-      on: {
-        change: function(val) {
-          self.thisSpeaker = val[0];
-          // Fetch other information and show.
-          console.log("Fetch more information and show", self.thisSpeaker);
-        },
-      },
-    });
-
   },
   methods: { 
     venueToStr: function(venueID)
@@ -208,29 +189,9 @@ export default {
         return '('+v.strength+') ' + v.summary;
       return 'Info not available.';
     },
-    refreshVenuesStatus: function(data) 
-    {
-      const self         = this;
-      const app          = self.$f7;
-      self.isOpen        = false;
-
-      // Try to connect. Convert date to unix-timestamp.
-        var link = self.$store.state.api+'/venue/status/all/'
-        +self.startTimeStamp+'/'+self.endTimeStamp;
-
-      app.request.post( link, this.apiPostData()
-        , function(json) 
-        {
-          var res = JSON.parse(json);
-          if(res.status == 'ok')
-          {
-            self.venuesStatus = res.data.venues;
-            self.venuesFree = self.venuesStatus.filter(el=>el.events.length==0);
-            self.venuesTaken = self.venuesStatus.filter(el=>el.events.length>0);
-            self.$localStorage.set('venueIDs', res.data.venues.map(x=>x.id));
-          }
-        }
-      );
+    searchSpeakerURI: function(q) {
+      const self = this;
+      return self.getAPIUrl() + '/search/speaker/'+encodeURIComponent(q);
     },
     onEventSelect: function(type) 
     {
@@ -248,6 +209,18 @@ export default {
       if(self.thisEvent.type.includes("SEMINAR"))
         return true;
       return false;
+    },
+    onSpeakerSelected: function(spkr) 
+    {
+      const self = this;
+      console.log('Selected ', spkr);
+      console.log('Available ', self.potentialSpeakers);
+      self.thisSpeaker = self.potentialSpeakers.find(x=> x.id === spkr.value);
+    },
+    foundSpeakersOnSearch: function(res)
+    {
+      const self = this;
+      self.potentialSpeakers = res.results;
     },
   },
 }; 

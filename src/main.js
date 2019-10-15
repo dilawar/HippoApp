@@ -21,6 +21,10 @@ Vue.component('vue-editor', VueEditor);
 // Vue.use(VueQrcodeReader);
 // import 'vue-qrcode-reader/dist/vue-qrcode-reader.css';
 
+// Autocomplete
+import Autocomplete from 'vuejs-auto-complete';
+Vue.component('v-autocomplete', Autocomplete);
+
 // OSM and leaflet.
 import {LMap, LTileLayer, LMarker, LPolyline, LPopup, LTooltip, LControlLayers} from 'vue2-leaflet';
 import Vue2LeafletLocateControl from 'vue2-leaflet-locatecontrol';
