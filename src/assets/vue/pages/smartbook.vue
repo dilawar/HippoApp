@@ -2,6 +2,47 @@
   <f7-page>
   <f7-navbar title="Booking Events" back-link="Back"></f7-navbar>
 
+  <!-- VENUE POPUP -->
+  <f7-popup :opened="popupVenueSelect" @popup:close="popupVenueSelect=false">
+
+    <f7-page>
+      <f7-navbar title="Select a venue">
+        <f7-nav-right>
+          <f7-link popup-close>Close</f7-link>
+        </f7-nav-right>
+      </f7-navbar>
+
+      <f7-block-title small>
+        Available venues:
+        {{dbDateTime(thisBooking.startDateTime)}} 
+        to {{dbTime(thisBooking.endTime)}}
+      </f7-block-title>
+
+      <f7-block>
+        <!-- Fetch venues and show the status. -->
+        <f7-list media-list>
+
+          <f7-list-item v-for="(venue, key) in venues" 
+                        :key="key"
+                        @click="onVenueSelected(venue.id)">
+            <div slot="header" bg-color="blue">{{venue.note_to_user}}</div>
+            <div slot="title">{{venue.name}}</div>
+            <div slot="after" v-if="isAvailable(venue)">Available</div>
+            <div slot="footer" v-if="venue.BOOKING_STATUS!=='AVAILABLE'">
+              {{venue.BOOKING}}
+            </div>
+            <div slot="header">
+              Capacity {{venue.strength}}, Projector {{venue.has_projector}}
+            </div>
+          </f7-list-item>
+
+        </f7-list>
+      </f7-block>
+
+    </f7-page>
+  </f7-popup>
+
+
   <!-- SPEAKER POPUP -->
   <!-- POPUP  -->
   <f7-popup :opened="openSpeakerPopup" @popup:close="openSpeakerPopup = false">
@@ -148,7 +189,7 @@
     <f7-list-group v-if="parseInt(thisTalk.speaker_id)>0">
       <f7-list-item>
         <div slot="header">
-          Cool! Now a valid speaker has been found, please fill-in 
+          Cool! Now a valid speaker has been assigned, fill-in 
           the details of your <tt>{{thisEvent.type}}</tt>.
         </div>
       </f7-list-item>
@@ -194,12 +235,24 @@
             :source="(q)=>searchPeopleURI(q, 'login')">
         </v-autocomplete>
       </f7-list-input>
+      <f7-list-item text="Save this talk now. You can book later">
+        <f7-button small 
+                   :disabled="! isTalkValid.status" 
+                   @click="registerTalk(false)"
+                   slot="after">
+          {{isTalkValid.msg}}
+        </f7-button>
+      </f7-list-item>
+    </f7-list-group>
 
-      <!-- VENUE AND TIME -->
+    <!-- VENUE AND TIME -->
+    <f7-list-group v-if="isTalkValid.status">
+      <f7-list-item text="Talk looks good enough. Lets plan its booking...">
+      </f7-list-item>
       <f7-list-input label="Start Date/Time" :input="false">
         <date-picker slot="input" 
              v-model="thisBooking.startDateTime"
-             placeholder="Select datetime"
+             placeholder="Select Datetime"
              type="datetime" 
              lang="en"
              format="YYYY-MM-DD hh:mm a" 
@@ -218,33 +271,33 @@
         </date-picker>
       </f7-list-input>
 
-      <f7-list-item title="Select a venue"
-          smart-select
-          :smart-select-params="{closeOnSelect:true}"
-          @smartselect:closed="onEventTypeSelection()">
-        <select @change="thisBooking.venue=$event.target.value"
-            :value="thisEvent.venue">
-          <option v-for="(venue, key) in venues" :key="key" :value="venue.id">
-              {{venue.id}}
-          </option>
-        </select>
+      <!-- FIND A VENUE -->
+      <f7-list-item v-if="thisBooking.venue"
+                    title="Selected venue" 
+                    :after="thisBooking.venue"
+                    >
+      </f7-list-item>
+      <f7-list-item v-else>
+        <f7-button small slot="after" @click="openVenueSelectPopup()">
+          Find a venue
+        </f7-button>
       </f7-list-item>
 
       <!-- SUBMIT BUTTON -->
       <f7-list-item>
-        <f7-button v-if="isTalkValid()" 
-                   @click="registerTalk()"
+        <f7-button :disabled="! (isTalkValid.status && isBookingValid.status)" 
+                   raised 
+                   @click="registerTalk(true)"
                    slot="after">
-          Register This Talk
+          {{isBookingValid.msg}}
         </f7-button>
-        <div slot="after" v-else>Missing details...</div>
       </f7-list-item>
-
-      <!-- PROVIDE SOME SPACE AT BOTTOM -->
-      <f7-list-item></f7-list-item>
-
     </f7-list-group>
+
+    <!-- PROVIDE SOME SPACE AT BOTTOM -->
+    <f7-list-item></f7-list-item>
     </f7-list>
+
   </f7-block>
 
   </f7-page>
@@ -262,11 +315,12 @@ export default {
       venues: self.loadStore('venues'),
       potentialSpeakers: [],
       openSpeakerPopup: false,
-      thisEvent: { type: 'TALK' }, // Change to UNKNOWN
+      popupVenueSelect: false,
+      thisEvent: { type: 'UNKNOWN' }, // Change to UNKNOWN
       createNewSpeaker: false,
       myUnscheduledTalks : [],
       thisSpeaker: {
-        id: '1',            // CHANGE TO -1
+        id: '-1',                     // CHANGE TO -1
         honorific: '',
         email: '',
         first_name: '',
@@ -278,21 +332,28 @@ export default {
         institute: '',
       },
       thisTalk: {
-        speaker_id: '1'     // CHANGE TO -1
+        speaker_id: '-1'             // CHANGE TO -1
         , title: ''
         , description: ''
         , host: ''
         , coordinator: ''
       },
       thisBooking: {
-        startDateTime: moment()
+        startDateTime: moment().add(1, 'minutes')
         , endTime: moment().add(1, 'hours')
+        , venue: ''
       },
     };
   },
-  actions: {
-    bookingPopup: function(data) {
-      console.log('popup');
+  watch: {
+    'thisBooking.startDateTime': function(val, old) {
+      const self = this;
+      self.thisBooking.endTime = moment(val).add(1, 'hours');
+      self.thisBooking.venue = '';
+    },
+    'thisBooking.endTime': function(val, old) {
+      const self = this;
+      self.thisBooking.venue = '';
     },
   },
   mounted: function() {
@@ -303,38 +364,52 @@ export default {
     // Currently only NOPUBLIC type of bookings are allowed.
     app.dialog.preloader();
     self.postWithPromise('info/bmv/bookingclasses')
-      .then( function(json) {
-        self.classes = JSON.parse(json).data;
+      .then( function(x) {
+        self.classes = JSON.parse(x.data).data;
         app.dialog.close();
       });
 
     // Get this user talks.
     self.postWithPromise('/me/talk/unscheduled')
-      .then( function(json) {
-        self.myUnscheduledTalks = JSON.parse(json).data;
+      .then( function(x) {
+        self.myUnscheduledTalks = JSON.parse(x.data).data;
       });
   },
-  methods: { 
-    venueToStr: function(venueID)
+  computed: {
+    isTalkValid: function()
     {
       const self = this;
-      const v = self.venues[venueID];
-      if(v)
-        return '('+v.strength+') ' + v.summary;
-      return 'Info not available.';
+      if(! self.thisEvent.type || self.thisEvent.type === 'UNKNOWN')
+        return {status:false, msg:''};
+
+      if(parseInt(self.thisTalk.speaker_id) < 1)
+        return {status:false, msg:'No valid speaker'};
+
+      if(self.thisTalk.title.length < 4)
+        return {status:false, msg:'Title too short'};
+
+      if(!(self.thisTalk.host && self.thisTalk.host.includes('@')))
+        return {status:false, msg:'Invalid Host/PI'};
+
+      return {status:true, msg:'Save it. I will book later'};
     },
+    isBookingValid: function()
+    {
+      const self = this;
+      if(moment(self.thisBooking.startDateTime) <= moment())
+        return {status: false, msg: 'Start time is in the past!'};
+      if(! self.thisBooking.venue)
+        return {status: false, msg: 'No venue selected.'};
+      return {status: true, msg: 'Register & BOOK'};
+    },
+  },
+  methods: { 
     searchPeopleURI: function(q, what) {
       const self = this;
       return self.getAPIUrl() + '/search/'+what+'/'+encodeURIComponent(q);
-    },
-    onEventSelect: function(type) 
-    {
-      const self = this;
-      console.log("Selected type ", type);
-    },
-    onEventTypeSelection: function() {
-      const self = this;
-      console.log( "Selected type is", self.thisEvent.type);
+      if(moment(self.thisBooking.startDateTime) <= moment())
+        return {status: false, msg: 'Start datetime is in the past!'};
+      return {status: true, msg: 'ok'};
     },
     isTalkOrSeminar: function() {
       const self = this;
@@ -350,6 +425,13 @@ export default {
       self.thisSpeaker = val.selectedObject;
       self.thisTalk.speaker_id = self.thisSpeaker.id;
     },
+    onVenueSelected: function(venueid)
+    {
+      const self = this;
+      self.thisBooking.venue = venueid;
+      console.log('Selected venue is ' + venueid);
+      self.popupVenueSelect = false;
+    },
     foundSpeakersOnSearch: function(res)
     {
       const self = this;
@@ -363,27 +445,41 @@ export default {
       console.log('Adding ', speaker);
       app.dialog.preloader();
       self.promiseWithAuth('people/speaker/add', speaker)
-        .then( function(json) {
-          var data = JSON.parse(json).data;
+        .then( function(x) {
+          var data = JSON.parse(x.data).data;
           self.thisSpeaker = data.data;
           app.dialog.close();
           console.log( 'Added ', self.thisSpeaker);
         });
       setTimeout(() => app.dialog.close(), 500);
     },
-    registerTalk: function() 
+    registerTalk: function(book=false) 
     {
       const self = this;
       const app = self.$f7;
+
+      // Assign the class to talk.
       console.log("Registering talk.", self.thisTalk);
       app.dialog.preloader();
       self.thisTalk.class = self.thisEvent.type;
       self.promiseWithAuth('me/talk/register', self.thisTalk)
-        .then(function(json) {
-          let res = JSON.parse(json).data;
+        .then(function(x) {
+          let res = JSON.parse(x.data).data;
           if('id' in res)
           {
-            app.dialog.alert('Created talk with ID ' + res.id);
+            // Also book this talk.
+            if(book)
+            {
+              self.thisBooking.external_id = 'talk.'+res.id;
+              self.thisBooking.title = self.thisTalk.title;
+              self.thisBooking.description = self.thisTalk.description;
+              self.promiseWithAuth('venue/book/'+self.thisBooking.venue+'/'
+                + moment(self.thisBooking.startDateTime,'X')+'/'
+                + moment(self.thisBooking.endTime, 'X'), self.thisBooking
+              ).then( function(x) {
+                  console.log( "Booked event for talk", x.data);
+                });
+            }
             // Refresh page.
             self.$f7router.refreshPage();
           }
@@ -391,18 +487,35 @@ export default {
             navigator.notification.alert('I could not register your talk!', null);
           app.dialog.close();
         });
-      setTimeout(()=> app.dialog.close(), 500);
+
+      setTimeout(() => app.dialog.close(), 500);
     },
-    isTalkValid: function()
+    isAvailable: function(venue)
     {
-      const self = this;
-      if(parseInt(self.thisTalk.speaker_id) < 1)
+      if(venue.allowd_booking_on_hippo === 'NO')
         return false;
-      if(self.thisTalk.title.length < 4)
-        return false;
-      if(!(self.thisTalk.host && self.thisTalk.host.includes('@')))
+      if(venue.BOOKING_STATUS !== 'AVAILABLE')
         return false;
       return true;
+    },
+    openVenueSelectPopup: function() 
+    {
+      const self = this;
+      const app = self.$f7;
+
+      let date = self.dbDate(self.thisBooking.startDateTime);
+      let startTime = self.dbTime(self.thisBooking.startDateTime);
+      let endTime = self.dbTime(self.thisBooking.endTime);
+
+      app.dialog.preloader();
+
+      self.promiseWithAuth('info/venues/availability/all'
+        , {'date':date, 'start_time': startTime, 'end_time': endTime}
+      ).then(function(x) {
+          self.venues = JSON.parse(x.data).data;
+          app.dialog.close();
+          self.popupVenueSelect = true;
+        });
     },
   },
 }; 

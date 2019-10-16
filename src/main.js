@@ -132,7 +132,7 @@ Vue.mixin({
          return moment().format();
       },
       dbDateTime: function(date) {
-         return moment(date).format('YYYY-MM-DDTHH:mm');
+         return moment(date).format('YYYY-MM-DD HH:mm');
       },
       datetime2Moment: function(timestamp) {
          return moment(timestamp, 'YYYY-MM-DD HH:mm:ss');

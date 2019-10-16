@@ -16,7 +16,6 @@ import BookingPage from './assets/vue/pages/booking.vue';
 import SmartBookingPage from './assets/vue/pages/smartbook.vue';
 import MyBookingPage from './assets/vue/pages/mybooking.vue';
 import MyInventoryPage from './assets/vue/pages/myinventory.vue';
-import BookThisVenuePage from './assets/vue/pages/bookthisvenue.vue';
 import EventPage from './assets/vue/pages/events.vue';
 import TravelPage from './assets/vue/pages/travel.vue';
 import NCBSMap from './assets/vue/pages/map.vue';
@@ -129,11 +128,6 @@ export default [
    {
       path: '/mybooking/',
       component: MyBookingPage
-   },
-   {
-      path: '/book/:venue/:startDateTime/:endDateTime/',
-      component: BookThisVenuePage,
-      pushState: false,
    },
    {
       path: '/events/',
