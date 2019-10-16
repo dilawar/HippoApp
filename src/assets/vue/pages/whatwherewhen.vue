@@ -93,15 +93,15 @@ export default {
          items: [],
       }
    },
-   mounted: function() {
-      const self = this;
-      // Only fetch when nothing is available in the store.
-      self.events = self.loadStore('events');
-      self.initVenuesAndClasses();
-      if(! self.events || self.events.length == 0)
-         self.fetchEvents();
-      self.eventsToTimeLine(self.events);
-   },
+  mounted: function() {
+    const self = this;
+    // Only fetch when nothing is available in the store.
+    self.events = self.loadStore('events');
+    self.initVenuesAndClasses();
+    if(! self.events || self.events.length == 0)
+      self.fetchEvents();
+    self.eventsToTimeLine(self.events);
+  },
    methods: { 
      initVenuesAndClasses: function( ) {
        const self = this;
@@ -113,8 +113,8 @@ export default {
      fetchEvents: function( ) {
        const self = this;
        self.postWithPromise('/events/latest/100').then(
-         function(json) {
-           self.events = JSON.parse(json).data;
+         function(x) {
+           self.events = JSON.parse(x.data).data;
            self.initVenuesAndClasses();
            self.eventsToTimeLine(self.events);
            self.saveStore('events', self.events);
@@ -164,7 +164,7 @@ export default {
        }
     },
     loadMore: function() 
-    {
+     {
        const self = this;
        const app = this.$f7;
 
@@ -184,19 +184,16 @@ export default {
        }
 
        // now fetch 20 more starting from offset.
-       app.request.post(self.$store.state.api+'/events/latest/20'+'/'+self.events.length.toString()
-         , self.apiPostData()
-         , function(json) 
-         {
-           const res = JSON.parse(json);
+         self.promiseWithAuth('events/latest/20'+'/'+self.events.length.toString())
+         .then( function(x) {
+           const res = JSON.parse(x.data);
            if(res.status=='ok')
            {
              self.events.push(...res.data);
              self.filterTimeline(self.selectedVenue, self.selectedClass);
              self.$localStorage.set('events', JSON.stringify(self.events));
            }
-         }
-       );
+         });
        setTimeout(() => {self.allowInfinite = true; }, 200);
        self.eventTypes = [... new Set( self.events.map(x=>x.class))];
        self.eventTypes.push('ALL');

@@ -52,21 +52,16 @@ export default {
       {
          const self = this;
          const app = self.$f7;
-         var link = self.$store.state.api+'/ldap/'+self.query;
-         app.request.post(link, this.apiPostData(),
-            function(json) {
-               var ldap = JSON.parse(json).data;
-
-               // Keep a copy else it will clutter.
-               self.ldapInfo =JSON.parse(json).data;
-
-               // Append to my personal library.
-               var stored = JSON.parse(self.$localStorage.get('ldap.cache'), '[]');
-               for(var k in stored)
-                  ldap.push(stored[k]);
-               self.$localStorage.set('ldap.cache', JSON.stringify(ldap));
-            }
-         );
+         self.promiseWithAuth('ldap/'+self.query)
+          .then( function(x) {
+           // Keep a copy else it will clutter.
+           self.ldapInfo =JSON.parse(x.data).data;
+           // Append to my personal library.
+           var stored = JSON.parse(self.$localStorage.get('ldap.cache'), '[]');
+           for(var k in stored)
+             ldap.push(stored[k]);
+           self.$localStorage.set('ldap.cache', JSON.stringify(ldap));
+         });
       },
    },
 };

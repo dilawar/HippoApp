@@ -230,9 +230,9 @@ export default {
          const self         = this;
          const app          = self.$f7;
          self.postWithPromise('/transport').then(
-            function(json)
+            function(x)
             {
-               var res = JSON.parse(json);
+               var res = JSON.parse(x.data);
                // to make sure it triggers the rendering.
                if(res.status == "ok")
                {

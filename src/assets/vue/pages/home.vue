@@ -1,6 +1,5 @@
 <template>
-   <f7-page @page:init="reinit">
-
+  <f7-page>
       <f7-navbar>
          <f7-nav-left>
             <!-- LEFT PANEL -->
@@ -228,30 +227,18 @@ export default {
     self.alreadyLoggedIn = self.isUserAuthenticated();
 
     // Check if hippo is alive
-    setTimeout( () =>
-      app.request.post(self.$store.state.api + '/status'
-        , function(json) 
-        {
-          var res = JSON.parse(json);
-          if( res.status =='ok' && res.data.status == 'alive')
-          {
-            self.isHippoAlive = true;
-          }
-        })
-      , 1000);
+    self.promiseWithAuth('status').then(function(x) {
+        var res = JSON.parse(x.data);
+        if( res.status =='ok' && res.data.status == 'alive')
+          self.isHippoAlive = true;
+      });
 
     // Fetch the transport as well.
-    setTimeout( () => {
-      app.request.post( self.$store.state.api+'/transport'
-        , self.apiPostData()
-        , function(json) 
-        {
-          const res = JSON.parse(json);
-          if( res.status=='ok')
-            self.$localStorage.set('transport', JSON.stringify(res.data));
-        }
-      );
-    }, 2000);
+    self.promiseWithAuth('transport').then(function(x) {
+        const res = JSON.parse(x.data);
+        if( res.status=='ok')
+          self.$localStorage.set('transport', JSON.stringify(res.data));
+      });
 
     // Get notification now and display them.
     setTimeout(() => {self.fetchNotifications();}, 500);
@@ -284,15 +271,15 @@ export default {
           const app = self.$f7;
           app.dialog.preloader("Loging in ...");
           app.request.promise.post( self.$store.state.api+"/authenticate"
-            , {"login":self.username, "password": btoa(self.password)}
-          ).then( function(json) {
-            var res = JSON.parse(json);
+            , {login:self.username, password: btoa(self.password)})
+            .then(function(x) {
+            var res = JSON.parse(x.data);
             if( res.status =='ok' && res.data.apikey != '')
             {
               self.$localStorage.set('HIPPO-API-KEY', res.data.apikey);
               self.$localStorage.set('GOOGLE-MAP-API-KEY', res.data.gmapapikey);
               self.$localStorage.set('HIPPO-LOGIN', self.username);
-              self.isUserAuthenticated = true;
+              self.alreadyLoggedIn = true;
               self.fetchProfile();
               self.$f7router.refreshPage();
             }
@@ -307,13 +294,8 @@ export default {
           console.log( "Signing out.");
           self.$localStorage.set('HIPPO-API-KEY', '');
           self.$localStorage.set('HIPPO-LOGIN', '');
-          self.isUserAuthenticated = false;
+          self.alreadyLoggedIn = false;
           self.$f7router.refreshPage();
-        },
-        reinit: function() {
-          const self = this;
-          self.isUserAuthenticated();
-          console.log( "User logged in " + self.alreadyLoggedIn );
         },
         youAreNotLoggedIn: function() {
           const app = this.$f7;
@@ -322,9 +304,14 @@ export default {
         isAdmin: function() 
         {
           const self = this;
+          if(! self.isUserAuthenticated())
+          {
+            console.log("Not authenticated yet. So can't fetch profile");
+            return false;
+          }
           self.promiseWithAuth('/me/profile')
-            .then( function(json) {
-              var profile = JSON.parse(json).data;
+            .then( function(x) {
+              var profile = JSON.parse(x.data).data;
               var roles = profile.roles;
               if(roles.includes("ADMIN") 
                 || roles.includes("BOOKMYVENU_ADMIN") 

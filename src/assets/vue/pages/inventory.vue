@@ -90,9 +90,9 @@ export default {
          // Get all inventory.
          console.log( "Fetching inventories ... " );
          self.postWithPromise( '/inventory/list/100').then(
-            function(json) 
+            function(x) 
             {
-               self.inventories = JSON.parse(json).data;
+               self.inventories = JSON.parse(x.data).data;
                self.saveStore('inventories', self.inventories);
             }
          );
@@ -105,8 +105,8 @@ export default {
          const app = self.$f7;
          
          self.postWithPromise( '/inventory/list')
-            .then(function(json) {
-               let res = JSON.parse(json);
+            .then(function(x) {
+               let res = JSON.parse(x.data);
                if(res.status == 'ok')
                {
                   self.inventories = res.data;
@@ -158,9 +158,8 @@ export default {
          console.log( "Fetching image ", ids );
          self.photos = [];
          self.promiseWithAuth('images/get/'+ids).then( 
-            function( json ) {
-               let res = JSON.parse(json);
-               console.log(res);
+           function( x ) {
+               let res = JSON.parse(x.data);
                if(res)
                {
                   res = res.data[ids];

@@ -92,7 +92,9 @@
       </f7-card-header>
       <f7-card-content style="font-size:small">
         <f7-list>
-          <f7-list-item v-for="(talk, key) in myUnscheduledTalks">
+          <f7-list-item v-for="(talk, key) in myUnscheduledTalks"
+                        :key="key"
+                        >
             <div slot="header">
               {{talk.class}} by {{talk.speaker}} | {{talk.title}}
             </div>
