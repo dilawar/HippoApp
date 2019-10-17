@@ -20,20 +20,16 @@
                     :checked="sendEmailToAcademic"
                     title="Send email(s) to Academic community">
       </f7-list-item>
-
-      <f7-list-item checkbox 
-                    :checked="addToGoogleCalendar"
-                    title="Add to NCBS's public calendar">
-      </f7-list-item>
     </f7-list>
 
     <f7-button v-if="sendEmailToAcademic"
                :disabled="! isValidSelection()" 
-               :href="'/register-event-with-speaker/'+eventType"
-               raised>
+               :href="'/register-event-with-speaker/'+eventType">
       Continue
     </f7-button>
-    <f7-button v-else :disabled="! isValidSelection()">
+    <f7-button v-else 
+               :disabled="! isValidSelection()"
+               :href="'/bookevent/0/'+eventType">
       Continue
     </f7-button>
 

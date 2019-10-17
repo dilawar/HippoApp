@@ -49,19 +49,19 @@
     <f7-list media-list>
 
       <f7-list-group v-if="! thisEvent.readonly">
-        <f7-list-input @input="thisEvent.title = $event.target.value"
+
+        <f7-list-input @input="thisBooking.title = $event.target.value"
                      floating-label 
                      label="Title" outline
-                     :readonly="thisEvent.readonly"
                      type="textarea" resizable required 
-                     :value="thisEvent.title">
+                     :value="thisBooking.title">
         </f7-list-input>
 
-        <f7-list-input :input="false" v-if="! thisEvent.readonly">
+        <f7-list-input :input="false">
           <vue-editor ref="description" 
                       slot="input"
-                      placeholder="Description of this talk"
-                      v-model="thisEvent.description">
+                      placeholder="Description (optional)"
+                      v-model="thisBooking.description">
           </vue-editor>
         </f7-list-input>
       </f7-list-group>
@@ -118,7 +118,7 @@
         <!-- SUBMIT BUTTON -->
         <f7-list-item>
           <f7-button raised 
-                     :disabled="! (isTalkValid.status && isBookingValid.status)" 
+                     :disabled="! isBookingValid.status" 
                      @click="bookThisEvent()"
                      slot="after">
             {{isBookingValid.msg}}
@@ -143,6 +143,7 @@ export default {
       venues: self.loadStore('venues'),
       popupVenueSelect: false,
       externalId: self.$f7route.params.externalId,
+      evType: self.$f7route.params.evType,
       thisEvent: {
          type: '' 
         , external_id: self.externalId
@@ -179,7 +180,7 @@ export default {
     const self = this;
     const app = this.$f7;
 
-    if(self.externalId)
+    if(self.externalId && self.externalId.includes('.'))
     {
       app.dialog.preloader();
       self.postWithPromise('info/externalid/'+self.externalId)
@@ -205,6 +206,8 @@ export default {
           app.dialog.close();
         });
     }
+    else
+      self.thisBooking['class'] = self.evType;
   },
   computed: {
     isTalkValid: function()
@@ -275,7 +278,7 @@ export default {
       app.dialog.preloader();
 
       // Before sending, change date to str format.
-      var args = self.thisBooking.venue + '/' +
+      var args = btoa(self.thisBooking.venue) + '/' +
         moment(self.thisBooking.startDateTime).format('X') + '/' +
         moment(self.thisBooking.endTime).format('X');
 
@@ -284,12 +287,19 @@ export default {
           app.dialog.close();
           var res = JSON.parse(x.data).data;
           if(! res.success)
-            navigator.notification.confirm(res.msg, null, "Failed");
+            app.notification.create( {
+              title: "Failed", subtitle: res.msg
+              , closeButton: true, closeOnClick: true
+              , closeTimeout: 10000,
+            }).open();
           else
           {
-            navigator.notification.confirm("Successfully booked.", null, "Success");
-            // Go back
-            self.$f7router.navigate('/smartbook/', {ignoreCache:true});
+            app.notification.create( {
+              title: "Success", subtitle: "Successfully created"
+              , closeButton: true, closeOnClick: true
+              , closeTimeout: 3000,
+            }).open();
+            self.$f7router.navigate('/home/', {reloadAll:true});
           }
         });
     },

@@ -125,7 +125,7 @@ export default [
       component: RegisterEventWithSpeaker
    },
    {
-      path: '/bookevent/:externalId',
+      path: '/bookevent/:externalId/:evType',
       component: BookEvent
    },
    {
