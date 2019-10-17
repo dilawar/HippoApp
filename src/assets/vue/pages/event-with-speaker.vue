@@ -1,44 +1,44 @@
 <template>
   <f7-page> 
+
     <f7-navbar :title="'Booking a ' + thisEvent.type" back-link="Back">
     </f7-navbar>
 
-  <!-- VENUE POPUP -->
-  <f7-popup :opened="popupVenueSelect" @popup:close="popupVenueSelect=false">
-    <f7-page>
-      <f7-navbar title="Select a venue">
-        <f7-nav-right>
-          <f7-link popup-close>Close</f7-link>
-        </f7-nav-right>
-      </f7-navbar>
+    <!-- VENUE POPUP -->
+    <f7-popup :opened="popupVenueSelect" @popup:close="popupVenueSelect=false">
+      <f7-page>
+        <f7-navbar title="Select a venue">
+          <f7-nav-right>
+            <f7-link popup-close>Close</f7-link>
+          </f7-nav-right>
+        </f7-navbar>
 
-      <f7-block-title small>
-        Available venues:
-        {{dbDateTime(thisBooking.startDateTime)}} 
-        to {{dbTime(thisBooking.endTime)}}
-      </f7-block-title>
+        <f7-block-title small>
+          Available venues:
+          {{dbDateTime(thisBooking.startDateTime)}} 
+          to {{dbTime(thisBooking.endTime)}}
+        </f7-block-title>
 
-      <f7-block>
-        <!-- Fetch venues and show the status. -->
-        <f7-list media-list>
-          <f7-list-item v-for="(venue, key) in venues" 
-                        :key="key"
-                        @click="onVenueSelected(venue.id)">
-            <div slot="header" bg-color="blue">{{venue.note_to_user}}</div>
-            <div slot="title">{{venue.name}}</div>
-            <div slot="after" v-if="isAvailable(venue)">Available</div>
-            <div slot="footer" v-if="venue.BOOKING_STATUS!=='AVAILABLE'">
-              {{venue.BOOKING}}
-            </div>
-            <div slot="header">
-              Capacity {{venue.strength}}, Projector {{venue.has_projector}}
-            </div>
-          </f7-list-item>
-        </f7-list>
-      </f7-block>
-    </f7-page>
-  </f7-popup>
-
+        <f7-block>
+          <!-- Fetch venues and show the status. -->
+          <f7-list media-list>
+            <f7-list-item v-for="(venue, key) in venues" 
+                          :key="key"
+                          @click="onVenueSelected(venue.id)">
+              <div slot="header" bg-color="blue">{{venue.note_to_user}}</div>
+              <div slot="title">{{venue.name}}</div>
+              <div slot="after" v-if="isAvailable(venue)">Available</div>
+              <div slot="footer" v-if="venue.BOOKING_STATUS!=='AVAILABLE'">
+                {{venue.BOOKING}}
+              </div>
+              <div slot="header">
+                Capacity {{venue.strength}}, Projector {{venue.has_projector}}
+              </div>
+            </f7-list-item>
+          </f7-list>
+        </f7-block>
+      </f7-page>
+    </f7-popup>
 
   <!-- SPEAKER POPUP -->
   <!-- POPUP  -->

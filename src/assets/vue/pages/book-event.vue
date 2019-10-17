@@ -1,9 +1,9 @@
 <template>
-  <f7-page> <f7-navbar title="Booking Events" back-link="Back"></f7-navbar>
+  <f7-page> 
+  <f7-navbar title="Booking Events" back-link="Back"></f7-navbar>
 
-<!-- VENUE POPUP -->
+  <!-- VENUE POPUP -->
   <f7-popup :opened="popupVenueSelect" @popup:close="popupVenueSelect=false">
-
     <f7-page>
       <f7-navbar title="Select a venue">
         <f7-nav-right>
@@ -41,81 +41,94 @@
   <!-- BOOKING INTERFACE -->
   <f7-block>
     <div v-if="thisEvent.readonly">
-      You are booking for an aleady registered event, most like a TALK/SEMINAR
-      etc. You won't be able to modify
+      You are booking for an aleady registered event, most likely a 
+      TALK/SEMINAR etc. You won't be able to modify
       <tt>TITLE</tt> and <tt>DESCRIPTION</tt> here.
     </div>
-    <f7-list form>
-      <f7-list-input @input="thisEvent.title = $event.target.value"
-             floating-label 
-             label="Title" outline
-             :readonly="thisEvent.readonly"
-             type="textarea" resizable required 
-             :value="thisEvent.title">
-      </f7-list-input>
 
-      <f7-list-input :input="false">
-        <vue-editor ref="description" 
-                    :readonly="thisEvent.readonly"
-                    slot="input"
-                    placeholder="Description of this talk"
-                    v-model="thisEvent.description">
-        </vue-editor>
-      </f7-list-input>
+    <f7-list media-list>
 
-    <!-- VENUE AND TIME -->
-    </f7-list-item>
-      <f7-list-input label="Start Date/Time" :input="false">
-        <date-picker slot="input" 
-             v-model="thisBooking.startDateTime"
-             placeholder="Select Datetime"
-             type="datetime" 
-             lang="en"
-             format="YYYY-MM-DD hh:mm a" 
-             :minute-step="15">
-        </date-picker>
-      </f7-list-input>
+      <f7-list-group v-if="! thisEvent.readonly">
+        <f7-list-input @input="thisEvent.title = $event.target.value"
+                     floating-label 
+                     label="Title" outline
+                     :readonly="thisEvent.readonly"
+                     type="textarea" resizable required 
+                     :value="thisEvent.title">
+        </f7-list-input>
 
-      <f7-list-input label="End Time" :input="false">
-        <date-picker slot="input" 
-             v-model="thisBooking.endTime"
-             placeholder="End time"
-             type="time" 
-             lang="en"
-             format="hh:mm a" 
-             :minute-step="15">
-        </date-picker>
-      </f7-list-input>
+        <f7-list-input :input="false" v-if="! thisEvent.readonly">
+          <vue-editor ref="description" 
+                      slot="input"
+                      placeholder="Description of this talk"
+                      v-model="thisEvent.description">
+          </vue-editor>
+        </f7-list-input>
+      </f7-list-group>
 
-      <!-- FIND A VENUE -->
-      <f7-list-item v-if="thisBooking.venue"
-                    title="Selected venue" 
-                    :after="thisBooking.venue"
-                    @click="popupVenueSelect=true"
-                    >
-      </f7-list-item>
-      <f7-list-item v-else>
-        <f7-button small slot="after" @click="openVenueSelectPopup()">
-          Find a venue
-        </f7-button>
-      </f7-list-item>
+      <f7-list-group v-else media-list>
+        <f7-list-item header="Title">
+          <div slot="text">
+            {{thisEvent.class | firstUpper}} by {{thisEvent.speaker}}  on
+            '{{thisEvent.title}}'
+          </div>
+        </f7-list-item>
+        <f7-list-item header="Description">
+          <div slot="text" v-html="thisEvent.description">
+          </div>
+        </f7-list-item>
+      </f7-list-group>
 
-      <!-- SUBMIT BUTTON -->
-      <f7-list-item>
-        <f7-button :disabled="! (isTalkValid.status && isBookingValid.status)" 
-                   raised 
-                   @click="bookThisEvent()"
-                   slot="after">
-          {{isBookingValid.msg}}
-        </f7-button>
-      </f7-list-item>
+      <f7-list-group media-list>
+        <!-- VENUE AND TIME -->
+        <f7-list-input label="Start Date/Time" :input="false">
+          <date-picker slot="input" 
+                       v-model="thisBooking.startDateTime"
+                       placeholder="Select Datetime"
+                       type="datetime" 
+                       lang="en"
+                       format="YYYY-MM-DD hh:mm a" 
+                       :minute-step="15">
+          </date-picker>
+        </f7-list-input>
 
-    <!-- PROVIDE SOME SPACE AT BOTTOM -->
-    <f7-list-item></f7-list-item>
+        <f7-list-input label="End Time" :input="false">
+          <date-picker slot="input" 
+                       v-model="thisBooking.endTime"
+                       placeholder="End time"
+                       type="time" 
+                       lang="en"
+                       format="hh:mm a" 
+                       :minute-step="15">
+          </date-picker>
+        </f7-list-input>
+
+        <!-- FIND A VENUE -->
+        <f7-list-item v-if="thisBooking.venue"
+                      title="Selected venue" 
+                      :after="thisBooking.venue"
+                      @click="popupVenueSelect=true">
+        </f7-list-item>
+        <f7-list-item v-else>
+          <f7-button small slot="after" @click="openVenueSelectPopup()">
+            Find a venue
+          </f7-button>
+        </f7-list-item>
+
+        <!-- SUBMIT BUTTON -->
+        <f7-list-item>
+          <f7-button raised 
+                     :disabled="! (isTalkValid.status && isBookingValid.status)" 
+                     @click="bookThisEvent()"
+                     slot="after">
+            {{isBookingValid.msg}}
+          </f7-button>
+        </f7-list-item>
+
+      </f7-list-group>
+
     </f7-list>
-
   </f7-block>
-
   </f7-page>
 
 </template>
@@ -129,12 +142,14 @@ export default {
     return {
       venues: self.loadStore('venues'),
       popupVenueSelect: false,
+      externalId: self.$f7route.params.externalId,
       thisEvent: {
          type: '' 
-        , external_id: self.$f7route.params.externalId
+        , external_id: self.externalId
         , title: ''
         , description: ''
         , host: ''
+        , host_extra: ''
         , coordinator: ''
         , is_public_event: false
         , readonly: false    // when external id is set, make is readonly
@@ -142,6 +157,9 @@ export default {
       thisBooking: {
         startDateTime: moment().add(1, 'minutes')
         , endTime: moment().add(1, 'hours')
+        , external_id: self.externalId
+        , title: ''
+        , description: ''
         , venue: ''
       },
     };
@@ -161,16 +179,28 @@ export default {
     const self = this;
     const app = this.$f7;
 
-    if(self.thisEvent.external_id)
+    if(self.externalId)
     {
       app.dialog.preloader();
-      self.postWithPromise('info/externalid/'+self.thisEvent.external_id)
+      self.postWithPromise('info/externalid/'+self.externalId)
         .then( function(x) {
+          // Got the event with given external id
           self.thisEvent = JSON.parse(x.data).data;
           if(self.thisEvent)
           {
             self.thisEvent.type = self.thisEvent['class'];
             self.thisEvent.readonly = true;
+
+            // Update thisBooking before sending to server.
+            self.thisBooking.is_public_event = true;
+            self.thisBooking.description = self.thisEvent.description;
+
+            // This is most important.
+            self.thisBooking.external_id = self.externalId;
+            self.thisBooking['class'] = self.thisEvent.type;
+            self.thisBooking.title = self.thisEvent.type + ' by ' 
+                + self.thisEvent.speaker + " on '" 
+                + self.thisEvent.title + "'";
           }
           app.dialog.close();
         });
@@ -238,15 +268,16 @@ export default {
       const self = this;
       const app = self.$f7;
 
+      console.log('BOOKING', self.thisBooking);
+
       // Assign the class to talk.
-      console.log("Registering talk.", self.thisEvent);
+      // console.log("Registering talk.", self.thisEvent);
       app.dialog.preloader();
-      self.thisEvent.class = self.thisEvent.type;
 
       // Before sending, change date to str format.
       var args = self.thisBooking.venue + '/' +
-        moment(self.thisBooking.startDateTime, 'X') + '/' +
-        moment(self.thisBooking.endTime, 'X');
+        moment(self.thisBooking.startDateTime).format('X') + '/' +
+        moment(self.thisBooking.endTime).format('X');
 
       self.promiseWithAuth('venue/book/'+args, self.thisBooking)
         .then(function(x) {
@@ -258,7 +289,7 @@ export default {
           {
             navigator.notification.confirm("Successfully booked.", null, "Success");
             // Go back
-            self.$f7router.back();
+            self.$f7router.back('/smartbook/', {ignoreCache:true,force:true});
           }
         });
     },

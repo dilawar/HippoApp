@@ -121,28 +121,6 @@
             <f7-icon ios="f7:add" aurora="f7:add" md="material:add"></f7-icon>
     </f7-fab>
 
-    <!-- FAB Right Bottom (Orange) -->
-    <!--
-      <f7-fab v-if="alreadyLoggedIn"
-      text="Book"
-      position="right-bottom"
-      slot="fixed" color="blue"
-      >
-      <f7-icon ios="f7:add" aurora="f7:add" md="material:add"></f7-icon>
-      <f7-icon ios="f7:close" aurora="f7:close" md="material:close"></f7-icon>
-      <f7-fab-buttons position="top">
-      <f7-fab-button href="/book/private" 
-      label="Private">
-      <f7-icon fa="plus"></f7-icon>
-      </f7-fab-button>
-      <f7-fab-button href="/book/public" 
-      label="Public with email to Academic">
-      <f7-icon fa="plus"></f7-icon>
-      </f7-fab-button>
-      </f7-fab-buttons>
-      </f7-fab>
-    -->
-
     <!-- LOGIN SCREEN  -->
     <f7-login-screen class="hippo-login-screen">
       <f7-page login-screen>

@@ -2,13 +2,12 @@
   <f7-page> <f7-navbar title="Booking Events" back-link="Back"></f7-navbar>
 
   <f7-block strong>
-    <f7-list small-inset no-hairlines
-             style="margin:0;padding:0;font-size:small"
-             >
+    <f7-list no-hairlines>
+
       <!-- Ask user for what purpose they are booking -->
       <f7-list-item title="Select the TYPE of event..."
                     smart-select
-                    :smart-select-params="{openIn:'popover', closeOnSelect:true}"
+                    :smart-select-params="{openIn:'popup', closeOnSelect:true}"
                     >
         <select v-model="eventType">
           <option v-for="(cls, key) in eventTypes.all" :key="key" :value="cls">
@@ -31,10 +30,11 @@
     <f7-button v-if="sendEmailToAcademic"
                :disabled="! isValidSelection()" 
                :href="'/register-event-with-speaker/'+eventType"
-               >
+               raised>
       Continue
     </f7-button>
     <f7-button v-else
+               raised 
                :disabled="! isValidSelection()">
       Continue
     </f7-button>
@@ -58,7 +58,7 @@
             Created on: {{talk.created_on | date}}
           </div>
           <div slot="after">
-            <f7-button small @click="scheduleThisEvent(talk)">
+            <f7-button small raised :href="'/bookevent/talks.'+talk.id">
               Book
             </f7-button>
           </div>

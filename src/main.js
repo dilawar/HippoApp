@@ -391,6 +391,9 @@ Vue.mixin({
       'tt' : function(text) {
          return "<tt>" + text + "</tt>";
       },
+      'firstUpper': function(x) {
+         return x.substring(0,1).toUpperCase() + x.substring(1).toLowerCase();
+      },
    },
 });
 
