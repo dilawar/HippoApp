@@ -227,7 +227,6 @@ import moment from 'moment';
 export default {
   data() {
     const self = this;
-
     return {
       venues: self.loadStore('venues'),
       potentialSpeakers: [],
@@ -249,6 +248,7 @@ export default {
       },
       thisEvent: {
         speaker_id: '-1'             // CHANGE TO -1
+        , id : '-1'
         , type: self.$f7route.params.eventType
         , title: ''
         , description: ''
@@ -296,7 +296,7 @@ export default {
       if(!(self.thisEvent.host && self.thisEvent.host.includes('@')))
         return {status:false, msg:'Invalid Host/PI'};
 
-      return {status:true, msg:'Save this event'};
+      return {status:true, msg:'Save before booking'};
     },
     isBookingValid: function()
     {
@@ -352,14 +352,16 @@ export default {
       const app = self.$f7;
 
       // Assign the class to talk.
-      console.log("Registering talk.", self.thisEvent);
       app.dialog.preloader();
       self.thisEvent.class = self.thisEvent.type;
       self.promiseWithAuth('me/talk/register', self.thisEvent)
         .then(function(x) {
           let res = JSON.parse(x.data).data;
           if('id' in res)
+          {
             self.thisEvent.isRegistered = true;
+            self.thisEvent.id = res.id;
+          }
           else
             navigator.notification.alert('I could not register your talk!', null);
           app.dialog.close();
