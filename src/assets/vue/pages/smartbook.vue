@@ -33,9 +33,7 @@
                raised>
       Continue
     </f7-button>
-    <f7-button v-else
-               raised 
-               :disabled="! isValidSelection()">
+    <f7-button v-else :disabled="! isValidSelection()">
       Continue
     </f7-button>
 

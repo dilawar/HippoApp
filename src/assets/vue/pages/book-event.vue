@@ -289,7 +289,7 @@ export default {
           {
             navigator.notification.confirm("Successfully booked.", null, "Success");
             // Go back
-            self.$f7router.back('/smartbook/', {ignoreCache:true,force:true});
+            self.$f7router.navigate('/smartbook/', {ignoreCache:true});
           }
         });
     },
