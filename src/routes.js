@@ -11,9 +11,12 @@ import PanelLeftPage from './assets/vue/pages/panel-left.vue';
 import PanelRightPage from './assets/vue/pages/panel-right.vue';
 import WhatWhereWhenPage from './assets/vue/pages/whatwherewhen.vue';
 import FormPage from './assets/vue/pages/form.vue';
-import DynamicRoutePage from './assets/vue/pages/dynamic-route.vue';
+
 import BookingPage from './assets/vue/pages/booking.vue';
 import SmartBookingPage from './assets/vue/pages/smartbook.vue';
+import RegisterEventWithSpeaker from './assets/vue/pages/event-with-speaker.vue';
+
+import BookEvent from './assets/vue/pages/book-event.vue';
 import MyBookingPage from './assets/vue/pages/mybooking.vue';
 import MyInventoryPage from './assets/vue/pages/myinventory.vue';
 import EventPage from './assets/vue/pages/events.vue';
@@ -116,6 +119,14 @@ export default [
    {
       path: '/smartbook/',
       component: SmartBookingPage
+   },
+   {
+      path: '/register-event-with-speaker/:eventType',
+      component: RegisterEventWithSpeaker
+   },
+   {
+      path: '/bookevent/:externalId',
+      component: BookEvent
    },
    {
       path: '/map/',

@@ -433,13 +433,13 @@ export default new Vue({
       onDeviceReady : function(x) {
          const self = this;
          console.log( "Add onDeviceReady callback here.");
-         ///////////////////////////////////////////////////////////////
+
          // Notifications 
-         ///////////////////////////////////////////////////////////////
          cordova.plugins.notification.local.on("click", function(not) {
             // On click show notification page.
             self.$f7router.navigate('/notifications');
          }, self);
+
          cordova.plugins.notification.local.on("clear", function(not) {
             setTimeout( () => {
                self.postWithPromise('/notifications/dismiss/' + not.id);

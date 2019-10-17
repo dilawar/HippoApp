@@ -1,307 +1,74 @@
 <template>
-  <f7-page>
-  <f7-navbar title="Booking Events" back-link="Back"></f7-navbar>
+  <f7-page> <f7-navbar title="Booking Events" back-link="Back"></f7-navbar>
 
-  <!-- VENUE POPUP -->
-  <f7-popup :opened="popupVenueSelect" @popup:close="popupVenueSelect=false">
-
-    <f7-page>
-      <f7-navbar title="Select a venue">
-        <f7-nav-right>
-          <f7-link popup-close>Close</f7-link>
-        </f7-nav-right>
-      </f7-navbar>
-
-      <f7-block-title small>
-        Available venues:
-        {{dbDateTime(thisBooking.startDateTime)}} 
-        to {{dbTime(thisBooking.endTime)}}
-      </f7-block-title>
-
-      <f7-block>
-        <!-- Fetch venues and show the status. -->
-        <f7-list media-list>
-
-          <f7-list-item v-for="(venue, key) in venues" 
-                        :key="key"
-                        @click="onVenueSelected(venue.id)">
-            <div slot="header" bg-color="blue">{{venue.note_to_user}}</div>
-            <div slot="title">{{venue.name}}</div>
-            <div slot="after" v-if="isAvailable(venue)">Available</div>
-            <div slot="footer" v-if="venue.BOOKING_STATUS!=='AVAILABLE'">
-              {{venue.BOOKING}}
-            </div>
-            <div slot="header">
-              Capacity {{venue.strength}}, Projector {{venue.has_projector}}
-            </div>
-          </f7-list-item>
-
-        </f7-list>
-      </f7-block>
-
-    </f7-page>
-  </f7-popup>
-
-
-  <!-- SPEAKER POPUP -->
-  <!-- POPUP  -->
-  <f7-popup :opened="openSpeakerPopup" @popup:close="openSpeakerPopup = false">
-    <f7-page>
-      <f7-navbar title="Add new speaker">
-        <f7-nav-right>
-          <f7-link popup-close>Close</f7-link>
-        </f7-nav-right>
-      </f7-navbar>
-
-    <!-- Once the CLASS is known, expand the speaker card. -->
-    <f7-block-title small>Your search was futile.  Add a new speaker...
-    </f7-block-title>
-    <f7-block>
-    <f7-list no-hairlines>
-      <f7-list-input :input="false"
-             label="Email">
-        <input :value="thisSpeaker.email" 
-             slot="input"
-             type="email" required
-             @change="thisSpeaker.email=$event.target.value"
-             />
-      </f7-list-input>
-
-      <f7-list-input :value="thisSpeaker.name" 
-              required
-              @change="thisSpeaker.name = $event.target.value"
-              label="Name">
-      </f7-list-input>
-
-      <f7-list-input :value="thisSpeaker.homepage"
-             type="url" 
-             @change="thisSpeaker.homepage = $event.target.value"
-             label="Homepage">
-      </f7-list-input>
-
-      <f7-list-input :value="thisSpeaker.department"
-              @change="thisSpeaker.department = $event.target.value"
-              label="Department">
-      </f7-list-input>
-
-      <f7-list-input :value="thisSpeaker.institute"
-             type="text"
-             required
-             @change="thisSpeaker.institute = $event.target.value"
-             label="Institute">
-      </f7-list-input>
-    </f7-list>
-    <f7-row>
-      <f7-col></f7-col>
-      <f7-col>
-        <f7-button panel-close raised
-                   @click="submitSpeaker(thisSpeaker)">
-          Add Speaker
-        </f7-button>
-      </f7-col>
-    </f7-row>
-    </f7-block>
-
-    </f7-page>
-  </f7-popup>
-
-  <f7-block>
-    <f7-list form no-hairlines>
-      <!-- If there is any unscheduled talks, show them here for booking.
-      -->
-
+  <f7-block strong>
+    <f7-list small-inset no-hairlines
+             style="margin:0;padding:0;font-size:small"
+             >
       <!-- Ask user for what purpose they are booking -->
-      <f7-list-item title="Select the TYPE of event to continue..."
+      <f7-list-item title="Select the TYPE of event..."
                     smart-select
-                    @smartselect:closed="onEventTypeSelection()"
-                    :smart-select-params="{openIn:'popup', searchbar: true, closeOnSelect:true, searchbarPlaceholder:'Search Class'}">
-        <select @change="thisEvent.type = $event.target.value"
-                    :value="thisEvent.type">
-          <option v-for="(cls, key) in classes.all" 
-                  :key="key" 
-                  :value="cls">
-          {{cls}}
+                    :smart-select-params="{openIn:'popover', closeOnSelect:true}"
+                    >
+        <select v-model="eventType">
+          <option v-for="(cls, key) in eventTypes.all" :key="key" :value="cls">
+            {{cls}}
           </option>
         </select>
       </f7-list-item>
+
+      <f7-list-item checkbox 
+                    :checked="sendEmailToAcademic"
+                    title="Send email(s) to Academic community">
+      </f7-list-item>
+
+      <f7-list-item checkbox 
+                    :checked="addToGoogleCalendar"
+                    title="Add to NCBS's public calendar">
+      </f7-list-item>
     </f7-list>
 
-    <f7-card v-if="isTalkOrSeminar() && myUnscheduledTalks.length > 0">
-      <f7-card-header>
-        Unscheduled events
-        <f7-button small href="/me/talks">SCHEDULE/EDIT/CANCEL</f7-button>
-      </f7-card-header>
-      <f7-card-content style="font-size:small">
-        <f7-list>
-          <f7-list-item v-for="(talk, key) in myUnscheduledTalks"
-                        :key="key"
-                        >
-            <div slot="header">
-              {{talk.class}} by {{talk.speaker}} | {{talk.title}}
-            </div>
-            <div slot="footer">
-              Created on: {{talk.created_on | date}}
-            </div>
-          </f7-list-item>
-        </f7-list>
-      </f7-card-content>
-    </f7-card>
-
-    <!-- SPEAKER -->
-    <f7-list form no-hairlines>
-    <f7-list-group v-if="isTalkOrSeminar()">
-      <f7-list-item >
-        <div slot="header">
-          <tt>{{thisEvent.type}}</tt> must have a speaker. 
-        </div>
-        <div slot="footer">
-          If no one is found in my database, I will ask you
-          to fill-in speaker's details.
-        </div>
-      </f7-list-item>
-      <f7-list-input :input="false">
-        <v-autocomplete  slot="input"
-                         input-class="item-input"
-                         placeholder="Speaker"
-                         results-property="email"
-                         results-display="name"
-                         :request-headers="apiPostData()"
-                         method="post"
-                         @selected="onSpeakerSelected"
-                         @results="foundSpeakersOnSearch"
-                         @noResults="createNewSpeaker=true"
-                         :source="(q)=>searchPeopleURI(q, 'speaker')">
-        </v-autocomplete>
-      </f7-list-input>
-      <f7-list-item v-if="parseInt(thisSpeaker.id) > 0">
-        <div slot="header" v-html="thisSpeaker.html"></div>
-        <f7-link slot="footer" @click="openSpeakerPopup=true" >Update</f7-link>
-      </f7-list-item>
-      <f7-list-item v-if="createNewSpeaker">
-        <div slot="header">No one is found..</div>
-        <f7-button small raised
-                   @click="openSpeakerPopup=true"
-          > Add new Speaker </f7-button>
-      </f7-list-item>
-    </f7-list-group>
-
-    <!-- WHEN SPEAKER IS SET, SHOW THE TALK SECTION -->
-    <f7-list-group v-if="parseInt(thisTalk.speaker_id)>0">
-      <f7-list-item>
-        <div slot="header">
-          Cool! Now a valid speaker has been assigned, fill-in 
-          the details of your <tt>{{thisEvent.type}}</tt>.
-        </div>
-      </f7-list-item>
-      <f7-list-input v-if="parseInt(thisTalk.speaker_id) > 0"
-                     @input="thisTalk.title = $event.target.value"
-                     floating-label label="Title" outline
-                     type="textarea" resizable required 
-                     :value="thisTalk.title">
-      </f7-list-input>
-
-      <f7-list-input :input="false">
-        <vue-editor ref="description" 
-                    slot="input"
-                    placeholder="Description of this talk"
-                    v-model="thisTalk.description">
-        </vue-editor>
-      </f7-list-input>
-
-      <f7-list-input :input="false" required>
-        <v-autocomplete  slot="input"
-                         input-class="item-input"
-                         results-property="email"
-                         results-display="name"
-                         results-value="email"
-                         placeholder="Host/PI"
-                         :request-headers="apiPostData()"
-                         method="post"
-                         @selected="(v)=>thisTalk.host=v.selectedObject.email"
-                         :source="(q)=>searchPeopleURI(q, 'host')">
-        </v-autocomplete>
-      </f7-list-input>
-
-      <f7-list-input :input="false">
-        <v-autocomplete slot="input"
-            input-class="item-input"
-            results-property="email"
-            results-display="name"
-            results-value="email"
-            placeholder="Coordination email"
-            :request-headers="apiPostData()"
-            method="post"
-            @selected="(v)=>thisTalk.coordinator=v.selectedObject.email"
-            :source="(q)=>searchPeopleURI(q, 'login')">
-        </v-autocomplete>
-      </f7-list-input>
-      <f7-list-item text="Save this talk now. You can book later">
-        <f7-button small 
-                   :disabled="! isTalkValid.status" 
-                   @click="registerTalk(false)"
-                   slot="after">
-          {{isTalkValid.msg}}
-        </f7-button>
-      </f7-list-item>
-    </f7-list-group>
-
-    <!-- VENUE AND TIME -->
-    <f7-list-group v-if="isTalkValid.status">
-      <f7-list-item text="Talk looks good enough. Lets plan its booking...">
-      </f7-list-item>
-      <f7-list-input label="Start Date/Time" :input="false">
-        <date-picker slot="input" 
-             v-model="thisBooking.startDateTime"
-             placeholder="Select Datetime"
-             type="datetime" 
-             lang="en"
-             format="YYYY-MM-DD hh:mm a" 
-             :minute-step="15">
-        </date-picker>
-      </f7-list-input>
-
-      <f7-list-input label="End Time" :input="false">
-        <date-picker slot="input" 
-             v-model="thisBooking.endTime"
-             placeholder="End time"
-             type="time" 
-             lang="en"
-             format="hh:mm a" 
-             :minute-step="15">
-        </date-picker>
-      </f7-list-input>
-
-      <!-- FIND A VENUE -->
-      <f7-list-item v-if="thisBooking.venue"
-                    title="Selected venue" 
-                    :after="thisBooking.venue"
-                    >
-      </f7-list-item>
-      <f7-list-item v-else>
-        <f7-button small slot="after" @click="openVenueSelectPopup()">
-          Find a venue
-        </f7-button>
-      </f7-list-item>
-
-      <!-- SUBMIT BUTTON -->
-      <f7-list-item>
-        <f7-button :disabled="! (isTalkValid.status && isBookingValid.status)" 
-                   raised 
-                   @click="registerTalk(true)"
-                   slot="after">
-          {{isBookingValid.msg}}
-        </f7-button>
-      </f7-list-item>
-    </f7-list-group>
-
-    <!-- PROVIDE SOME SPACE AT BOTTOM -->
-    <f7-list-item></f7-list-item>
-    </f7-list>
+    <f7-button v-if="sendEmailToAcademic"
+               :disabled="! isValidSelection()" 
+               :href="'/register-event-with-speaker/'+eventType"
+               >
+      Continue
+    </f7-button>
+    <f7-button v-else
+               :disabled="! isValidSelection()">
+      Continue
+    </f7-button>
 
   </f7-block>
 
-  </f7-page>
+  <f7-block inset>
+    <!-- If there is any unscheduled talks, show them here for booking. -->
+    <div v-if="isTalkOrSeminar() && myUnscheduledTalks.length > 0">
 
+      <f7-icon fa="bell-o fa-fw"></f7-icon> 
+      You already have some unscheduled events. Just a reminder...
+      <f7-list>
+        <f7-list-item v-for="(talk, key) in myUnscheduledTalks"
+                      :key="key"
+                      >
+          <div slot="header">
+            {{talk.class}} by {{talk.speaker}} | {{talk.title}}
+          </div>
+          <div slot="footer">
+            Created on: {{talk.created_on | date}}
+          </div>
+          <div slot="after">
+            <f7-button small @click="scheduleThisEvent(talk)">
+              Book
+            </f7-button>
+          </div>
+        </f7-list-item>
+      </f7-list>
+    </div>
+  </f7-block>
+
+
+  </f7-page>
 </template>
 
 <script>
@@ -309,63 +76,27 @@ import moment from 'moment';
 
 export default {
   data() {
-    const self = this;
     return {
-      classes: [],
-      venues: self.loadStore('venues'),
-      potentialSpeakers: [],
-      openSpeakerPopup: false,
-      popupVenueSelect: false,
-      thisEvent: { type: 'UNKNOWN' }, // Change to UNKNOWN
-      createNewSpeaker: false,
-      myUnscheduledTalks : [],
-      thisSpeaker: {
-        id: '-1',                     // CHANGE TO -1
-        honorific: '',
-        email: '',
-        first_name: '',
-        middle_name: '',
-        last_name: '',
-        designation: '',
-        homepage: '',
-        department: '',
-        institute: '',
-      },
-      thisTalk: {
-        speaker_id: '-1'             // CHANGE TO -1
-        , title: ''
-        , description: ''
-        , host: ''
-        , coordinator: ''
-      },
-      thisBooking: {
-        startDateTime: moment().add(1, 'minutes')
-        , endTime: moment().add(1, 'hours')
-        , venue: ''
-      },
+      eventTypes: [],
+      eventType: 'UNKNOWN',
+      sendEmailToAcademic: false,
+      addToGoogleCalendar: false,
     };
   },
-  watch: {
-    'thisBooking.startDateTime': function(val, old) {
-      const self = this;
-      self.thisBooking.endTime = moment(val).add(1, 'hours');
-      self.thisBooking.venue = '';
-    },
-    'thisBooking.endTime': function(val, old) {
-      const self = this;
-      self.thisBooking.venue = '';
-    },
-  },
   mounted: function() {
-    // Fetch the available classes of booking. 
+    // Fetch the available eventTypes of booking. 
     const self = this;
     const app = this.$f7;
+
+    self.eventType = 'UNKNOWN';
+    self.sendEmailToAcademic = false;
+    self.addToGoogleCalendar = false;
 
     // Currently only NOPUBLIC type of bookings are allowed.
     app.dialog.preloader();
     self.postWithPromise('info/bmv/bookingclasses')
       .then( function(x) {
-        self.classes = JSON.parse(x.data).data;
+        self.eventTypes = JSON.parse(x.data).data;
         app.dialog.close();
       });
 
@@ -375,149 +106,43 @@ export default {
         self.myUnscheduledTalks = JSON.parse(x.data).data;
       });
   },
-  computed: {
-    isTalkValid: function()
-    {
+  watch: {
+    eventType: function(old, newval) {
       const self = this;
-      if(! self.thisEvent.type || self.thisEvent.type === 'UNKNOWN')
-        return {status:false, msg:''};
-
-      if(parseInt(self.thisTalk.speaker_id) < 1)
-        return {status:false, msg:'No valid speaker'};
-
-      if(self.thisTalk.title.length < 4)
-        return {status:false, msg:'Title too short'};
-
-      if(!(self.thisTalk.host && self.thisTalk.host.includes('@')))
-        return {status:false, msg:'Invalid Host/PI'};
-
-      return {status:true, msg:'Save it. I will book later'};
-    },
-    isBookingValid: function()
-    {
-      const self = this;
-      if(moment(self.thisBooking.startDateTime) <= moment())
-        return {status: false, msg: 'Start time is in the past!'};
-      if(! self.thisBooking.venue)
-        return {status: false, msg: 'No venue selected.'};
-      return {status: true, msg: 'Register & BOOK'};
+      self.isTalkOrSeminar();
     },
   },
   methods: { 
-    searchPeopleURI: function(q, what) {
+    isValidSelection: function()
+    {
       const self = this;
-      return self.getAPIUrl() + '/search/'+what+'/'+encodeURIComponent(q);
-      if(moment(self.thisBooking.startDateTime) <= moment())
-        return {status: false, msg: 'Start datetime is in the past!'};
-      return {status: true, msg: 'ok'};
+      if(! self.eventType)
+        return false;
+
+      if(self.eventType === 'UNKNOWN')
+        return false;
+
+      if(! ('all' in self.eventTypes))
+        return false;
+      if(Object.values(self.eventTypes.all).includes(self.eventType))
+        if(self.eventType !== 'UNKNOWN')
+          return true
+      return false;
     },
     isTalkOrSeminar: function() {
       const self = this;
-      if(self.thisEvent.type.includes("TALK"))
-        return true;
-      if(self.thisEvent.type.includes("SEMINAR"))
-        return true;
-      return false;
-    },
-    onSpeakerSelected: function(val) 
-    {
-      const self = this;
-      self.thisSpeaker = val.selectedObject;
-      self.thisTalk.speaker_id = self.thisSpeaker.id;
-    },
-    onVenueSelected: function(venueid)
-    {
-      const self = this;
-      self.thisBooking.venue = venueid;
-      console.log('Selected venue is ' + venueid);
-      self.popupVenueSelect = false;
-    },
-    foundSpeakersOnSearch: function(res)
-    {
-      const self = this;
-      self.potentialSpeakers = res.results;
-      self.createNewSpeaker = false;
-    },
-    submitSpeaker: function(speaker) 
-    {
-      const self = this;
-      const app = self.$f7;
-      console.log('Adding ', speaker);
-      app.dialog.preloader();
-      self.promiseWithAuth('people/speaker/add', speaker)
-        .then( function(x) {
-          var data = JSON.parse(x.data).data;
-          self.thisSpeaker = data.data;
-          app.dialog.close();
-          console.log( 'Added ', self.thisSpeaker);
-        });
-      setTimeout(() => app.dialog.close(), 500);
-    },
-    registerTalk: function(book=false) 
-    {
-      const self = this;
-      const app = self.$f7;
-
-      // Assign the class to talk.
-      console.log("Registering talk.", self.thisTalk);
-      app.dialog.preloader();
-      self.thisTalk.class = self.thisEvent.type;
-      self.promiseWithAuth('me/talk/register', self.thisTalk)
-        .then(function(x) {
-          let res = JSON.parse(x.data).data;
-          if('id' in res)
-          {
-            // Also book this talk.
-            if(book)
-            {
-              self.thisBooking.external_id = 'talk.'+res.id;
-              self.thisBooking.title = self.thisTalk.title;
-              self.thisBooking.description = self.thisTalk.description;
-              self.promiseWithAuth('venue/book/'+self.thisBooking.venue+'/'
-                + moment(self.thisBooking.startDateTime,'X')+'/'
-                + moment(self.thisBooking.endTime, 'X'), self.thisBooking
-              ).then( function(x) {
-                  console.log( "Booked event for talk", x.data);
-                });
-            }
-            // Refresh page.
-            self.$f7router.refreshPage();
-          }
-          else
-            navigator.notification.alert('I could not register your talk!', null);
-          app.dialog.close();
-        });
-
-      setTimeout(() => app.dialog.close(), 500);
-    },
-    isAvailable: function(venue)
-    {
-      if(venue.allowd_booking_on_hippo === 'NO')
-        return false;
-      if(venue.BOOKING_STATUS !== 'AVAILABLE')
-        return false;
-      return true;
-    },
-    openVenueSelectPopup: function() 
-    {
-      const self = this;
-      const app = self.$f7;
-
-      let date = self.dbDate(self.thisBooking.startDateTime);
-      let startTime = self.dbTime(self.thisBooking.startDateTime);
-      let endTime = self.dbTime(self.thisBooking.endTime);
-
-      app.dialog.preloader();
-
-      self.promiseWithAuth('info/venues/availability/all'
-        , {'date':date, 'start_time': startTime, 'end_time': endTime}
-      ).then(function(x) {
-          self.venues = JSON.parse(x.data).data;
-          app.dialog.close();
-          self.popupVenueSelect = true;
-        });
+      var ans = false;
+      if(self.eventType.includes("TALK"))
+        ans = true;
+      else if(self.eventType.includes("SEMINAR"))
+        ans = true;
+      if(ans)
+      {
+        self.sendEmailToAcademic = true;
+        self.addToGoogleCalendar = true;
+      }
+      return ans;
     },
   },
 }; 
-
 </script>
