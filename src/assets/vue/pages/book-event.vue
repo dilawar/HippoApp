@@ -5,6 +5,7 @@
   <!-- VENUE POPUP -->
   <f7-popup :opened="popupVenueSelect" @popup:close="popupVenueSelect=false">
     <f7-page>
+
       <f7-navbar title="Select a venue">
         <f7-nav-right>
           <f7-link popup-close>Close</f7-link>
@@ -38,6 +39,87 @@
     </f7-page>
   </f7-popup>
 
+  <!-- REPEAT PATTERN POPUP -->
+  <f7-popup :opened="popupRepeat" @popup:close="popupRepeat=false">
+    <f7-page>
+      <f7-navbar title="Repeat pattern for the booking">
+        <f7-nav-right>
+          <f7-link popup-close>Close</f7-link>
+        </f7-nav-right>
+      </f7-navbar>
+
+      <!-- Fetch venues and show the status. -->
+      <f7-block>
+        <f7-block-title small>Provide a repeat pattern </f7-block-title>
+        <f7-list media-list>
+          <!-- Repeat pattern -->
+          <f7-list-item header="Select days" smart-select
+                        :smart-select-params="{openIn:'popover', routableModals:false}">
+            <select name="days" multiple v-model="thisBooking.repeat_pat.days">
+              <option value="Mon" selected data-display-as="Mon">Monday</option>
+              <option value="Tue" data-display-as="Tue">Tuesday</option>
+              <option value="Wed" data-display-as="Wed">Wednesday</option>
+              <option value="Thu" data-display-as="Thu">Thursday</option>
+              <option value="Fri" data-display-as="Fri">Friday</option>
+              <option value="Sat" data-display-as="Sat">Saturday</option>
+              <option value="Sun" data-display-as="Sun">Sunday</option>
+            </select>
+          </f7-list-item>
+          <f7-list-item header="Select weeks" smart-select
+                        :smart-select-params="{openIn:'popover', routableModals:false}"
+                        >
+            <select name="weeks" multiple v-model="thisBooking.repeat_pat.weeks">
+              <option value="All" data-display-as="all" selected >All</option>
+              <option value="first" >1st</option>
+              <option value="second" >2nd</option>
+              <option value="third" >3rd</option>
+              <option value="fourth" >4th</option>
+              <option value="fifth" >5th</option>
+            </select>
+          </f7-list-item>
+          <f7-list-input label="Select months" :input="false">
+            <f7-range slot="input" :value="1" :min="1" :max="6" :step="1"
+                      v-model="thisBooking.repeat_pat.months"
+                      :label="true">
+            </f7-range>
+          </f7-list-input>
+          <f7-list-item>
+            <f7-button small
+                       raised
+                       slot="after" 
+                       @click="resolveRepeatPattern()"> 
+              Check my pattern
+            </f7-button>
+          </f7-list-item>
+        </f7-list>
+      </f7-block>
+
+      <f7-block inset>
+        <f7-block-title>Or,</f7-block-title>
+        <f7-list>
+          <f7-list-input :input="false" label="Pick multiple dates">
+            <input class="item-input-wrap" slot="input" id="select-multiple-dates" />
+          </f7-list-input>
+        </f7-list>
+      </f7-block>
+
+      <f7-block inset>
+        <f7-block-title small>
+          Picked dates.
+        </f7-block-title> 
+        <f7-list no-hairlines v-if="resolvedRepeat">
+          <f7-list-item>
+          </f7-list-item>
+          <f7-list-item v-for="(day, key) in resolvedRepeat">
+            <div slot="header">{{day | date}}</div>
+          </f7-list-item> 
+        </f7-list>
+      </f7-block>
+
+    </f7-page>
+  </f7-popup>
+
+
   <!-- BOOKING INTERFACE -->
   <f7-block>
     <div v-if="thisEvent.readonly">
@@ -52,7 +134,8 @@
 
         <f7-list-input @input="thisBooking.title = $event.target.value"
                      floating-label 
-                     label="Title" outline
+                     label="Title" 
+                     placeholder="At least 6 chars"
                      type="textarea" resizable required 
                      :value="thisBooking.title">
         </f7-list-input>
@@ -110,60 +193,33 @@
                       @click="popupVenueSelect=true">
         </f7-list-item>
         <f7-list-item v-else>
-          <f7-button small slot="after" @click="openVenueSelectPopup()">
+          <f7-button small 
+                     slot="after" 
+                     :disabled="thisBooking.title.length < 4"
+                     @click="openVenueSelectPopup()">
             Find a venue
           </f7-button>
         </f7-list-item>
       </f7-list-group>
 
-      <!-- Repeat pattern -->
-      <f7-list-group>
-         <f7-row>
-            <f7-col>
-               <f7-list-item header="Days" smart-select>
-                  <select name="days" multiple>
-                     <option value="monday" selected data-display-as="Mon">Monday</option>
-                     <option value="tuesday" data-display-as="Tue">Tuesday</option>
-                     <option value="wednesday" data-display-as="Wed">Wednesday</option>
-                     <option value="thursday" data-display-as="Thu">Thursday</option>
-                     <option value="friday" data-display-as="Fri">Friday</option>
-                     <option value="saturday" data-display-as="Sat">Saturday</option>
-                     <option value="sunday" data-display-as="Sun">Sunday</option>
-                  </select>
-               </f7-list-item>
-            </f7-col>
-            <f7-col>
-               <f7-list-item header="Weeks" smart-select>
-                  <select name="weeks" multiple>
-                     <option value="*" data-display-as="all" selected >Monday</option>
-                     <option value="1" >Monday</option>
-                     <option value="2" >Tuesday</option>
-                     <option value="3" >Wednesday</option>
-                     <option value="4" >Thursday</option>
-                     <option value="5" >Friday</option>
-                  </select>
-               </f7-list-item>
-            </f7-col>
-            <f7-col>
-               <f7-list-input label="Months" :input="false">
-                  <f7-range slot="input" :value="1" :min="1" :max="6" :step="1"
-                            label=true>
-                  </f7-range>
-               </f7-list-input>
-            </f7-col>
-         </f7-row>
-      </f7-list-group>
-
         <!-- SUBMIT BUTTON -->
+        <f7-list-group media-list>
         <f7-list-item>
           <f7-button raised 
+                     small
                      :disabled="! isBookingValid.status" 
                      @click="bookThisEvent()"
                      slot="after">
             {{isBookingValid.msg}}
           </f7-button>
+          <f7-link slot="title" :disabled="! isBookingValid.status"
+                   @click="popupRepeat=true">
+              Add repeat
+          </f7-link>
+          <div slot="footer" v-if="resolvedRepeat.length>0">
+            Dates: {{resolvedRepeat.join(', ')}}
+          </div>
         </f7-list-item>
-
       </f7-list-group>
 
     </f7-list>
@@ -181,6 +237,8 @@ export default {
     return {
       venues: self.loadStore('venues'),
       popupVenueSelect: false,
+      popupRepeat: false,
+      resolvedRepeat: [],
       externalId: self.$f7route.params.externalId,
       evType: self.$f7route.params.evType,
       thisEvent: {
@@ -201,6 +259,8 @@ export default {
         , title: ''
         , description: ''
         , venue: ''
+        , repeat_pat : { days:[], weeks:[], months:1}
+        , dates: []
       },
     };
   },
@@ -247,6 +307,20 @@ export default {
     }
     else
       self.thisBooking['class'] = self.evType;
+
+    console.log('Creating calendar');
+    self.calendar = app.calendar.create({
+      inputEl: '#select-multiple-dates',
+      multiple: true,
+      //header: true,
+      footer: true,
+      dateFormat: 'yyyy-mm-dd',
+      on: {
+        change: function(input) {
+          self.resolvedRepeat = input.value.map(x=> self.dbDate(x));
+        },
+      },
+    });
   },
   computed: {
     isTalkValid: function()
@@ -367,6 +441,17 @@ export default {
           self.venues = JSON.parse(x.data).data;
           app.dialog.close();
           self.popupVenueSelect = true;
+        });
+    },
+    resolveRepeatPattern: function() 
+    {
+      const self = this;
+      var rp = self.thisBooking.repeat_pat;
+      var pat = rp.days.join('/')+','+rp.weeks.join('/')+','+rp.months;
+      console.log('Resolving repeat pattern', pat);
+      self.promiseWithAuth('info/repeatpat/'+btoa(pat))
+        .then(function(x) {
+          self.resolvedRepeat = JSON.parse(x.data).data;
         });
     },
   },
