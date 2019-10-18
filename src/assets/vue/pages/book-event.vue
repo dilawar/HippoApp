@@ -118,35 +118,41 @@
 
       <!-- Repeat pattern -->
       <f7-list-group>
-        <f7-list-item header="Days" smart-select>
-          <select name="days" multiple>
-            <option value="monday" selected data-display-as="Mon">Monday</option>
-            <option value="tuesday" data-display-as="Tue">Tuesday</option>
-            <option value="wednesday" data-display-as="Wed">Wednesday</option>
-            <option value="thursday" data-display-as="Thu">Thursday</option>
-            <option value="friday" data-display-as="Fri">Friday</option>
-            <option value="saturday" data-display-as="Sat">Saturday</option>
-            <option value="sunday" data-display-as="Sun">Sunday</option>
-          </select>
-        </f7-list-item>
-
-        <f7-list-item header="Weeks" smart-select>
-          <select name="weeks" multiple>
-            <option value="*" data-display-as="all" selected >Monday</option>
-            <option value="1" >Monday</option>
-            <option value="2" >Tuesday</option>
-            <option value="3" >Wednesday</option>
-            <option value="4" >Thursday</option>
-            <option value="5" >Friday</option>
-          </select>
-        </f7-list-item>
+         <f7-row>
+            <f7-col>
+               <f7-list-item header="Days" smart-select>
+                  <select name="days" multiple>
+                     <option value="monday" selected data-display-as="Mon">Monday</option>
+                     <option value="tuesday" data-display-as="Tue">Tuesday</option>
+                     <option value="wednesday" data-display-as="Wed">Wednesday</option>
+                     <option value="thursday" data-display-as="Thu">Thursday</option>
+                     <option value="friday" data-display-as="Fri">Friday</option>
+                     <option value="saturday" data-display-as="Sat">Saturday</option>
+                     <option value="sunday" data-display-as="Sun">Sunday</option>
+                  </select>
+               </f7-list-item>
+            </f7-col>
+            <f7-col>
+               <f7-list-item header="Weeks" smart-select>
+                  <select name="weeks" multiple>
+                     <option value="*" data-display-as="all" selected >Monday</option>
+                     <option value="1" >Monday</option>
+                     <option value="2" >Tuesday</option>
+                     <option value="3" >Wednesday</option>
+                     <option value="4" >Thursday</option>
+                     <option value="5" >Friday</option>
+                  </select>
+               </f7-list-item>
+            </f7-col>
+            <f7-col>
+               <f7-list-input label="Months" :input="false">
+                  <f7-range slot="input" :value="1" :min="1" :max="6" :step="1"
+                            label=true>
+                  </f7-range>
+               </f7-list-input>
+            </f7-col>
+         </f7-row>
       </f7-list-group>
-
-        <f7-list-input label="Months" :input="false">
-          <f7-range slot="input" :value="1" :min="1" :max="6" :step="1"
-            label=true>
-          </f7-range>
-        </f7-list-input>
 
         <!-- SUBMIT BUTTON -->
         <f7-list-item>
