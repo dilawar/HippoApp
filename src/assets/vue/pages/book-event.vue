@@ -58,7 +58,7 @@
           <!-- Repeat pattern -->
           <f7-list-item header="Select days" smart-select
                         :smart-select-params="{openIn:'popover', routableModals:false}">
-            <select name="days" multiple v-model="thisBooking.repeat_pat.days">
+            <select name="days" multiple v-model="thisBooking.repeatPat.days">
               <option value="Mon" selected data-display-as="Mon">Monday</option>
               <option value="Tue" data-display-as="Tue">Tuesday</option>
               <option value="Wed" data-display-as="Wed">Wednesday</option>
@@ -71,7 +71,7 @@
           <f7-list-item header="Select weeks" smart-select
                         :smart-select-params="{openIn:'popover', routableModals:false}"
                         >
-            <select name="weeks" multiple v-model="thisBooking.repeat_pat.weeks">
+            <select name="weeks" multiple v-model="thisBooking.repeatPat.weeks">
               <option value="All" data-display-as="all" selected >All</option>
               <option value="first" >1st</option>
               <option value="second" >2nd</option>
@@ -80,9 +80,10 @@
               <option value="fifth" >5th</option>
             </select>
           </f7-list-item>
+
           <f7-list-input label="Select months" :input="false">
             <f7-range slot="input" :value="1" :min="1" :max="6" :step="1"
-                      v-model="thisBooking.repeat_pat.months"
+                      v-model="thisBooking.repeatPat.months"
                       :label="true">
             </f7-range>
           </f7-list-input>
@@ -94,6 +95,7 @@
               Check my pattern
             </f7-button>
           </f7-list-item>
+
         </f7-list>
       </f7-block>
 
@@ -137,7 +139,7 @@
 
     <f7-list media-list>
 
-      <f7-list-group v-if="! thisEvent.readonly">
+      <f7-list-group v-if="! thisEvent.readonly" media-list>
 
         <f7-list-input @input="thisBooking.title = $event.target.value"
                      floating-label 
@@ -147,6 +149,7 @@
                      :value="thisBooking.title">
         </f7-list-input>
 
+        <!--
         <f7-list-input :input="false">
           <vue-editor ref="description" 
                       slot="input"
@@ -154,6 +157,16 @@
                       v-model="thisBooking.description">
           </vue-editor>
         </f7-list-input>
+        <f7-list-input type="texteditor" 
+                       resizable
+                       :textEditorParams="{mode: 'popover'}"
+                       >
+        </f7-list-input>
+        -->
+        <f7-list-input :input="false">
+           <input slot="input" id="text-editor" />
+        </f7-list-input>
+
       </f7-list-group>
 
       <f7-list-group v-else media-list>
@@ -269,7 +282,7 @@ export default {
         , description: ''
         , venue: ''
         , dates: []
-        , repeat_pat: { days:[], weeks:[], months:1}
+        , repeatPat: { days:[], weeks:[], months:1}
       },
     };
   },
@@ -323,7 +336,7 @@ export default {
       footer: true,
       dateFormat: 'yyyy-mm-dd',
       minDate: moment(),
-      maxDate: moment().add('month', 6),
+      maxDate: moment().add(6, 'months'),
       on: {
         change: function(input) {
           if(input.value)
@@ -333,6 +346,13 @@ export default {
         },
       },
     });
+
+   // Text editor.
+     var tE = app.textEditor.create({
+        el : '#text-editor',
+        value: '<code><p>Hellow</p></code>'
+     });
+   
   },
   computed: {
     isTalkValid: function()
@@ -396,8 +416,10 @@ export default {
       const self = this;
       const app = self.$f7;
 
-      var rp = self.thisBooking.repeat_pat;
+      var rp = self.thisBooking.repeatPat;
       var pat = rp.days.join('/')+','+rp.weeks.join('/')+','+rp.months;
+                           
+      // Attach the repeat_pat for the API.
       self.thisBooking.repeat_pat = pat;
       console.log('BOOKING', self.thisBooking);
 
@@ -465,7 +487,7 @@ export default {
     resolveRepeatPattern: function() 
     {
       const self = this;
-      var rp = self.thisBooking.repeat_pat;
+      var rp = self.thisBooking.repeatPat;
       var pat = rp.days.join('/')+','+rp.weeks.join('/')+','+rp.months;
       console.log('Resolving repeat pattern', pat);
       self.promiseWithAuth('info/repeatpat/'+btoa(pat))

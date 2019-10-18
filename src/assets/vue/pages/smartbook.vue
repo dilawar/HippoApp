@@ -41,7 +41,6 @@
   <f7-block inset>
     <!-- If there is any unscheduled talks, show them here for booking. -->
     <div v-if="isTalkOrSeminar() && myUnscheduledTalks.length > 0">
-
       <f7-icon fa="bell-o fa-fw"></f7-icon> 
       You already have some unscheduled events. Just a reminder...
       <f7-list>
@@ -104,7 +103,7 @@ export default {
       });
   },
   watch: {
-    eventType: function(old, newval) {
+    'eventType': function(old, newval) {
       const self = this;
       self.isTalkOrSeminar();
     },
@@ -134,10 +133,9 @@ export default {
       else if(self.eventType.includes("SEMINAR"))
         ans = true;
       if(ans)
-      {
         self.sendEmailToAcademic = true;
-        self.addToGoogleCalendar = true;
-      }
+       else
+        self.sendEmailToAcademic = false;
       return ans;
     },
   },
