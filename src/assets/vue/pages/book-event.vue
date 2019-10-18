@@ -149,7 +149,6 @@
                      :value="thisBooking.title">
         </f7-list-input>
 
-        <!--
         <f7-list-input :input="false">
           <vue-editor ref="description" 
                       slot="input"
@@ -157,14 +156,6 @@
                       v-model="thisBooking.description">
           </vue-editor>
         </f7-list-input>
-        <f7-list-input type="texteditor" 
-                       resizable
-                       :textEditorParams="{mode: 'popover'}"
-                       >
-        </f7-list-input>
-        -->
-        <f7-list-input :input="false">
-           <input slot="input" id="text-editor" />
         </f7-list-input>
 
       </f7-list-group>
@@ -346,13 +337,6 @@ export default {
         },
       },
     });
-
-   // Text editor.
-     var tE = app.textEditor.create({
-        el : '#text-editor',
-        value: '<code><p>Hellow</p></code>'
-     });
-   
   },
   computed: {
     isTalkValid: function()
