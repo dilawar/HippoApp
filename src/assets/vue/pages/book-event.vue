@@ -50,7 +50,10 @@
 
       <!-- Fetch venues and show the status. -->
       <f7-block>
-        <f7-block-title small>Provide a repeat pattern </f7-block-title>
+        <f7-block-title small>
+          <p> Add a repeat pattern or select 
+          dates manually below </p>
+        </f7-block-title>
         <f7-list media-list>
           <!-- Repeat pattern -->
           <f7-list-item header="Select days" smart-select
@@ -100,6 +103,10 @@
           <f7-list-input :input="false" label="Pick multiple dates">
             <input class="item-input-wrap" slot="input" id="select-multiple-dates" />
           </f7-list-input>
+
+          <f7-list-item>
+            <f7-button slot="after" popup-close>Done</f7-button>
+          </f7-list-item>
         </f7-list>
       </f7-block>
 
@@ -107,10 +114,10 @@
         <f7-block-title small>
           Picked dates.
         </f7-block-title> 
-        <f7-list no-hairlines v-if="resolvedRepeat">
+        <f7-list no-hairlines v-if="thisBooking.dates">
           <f7-list-item>
           </f7-list-item>
-          <f7-list-item v-for="(day, key) in resolvedRepeat">
+          <f7-list-item v-for="(day, key) in thisBooking.dates">
             <div slot="header">{{day | date}}</div>
           </f7-list-item> 
         </f7-list>
@@ -212,12 +219,15 @@
                      slot="after">
             {{isBookingValid.msg}}
           </f7-button>
-          <f7-link slot="title" :disabled="! isBookingValid.status"
-                   @click="popupRepeat=true">
+          <f7-button small
+                     slot="header" 
+                     :disabled="! isBookingValid.status"
+                     style="width:100px"
+                     @click="popupRepeat=true">
               Add repeat
-          </f7-link>
-          <div slot="footer" v-if="resolvedRepeat.length>0">
-            Dates: {{resolvedRepeat.join(', ')}}
+          </f7-button>
+          <div slot="footer" v-if="thisBooking.dates.length>0">
+            Dates: {{thisBooking.dates.join(', ')}}
           </div>
         </f7-list-item>
       </f7-list-group>
@@ -238,7 +248,6 @@ export default {
       venues: self.loadStore('venues'),
       popupVenueSelect: false,
       popupRepeat: false,
-      resolvedRepeat: [],
       externalId: self.$f7route.params.externalId,
       evType: self.$f7route.params.evType,
       thisEvent: {
@@ -259,8 +268,8 @@ export default {
         , title: ''
         , description: ''
         , venue: ''
-        , repeat_pat : { days:[], weeks:[], months:1}
         , dates: []
+        , repeat_pat: { days:[], weeks:[], months:1}
       },
     };
   },
@@ -308,16 +317,19 @@ export default {
     else
       self.thisBooking['class'] = self.evType;
 
-    console.log('Creating calendar');
     self.calendar = app.calendar.create({
       inputEl: '#select-multiple-dates',
       multiple: true,
-      //header: true,
       footer: true,
       dateFormat: 'yyyy-mm-dd',
+      minDate: moment(),
+      maxDate: moment().add('month', 6),
       on: {
         change: function(input) {
-          self.resolvedRepeat = input.value.map(x=> self.dbDate(x));
+          if(input.value)
+            self.thisBooking.dates = input.value.map(x=> self.dbDate(x));
+          else
+            self.thisBooking.dates = [];
         },
       },
     });
@@ -384,6 +396,9 @@ export default {
       const self = this;
       const app = self.$f7;
 
+      var rp = self.thisBooking.repeat_pat;
+      var pat = rp.days.join('/')+','+rp.weeks.join('/')+','+rp.months;
+      self.thisBooking.repeat_pat = pat;
       console.log('BOOKING', self.thisBooking);
 
       // Assign the class to talk.
@@ -401,16 +416,20 @@ export default {
           var res = JSON.parse(x.data).data;
           if(! res.success)
             app.notification.create( {
-              title: "Failed", subtitle: res.msg
-              , closeButton: true, closeOnClick: true
+              title: "Failed"
+              , subtitle: res.msg
+              , closeButton: true
+              , closeOnClick: true
               , closeTimeout: 10000,
             }).open();
           else
           {
             app.notification.create( {
-              title: "Success", subtitle: "Successfully created"
-              , closeButton: true, closeOnClick: true
-              , closeTimeout: 3000,
+              title: "Success"
+              , subtitle: "Created "+res.num_bookings+" bookings."
+              , closeButton: true
+              , closeOnClick: true
+              , closeTimeout: 5000,
             }).open();
             self.$f7router.navigate('/home/', {reloadAll:true});
           }
@@ -451,7 +470,7 @@ export default {
       console.log('Resolving repeat pattern', pat);
       self.promiseWithAuth('info/repeatpat/'+btoa(pat))
         .then(function(x) {
-          self.resolvedRepeat = JSON.parse(x.data).data;
+          self.thisBooking.dates = JSON.parse(x.data).data;
         });
     },
   },

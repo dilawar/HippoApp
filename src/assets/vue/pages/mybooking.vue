@@ -26,6 +26,7 @@
                <f7-swipeout-actions right v-if="isMobileApp()">
                  <f7-swipeout-button delete>Delete</f7-swipeout-button>
                </f7-swipeout-actions>
+
                <f7-button v-else small raised color="red" fill slot="after"
                            @click="deleteThisRequest(val.gid, val.rid)"> 
                  Delete
@@ -99,11 +100,10 @@ export default {
         }, {});
       };
 
-      var link = self.$store.state.api+'/mybooking/list/'+moment(self.startDate).format('X');
-      app.request.post(link, this.apiPostData(),
-        function(json) 
-        {
-          var res = JSON.parse(json);
+      var link = '/mybooking/list/'+moment(self.startDate).format('X');
+      self.promiseWithAuth(link)
+        .then( function(x) {
+          var res = JSON.parse(x.data);
           self.requestGroups = res.data.requests;
           self.eventGroups = res.data.events;
         }
