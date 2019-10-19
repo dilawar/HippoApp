@@ -83,21 +83,23 @@ export default {
       };
    },
    mounted() {
-      const self = this;
-      self.inventories = self.loadStore('inventories');
-      if( ! self.inventories || self.inventories.length == 0)
-      {
-         // Get all inventory.
-         console.log( "Fetching inventories ... " );
-         self.postWithPromise( '/inventory/list/100').then(
-            function(x) 
-            {
-               self.inventories = JSON.parse(x.data).data;
-               self.saveStore('inventories', self.inventories);
-            }
-         );
-      }
-      self.toItems(self.inventories.list);
+     const self = this;
+     const app = self.$f7;
+     self.inventories = self.loadStore('inventories');
+     if( ! self.inventories || self.inventories.length == 0)
+     {
+       // Get all inventory.
+       console.log( "Fetching inventories ... " );
+       app.dialog.preloader('Fetching inventory');
+       self.postWithPromise( '/inventory/list/100').then(
+         function(x) 
+         {
+           self.inventories = JSON.parse(x.data).data;
+           self.saveStore('inventories', self.inventories);
+         }
+       );
+     }
+     self.toItems(self.inventories.list);
    },
    methods: { 
       fetchInventory: function() {

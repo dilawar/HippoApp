@@ -305,8 +305,8 @@
          self.myjcs = self.loadStore('me.profile').jcs;
          console.log( "My JCS ", self.myjcs);
 
-         self.postWithPromise('/me/jc').then( function(json) {
-           let res = JSON.parse(json);
+         self.postWithPromise('/me/jc').then( function(x) {
+           let res = JSON.parse(x.data);
            self.jcs = res.data;
            self.saveStore('me.jcs', res.data);
            });
@@ -323,8 +323,8 @@
          const self = this;
          self.thisJC.jc_id = jcid;
          self.postWithPromise('/jc/subscriptions/'+jcid)
-           .then( function(json) {
-             let res = JSON.parse(json);
+           .then( function(x) {
+             let res = JSON.parse(x.data);
              self.thisJCSubscrptions = res.data;
              self.subscriptions[jcid] = res.data;
            });
@@ -335,8 +335,8 @@
          self.thisJC.jc_id = jcid;
 
          self.postWithPromise('/jc/info/'+jcid)
-           .then(function(json) {
-             let res = JSON.parse(json);
+           .then(function(x) {
+             let res = JSON.parse(x.data);
              self.thisJC.info = res.data;
              // Add time.
              self.thisJC.time = self.thisJC.info.time;
@@ -390,7 +390,7 @@
          const self = this;
          self.popupOpened = false;
          self.promiseWithAuth('/jc/update', self.thisJC).then(
-           function(json) {
+           function(x) {
              self.fetchJC();
            }
          );
@@ -405,7 +405,7 @@
        removeJC: function(jcid) {
          const self = this;
          self.promiseWithAuth('/jcadmin/remove/' + jcid)
-           .then( function(json) {
+           .then( function(x) {
              self.fetchJC();
            });
        },
@@ -423,7 +423,7 @@
          const self = this;
          // console.log('Submitting', self.thisJC);
          self.promiseWithAuth('/jcadmin/assign', self.thisJC)
-          .then( function(json) {
+          .then( function(x) {
              self.fetchJC();
           });
            self.jcAdminPresentationPopup = false;
@@ -431,7 +431,7 @@
        unsubscribeFromJC: function(login, jcid) {
          const self = this;
          self.promiseWithAuth('/jcadmin/unsubscribe/'+jcid+'/'+login)
-          .then( function(json) {
+          .then( function(x) {
              self.fetchSubscriptions(jcid);
           });
        },
@@ -439,8 +439,8 @@
          const self = this;
          const app = self.$f7;
          self.promiseWithAuth('/jcadmin/subscribe/'+jcid+'/'+login)
-          .then( function(json) {
-            let res = JSON.parse(json).data;
+          .then( function(x) {
+            let res = JSON.parse(x.data).data;
             if(res.success)
             {
               app.alert(res.msg, "Success", null);
