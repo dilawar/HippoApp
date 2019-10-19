@@ -2,101 +2,131 @@
   <f7-page ptr @ptr:refresh="refreshMyBooking" 
            @page:init="fetchMyBooking"
            @page:refresh="fetchMyBooking">
+  <f7-navbar title="My Bookings" back-link="Back">
+  </f7-navbar>
 
-  <f7-navbar title="My Bookings" back-link="Back"></f7-navbar>
-     <f7-list media-list>
-       <f7-list-item accordion-item
-                     v-for="(requests, gid, index) in requestGroups" 
-                     :title="requests[0].title"
-                     :key="gid"
-                     :header="requests[0].venue">
-         <font slot="after" color="blue">{{requests.length}} pending</font>
-         <f7-accordion-content>
-           <f7-block inset style="background-color:lightyellow">
-             <div>{{requests[0].title}}</div>
+  <f7-block v-if="Object.keys(requestGroups).length>0">
+    <f7-block-title>Pending booking requests...</f7-block-title>
+    <f7-list media-list>
+      <f7-list-item accordion-item
+                    v-for="(requests, gid, index) in requestGroups" 
+                    :title="requests[0].title"
+                    :key="gid"
+                    :header="requests[0].venue">
+        <font slot="after" color="blue">{{requests.length}} pending</font>
+        <f7-accordion-content>
+          <f7-block inset style="background-color:lightyellow">
+            <div>{{requests[0].title}}</div>
 
-             <f7-list media-list margin="10px">
+            <f7-list media-list margin="10px">
 
-               <f7-list-item v-if="requests.length > 1">
-                 <f7-button color="red"
-                            fill small 
-                            @click="deleteThisRequest(requests[0].gid)"
-                            raised>
-                   Delete whole group
-                 </f7-button>
-               </f7-list-item>
+              <f7-list-item v-if="requests.length > 1">
+                <f7-button color="red"
+                           fill small 
+                           @click="deleteThisRequest(requests[0].gid)"
+                           raised>
+                  Delete whole group
+                </f7-button>
+              </f7-list-item>
 
-               <f7-list-item swipeout
-                             @swipeout:deleted="deleteThisRequest(val.gid, val.rid)"
-                             v-for="(val, index) in requests" 
-                             :key="val.gid+'.'+val.rid" 
-                             :title="humanReadableDateTime(val.date,val.start_time)+' ('+val.venue+')'">
+              <f7-list-item swipeout
+                            @swipeout:deleted="deleteThisRequest(val.gid, val.rid)"
+                            v-for="(val, index) in requests" 
+                            :key="val.gid+'.'+val.rid" 
+                            :title="humanReadableDateTime(val.date,val.start_time)+' ('+val.venue+')'">
 
-                 <!-- SWIPEOUT IF IT IS AN MOBILE APP. ELSE USE BUTTON -->
-                 <f7-swipeout-actions right v-if="isMobileApp()">
-                   <f7-swipeout-button delete>Delete</f7-swipeout-button>
-                 </f7-swipeout-actions>
+                <!-- SWIPEOUT IF IT IS AN MOBILE APP. ELSE USE BUTTON -->
+                <f7-swipeout-actions right v-if="isMobileApp()">
+                  <f7-swipeout-button delete>Delete</f7-swipeout-button>
+                </f7-swipeout-actions>
 
-                 <f7-button v-else 
-                            small raised 
-                            color="red"
-                            fill slot="after"
-                            @click="deleteThisRequest(val.gid, val.rid)"> 
-                   Delete
-                 </f7-button>
-               </f7-list-item>
-             </f7-list>
-           </f7-block>
-         </f7-accordion-content>
-       </f7-list-item>
-     </f7-list>
+                <f7-button v-else 
+                           small raised 
+                           color="red"
+                           fill slot="after"
+                                @click="deleteThisRequest(val.gid, val.rid)"> 
+                  Delete
+                </f7-button>
+              </f7-list-item>
+            </f7-list>
+          </f7-block>
+        </f7-accordion-content>
+      </f7-list-item>
+    </f7-list>
+  </f7-block>
 
-     <!-- THESE ARE CONFIRMED EVENTS -->
-     <f7-list media-list>
-       <f7-list-item accordion-item 
-                      v-for="(events, gid, index) in eventGroups" 
-                      :title="events[0].title"
-                      :footer="events[0].venue" 
-                      :key="gid">
-           <div slot="after">{{events.length}} confirmed</div>
-           <f7-accordion-content>
-             <f7-list media-list>
-               <!-- DELETE THE WHOLE GROUP -->
-               <f7-list-item v-if="events.length > 1">
-                 <f7-button raised> Delete whole group </f7-button>
-               </f7-list-item>
+  <!-- THESE ARE CONFIRMED EVENTS -->
+  <f7-block v-if="Object.keys(eventGroups).length > 0">
+    <f7-block-title>Confirmed bookings...</f7-block-title>
+    <f7-list media-list>
+      <f7-list-item accordion-item 
+                    v-for="(events, gid, index) in eventGroups" 
+                    :title="events[0].title"
+                    :footer="events[0].venue" 
+                    :key="gid">
+        <div slot="after">{{events.length}} confirmed</div>
+        <f7-accordion-content>
+          <f7-list media-list>
+            <!-- DELETE THE WHOLE GROUP -->
+            <f7-list-item v-if="events.length > 1">
+              <f7-button raised> Delete whole group </f7-button>
+            </f7-list-item>
 
-               <!-- DELETE EACH ELEMENT -->
-               <f7-list-item swipeout 
-                             v-for="(val, index) in events" 
-                             @swipeout:deleted="deleteEvent(val.gid, val.eid)"
-                             :key="val.gid+'.'+val.eid" 
-                             :title="humanReadableDateTime(val.date, val.start_time)">
-                 <f7-icon slot="media" icon="fa fa-check-circle"></f7-icon>
+            <!-- DELETE EACH ELEMENT -->
+            <f7-list-item swipeout 
+                          v-for="(val, index) in events" 
+                          @swipeout:deleted="deleteEvent(val.gid, val.eid)"
+                          :key="val.gid+'.'+val.eid" 
+                          :title="humanReadableDateTime(val.date, val.start_time)">
+              <f7-icon slot="media" icon="fa fa-check-circle"></f7-icon>
 
-                 <!-- ON MOBILE -->
-                 <f7-swipeout-actions right v-if="isMobileApp()">
-                   <f7-swipeout-button delete
-                                       color="blue"
-                                       title="Deleting request?" 
-                                       confirm-text="Cancel booking?">
-                     Cancel
-                   </f7-swipeout-button>
-                 </f7-swipeout-actions>
+              <!-- ON MOBILE -->
+              <f7-swipeout-actions right v-if="isMobileApp()">
+                <f7-swipeout-button delete
+                                    color="blue"
+                                    title="Deleting request?" 
+                                    confirm-text="Cancel booking?">
+                  Cancel
+                </f7-swipeout-button>
+              </f7-swipeout-actions>
 
-                 <!-- ELSE -->
-                 <f7-button @click="deleteEvent(val.gid, val.eid)"
-                                       color="red" fill
-                                       slot="after"
-                                       small>
-                   Delete
-                 </f7-button>
-               </f7-list-item>
-             </f7-list>
-           </f7-accordion-content>
-        </f7-list-item>
-        <f7-list-item></f7-list-item>
-     </f7-list>
+              <!-- ELSE -->
+              <f7-button @click="deleteEvent(val.gid, val.eid)"
+                                    color="red" fill
+                                    slot="after"
+                                    small>
+                Delete
+              </f7-button>
+            </f7-list-item>
+          </f7-list>
+        </f7-accordion-content>
+      </f7-list-item>
+      <f7-list-item></f7-list-item>
+    </f7-list>
+  </f7-block>
+
+
+  <!-- MY TAKS -->
+  <f7-block v-if="Object.keys(myTalks).length>0">
+    <f7-block-title>My talks (total {{myTalks.length}})</f7-block-title>
+    <f7-list media-list>
+      <f7-list-item v-for="(talk, key) in myTalks"
+                    :key="key"
+                    :link="'/updatetalk/'+talk.id+'/'">
+        <div slot="title">{{talk.class}} by {{talk.speaker}}</div>
+        <div slot="text">{{talk.title}}</div>
+
+        <!-- If talk is scheduled, show the information -->
+        <div slot="header" v-if="talk.booking">
+          {{talk.booking.date | date}}, {{talk.booking.start_time|clockTime}}
+            , {{talk.booking.venue}}
+        </div>
+        <!-- else show the it is not scheduled. -->
+        <div slot="after" v-else>{{talk.booking_status}}</div>
+        <div slot="footer">Created {{toNow(talk.created_on)}} ago</div>
+      </f7-list-item>
+    </f7-list>
+  </f7-block>
 
   </f7-page>
 </template>
@@ -110,15 +140,29 @@ export default {
     return {
       requestGroups: [],
       eventGroups: [],
+      myTalks: [],
       startDate: moment(),
       endDate: '',
+
+      // This talk and associated popup.
+      thisTalk: [],
+      popupTalk: false,
     };
   },
   mounted: function() {
     const self = this;
     self.fetchMyBooking();
+    self.fetchMyTalks();
   },
   methods: { 
+    fetchMyTalks: function()
+    {
+      const self = this;
+      self.promiseWithAuth('me/talk/all')
+        .then( function(x) {
+          self.myTalks = JSON.parse(x.data).data;
+        });
+    },
     fetchMyBooking: function(data) 
     {
       const self         = this;
@@ -218,6 +262,11 @@ export default {
         closeOnClick: true,
         closeButton: true,
       }).open();
+    },
+    openTalkPopup: function(talk) {
+      const self = this;
+      self.thisTalk = talk;
+      self.popupTalk = true;
     },
   },
 };
