@@ -31,6 +31,7 @@
         -->
 
         <f7-link v-if="isUserAuthenticated()" 
+                 text="People"
                  href="/search/" 
                  icon="fa fa-search fa-fw"
                  >
