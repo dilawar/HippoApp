@@ -431,7 +431,7 @@ export default {
               , closeOnClick: true
               , closeTimeout: 5000,
             }).open();
-            self.$f7router.navigate('/mybooking/', {reloadAll:true});
+            self.$f7router.navigate('/mybooking/', {reloadCurrent:true});
           }
         });
     },
