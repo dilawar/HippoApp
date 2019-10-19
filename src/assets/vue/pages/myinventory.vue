@@ -270,16 +270,18 @@ export default {
       };
    },
    mounted: function() {
-      const self = this;
-      self.inventories = self.loadStore('me.inventories');
+     const self = this;
+     self.inventories = self.loadStore('me.inventories');
+     if(! self.inventories)
+       self.fetchInventories();
    },
    methods: { 
       fetchInventories: function() {
          const self = this;
          const app = self.$f7;
          self.postWithPromise( '/labinventory/list/').then(
-            function(json) {
-               let res = JSON.parse(json);
+            function(x) {
+               let res = JSON.parse(x.data);
                if( res.status == 'ok') {
                   self.inventories = res.data;
                   self.saveStore('me.inventories', self.inventories);
@@ -318,8 +320,8 @@ export default {
       {
          const self = this;
          self.promiseWithAuth( 'labinventory/create', self.inventory).then(
-            function( json ) {
-               let res = JSON.parse(json)['data'];
+            function(x) {
+               let res = JSON.parse(x.data).data;
                console.log( "Created inventory", res.id );
                self.inventory = res;
                if(self.inventory.borrowing.length == 0)
@@ -333,8 +335,8 @@ export default {
       submitUpdateInventory: function(card) {
          const self = this;
          self.promiseWithAuth( 'labinventory/update', card).then(
-            function( json ) {
-               let res = JSON.parse(json)['data'];
+            function(x) {
+               let res = JSON.parse(x.data).data;
                // Now upload images if any.
                // Before uploading image, add corresponding inventory id to the image.
                self.$refs.inventoryDZ.processQueue();

@@ -69,6 +69,7 @@
                class="aws-roster"
                >
         <f7-list-item v-for="(speaker, key) in speakers"
+                      :key="key"
                       accordion-item
                       >
           <div slot="subtitle">{{speaker|name}} ({{speaker.login}})</div>

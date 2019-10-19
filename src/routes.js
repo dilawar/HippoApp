@@ -11,12 +11,14 @@ import PanelLeftPage from './assets/vue/pages/panel-left.vue';
 import PanelRightPage from './assets/vue/pages/panel-right.vue';
 import WhatWhereWhenPage from './assets/vue/pages/whatwherewhen.vue';
 import FormPage from './assets/vue/pages/form.vue';
-import DynamicRoutePage from './assets/vue/pages/dynamic-route.vue';
+
 import BookingPage from './assets/vue/pages/booking.vue';
 import SmartBookingPage from './assets/vue/pages/smartbook.vue';
+import RegisterEventWithSpeaker from './assets/vue/pages/event-with-speaker.vue';
+
+import BookEvent from './assets/vue/pages/book-event.vue';
 import MyBookingPage from './assets/vue/pages/mybooking.vue';
 import MyInventoryPage from './assets/vue/pages/myinventory.vue';
-import BookThisVenuePage from './assets/vue/pages/bookthisvenue.vue';
 import EventPage from './assets/vue/pages/events.vue';
 import TravelPage from './assets/vue/pages/travel.vue';
 import NCBSMap from './assets/vue/pages/map.vue';
@@ -119,6 +121,14 @@ export default [
       component: SmartBookingPage
    },
    {
+      path: '/register-event-with-speaker/:eventType',
+      component: RegisterEventWithSpeaker
+   },
+   {
+      path: '/bookevent/:externalId/:evType',
+      component: BookEvent
+   },
+   {
       path: '/map/',
       component: NCBSMap
    },
@@ -129,11 +139,6 @@ export default [
    {
       path: '/mybooking/',
       component: MyBookingPage
-   },
-   {
-      path: '/book/:venue/:startDateTime/:endDateTime/',
-      component: BookThisVenuePage,
-      pushState: false,
    },
    {
       path: '/events/',

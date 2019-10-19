@@ -76,11 +76,15 @@
     mounted()
     {
       const self = this;
-      self.postWithPromise('/me/profile').then( function(json) {
-        self.profile = JSON.parse(json).data;
-        if('roles' in self.profile)
-          self.roles = self.profile.roles.split(',');
-      });
+      if( self.isUserAuthenticated())
+      {
+        self.postWithPromise('/me/profile')
+          .then( function(x) {
+            self.profile = JSON.parse(x.data).data;
+            if('roles' in self.profile)
+              self.roles = self.profile.roles.split(',');
+          });
+      }
     },
     methods : {
       refreshData: function(ev, done) {
