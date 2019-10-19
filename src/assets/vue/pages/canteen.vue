@@ -187,8 +187,8 @@ export default {
       // Get menu for this day.
       const self = this;
       self.postWithPromise( '/menu/list/'+self.selectedDay).then(
-         function(json) {
-            let res = JSON.parse(json);
+         function(x) {
+            let res = JSON.parse(x.data);
             if( res.status == 'ok') {
                self.menu = res.data;
                self.saveStore('menu', res.data);
@@ -201,8 +201,8 @@ export default {
       fetchMenu: function() {
          const self = this;
          self.postWithPromise( '/menu/list/'+self.selectedDay).then(
-            function(json) {
-               let res = JSON.parse(json);
+            function(x) {
+               let res = JSON.parse(x.data);
                if( res.status == 'ok') {
                   self.saveStore('menu', self.menu);
                   self.menu = res.data;

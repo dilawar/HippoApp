@@ -311,8 +311,8 @@ export default {
          console.log( "Fetching forum posts." );
          const self = this;
          self.promiseWithAuth( "/forum/list/100", []).then(
-            function(json) {
-               var res = JSON.parse(json).data;
+            function(x) {
+               var res = JSON.parse(x.data).data;
                self.forumCards = res;
                self.saveStore('forum.cards', self.forumCards);
             }
@@ -322,8 +322,8 @@ export default {
          const self = this;
          console.log( "Getting user subscriptions..." );
          self.promiseWithAuth( "/forum/subscriptions", []).then(
-            function(json) {
-               var res = JSON.parse(json).data;
+            function(x) {
+               var res = JSON.parse(x.data).data;
                self.subscriptions = res;
                self.saveStore('forum.subscriptions', self.subscriptions);
             }
@@ -339,8 +339,8 @@ export default {
          console.log( "Getting forum tags." );
          const self = this;
          self.promiseWithAuth("/forum/alltags", []).then(
-            function(json) {
-               var res = JSON.parse(json).data;
+            function(x) {
+               var res = JSON.parse(x.data).data;
                self.alltags = res;
                self.saveStore('forum.alltags', self.alltags);
             }
@@ -349,8 +349,8 @@ export default {
       fetchAllTags: function() {
          const self = this;
          self.postWithPromise('/forum/alltags').then(
-            function(json) {
-               self.alltags = JSON.parse(json).data;
+            function(x) {
+               self.alltags = JSON.parse(x.data).data;
                self.saveStore('forum.alltags', self.alltags);
             }
          );
@@ -382,8 +382,8 @@ export default {
          // Get all previous comments to show as well.
          setTimeout( () => {
             self.promiseWithAuth("/comment/get/forum."+item.id).then(
-               function(json) {
-                  let res = JSON.parse(json).data;
+               function(x) {
+                  let res = JSON.parse(x.data).data;
                   self.comments = res;
                }
             )}, 1000);

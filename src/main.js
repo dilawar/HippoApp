@@ -15,12 +15,15 @@ import { VueEditor, Quill } from 'vue2-editor';
 Vue.component('vue-editor', VueEditor);
 
 // Multi uploader.
-import MultipleFileUploader from '@updivision/vue2-multi-uploader'
-Vue.component('v-multifile-uploader', MultipleFileUploader);
-
+// import MultipleFileUploader from '@updivision/vue2-multi-uploader'
+// Vue.component('v-multifile-uploader', MultipleFileUploader);
 // import VueQrcodeReader from "vue-qrcode-reader";
 // Vue.use(VueQrcodeReader);
 // import 'vue-qrcode-reader/dist/vue-qrcode-reader.css';
+
+// Autocomplete
+import Autocomplete from 'vuejs-auto-complete';
+Vue.component('v-autocomplete', Autocomplete);
 
 // OSM and leaflet.
 import {LMap, LTileLayer, LMarker, LPolyline, LPopup, LTooltip, LControlLayers} from 'vue2-leaflet';
@@ -129,7 +132,7 @@ Vue.mixin({
          return moment().format();
       },
       dbDateTime: function(date) {
-         return moment(date).format('YYYY-MM-DDTHH:mm');
+         return moment(date).format('YYYY-MM-DD HH:mm');
       },
       datetime2Moment: function(timestamp) {
          return moment(timestamp, 'YYYY-MM-DD HH:mm:ss');
@@ -206,17 +209,15 @@ Vue.mixin({
       fetchAndStore: function(endpoint, key) {
          const self = this;
          const app = self.$f7;
-         app.request.post(self.$store.state.api+'/'+endpoint
-            , self.apiPostData()
-            , function(json)
-            {
-               const res = JSON.parse(json);
-               if(res.status=='ok')
+         app.request.promise.post(self.$store.state.api+'/'+endpoint
+            , self.apiPostData() )
+            .then( function(x) {
+               const res = JSON.parse(x.data);
+               if(res.status==='ok')
                   self.$localStorage.set(key, JSON.stringify(res.data));
                else
-                  console.log('Warn: Failed to fetch ',);
-            }
-         );
+                  console.log('Warn: Failed to fetch from '+endpoint);
+            });
       },
       saveStore: function(key, data) {
          const self=this;
@@ -245,8 +246,8 @@ Vue.mixin({
          app.dialog.preloader();
          let data = { ...self.apiPostData(), ...post};
          app.request.promise.post(self.$store.state.api+'/'+endpoint, data)
-            .then( function(json) {
-               const res = JSON.parse(json);
+            .then( function(x) {
+               const res = JSON.parse(x.data);
                app.dialog.close();
                return;
             }
@@ -262,8 +263,8 @@ Vue.mixin({
          for(let k in coords)
             data[k] = coords[k];
          app.request.promise.post(self.$store.state.api+'/'+endpoint, data)
-            .then( function(json) {
-               const res = JSON.parse(json);
+            .then( function(x) {
+               const res = JSON.parse(x.data);
                return res.status;
             }
          );
@@ -288,7 +289,12 @@ Vue.mixin({
          const self = this;
          var profile = self.loadStore('me.profile');
          if(! 'roles' in profile)
+         {
             self.fetchProfile();
+            setTimeout(() => { 
+               return profile.roles.split(',');
+            }, 500);
+         }
          return profile.roles.split(",");
       },
       filterSchema: function(schema, toremove) 
@@ -308,9 +314,12 @@ Vue.mixin({
       },
       fetchNotifications: function() {
          const self = this;
+         if(! self.isUserAuthenticated())
+            return;
+
          self.postWithPromise( 'notifications/get' ).then(
-            function(json) {
-               let notifications = JSON.parse(json).data;
+            function(x) {
+               let notifications = JSON.parse(x.data).data;
                self.saveStore("notifications", notifications);
             }
          );
@@ -353,6 +362,18 @@ Vue.mixin({
          const app = self.$f7;
          app.preloader.hide();
       },
+      isAdmin: function() 
+      {
+         const self = this;
+         console.log('is admin');
+         if(! self.isUserAuthenticated())
+         {
+            console.log("Not authenticated yet. So can't fetch profile");
+            return false;
+         }
+         var roles = self.loadStore('me.profile').roles;
+         return roles.includes('ADMIN');
+      },
       _get: function(obj, key, o=null) {
          if(! obj)
             return o;
@@ -378,6 +399,12 @@ Vue.mixin({
       },
       'name' : function(login) {
          return login.first_name + ' ' + login.last_name;
+      },
+      'tt' : function(text) {
+         return "<tt>" + text + "</tt>";
+      },
+      'firstUpper': function(x) {
+         return x.substring(0,1).toUpperCase() + x.substring(1).toLowerCase();
       },
    },
 });
@@ -421,13 +448,13 @@ export default new Vue({
       onDeviceReady : function(x) {
          const self = this;
          console.log( "Add onDeviceReady callback here.");
-         ///////////////////////////////////////////////////////////////
+
          // Notifications 
-         ///////////////////////////////////////////////////////////////
          cordova.plugins.notification.local.on("click", function(not) {
             // On click show notification page.
             self.$f7router.navigate('/notifications');
          }, self);
+
          cordova.plugins.notification.local.on("clear", function(not) {
             setTimeout( () => {
                self.postWithPromise('/notifications/dismiss/' + not.id);

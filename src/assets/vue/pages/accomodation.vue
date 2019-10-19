@@ -392,8 +392,8 @@ export default {
 
       // Get all accomodations.
       self.postWithPromise( '/accomodation/list').then(
-         function(json) {
-            self.accomodations = JSON.parse(json).data;
+         function(x) {
+            self.accomodations = JSON.parse(x.data).data;
             self.saveStore('accomodations', self.accomodations);
          }
       );
@@ -437,9 +437,9 @@ export default {
          const app = self.$f7;
          app.dialog.preloader();
          self.postWithPromise( '/accomodation/list/50' ).then( 
-            function(json) 
+            function(x) 
             {
-               let res = JSON.parse(json);
+               let res = JSON.parse(x.data);
                if(res.status == "ok")
                {
                   self.accomodations = res.data;
@@ -504,8 +504,8 @@ export default {
          self.thisAccomodation = acc;
 
          self.postWithPromise('/accomodation/comment/list/'+acc.id).then(
-            function(json) {
-               let res = JSON.parse(json);
+            function(x) {
+               let res = JSON.parse(x.data);
                if(res.status == 'ok')
                   self.comments = res.data.comments;
             });

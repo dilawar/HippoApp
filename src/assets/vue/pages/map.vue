@@ -67,24 +67,25 @@ export default {
                   container.style.backgroundColor = 'white'; 
                }
 
-               container.oninput = function( ){
-                  if(container.value.length > 2){
-                     let name = container.value;
-                     let found = [];
-                     for(let k in self.mapVenues)
-                     {
-                        let venue = self.mapVenues[k];
-                        if( venue.id.toLowerCase().includes(name.toLowerCase()) )
-                           found.push(venue);
-                     }
-                     // Flash these venues
-                     found.map( venue => {
-                        // Find its reference.
-                        let p = self.$refs['marker'+venue.id][0].mapObject;
-                        p.bindPopup(venue.html).openPopup();
-                     });
+              container.oninput = function()
+              {
+                if(container.value.length >= 2){
+                  let name = container.value;
+                  let found = [];
+                  for(let k in self.mapVenues)
+                  {
+                    let venue = self.mapVenues[k];
+                    if( venue.id.toLowerCase().includes(name.toLowerCase()) )
+                      found.push(venue);
                   }
-               }
+                  // Flash these venues
+                  found.map( venue => {
+                    // Find its reference.
+                    let p = self.$refs['marker'+venue.id][0].mapObject;
+                    p.bindPopup(venue.html).openPopup();
+                  });
+                }
+              }
 
                return container;
             },
@@ -94,18 +95,15 @@ export default {
    mounted: function() {
       const self = this;
       self.postWithPromise("/venue/list/all").then(
-         function(json) {
-            let res = JSON.parse(json);
+         function(x) {
+            let res = JSON.parse(x.data);
             if(res.status === "ok")
             {
-               self.venues = JSON.parse(json).data;
+               self.venues = res.data;
                self.saveStore("venues", self.venues);
             }
             else
-            {
                self.venues = self.loadStore("venues");
-               console.log( "Failed to fetch venues" );
-            }
 
             // Reformat to create mapVenues
             for(var k in self.venues)
@@ -136,7 +134,6 @@ export default {
       onResize: function() { },
       refreshMap: function() {
          const map = this.$refs.map.mapObject;
-         //this.venues.map( x => x );
       },
       zoomUpdated (zoom) {
          const self = this;

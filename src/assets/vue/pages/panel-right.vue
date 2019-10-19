@@ -27,7 +27,7 @@
         </f7-list>
       </f7-block>
 
-      <f7-block v-if="getRoles().includes('ACAD_ADMIN')">
+      <f7-block v-if="roles.includes('ACAD_ADMIN')">
       <f7-block-title>Acad Admin</f7-block-title>
         <f7-list>
           <f7-list-item link="/acadadmin/aws/" 
@@ -49,11 +49,11 @@
 
       </f7-block>
 
-      <f7-block v-if="getRoles().includes('SERVICES_ADMIN')">
+      <f7-block v-if="roles.includes('SERVICES_ADMIN')">
       <f7-block-title>Services Admin</f7-block-title>
       </f7-block>
 
-      <f7-block v-if="getRoles().includes('ADMIN')">
+      <f7-block v-if="roles.includes('ADMIN')">
       <f7-block-title>Hippo Admin</f7-block-title>
       </f7-block>
 
@@ -68,7 +68,7 @@
       return {
         username: 'Guest',
         alreadyLoggedIn: false,
-        profile: [],
+        profile: { 'roles':[] },
         notifications: [],
         roles: [],
       };
@@ -76,7 +76,15 @@
     mounted()
     {
       const self = this;
-      self.roles = self.getRoles();
+      if( self.isUserAuthenticated())
+      {
+        self.postWithPromise('/me/profile')
+          .then( function(x) {
+            self.profile = JSON.parse(x.data).data;
+            if('roles' in self.profile)
+              self.roles = self.profile.roles.split(',');
+          });
+      }
     },
     methods : {
       refreshData: function(ev, done) {

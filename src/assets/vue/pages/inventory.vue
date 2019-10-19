@@ -83,21 +83,23 @@ export default {
       };
    },
    mounted() {
-      const self = this;
-      self.inventories = self.loadStore('inventories');
-      if( ! self.inventories || self.inventories.length == 0)
-      {
-         // Get all inventory.
-         console.log( "Fetching inventories ... " );
-         self.postWithPromise( '/inventory/list/100').then(
-            function(json) 
-            {
-               self.inventories = JSON.parse(json).data;
-               self.saveStore('inventories', self.inventories);
-            }
-         );
-      }
-      self.toItems(self.inventories.list);
+     const self = this;
+     const app = self.$f7;
+     self.inventories = self.loadStore('inventories');
+     if( ! self.inventories || self.inventories.length == 0)
+     {
+       // Get all inventory.
+       console.log( "Fetching inventories ... " );
+       app.dialog.preloader('Fetching inventory');
+       self.postWithPromise( '/inventory/list/100').then(
+         function(x) 
+         {
+           self.inventories = JSON.parse(x.data).data;
+           self.saveStore('inventories', self.inventories);
+         }
+       );
+     }
+     self.toItems(self.inventories.list);
    },
    methods: { 
       fetchInventory: function() {
@@ -105,8 +107,8 @@ export default {
          const app = self.$f7;
          
          self.postWithPromise( '/inventory/list')
-            .then(function(json) {
-               let res = JSON.parse(json);
+            .then(function(x) {
+               let res = JSON.parse(x.data);
                if(res.status == 'ok')
                {
                   self.inventories = res.data;
@@ -158,9 +160,8 @@ export default {
          console.log( "Fetching image ", ids );
          self.photos = [];
          self.promiseWithAuth('images/get/'+ids).then( 
-            function( json ) {
-               let res = JSON.parse(json);
-               console.log(res);
+           function( x ) {
+               let res = JSON.parse(x.data);
                if(res)
                {
                   res = res.data[ids];
