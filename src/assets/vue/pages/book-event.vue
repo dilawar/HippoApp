@@ -119,7 +119,7 @@
         <f7-list no-hairlines v-if="thisBooking.dates">
           <f7-list-item>
           </f7-list-item>
-          <f7-list-item v-for="(day, key) in thisBooking.dates">
+          <f7-list-item v-for="(day, key) in thisBooking.dates" :key="key">
             <div slot="header">{{day | date}}</div>
           </f7-list-item> 
         </f7-list>
@@ -131,16 +131,8 @@
 
   <!-- BOOKING INTERFACE -->
   <f7-block>
-    <div v-if="thisEvent.readonly">
-      You are booking for an aleady registered event, most likely a 
-      TALK/SEMINAR etc. You won't be able to modify
-      <tt>TITLE</tt> and <tt>DESCRIPTION</tt> here.
-    </div>
-
     <f7-list media-list>
-
       <f7-list-group v-if="! thisEvent.readonly" media-list>
-
         <f7-list-input @input="thisBooking.title = $event.target.value"
                      floating-label 
                      label="Title" 
@@ -273,7 +265,7 @@ export default {
         , description: ''
         , venue: ''
         , dates: []
-        , repeatPat: { days:[], weeks:[], months:1}
+        , repeatPat: { days:[], weeks:['All'], months:0}
       },
     };
   },
@@ -294,7 +286,7 @@ export default {
 
     if(self.externalId && self.externalId.includes('.'))
     {
-      app.dialog.preloader();
+      app.dialog.preloader('Getting details of event...');
       self.postWithPromise('info/externalid/'+self.externalId)
         .then( function(x) {
           // Got the event with given external id
@@ -401,15 +393,17 @@ export default {
       const app = self.$f7;
 
       var rp = self.thisBooking.repeatPat;
-      var pat = rp.days.join('/')+','+rp.weeks.join('/')+','+rp.months;
+      var pat = '';
+      if(rp.days.length > 0)
+        pat = rp.days.join('/')+','+rp.weeks.join('/')+','+rp.months;
                            
       // Attach the repeat_pat for the API.
       self.thisBooking.repeat_pat = pat;
-      console.log('BOOKING', self.thisBooking);
+      //console.log('BOOKING', self.thisBooking);
 
       // Assign the class to talk.
       // console.log("Registering talk.", self.thisEvent);
-      app.dialog.preloader();
+      app.dialog.preloader('Sending booking request...');
 
       // Before sending, change date to str format.
       var args = btoa(self.thisBooking.venue) + '/' +
@@ -437,7 +431,7 @@ export default {
               , closeOnClick: true
               , closeTimeout: 5000,
             }).open();
-            self.$f7router.navigate('/home/', {reloadAll:true});
+            self.$f7router.navigate('/mybooking/', {reloadAll:true});
           }
         });
     },
@@ -458,8 +452,7 @@ export default {
       let startTime = self.dbTime(self.thisBooking.startDateTime);
       let endTime = self.dbTime(self.thisBooking.endTime);
 
-      app.dialog.preloader();
-
+      app.dialog.preloader('Fetching available venues...');
       self.promiseWithAuth('info/venues/availability/all'
         , {'date':date, 'start_time': startTime, 'end_time': endTime}
       ).then(function(x) {

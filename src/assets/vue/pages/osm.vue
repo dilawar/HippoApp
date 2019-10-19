@@ -190,8 +190,8 @@ export default {
          const self = this;
 
          self.postWithPromise("/geolocation/latest/60")
-            .then(function(json) {
-               let res = JSON.parse(json);
+            .then(function(x) {
+               let res = JSON.parse(x.data);
                if(res.status !== "ok") 
                   return
 

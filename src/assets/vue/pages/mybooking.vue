@@ -15,24 +15,27 @@
                      :header="requests[0].venue">
          <font slot="after" color="blue">{{requests.length}} pending</font>
          <f7-accordion-content>
-           <f7-list media-list inset>
-             <f7-list-item swipeout
-                           @swipeout:deleted="deleteThisRequest(val.gid, val.rid)"
-                           v-for="(val, index) in requests" 
-                           :key="val.gid+'.'+val.rid" 
-                           :title="humanReadableDateTime(val.date,val.start_time)+' ('+val.venue+')'">
+           <f7-block inset style="background-color:lightyellow">
+             <div>{{requests[0].title}}</div>
+             <f7-list media-list margin="10px">
+               <f7-list-item swipeout
+                             @swipeout:deleted="deleteThisRequest(val.gid, val.rid)"
+                             v-for="(val, index) in requests" 
+                             :key="val.gid+'.'+val.rid" 
+                             :title="humanReadableDateTime(val.date,val.start_time)+' ('+val.venue+')'">
 
-               <!-- SWIPEOUT IF IT IS AN MOBILE APP. ELSE USE BUTTON -->
-               <f7-swipeout-actions right v-if="isMobileApp()">
-                 <f7-swipeout-button delete>Delete</f7-swipeout-button>
-               </f7-swipeout-actions>
+                 <!-- SWIPEOUT IF IT IS AN MOBILE APP. ELSE USE BUTTON -->
+                 <f7-swipeout-actions right v-if="isMobileApp()">
+                   <f7-swipeout-button delete>Delete</f7-swipeout-button>
+                 </f7-swipeout-actions>
 
-               <f7-button v-else small raised color="red" fill slot="after"
-                           @click="deleteThisRequest(val.gid, val.rid)"> 
-                 Delete
-               </f7-button>
-             </f7-list-item>
-           </f7-list>
+                 <f7-button v-else small raised color="red" fill slot="after"
+                                                                 @click="deleteThisRequest(val.gid, val.rid)"> 
+                   Delete
+                 </f7-button>
+               </f7-list-item>
+             </f7-list>
+           </f7-block>
          </f7-accordion-content>
        </f7-list-item>
 

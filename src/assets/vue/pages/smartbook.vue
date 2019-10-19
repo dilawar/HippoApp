@@ -54,7 +54,8 @@
             Created on: {{talk.created_on | date}}
           </div>
           <div slot="after">
-            <f7-button small raised :href="'/bookevent/talks.'+talk.id">
+            <f7-button small raised 
+                       :href="'/bookevent/talks.'+talk.id+'/'+talk.type">
               Book
             </f7-button>
           </div>

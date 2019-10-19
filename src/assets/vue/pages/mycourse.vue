@@ -179,8 +179,9 @@
          fetchCoursesPromise: function() {
             const self = this;
             const app = self.$f7;
-            return self.postWithPromise('/me/course').then( function(json) {
-               let res = JSON.parse(json);
+            return self.postWithPromise('/me/course')
+             .then( function(x) {
+               let res = JSON.parse(x.data);
                if(res.status == 'ok')
                {
                   self.saveStore('me.course', res.data);
@@ -206,8 +207,9 @@
          fetchCoursesMetadata: function() {
             const self = this;
             console.log("Fetching courses metadata ...");
-            self.postWithPromise('/courses/metadata/all').then( function(json) {
-               let res = JSON.parse(json);
+            self.postWithPromise('/courses/metadata/all')
+             .then( function(x) {
+               let res = JSON.parse(x.data);
                if(res.status == 'ok')
                   self.saveStore('courses.metadata', res.data);
                else
@@ -218,8 +220,9 @@
          fetchRunningCourses: function() {
             const self = this;
             console.log("Fetching running courses..");
-            self.postWithPromise('/courses/running').then( function(json) {
-               let res = JSON.parse(json);
+            self.postWithPromise('/courses/running')
+             .then( function(x) {
+               let res = JSON.parse(x.data);
                if(res.status == 'ok')
                   self.saveStore('courses.running', res.data);
                else
@@ -242,9 +245,9 @@
             // NOTE:course.id can have characters which are not allowed in URL at
             // server.
             app.preloader.show();
-            self.postWithPromise( "/courses/register/"+btoa(course.id)+"/"+regType)
-               .then(function(json) {
-                  let res = JSON.parse(json);
+            self.postWithPromise("/courses/register/"+btoa(course.id)+"/"+regType)
+               .then(function(x) {
+                  let res = JSON.parse(x.data);
                   if( res.status == 'ok')
                      self.fetchCoursesPromise().then(function(x) {
                         app.preloader.hide();
@@ -275,8 +278,8 @@
             self.thisCourse = course;
             app.preloader.show();
             self.postWithPromise('/courses/feedback/questions')
-               .then( function(json) {
-                  self.questions = JSON.parse(json).data;
+               .then( function(x) {
+                  self.questions = JSON.parse(x.data).data;
  
                   // Populate feedback so we can bind values. This is bit
                   // contrived.
@@ -291,9 +294,9 @@
                });
             let cid = course.course_id + '-' + course.semester + '-' + course.year;
             self.postWithPromise('/courses/feedback/get/'+btoa(cid))
-               .then( function(json) {
+               .then( function(x) {
                   console.log("Getting old feedback for ",cid);
-                  let data = JSON.parse(json).data;
+                  let data = JSON.parse(x.data).data;
                   self.feedback = data;
                   app.preloader.hide();
                });
@@ -318,7 +321,7 @@
             console.log( "data is ", self.feedback);
             let cid = self.thisCourse.id;
             self.postWithPromise('/courses/feedback/submit/'+btoa(cid))
-               .then( function(json) {
+               .then( function(x) {
                   console.log("Submitting  feedback for ",cid);
                   app.preloader.hide();
                });

@@ -1,7 +1,7 @@
 <template>
   <!-- App -->
   <f7-app :params="f7params">
-    <f7-statusbar></f7-statusbar>
+    <f7-statusbar name="mainstatusbar"></f7-statusbar>
     <f7-panel left cover>
        <f7-view name="left" url="/userpanel/" ></f7-view>
     </f7-panel>
