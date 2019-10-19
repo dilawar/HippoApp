@@ -205,8 +205,16 @@
         </f7-list-item>
       </f7-list-group>
 
-        <!-- SUBMIT BUTTON -->
-        <f7-list-group media-list>
+
+      <!-- SUBMIT BUTTON -->
+      <f7-list-group media-list>
+        
+        <f7-list-item checkbox 
+                       title="Add to NCBS Calendar?"
+                       :checked="thisBooking.is_public_event"
+                       @change="thisBooking.is_public_event=$event.target.value">
+        </f7-list-item>
+
         <f7-list-item>
           <f7-button raised 
                      small
@@ -220,7 +228,7 @@
                      :disabled="! isBookingValid.status"
                      style="width:100px"
                      @click="popupRepeat=true">
-              Add repeat
+            Add repeat
           </f7-button>
           <div slot="footer" v-if="thisBooking.dates.length>0">
             Dates: {{thisBooking.dates.join(', ')}}
@@ -254,7 +262,6 @@ export default {
         , host: ''
         , host_extra: ''
         , coordinator: ''
-        , is_public_event: false
         , readonly: false    // when external id is set, make is readonly
       },
       thisBooking: {
@@ -265,6 +272,7 @@ export default {
         , description: ''
         , venue: ''
         , dates: []
+        , is_public_event: false
         , repeatPat: { days:[], weeks:['All'], months:0}
       },
     };
@@ -297,7 +305,7 @@ export default {
             self.thisEvent.readonly = true;
 
             // Update thisBooking before sending to server.
-            self.thisBooking.is_public_event = true;
+            self.thisBooking.is_public_event = 'YES';
             self.thisBooking.description = self.thisEvent.description;
 
             // This is most important.
@@ -399,10 +407,15 @@ export default {
                            
       // Attach the repeat_pat for the API.
       self.thisBooking.repeat_pat = pat;
+
+      if(self.thisBooking.is_public_event)
+        self.thisBooking.is_public_event = 'YES'
+      else
+        self.thisBooking.is_public_event = 'NO'
+
       //console.log('BOOKING', self.thisBooking);
 
       // Assign the class to talk.
-      // console.log("Registering talk.", self.thisEvent);
       app.dialog.preloader('Sending booking request...');
 
       // Before sending, change date to str format.

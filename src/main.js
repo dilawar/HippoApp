@@ -288,14 +288,16 @@ Vue.mixin({
       getRoles: function() {
          const self = this;
          var profile = self.loadStore('me.profile');
+         if(! profile)
+            return false;
+
          if(! 'roles' in profile)
          {
-            self.fetchProfile();
-            setTimeout(() => { 
-               return profile.roles.split(',');
-            }, 500);
+            setTimeout(()=>self.fetchProfile(), 500);
+            return profile.roles.split(',');
          }
-         return profile.roles.split(",");
+         else
+            return profile.roles.split(',');
       },
       filterSchema: function(schema, toremove) 
       {

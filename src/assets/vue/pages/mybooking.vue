@@ -2,11 +2,8 @@
   <f7-page ptr @ptr:refresh="refreshMyBooking" 
            @page:init="fetchMyBooking"
            @page:refresh="fetchMyBooking">
-           
 
   <f7-navbar title="My Bookings" back-link="Back"></f7-navbar>
-  <f7-block-title></f7-block-title>
-
      <f7-list media-list>
        <f7-list-item accordion-item
                      v-for="(requests, gid, index) in requestGroups" 
@@ -17,7 +14,18 @@
          <f7-accordion-content>
            <f7-block inset style="background-color:lightyellow">
              <div>{{requests[0].title}}</div>
+
              <f7-list media-list margin="10px">
+
+               <f7-list-item v-if="requests.length > 1">
+                 <f7-button color="red"
+                            fill small 
+                            @click="deleteThisRequest(requests[0].gid)"
+                            raised>
+                   Delete whole group
+                 </f7-button>
+               </f7-list-item>
+
                <f7-list-item swipeout
                              @swipeout:deleted="deleteThisRequest(val.gid, val.rid)"
                              v-for="(val, index) in requests" 
@@ -29,8 +37,11 @@
                    <f7-swipeout-button delete>Delete</f7-swipeout-button>
                  </f7-swipeout-actions>
 
-                 <f7-button v-else small raised color="red" fill slot="after"
-                                                                 @click="deleteThisRequest(val.gid, val.rid)"> 
+                 <f7-button v-else 
+                            small raised 
+                            color="red"
+                            fill slot="after"
+                            @click="deleteThisRequest(val.gid, val.rid)"> 
                    Delete
                  </f7-button>
                </f7-list-item>
@@ -38,34 +49,41 @@
            </f7-block>
          </f7-accordion-content>
        </f7-list-item>
+     </f7-list>
 
-        <f7-list-item accordion-item 
+     <!-- THESE ARE CONFIRMED EVENTS -->
+     <f7-list media-list>
+       <f7-list-item accordion-item 
                       v-for="(events, gid, index) in eventGroups" 
                       :title="events[0].title"
                       :footer="events[0].venue" 
                       :key="gid">
            <div slot="after">{{events.length}} confirmed</div>
            <f7-accordion-content>
-              <f7-list media-list>
-              <f7-list-item swipeout 
-                            v-for="(val, index) in events" 
-                            @swipeout:deleted="deleteEvent(val.gid, val.eid)"
-                            :key="val.gid+'.'+val.eid" 
-                            :title="humanReadableDateTime(val.date, val.start_time)"
-                            footer="Swipe ← to cancel">
-                <f7-icon slot="media" icon="fa fa-check-circle"></f7-icon>
-                <f7-swipeout-actions right>
-                  <f7-swipeout-button delete
-                                      color="blue"
-                                      title="Deleting request?" 
-                                      confirm-text="Cancel booking?"
-                                      >Cancel
-                  </f7-swipeout-button>
-                </f7-swipeout-actions>
-              </f7-list-item>
-           </f7-list>
-                      </f7-accordion-content>
+             <f7-list media-list>
+               <f7-list-item v-if="events.length > 1">
+                 <f7-button raised> Delete whole group </f7-button>
+               </f7-list-item>
+               <f7-list-item swipeout 
+                             v-for="(val, index) in events" 
+                             @swipeout:deleted="deleteEvent(val.gid, val.eid)"
+                             :key="val.gid+'.'+val.eid" 
+                             :title="humanReadableDateTime(val.date, val.start_time)"
+                             footer="Swipe ← to cancel">
+                 <f7-icon slot="media" icon="fa fa-check-circle"></f7-icon>
+                 <f7-swipeout-actions right>
+                   <f7-swipeout-button delete
+                                       color="blue"
+                                       title="Deleting request?" 
+                                       confirm-text="Cancel booking?">
+                     Cancel
+                   </f7-swipeout-button>
+                 </f7-swipeout-actions>
+               </f7-list-item>
+             </f7-list>
+           </f7-accordion-content>
         </f7-list-item>
+        <f7-list-item></f7-list-item>
      </f7-list>
 
   </f7-page>
@@ -146,10 +164,11 @@ export default {
         }
       );
     },
-    deleteThisRequest: function(gid, rid)
+    deleteThisRequest: function(gid, rid='')
     {
       const self = this;
       const app = this.$f7;
+      // When rid is empty, delete whole group.
       console.log( "Deleting ", gid, rid );
       app.dialog.confirm( "Really?", "Deleting", 
         function(val) {

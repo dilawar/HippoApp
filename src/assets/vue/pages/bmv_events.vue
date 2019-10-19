@@ -152,8 +152,8 @@
       {
         const self = this;
         self.promiseWithAuth('bmvadmin/events/upcoming/0/10').then(
-          function(json) {
-            self.events = JSON.parse(json).data;
+          function(x) {
+            self.events = JSON.parse(x.data).data;
           });
       },
       loadMore: function()
@@ -169,8 +169,8 @@
         var to = from + 10;
         console.log("Fetching from ", from, " to ", to );
         self.promiseWithAuth('bmvadmin/events/upcoming/'+from+'/'+to).then(
-          function(json) {
-            var moreE = JSON.parse(json).data;
+          function(x) {
+            var moreE = JSON.parse(x.data).data;
             for(var o in moreE)
               self.events.push(moreE[o]);
             self.allowInfinite = true;
@@ -182,8 +182,8 @@
         self.thisEvent = event;
         // Fetch all events for this gid.
         self.promiseWithAuth('bmvadmin/events/gid/'+event.gid)
-          .then( function(json) {
-            self.theseEvents = JSON.parse(json).data;
+          .then( function(x) {
+            self.theseEvents = JSON.parse(x.data).data;
             self.eventPopup = true;
           });
       },
@@ -203,11 +203,11 @@
         const app = self.$f7;
         app.dialog.preloader();
         self.promiseWithAuth('bmvadmin/event/update', event)
-          .then( function(json) {
+          .then( function(x) {
             // Fetch this group events.
             self.promiseWithAuth('bmvadmin/events/gid/'+event.gid)
-              .then( function(json) {
-                self.theseEvents = JSON.parse(json).data;
+              .then( function(x) {
+                self.theseEvents = JSON.parse(x.data).data;
                 app.dialog.close();
               });
           });
@@ -228,7 +228,7 @@
         app.dialog.prompt("Reason...", "Cancelling whole group..."
           , function(value) {
             self.promiseWithAuth('bmvadmin/events/cancel/'+gid, {reason:value})
-              .then( function(json){
+              .then(function(x){
                 self.eventPopup = false;
                 console.log('Cancelled group');
                 self.fetchUpcomingEvents();
