@@ -2,7 +2,6 @@
   <f7-page>
     <f7-navbar>
       <f7-nav-left>
-
         <!-- LEFT PANEL -->
         <f7-link v-if="alreadyLoggedIn" 
                  panel-open="left" 
@@ -38,13 +37,6 @@
 
     <f7-block>
       <f7-list media-list no-hairlines>
-        <f7-list-item v-if="alreadyLoggedIn" 
-                      link="/whatwherewhen/"
-                      title="What? Where? When?" panel-close
-                      footer="What is going on at different venues?"
-                      panel-close>
-          <f7-icon slot="media" icon="fa fa-calendar fa-2x"></f7-icon>
-        </f7-list-item>
         <f7-list-item link="/transport/" 
                       title="Transport" 
                       footer="Timetable of shuttle and buggy"
@@ -52,6 +44,7 @@
           <f7-icon slot="media" icon="fa fa-bus fa-2x"></f7-icon>
         </f7-list-item>
 
+        <!--
         <f7-list-item v-if="alreadyLoggedIn" 
                       link="/search/" 
                       title="Search" 
@@ -59,6 +52,7 @@
                       panel-close>
           <f7-icon slot="media" icon="fa fa-search fa-2x"></f7-icon>
         </f7-list-item>
+        -->
         <f7-list-item v-if="alreadyLoggedIn"
                       link="/inventory/" 
                       title="Inventory" 
@@ -190,12 +184,13 @@ export default {
       var leftp = app.panel.left && app.panel.left.opened;
       var rightp = app.panel.right && app.panel.right.opened;
 
-      if (leftp || rightp) {
-
+      if (leftp || rightp) 
+      {
         app.panel.close();
         return false;
-      } else if ($$('.modal-in').length > 0) {
-
+      } 
+      else if ($$('.modal-in').length > 0) 
+      {
         app.dialog.close();
         app.popup.close();
         return false;
@@ -234,78 +229,56 @@ export default {
       } catch (e) {
         /* handle error */
         console.log( "Could not fetch notifications.");
-      }
-    }, 30*60*1000);
+      }}, 30*60*1000);
 
-         setInterval( function() {
-            try {
-               self.displayNotifications()
-            } catch (e) {
-               /* handle error */
-               console.log("Could not display notifications.");
-            }
-         }, 60*60*1000);
-      },
-      methods: {
-        signIn: function()
-        {
-          const self = this;
-          const app = self.$f7;
-          app.dialog.preloader("Loging in ...");
-          app.request.promise.post( self.$store.state.api+"/authenticate"
-            , {login:self.username, password: btoa(self.password)})
-            .then(function(x) {
-            var res = JSON.parse(x.data);
-            if( res.status =='ok' && res.data.apikey != '')
-            {
-              self.$localStorage.set('HIPPO-API-KEY', res.data.apikey);
-              self.$localStorage.set('GOOGLE-MAP-API-KEY', res.data.gmapapikey);
-              self.$localStorage.set('HIPPO-LOGIN', self.username);
-              self.alreadyLoggedIn = true;
-              self.fetchProfile();
-              self.$f7router.refreshPage();
-            }
-            else
-              app.dialog.alert("Failed to login. Try again.", "Error");
-            app.dialog.close();
-          });
-          setTimeout(() => app.dialog.close(), 2000);
-        },
-        signOut: function() {
-          const self = this;
-          console.log( "Signing out.");
-          self.$localStorage.set('HIPPO-API-KEY', '');
-          self.$localStorage.set('HIPPO-LOGIN', '');
-          self.alreadyLoggedIn = false;
-          self.$f7router.refreshPage();
-        },
-        youAreNotLoggedIn: function() {
-          const app = this.$f7;
-          app.dialog.alert("Access denied. Login first.", "Prohibited");
-        },
-        isAdmin: function() 
-        {
-          const self = this;
-          if(! self.isUserAuthenticated())
+    setInterval( function() {
+      try {
+        self.displayNotifications()
+      } catch (e) {
+        /* handle error */
+        console.log("Could not display notifications.");
+      }}, 60*60*1000);
+  },
+  methods: {
+    signIn: function()
+    {
+      const self = this;
+      const app = self.$f7;
+      app.dialog.preloader("Loging in ...");
+      app.request.promise.post( self.$store.state.api+"/authenticate"
+        , {login:self.username, password: btoa(self.password)})
+        .then(function(x) {
+          var res = JSON.parse(x.data);
+          if( res.status =='ok' && res.data.apikey != '')
           {
-            console.log("Not authenticated yet. So can't fetch profile");
-            return false;
+            self.$localStorage.set('HIPPO-API-KEY', res.data.apikey);
+            self.$localStorage.set('GOOGLE-MAP-API-KEY', res.data.gmapapikey);
+            self.$localStorage.set('HIPPO-LOGIN', self.username);
+            self.alreadyLoggedIn = true;
+            self.fetchProfile();
+            self.$f7router.refreshPage();
           }
-          self.promiseWithAuth('/me/profile')
-            .then( function(x) {
-              var profile = JSON.parse(x.data).data;
-              var roles = profile.roles;
-              if(roles.includes("ADMIN") 
-                || roles.includes("BOOKMYVENU_ADMIN") 
-                || roles.includes("ACAD_ADMIN")
-              )
-                return true;
-              return false;
-            });
-        },
-        shutdown: function() {
-          navigator.app.exitApp();
-        },
-      },
-   }
+          else
+            app.dialog.alert("Failed to login. Try again.", "Error");
+          app.dialog.close();
+        });
+      setTimeout(() => app.dialog.close(), 2000);
+    },
+    signOut: function() {
+      const self = this;
+      console.log( "Signing out.");
+      self.$localStorage.set('HIPPO-API-KEY', '');
+      self.$localStorage.set('HIPPO-LOGIN', '');
+      self.alreadyLoggedIn = false;
+      self.$f7router.refreshPage();
+    },
+    youAreNotLoggedIn: function() {
+      const app = this.$f7;
+      app.dialog.alert("Access denied. Login first.", "Prohibited");
+    },
+    shutdown: function() {
+      navigator.app.exitApp();
+    },
+  },
+}
 </script>

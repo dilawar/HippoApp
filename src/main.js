@@ -362,6 +362,18 @@ Vue.mixin({
          const app = self.$f7;
          app.preloader.hide();
       },
+      isAdmin: function() 
+      {
+         const self = this;
+         console.log('is admin');
+         if(! self.isUserAuthenticated())
+         {
+            console.log("Not authenticated yet. So can't fetch profile");
+            return false;
+         }
+         var roles = self.loadStore('me.profile').roles;
+         return roles.includes('ADMIN');
+      },
       _get: function(obj, key, o=null) {
          if(! obj)
             return o;

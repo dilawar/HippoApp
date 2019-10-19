@@ -7,7 +7,7 @@
       <!-- Ask user for what purpose they are booking -->
       <f7-list-item title="Select the TYPE of event..."
                     smart-select
-                    :smart-select-params="{openIn:'popup', closeOnSelect:true}"
+                    :smart-select-params="{openIn:'popover', closeOnSelect:true}"
                     >
         <select v-model="eventType">
           <option v-for="(cls, key) in eventTypes.all" :key="key" :value="cls">

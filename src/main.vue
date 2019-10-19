@@ -22,10 +22,18 @@
                  back>
         </f7-link>
 
+        <!--
         <f7-link @click="infoPopup=true"
                  icon-only 
                  text="Info"
                  icon="fa fa-info fa-2x">
+        </f7-link>
+        -->
+
+        <f7-link v-if="isUserAuthenticated()" 
+                 href="/search/" 
+                 icon="fa fa-search fa-fw"
+                 >
         </f7-link>
 
         <f7-link icon-only 
@@ -40,7 +48,12 @@
                  icon="fa fa-cutlery fa-2x">
         </f7-link>
 
-        <f7-link icon-only 
+        <f7-link icon-only  v-if="isUserAuthenticated()"
+                 href="/whatwherewhen/"
+                 text="Calendar"
+                 icon="fa fa-calendar fa-2x">
+        </f7-link>
+        <f7-link icon-only  v-else
                  href="/events/"
                  text="Calendar"
                  icon="fa fa-calendar fa-2x">
@@ -66,7 +79,7 @@
                 Github</f7-link> and is released under GNU GPLv3 License.
 
               <p><strong>Contribution:</strong> 
-              <f7-link extrernal target="_system" 
+              <f7-link external target="_system" 
                 href="https://github.com/dilawar/HippoApp/blob/master/CONTRIBUTION.md"
                 >Read this.  </f7-link>
               </p>
