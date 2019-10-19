@@ -61,17 +61,21 @@
            <div slot="after">{{events.length}} confirmed</div>
            <f7-accordion-content>
              <f7-list media-list>
+               <!-- DELETE THE WHOLE GROUP -->
                <f7-list-item v-if="events.length > 1">
                  <f7-button raised> Delete whole group </f7-button>
                </f7-list-item>
+
+               <!-- DELETE EACH ELEMENT -->
                <f7-list-item swipeout 
                              v-for="(val, index) in events" 
                              @swipeout:deleted="deleteEvent(val.gid, val.eid)"
                              :key="val.gid+'.'+val.eid" 
-                             :title="humanReadableDateTime(val.date, val.start_time)"
-                             footer="Swipe ← to cancel">
+                             :title="humanReadableDateTime(val.date, val.start_time)">
                  <f7-icon slot="media" icon="fa fa-check-circle"></f7-icon>
-                 <f7-swipeout-actions right>
+
+                 <!-- ON MOBILE -->
+                 <f7-swipeout-actions right v-if="isMobileApp()">
                    <f7-swipeout-button delete
                                        color="blue"
                                        title="Deleting request?" 
@@ -79,6 +83,14 @@
                      Cancel
                    </f7-swipeout-button>
                  </f7-swipeout-actions>
+
+                 <!-- ELSE -->
+                 <f7-button @click="deleteEvent(val.gid, val.eid)"
+                                       color="red" fill
+                                       slot="after"
+                                       small>
+                   Delete
+                 </f7-button>
                </f7-list-item>
              </f7-list>
            </f7-accordion-content>
@@ -144,12 +156,11 @@ export default {
       console.log("Deleting event: ", gid, eid );
       const self = this;
       const app = self.$f7;
-      var link = self.$store.state.api+'/mybooking/delete/event/'+gid+'.'+eid;
+      var link = 'mybooking/delete/event/'+gid+'.'+eid;
       console.log('Link is', link);
-      app.request.post(link, this.apiPostData(), 
-        function(json) {
-          var res = JSON.parse(json);
-          console.log(res);
+      self.promiseWithAuth(link)
+        .then( function(x) {
+          var res = JSON.parse(x.data);
           if( res.status == 'ok')
           {
             app.notification.create( {
@@ -159,7 +170,7 @@ export default {
               closeOnClick: true,
               closeTimeout: 3000,
             }).open();
-            return;
+            self.fetchMyBooking();
           }
         }
       );
