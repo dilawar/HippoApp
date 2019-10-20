@@ -12,7 +12,7 @@
       <f7-nav-title>NCBS Hippo</f7-nav-title>
       <f7-nav-right>
         <f7-link v-if="alreadyLoggedIn"
-                 icon="fa fa-sign-out fw" @click="signOut" 
+                 icon="fa fa-sign-out-alt" @click="signOut" 
                  panel-close
                  header="Logout"
                  slot="media">
@@ -27,9 +27,9 @@
         </f7-link>
 
         <!-- RIGHT PANEL -->
-        <f7-link v-if="alreadyLoggedIn && isAdmin()" 
+        <f7-link v-if="amIAnAdmin" 
                  panel-open="right" 
-                 icon="fa fa-bars fw"
+                 icon="fa fa-bars fa-fw"
                  color="red">
         </f7-link>
       </f7-nav-right>
@@ -164,6 +164,7 @@ export default {
   data() {
     return {
       alreadyLoggedIn: false,
+      amIAnAdmin: false,
       isHippoAlive: false,
       username: '',
       password: '',
@@ -202,6 +203,8 @@ export default {
     }, false);
 
     self.alreadyLoggedIn = self.isUserAuthenticated();
+    if(self.alreadyLoggedIn)
+      self.amIAnAdmin = self.isAdmin();
 
     // Check if hippo is alive
     self.promiseWithAuth('status').then(function(x) {
@@ -255,7 +258,14 @@ export default {
             self.$localStorage.set('GOOGLE-MAP-API-KEY', res.data.gmapapikey);
             self.$localStorage.set('HIPPO-LOGIN', self.username);
             self.alreadyLoggedIn = true;
-            self.fetchProfile();
+            self.postWithPromise('me/profile')
+              .then( function(x) {
+                self.profile = JSON.parse(x.data).data;
+                self.saveStore('me.profile', self.profile);
+                self.amIAnAdmin = self.profile.roles.includes('_ADMIN');
+                console.log('Admin', self.amIAnAdmin);
+              });
+
             self.$f7router.refreshPage();
           }
           else
