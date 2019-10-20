@@ -1,14 +1,23 @@
 <template>
    <f7-page @page:init="refreshData" @page:refresh="refreshData">
       <f7-navbar title="Hippo" back-link="Back">
+        <f7-subnavbar :inner="false">
+          <f7-searchbar search-container=".request-list"
+                        search-in=".item-subtitle,.item-header,.item-footer,.item-text"
+                        >
+          </f7-searchbar>
+        </f7-subnavbar>
       </f7-navbar>
 
       <f7-block-title small>
         Total {{requests.length}} requests are pending...
       </f7-block-title>
       <f7-block v-if="getRoles().includes('BOOKMYVENUE_ADMIN')">
-        <f7-list no-hairlines media-list accordion-list>
 
+        <f7-list no-hairlines 
+                 media-list 
+                 class="request-list"
+                 accordion-list>
           <f7-list-item v-for="(request, id) in requests"
                         :key="id"
                         accordion-item
@@ -22,7 +31,7 @@
               {{request.start_time | clockTime}} to 
               {{request.end_time | clockTime }}
             </div>
-            <div slot="title"> {{request.class}} @{{request.venue}} </div>
+            <div slot="subtitle"> {{request.class}}, {{request.venue}} </div>
           </f7-list-item>
 
         </f7-list>
@@ -124,10 +133,14 @@
       fetchPendingRequests: function() 
       {
         const self = this;
+        const app = self.$f7;
+        app.dialog.preloader('Fetching pending requests...');
         self.promiseWithAuth('bmvadmin/requests/pending').then(
-          function(json) {
-            self.requests = JSON.parse(json).data;
+          function(x) {
+            self.requests = JSON.parse(x.data).data;
+            app.dialog.close();
           });
+        setTimeout(() => app.dialog.close(), 1000);
       },
       openReviewPopup: function(request) 
       {
@@ -141,8 +154,8 @@
       {
         const self = this;
         self.promiseWithAuth('bmvadmin/request/clash', request)
-          .then(function(json) {
-            self.thisRequest.clashes = JSON.parse(json).data;
+          .then(function(x) {
+            self.thisRequest.clashes = JSON.parse(x.data).data;
           });
       },
       onReject: function() {
@@ -160,7 +173,7 @@
             }
             // Else reject.
             self.promiseWithAuth('bmvadmin/request/reject/', self.thisRequest)
-              .then( function(json) {
+              .then( function(x) {
                 console.log("Rejected request ... ");
                 // Update list.
                 self.fetchPendingRequests();
@@ -176,7 +189,7 @@
       onApprove: function() {
         const self = this;
         self.promiseWithAuth('bmvadmin/request/approve', self.thisRequest)
-          .then( function(json) {
+          .then( function(x) {
             console.log("Approving request ...");
             self.fetchPendingRequests();
           });

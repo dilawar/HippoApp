@@ -132,9 +132,9 @@ export default {
         autocomplete.preloaderShow();
 
         self.promiseWithAuth('search/login/'+q)
-          .then( (json) => {
-            var res = JSON.parse(json).data;
-            results = res.map(x=> x.login);
+          .then( function(x)  {
+            var res = JSON.parse(x.data);
+            results = res.map(a=> a.login);
             autocomplete.preloaderHide();
             render(results);
           });
@@ -156,28 +156,29 @@ export default {
     {
       const self = this;
       const app = self.$f7;
-      app.dialog.preloader();
+      app.dialog.preloader('Fetching AWS roster...');
       self.promiseWithAuth('acadadmin/awsroster/fetch')
-        .then( function(json) {
-          self.speakers = JSON.parse(json).data;
+        .then( function(x) {
+          self.speakers = JSON.parse(x.data).data;
           app.dialog.close();
         });
+      setTimeout(() => app.dialog.close(), 5000);
     },
     addToAWSRoster: function(speaker) 
     {
       const self = this;
       const app = self.$f7;
-      app.dialog.preloader();
+      app.dialog.preloader('Adding to AWS roster');
       self.promiseWithAuth('acadadmin/awsroster/add/'+self.thisSpeaker.login)
-        .then( function(json) {
-          var ret = JSON.parse(json).data;
+        .then( function(x) {
+          var ret = JSON.parse(x.data).data;
           app.dialog.close();
           if(! res.success)
             navigator.notifications.alert(res.msg, null, "Failed");
           else
             thisSpeaker.login = '';
         });
-      setTimeout(()=> app.dialog.close(), 1000);
+      setTimeout(()=> app.dialog.close(), 5000);
     },
     openSpeakerPopup: function(speaker)
     {
@@ -193,9 +194,8 @@ export default {
         , function(value) {
             console.log("Removing user " + login);
             self.promiseWithAuth('acadadmin/awsroster/remove/'+login,{reason:value})
-              .then( function(json) {
-                //self.fetchAWSSpeakers();
-                self.speakers = self.speakers.filter(x => x.login !== login);
+              .then( function(x) {
+                self.speakers = self.speakers.filter(a => a.login !== login);
               });
         });
     },

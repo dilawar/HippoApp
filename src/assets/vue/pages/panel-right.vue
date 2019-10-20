@@ -41,7 +41,7 @@
           <f7-list-item link="/acadadmin/awsroster/" 
                         target="_blank"
                         view=".view-main"
-                        title="List of AWS speakers" 
+                        title="AWS roster" 
                         panel-close
                         >
           </f7-list-item>

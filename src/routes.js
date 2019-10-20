@@ -20,16 +20,20 @@ import BookEvent from './assets/vue/pages/book-event.vue';
 import MyBookingPage from './assets/vue/pages/mybooking.vue';
 import MyInventoryPage from './assets/vue/pages/myinventory.vue';
 import EventPage from './assets/vue/pages/events.vue';
+import UpdateTalkPage from './assets/vue/pages/updatetalk.vue';
+
+
 import TravelPage from './assets/vue/pages/travel.vue';
 import NCBSMap from './assets/vue/pages/map.vue';
 import OSM from './assets/vue/pages/osm.vue';
 import TransportPage from './assets/vue/pages/transport.vue';
 import ColorThemes from './assets/vue/pages/color-themes.vue';
-import Chat from './assets/vue/pages/chat.vue';
 import SearchPage from './assets/vue/pages/search.vue';
 import Vuex from './assets/vue/pages/vuex.vue';
 import InventoryPage from './assets/vue/pages/inventory.vue';
 import NoticeBoards from './assets/vue/pages/noticeboards.vue';
+
+
 
 // BMV ADMIN
 import BmvBookingRequests from './assets/vue/pages/bmv_booking_requests.vue';
@@ -63,6 +67,10 @@ export default [
    {
       path: '/bmvadmin/events/',
       component: BmvEvents
+   },
+   {
+      path: '/updatetalk/:talkid/',
+      component: UpdateTalkPage
    },
    {
       path: '/acadadmin/aws/',

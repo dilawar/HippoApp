@@ -40,19 +40,19 @@
         <f7-link icon-only 
                  href="/map/"
                  text="Map"
-                 icon="fa fa-map-o fa-2x">
+                 icon="far fa-map fa-2x">
         </f7-link>
 
         <f7-link icon-only 
                  href="/canteen/"
                  text="Canteen"
-                 icon="fa fa-cutlery fa-2x">
+                 icon="fa fa-utensils fa-2x">
         </f7-link>
 
         <f7-link icon-only  v-if="isUserAuthenticated()"
                  href="/whatwherewhen/"
                  text="Calendar"
-                 icon="fa fa-calendar fa-2x">
+                 icon="far fa-calendar fa-2x">
         </f7-link>
         <f7-link icon-only  v-else
                  href="/events/"

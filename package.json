@@ -54,6 +54,7 @@
     "webpack-merge": "^4.2.2"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.11.2",
     "@lazy-copilot/datetimepicker": "^0.1.47",
     "@mauron85/cordova-plugin-background-geolocation": "git+https://github.com/dilawar/cordova-plugin-background-geolocation.git",
     "@updivision/vue2-multi-uploader": "^1.6.2",

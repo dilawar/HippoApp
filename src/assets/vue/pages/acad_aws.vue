@@ -77,14 +77,16 @@
                 </vue-editor>
               </f7-list-item>
 
-            </f7-list>
-            <f7-row>
-              <f7-col>
-                <f7-button  raised outline popup-close 
-                  @click="editThisAWS()">Submit</f7-button>
-              </f7-col>
-            </f7-row>
+              <f7-list-item>
+                <f7-button  raised 
+                            popup-close 
+                            slot="after"
+                            @click="editThisAWS()">
+                  Update
+                </f7-button>
+              </f7-list-item>
 
+            </f7-list>
           </f7-block>
         </f7-page>
       </f7-popup>
@@ -190,8 +192,8 @@
           autocomplete.preloaderShow();
 
           self.promiseWithAuth('search/awsspeaker/'+q)
-            .then( (json) => {
-              var res = JSON.parse(json).data;
+            .then( (x) => {
+              var res = JSON.parse(x.data).data;
               results = res.map(x=> x.login);
               autocomplete.preloaderHide();
               render(results);
@@ -218,12 +220,13 @@
       {
         const self = this;
         const app = self.$f7;
-        app.dialog.preloader();
+        app.dialog.preloader("Fetching upcoming AWSs");
         self.promiseWithAuth('/acadadmin/aws/upcoming')
-          .then( function(json) {
-            self.upcomingAWS = JSON.parse(json).data;
+          .then( function(x) {
+            self.upcomingAWS = JSON.parse(x.data).data;
             app.dialog.close();
           });
+        setTimeout(() => app.dialog.close(), 5000);
       },
       addAWSSchedule: function(date, aws) 
       {
@@ -259,9 +262,9 @@
         const app = self.$f7;
         app.dialog.preloader();
         self.promiseWithAuth('/acadadmin/aws/assign', self.thisAWS)
-          .then( function(json) {
+          .then( function(x) {
             app.dialog.close();
-            var res = JSON.parse(json).data;
+            var res = JSON.parse(x.data).data;
             if(! res.success)
               navigator.notification.alert(res.msg, null, 'Failed...', 'OK');
           });
@@ -283,7 +286,7 @@
             aws['reason'] = value;
             console.log('aws', aws);
             self.promiseWithAuth('acadadmin/aws/cancel', aws)
-              .then( function(json) {
+              .then( function(x) {
                 self.fetchUpcomingAws();
               });
           }, function(ev) {
