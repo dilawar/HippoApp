@@ -111,14 +111,14 @@
       },
       removeRegistration: function()
       {
-        const self;
+        const self = this;
         self.promiseWithAuth('acadadmin/registration/remove', self.thisRegistration)
           .then( function(x) {
           });
       },
       updateRegistration: function()
       {
-        const self;
+        const self = this;
         self.promiseWithAuth('acadadmin/registration/update', self.thisRegistration)
           .then( function(x) {
           });
