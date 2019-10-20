@@ -25,12 +25,7 @@
     "css-loader": "^2.1.0",
     "current-device": "^0.8.2",
     "epipebomb": "^1.0.0",
-    "eslint-config-standard": "^12.0.0",
-    "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-node": "^8.0.1",
     "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.1",
-    "eslint-plugin-vue": "^5.2.3",
     "extract-text-webpack-plugin": "4.0.0-beta.0",
     "file-loader": "^3.0.1",
     "html-loader": "^0.5.1",
@@ -63,6 +58,7 @@
     "cordova-android": "^8.1.0",
     "cordova-browser": "^6.0.0",
     "cordova-custom-config": "^5.1.0",
+    "cordova-electron": "^1.1.1",
     "cordova-plugin-background-mode": "git+https://github.com/katzer/cordova-plugin-background-mode.git",
     "cordova-plugin-badge": "^0.8.8",
     "cordova-plugin-browsersync": "^1.1.0",
@@ -140,7 +136,8 @@
     },
     "platforms": [
       "browser",
-      "android"
+      "android",
+      "electron"
     ]
   }
 }
