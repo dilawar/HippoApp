@@ -179,21 +179,25 @@
               });
           });
       },
-    },
-    removeTalk: function()
-    {
-      const self = this;
-      const app = self.$f7;
+      removeTalk: function()
+      {
+        const self = this;
+        const app = self.$f7;
 
-      //console.log("Removing talk ", self.thisTalk);
-
-      self.promiseWithAuth('talk/remove/'+self.thisTalk.id)
-        .then( function(x) {
-          let res = JSON.parse(x.data).data;
-          app.notification.create({ title: res.success?'Success':'Failed'
-            , subtitle: res.msg }).open();
-          app.$f7router.back({ignoreCache:true, force:true});
-        });
+        app.dialog.confirm( "Removing this talk", "Are you sure?"
+          , function(x) {
+              self.promiseWithAuth('talk/remove/'+self.thisTalk.id)
+                .then( function(x) {
+                  let res = JSON.parse(x.data).data;
+                  self.$f7router.back({ignoreCache:true, force:true});
+                  app.notification.create({ title: res.success?'Success':'Failed'
+                    , subtitle: res.msg
+                    , closeButton: true
+                    , closeTimeout:5000 
+                  }).open();
+                });
+          }, null);
+      },
     },
   }
 </script>
