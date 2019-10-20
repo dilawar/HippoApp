@@ -58,6 +58,7 @@
     "cordova-android": "^8.1.0",
     "cordova-browser": "^6.0.0",
     "cordova-custom-config": "^5.1.0",
+    "cordova-electron": "^1.1.1",
     "cordova-plugin-background-mode": "git+https://github.com/katzer/cordova-plugin-background-mode.git",
     "cordova-plugin-badge": "^0.8.8",
     "cordova-plugin-browsersync": "^1.1.0",
@@ -135,7 +136,8 @@
     },
     "platforms": [
       "browser",
-      "android"
+      "android",
+      "electron"
     ]
   }
 }

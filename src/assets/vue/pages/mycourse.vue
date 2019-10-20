@@ -207,7 +207,7 @@
          fetchCoursesMetadata: function() {
             const self = this;
             console.log("Fetching courses metadata ...");
-            self.postWithPromise('/courses/metadata/all')
+            self.postWithPromise('/courses/metadata/'+btoa('all'))
              .then( function(x) {
                let res = JSON.parse(x.data);
                if(res.status == 'ok')

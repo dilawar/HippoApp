@@ -42,6 +42,8 @@ import BmvEvents from './assets/vue/pages/bmv_events.vue';
 // ACAD ADMIN 
 import AcadAdminAWSRoster from './assets/vue/pages/acad_aws_roster.vue';
 import AcadAdminAWS from './assets/vue/pages/acad_aws.vue';
+import AcadAdminCourses from './assets/vue/pages/acad_courses.vue';
+import UpdateCoursePage from './assets/vue/pages/updatecourse.vue';
 
 export default [
    {
@@ -73,12 +75,20 @@ export default [
       component: UpdateTalkPage
    },
    {
+      path: '/updatecourse/:courseid/',
+      component: UpdateCoursePage
+   },
+   {
       path: '/acadadmin/aws/',
       component: AcadAdminAWS
    },
    {
       path: '/acadadmin/awsroster/',
       component: AcadAdminAWSRoster
+   },
+   {
+      path: '/acadadmin/courses/',
+      component: AcadAdminCourses
    },
    {
       path: '/myprofile/',

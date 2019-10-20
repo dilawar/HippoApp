@@ -45,6 +45,15 @@
                         panel-close
                         >
           </f7-list-item>
+
+          <f7-list-item link="/acadadmin/courses/" 
+                        target="_blank"
+                        view=".view-main"
+                        title="Courses" 
+                        panel-close
+                        >
+          </f7-list-item>
+
         </f7-list>
 
       </f7-block>
