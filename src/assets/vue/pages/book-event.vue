@@ -132,6 +132,7 @@
   <!-- BOOKING INTERFACE -->
   <f7-block>
     <f7-list media-list>
+      <!-- NOT READONLY -->
       <f7-list-group v-if="! thisEvent.readonly" media-list>
         <f7-list-input @input="thisBooking.title = $event.target.value"
                      floating-label 
@@ -141,6 +142,13 @@
                      :value="thisBooking.title">
         </f7-list-input>
 
+        <f7-list-input type="texteditor"
+                       label="Description"
+                       :value="thisBooking.description"
+                       @input="thisBooking.description=$event.target.value">
+        </f7-list-input>
+
+        <!--
         <f7-list-input :input="false">
           <vue-editor ref="description" 
                       slot="input"
@@ -148,10 +156,12 @@
                       v-model="thisBooking.description">
           </vue-editor>
         </f7-list-input>
+        -->
         </f7-list-input>
 
       </f7-list-group>
 
+      <!-- FOR READONLY TALKS -->
       <f7-list-group v-else media-list>
         <f7-list-item header="Title">
           <div slot="text">
@@ -159,10 +169,13 @@
             '{{thisEvent.title}}'
           </div>
         </f7-list-item>
-        <f7-list-item header="Description">
-          <div slot="text" v-html="thisEvent.description">
-          </div>
-        </f7-list-item>
+
+        <f7-list-input label="Description" 
+                       type="texteditor"
+                       :textEditorParams="{mode:'popover', buttons:[]}"
+                       readonly
+                       :value="thisEvent.description">
+        </f7-list-input>
       </f7-list-group>
 
       <f7-list-group media-list>
@@ -211,8 +224,8 @@
         
         <f7-list-item checkbox 
                        title="Add to NCBS Calendar?"
-                       :checked="thisBooking.is_public_event"
-                       @change="thisBooking.is_public_event=$event.target.value">
+                       :checked="thisBooking.is_public_event==='YES'"
+                       @change="thisBooking.is_public_event=$event.target.value?'YES':'NO'">
         </f7-list-item>
 
         <f7-list-item>
@@ -272,7 +285,7 @@ export default {
         , description: ''
         , venue: ''
         , dates: []
-        , is_public_event: false
+        , is_public_event: "NO"
         , repeatPat: { days:[], weeks:['All'], months:0}
       },
     };
@@ -408,10 +421,7 @@ export default {
       // Attach the repeat_pat for the API.
       self.thisBooking.repeat_pat = pat;
 
-      if(self.thisBooking.is_public_event)
-        self.thisBooking.is_public_event = 'YES'
-      else
-        self.thisBooking.is_public_event = 'NO'
+      self.thisBooking.is_public_event = 'YES'
 
       //console.log('BOOKING', self.thisBooking);
 
@@ -444,9 +454,13 @@ export default {
               , closeOnClick: true
               , closeTimeout: 5000,
             }).open();
-            self.$f7router.navigate('/mybooking/', {reloadCurrent:true});
+
+            // Go back and refresh previous page. The states has changed and we
+            // must fetch updated data.
+            self.$f7router.back({force:true, ignoreCache:true});
           }
-        });
+        }
+      );
     },
     isAvailable: function(venue)
     {

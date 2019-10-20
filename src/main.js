@@ -70,7 +70,7 @@ import Framework7Icons from 'framework7-icons/css/framework7-icons.css'
 import MaterialIcons from 'material-design-icons/iconfont/material-icons.css'
 
 // Import Fontawesome Theme Styles
-import FontAwesome from 'font-awesome/css/font-awesome.css'
+import FontAwesome from '@fortawesome/fontawesome-free/css/all.css'
 
 // Import App Custom Styles
 import AppStyles from './assets/sass/main.scss'
@@ -291,13 +291,13 @@ Vue.mixin({
          if(! profile)
             return false;
 
-         if(! 'roles' in profile)
+         if(! ('roles' in profile))
          {
-            setTimeout(()=>self.fetchProfile(), 500);
+            setTimeout(()=>self.fetchProfile(), 1000);
             return profile.roles.split(',');
          }
          else
-            return profile.roles.split(',');
+            return false;
       },
       filterSchema: function(schema, toremove) 
       {

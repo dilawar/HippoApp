@@ -1,6 +1,6 @@
 <template>
   <f7-page>
-    <f7-navbar title="title" back-link="Back">
+    <f7-navbar title="Manage talk" back-link="Back">
     </f7-navbar>
 
     <f7-block>
@@ -10,7 +10,7 @@
                         :title="thisTalk.speaker"
                         footer="You can't change the speaker">
           </f7-list-item>
-          <f7-list-item label="Class" 
+          <f7-list-item header="Class" 
                         :title="thisTalk.class"
                         :smart-select-params="{openIn:'popover', closeOnSelect:true}"
                         smart-select>
@@ -24,17 +24,34 @@
           </f7-list-item>
           <f7-list-input label="Title" 
                          type="textarea" 
+                         @input="thisTalk.title = $event.target.value"
                          :value="thisTalk.title">
           </f7-list-input>
-          <f7-list-input label="Decription" :input="false">
-            <vue-editor slot="input" v-model="thisTalk.description">
+
+          <f7-list-input label="Decription" 
+                         type="texteditor"
+                         resizable
+                         @input="thisTalk.description=$event.target.value"
+                         :value="thisTalk.description">
+          </f7-list-input>
+
+          <!--
+          <f7-list-input :input="false" label="Description">
+            <vue-editor slot="input" 
+                        id="description_editor"
+                        v-model="thisTalk.description">
             </vue-editor>
           </f7-list-input>
+          -->
+
         </f7-list-group>
 
         <f7-list-group v-if="thisTalk.booking" media-list>
-          <f7-list-item :header="thisTalk.booking_status">
-            <div slot="text" v-if="thisTalk.booking">
+          <f7-list-item>
+            <div slot="title" style="font-size:small">
+              Booking status: {{thisTalk.booking_status}}
+            </div>
+            <div slot="text" v-if="thisTalk.booking_status !== 'UNSCHEDULED'">
               {{ thisTalk.booking.date | date }},
               {{ thisTalk.booking.start_time | clockTime }} to
               {{thisTalk.booking.end_time | clockTime}},
@@ -42,20 +59,48 @@
             </div>
 
             <!-- TASKS -->
-            <f7-button raised small
-                       color="red" slot="footer" class="float-right" v-if="thisTalk.booking">
+            <f7-button small
+                       color="red"
+                       slot="after"
+                       class="float-right" 
+                       @click="removeBooking()"
+                       v-if="thisTalk.booking_status!=='UNSCHEDULED'">
               Remove Booking
             </f7-button>
-            <f7-button raised small class="float-right" slot="footer" v-else>
+            <f7-button raised
+                       small
+                       class="float-right" 
+                       slot="after"
+                       :href="'/bookevent/talks.'+thisTalk.id+'/'+thisTalk.class+'/'"
+                       v-else>
               Schedule
             </f7-button>
           </f7-list-item>
 
           <f7-list-item>
-            <f7-button @click="updateTalk()" popup-close raised fill slot="after">
-              Update This Talk
-            </f7-button>
+            <f7-row>
+              <f7-col>
+                <f7-button @click="removeTalk()"
+                       small
+                       fill
+                       popup-close 
+                       color="red"
+                       raised>
+                  Remove Talk
+                </f7-button>
+              </f7-col>
+              <f7-col>
+                <f7-button @click="updateTalk()" 
+                       small
+                       popup-close 
+                       raised>
+                  Update Talk
+                </f7-button>
+              </f7-col>
+            </f7-row>
           </f7-list-item>
+
+          <f7-list-item></f7-list-item>
 
         </f7-list-group>
       </f7-list>
@@ -93,11 +138,62 @@
       updateTalk: function()
       {
         const self = this;
+        const app = self.$f7;
         self.promiseWithAuth('talk/update', self.thisTalk)
           .then( function(x) {
             var res = JSON.parse(x.data).data;
+            var popup = {title: 'Success', subtitle: res.msg
+              , closeButton: true, closeOnSelect:true
+              , closeTimeout: 2000
+            };
+            if(! res.success) {
+              popup.title = 'Failed'
+              popup.closeTimeout = 10000;
+            }
+            app.notification.create(popup).open();
           });
       },
-    }
+      removeBooking: function() 
+      {
+        const self = this;
+        const app = self.$f7;
+        var bk = self.thisTalk.booking;
+        var endpoint = '';
+        if(self.thisTalk.booking_status === 'PENDING')
+          endpoint = 'mybooking/delete/request/'+bk.gid+'.'+bk.rid;
+        else
+          endpoint = 'mybooking/delete/event/'+bk.gid+'.'+bk.eid;
+
+        // Prmise with auth.
+        self.promiseWithAuth(endpoint)
+          .then(function(x) {
+            let res = JSON.parse(x.data).data;
+            app.notification.create({
+              title: res.success?"Success":"Failed",
+              subtitle: res.msg, closeButton: true, closeOnClick: true,
+              closeTimeout: res.success?2000:10000,
+            }).open();
+            self.promiseWithAuth('talk/get/'+self.thisTalk.id)
+              .then( function(x) {
+                self.thisTalk = JSON.parse(x.data).data;
+              });
+          });
+      },
+    },
+    removeTalk: function()
+    {
+      const self = this;
+      const app = self.$f7;
+
+      //console.log("Removing talk ", self.thisTalk);
+
+      self.promiseWithAuth('talk/remove/'+self.thisTalk.id)
+        .then( function(x) {
+          let res = JSON.parse(x.data).data;
+          app.notification.create({ title: res.success?'Success':'Failed'
+            , subtitle: res.msg }).open();
+          app.$f7router.back({ignoreCache:true, force:true});
+        });
+    },
   }
 </script>

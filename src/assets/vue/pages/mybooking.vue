@@ -6,7 +6,9 @@
   </f7-navbar>
 
   <f7-block v-if="Object.keys(requestGroups).length>0">
-    <f7-block-title>Pending booking requests...</f7-block-title>
+    <f7-block-title>
+      <f7-icon icon="far fa-bell fa-2x"></f7-icon>
+      Pending booking requests...</f7-block-title>
     <f7-list media-list>
       <f7-list-item accordion-item
                     v-for="(requests, gid, index) in requestGroups" 
@@ -57,7 +59,10 @@
 
   <!-- THESE ARE CONFIRMED EVENTS -->
   <f7-block v-if="Object.keys(eventGroups).length > 0">
-    <f7-block-title>Confirmed bookings...</f7-block-title>
+    <f7-block-title>
+      <f7-icon icon="far fa-thumbs-up fa-2x"></f7-icon>
+      Confirmed bookings...
+    </f7-block-title>
     <f7-list media-list>
       <f7-list-item accordion-item 
                     v-for="(events, gid, index) in eventGroups" 
@@ -108,7 +113,9 @@
 
   <!-- MY TAKS -->
   <f7-block v-if="Object.keys(myTalks).length>0">
-    <f7-block-title>My talks (total {{myTalks.length}})</f7-block-title>
+    <f7-block-title>
+      <f7-icon icon="fa fa-chalkboard-teacher fa-2x"></f7-icon>
+      My talks (total {{myTalks.length}})</f7-block-title>
     <f7-list media-list>
       <f7-list-item v-for="(talk, key) in myTalks"
                     :key="key"
@@ -117,17 +124,17 @@
         <div slot="text">{{talk.title}}</div>
 
         <!-- If talk is scheduled, show the information -->
-        <div slot="header" v-if="talk.booking">
+        <div slot="header" v-if="talk.booking_status !== 'UNSCHEDULED'">
           {{talk.booking.date | date}}, {{talk.booking.start_time|clockTime}}
             , {{talk.booking.venue}}
         </div>
         <!-- else show the it is not scheduled. -->
-        <div slot="after" v-else>{{talk.booking_status}}</div>
+        <div slot="header" v-else>{{talk.booking_status}}</div>
         <div slot="footer">Created {{toNow(talk.created_on)}} ago</div>
       </f7-list-item>
+      <f7-list-item></f7-list-item>
     </f7-list>
   </f7-block>
-
   </f7-page>
 </template>
 
