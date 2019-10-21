@@ -171,7 +171,7 @@ export default {
       app.dialog.preloader('Adding to AWS roster');
       self.promiseWithAuth('acadadmin/awsroster/add/'+self.thisSpeaker.login)
         .then( function(x) {
-          var ret = JSON.parse(x.data).data;
+          var res = JSON.parse(x.data).data;
           app.dialog.close();
           if(! res.success)
             navigator.notifications.alert(res.msg, null, "Failed");

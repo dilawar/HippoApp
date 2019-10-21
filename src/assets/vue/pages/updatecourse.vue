@@ -12,7 +12,7 @@
         <f7-card>
           <f7-card-content>
             <f7-row >
-              <f7-col width="50">
+              <f7-col width="40">
                 <v-autocomplete  placeholder="Student login"
                                  results-property="email"
                                  results-display="name"
@@ -32,7 +32,7 @@
                   <option value="AUDIT">AUDIT</option>
                 </f7-input>
               </f7-col>
-              <f7-col width="20">
+              <f7-col width="25">
                 <f7-button @click="addRegistration()"
                           :disabled="thisRegistration.student_id.length<2">
                           Register

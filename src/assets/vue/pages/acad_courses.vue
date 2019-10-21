@@ -32,6 +32,7 @@
         </f7-block-title>
         <f7-list media-list>
           <f7-list-item v-for="(course,key) in runningCourses" 
+                        :key="key"
                         :link="'/updatecourse/'+course.id+'/'">
             <div slot="header">{{course.course_id}}, {{course.venue}}</div>
             <div slot="title">{{course.name}}</div>
