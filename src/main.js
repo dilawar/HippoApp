@@ -289,15 +289,17 @@ Vue.mixin({
          const self = this;
          var profile = self.loadStore('me.profile');
          if(! profile)
-            return false;
+            return '';
 
          if(! ('roles' in profile))
          {
-            setTimeout(()=>self.fetchProfile(), 1000);
-            return profile.roles.split(',');
+            setTimeout(()=> {
+               self.fetchProfile();
+               profile = self.loadStore('me.profile');
+               return profile.roles.split(',');
+            }, 1000);
          }
-         else
-            return false;
+         return profile.roles.split(',');
       },
       filterSchema: function(schema, toremove) 
       {
