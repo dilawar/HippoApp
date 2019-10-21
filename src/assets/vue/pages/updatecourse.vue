@@ -28,43 +28,42 @@
             </f7-nav-right>
           </f7-navbar>
       
-          <f7-block>
+          <f7-block inset>
 
-            <f7-list no-hairlines>
-              <f7-list-input label="Student login" 
-                             readonly
-                             :value="thisRegistration.student_id">
-              </f7-list-input>
+            <f7-block-title>Student ID: {{thisRegistration.student_id}} </f7-block-title>
 
-              <f7-list-input label="Registration type" 
-                             type="select"
-                             @change="thisRegistration.type=$event.target.value"
-                             :value="thisRegistration.type">
-                <option value="CREDIT">CREDIT</option>
-                <option value="AUDIT">AUDIT</option>
-              </f7-list-input>
+              <f7-list>
+                <f7-list-group no-hairlines media-list>
+                  <f7-list-input label="Registration type" 
+                                 type="select"
+                                 @change="thisRegistration.type=$event.target.value"
+                                 :value="thisRegistration.type">
+                    <option value="CREDIT">CREDIT</option>
+                    <option value="AUDIT">AUDIT</option>
+                    <f7-button slot="after">Change</f7-button>
+                  </f7-list-input>
 
-              <f7-list-input label="Grade" 
-                             type="select"
-                             @change="thisRegistration.grade=$event.target.value"
-                             :value="thisRegistration.grade">
-                <option v-for="g in availableGrades" :value="g">{{g}}</option>
-              </f7-list-input>
-            </f7-list>
+                  <f7-list-item>
+                    <f7-row>
+                    <f7-col>
+                      <f7-button color="red" @click="dropCourse()">Drop</f7-button>
+                    </f7-col>
+                    <f7-col>
+                      <f7-button @click="changeRegistration()">Change</f7-button>
+                    </f7-col>
+                    </f7-row>
+                  </f7-list-item>
+                </f7-list-group>
 
-            <f7-row>
-              <f7-col>
-                <f7-button color="red" raised
-                           @click="removeRegistration()"
-                           popup-close>
-                  Unregister
-                </f7-button>
-              </f7-col>
-              <f7-col>
-                <f7-button popup-close @click="updateRegistration()">Update</f7-button>
-              </f7-col>
-            </f7-row>
-
+                <f7-list-group>
+                  <f7-list-input label="Grade" 
+                                 type="select"
+                                 @change="thisRegistration.grade=$event.target.value"
+                                 :value="thisRegistration.grade">
+                    <option v-for="g in availableGrades" :value="g">{{g}}</option>
+                  </f7-list-input>
+                </f7-list-group>
+              </f7-list>
 
           </f7-block>
         </f7-page>
@@ -109,16 +108,24 @@
         self.thisRegistration = reg;
         self.openPopup = true;
       },
-      removeRegistration: function()
+      dropCourse: function()
       {
         const self = this;
-        self.promiseWithAuth('acadadmin/registration/remove', self.thisRegistration)
-          .then( function(x) {
-          });
+        const app = self.$f7;
+        app.dialog.confirm("Really?", "Dropping course"
+          , function(x) {
+            self.promiseWithAuth('acadadmin/course/registration/drop', self.thisRegistration)
+              .then( function(x) {
+                self.openPopup = false;
+              });
+          }, null);
+
       },
-      updateRegistration: function()
+      changeRegistration: function()
       {
         const self = this;
+        const app = self.$f7;
+
         self.promiseWithAuth('acadadmin/registration/update', self.thisRegistration)
           .then( function(x) {
           });
