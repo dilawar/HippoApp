@@ -9,39 +9,39 @@
           registrations.
         </f7-block-title>
 
-        <f7-card :padding="false" :outline="false" no-border>
+        <f7-card>
           <f7-card-content>
-            <f7-list no-hairlines media-list>
-              <f7-list-item header="New registration">
-                <f7-row slot="title">
-                  <f7-col>
-                    <f7-list-input type="text" 
-                                   label="Login"
-                                   @input="thisRegistration.student_id=$event.target.value"
-                                   :value="thisRegistration.student_id"
-                                   >
-                    </f7-list-input>
-                  </f7-col>
-                  <f7-col>
-                    <f7-list-input label="Type" 
-                                   type="select"
-                                   @change="thisRegistration.type=$event.target.value"
-                                   :value="thisRegistration.type">
-                      <option value="CREDIT" selected>CREDIT</option>
-                      <option value="AUDIT">AUDIT</option>
-                    </f7-list-input>
-                  </f7-col>
-                </f7-row>
-                <f7-button small 
-                           slot="after"
-                           @click="addRegistration()"
-                           :disabled="thisRegistration.student_id.length<2">
-                  Register
+            <f7-row >
+              <f7-col width="50">
+                <v-autocomplete  placeholder="Student login"
+                                 results-property="email"
+                                 results-display="name"
+                                 results-value="login"
+                                 @selected="(v)=>thisRegistration.student_id=v.selectedObject.login"
+                                 :request-headers="apiPostData()"
+                                 method="post"
+                                 :source="(q)=>searchPeopleURI(q, 'login')">
+                </v-autocomplete>
+              </f7-col>
+              <f7-col width="30">
+                <f7-input label="Type" 
+                          type="select"
+                          @change="thisRegistration.type=$event.target.value"
+                          :value="thisRegistration.type">
+                  <option value="CREDIT" selected>CREDIT</option>
+                  <option value="AUDIT">AUDIT</option>
+                </f7-input>
+              </f7-col>
+              <f7-col width="20">
+                <f7-button @click="addRegistration()"
+                          :disabled="thisRegistration.student_id.length<2">
+                          Register
                 </f7-button>
-              </f7-list-item>
-            </f7-list>
+              </f7-col>
+            </f7-row>
           </f7-card-content>
         </f7-card>
+
 
         <f7-list media-list>
           <f7-list-item v-for="(st,key) in registrations"
@@ -50,7 +50,7 @@
                         :after="st.type"
                         @click="onRegSelect(st)"
                         :footer="'Registered on: '+st.registered_on">
-            <div slot="media">{{(st.grade||'X')==='X'?'':st.grade}}</div>
+            <div slot="media">{{st.grade}}</div>
           </f7-list-item>
 
         </f7-list>

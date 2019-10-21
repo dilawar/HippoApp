@@ -314,6 +314,10 @@ Vue.mixin({
          console.log('type is ', ret);
          return ret;
       },
+      searchPeopleURI: function(q, what) {
+         const self = this;
+         return self.getAPIUrl() + '/search/'+what+'/'+encodeURIComponent(q);
+      },
       fetchNotifications: function() {
          const self = this;
          if(! self.isUserAuthenticated())

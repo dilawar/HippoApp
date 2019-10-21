@@ -309,13 +309,6 @@ export default {
     },
   },
   methods: { 
-    searchPeopleURI: function(q, what) {
-      const self = this;
-      return self.getAPIUrl() + '/search/'+what+'/'+encodeURIComponent(q);
-      if(moment(self.thisBooking.startDateTime) <= moment())
-        return {status: false, msg: 'Start datetime is in the past!'};
-      return {status: true, msg: 'ok'};
-    },
     isTalkOrSeminar: function() {
       return true;
     },
