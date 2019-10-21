@@ -89,16 +89,17 @@ export default {
      if( ! self.inventories || self.inventories.length == 0)
      {
        // Get all inventory.
-       console.log( "Fetching inventories ... " );
        app.dialog.preloader('Fetching inventory');
        self.postWithPromise( '/inventory/list/100').then(
          function(x) 
          {
            self.inventories = JSON.parse(x.data).data;
            self.saveStore('inventories', self.inventories);
+           app.dialog.close();
          }
        );
      }
+     setTimeout(() => app.dialog.close(), 3000);
      self.toItems(self.inventories.list);
    },
    methods: { 
@@ -106,10 +107,11 @@ export default {
          const self = this;
          const app = self.$f7;
          
+        app.dialog.preloader('Fetching inventory...');
          self.postWithPromise( '/inventory/list')
             .then(function(x) {
                let res = JSON.parse(x.data);
-               if(res.status == 'ok')
+               if(res.status === 'ok')
                {
                   self.inventories = res.data;
                   self.saveStore('inventories', self.inventories);
@@ -117,9 +119,10 @@ export default {
                else
                   self.inventories = self.loadStore('inventories');
                self.toItems(self.inventories.list);
+              app.dialog.close();
             }
          );
-         app.ptr.done();
+        setTimeout(() => app.dialog.close(), 3000);
       },
       toItems: function( invItems ) 
       {

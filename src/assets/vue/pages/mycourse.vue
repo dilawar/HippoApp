@@ -198,11 +198,11 @@
             const self = this;
             const app = self.$f7;
             console.log("Fetching courses..");
-            app.preloader.show();
+            app.dialog.preloader('Fetching your courses...');
             self.fetchCoursesPromise().then( function(x) {
-               app.preloader.hide();
+               app.dialog.close();
             });
-            setTimeout(() => app.preloader.hide(), 5000);
+            setTimeout(() => app.dialog.close(), 5000);
          },
          fetchCoursesMetadata: function() {
             const self = this;

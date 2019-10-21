@@ -30,10 +30,12 @@
       
           <f7-block inset>
 
-            <f7-block-title>Student ID: {{thisRegistration.student_id}} </f7-block-title>
+            <f7-block-title>
+              Student ID: {{thisRegistration.student_id}} 
+            </f7-block-title>
 
               <f7-list>
-                <f7-list-group no-hairlines media-list>
+                <f7-list-group media-list>
                   <f7-list-input label="Registration type" 
                                  type="select"
                                  @change="thisRegistration.type=$event.target.value"
@@ -46,7 +48,7 @@
                   <f7-list-item>
                     <f7-row>
                     <f7-col>
-                      <f7-button color="red" @click="dropCourse()">Drop</f7-button>
+                      <f7-button color="red" fill @click="dropCourse()">Drop</f7-button>
                     </f7-col>
                     <f7-col>
                       <f7-button @click="changeRegistration()">Change</f7-button>
@@ -95,10 +97,7 @@
           self.thisCourseMetadata = JSON.parse(x.data).data[self.thisCourseId];
         });
 
-      self.postWithPromise('courses/registration/'+btoa(self.thisCourseId))
-        .then( function(x) {
-          self.registrations = JSON.parse(x.data).data;
-        });
+      self.fetchRegistration();
           
     },
     methods : {
@@ -107,6 +106,18 @@
         const self = this;
         self.thisRegistration = reg;
         self.openPopup = true;
+      },
+      fetchRegistration: function()
+      {
+        const self = this;
+        const app = self.$f7;
+        app.dialog.preloader('Fetching registrations...');
+        self.postWithPromise('courses/registration/'+btoa(self.thisCourseId))
+          .then( function(x) {
+            self.registrations = JSON.parse(x.data).data;
+            app.dialog.close();
+          });
+        setTimeout(() => app.dialog.close(), 5000);
       },
       dropCourse: function()
       {
@@ -117,6 +128,7 @@
             self.promiseWithAuth('acadadmin/course/registration/drop', self.thisRegistration)
               .then( function(x) {
                 self.openPopup = false;
+                self.fetchRegistration();
               });
           }, null);
 
@@ -126,8 +138,9 @@
         const self = this;
         const app = self.$f7;
 
-        self.promiseWithAuth('acadadmin/registration/update', self.thisRegistration)
-          .then( function(x) {
+        self.promiseWithAuth('acadadmin/course/registration/'+self.thisRegistration.type
+          , self.thisRegistration).then( function(x) {
+            console.log('Update registration: ', x.data);
           });
       },
     }
