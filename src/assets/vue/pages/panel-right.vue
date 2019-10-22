@@ -80,15 +80,8 @@ export default {
   },
   mounted: function() {
     const self = this;
-    if('roles' in self.profile)
-      self.roles = self.profile.roles.split(',');
-    else
-      self.roles = '';
-  },
-  methods : {
-    refreshData: function(ev, done) {
-      const self = this;
-    },
+    self.roles = self.profile.roles.split(',');
+    console.log('roles ', self.roles);
   },
 }
 </script>

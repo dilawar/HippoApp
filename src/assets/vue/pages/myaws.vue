@@ -44,12 +44,12 @@ export default {
     fetchAws: function() {
       const self = this;
       const app = self.$f7;
-      app.dialog.preloader('Fetching your AWS...');
+      app.preloader.show();
       self.postWithPromise('/me/aws').then( function(x) {
         self.awses = JSON.parse(x.data).data;
-        app.dialog.close();
+        app.preloader.hide();
       });
-      setTimeout(() => app.dialog.close(), 3000);
+      setTimeout(() => app.preloader.hide(), 3000);
     },
     refreshAWS: function(e, done) {
       const self = this;
