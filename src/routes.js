@@ -1,5 +1,4 @@
 import Home from './assets/vue/pages/home.vue';
-import AboutPage from './assets/vue/pages/about.vue';
 import ProfilePage from './assets/vue/pages/myprofile.vue';
 import NotificationPage from './assets/vue/pages/notifications.vue';
 import AccomodationPage from './assets/vue/pages/accomodation.vue';

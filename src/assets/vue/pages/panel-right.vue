@@ -7,7 +7,6 @@
       <f7-block v-if="roles.includes('BOOKMYVENUE_ADMIN')">
       <f7-block-title>BookMyVenue Admin</f7-block-title>
         <f7-list>
-
           <f7-list-item link="/bmvadmin/bookingrequests/" 
                         target="_blank"
                         view=".view-main"
@@ -41,7 +40,7 @@
           <f7-list-item link="/acadadmin/awsroster/" 
                         target="_blank"
                         view=".view-main"
-                        title="AWS roster" 
+                        title="AWS Roster" 
                         panel-close
                         >
           </f7-list-item>
@@ -79,21 +78,16 @@
         alreadyLoggedIn: false,
         profile: { 'roles':[] },
         notifications: [],
-        roles: [],
+        roles: '',
       };
     },
     mounted()
     {
       const self = this;
-      if( self.isUserAuthenticated())
-      {
-        self.postWithPromise('/me/profile')
-          .then( function(x) {
-            self.profile = JSON.parse(x.data).data;
-            if('roles' in self.profile)
-              self.roles = self.profile.roles.split(',');
-          });
-      }
+      self.postWithPromise('/me/profile').then(function(x) {
+        self.profile = JSON.parse(x.data).data;
+        self.roles = self.profile.roles.split(',');
+      });
     },
     methods : {
       refreshData: function(ev, done) {

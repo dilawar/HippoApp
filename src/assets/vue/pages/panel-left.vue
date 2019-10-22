@@ -18,6 +18,16 @@
                </span>
             </f7-list-item>
 
+            <!--
+            <f7-list-item link="/home/" 
+                          view=".view-main"
+                          title="Home" 
+                          panel-close
+                          >
+               <f7-icon slot="media" icon="fa fa-home fa-2x"></f7-icon>
+            </f7-list-item>
+            -->
+
             <f7-list-item link="/myprofile/" 
                           target="_blank"
                           view=".view-main"

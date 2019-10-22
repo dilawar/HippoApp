@@ -22,6 +22,12 @@
                  back>
         </f7-link>
 
+        <f7-link text="Home"
+                 icon="fa fa-home fa-2x"
+                 @click="$f7.views.main.router.navigate('/home/')" 
+                 >
+        </f7-link>
+
         <!--
         <f7-link @click="infoPopup=true"
                  icon-only 
@@ -62,69 +68,69 @@
 
       </f7-toolbar>
 
-        <f7-popup :opened="infoPopup" @popup:closed="infoPopup = false">
-          <f7-page>
+      <f7-popup :opened="infoPopup" @popup:closed="infoPopup = false">
+        <f7-page>
 
-            <f7-navbar title="Info">
-              <f7-nav-right>
-                <f7-link popup-close>Close</f7-link>
-              </f7-nav-right>
-            </f7-navbar>
+          <f7-navbar title="Info">
+            <f7-nav-right>
+              <f7-link popup-close>Close</f7-link>
+            </f7-nav-right>
+          </f7-navbar>
 
-            <f7-block>
-              <p><strong>Version</strong> {{version}}</p>
+          <f7-block>
+            <p><strong>Version</strong> {{version}}</p>
 
-              <h3>Development</h3>
-              This app is open-source. It is hosted on
-              <f7-link external target="_system" href="https://github.com/dilawar/HippoApp">
-                Github</f7-link> and is released under GNU GPLv3 License.
+            <h3>Development</h3>
+            This app is open-source. It is hosted on
+            <f7-link external target="_system" href="https://github.com/dilawar/HippoApp">
+              Github</f7-link> and is released under GNU GPLv3 License.
 
-              <p><strong>Contribution:</strong> 
-              <f7-link external target="_system" 
-                href="https://github.com/dilawar/HippoApp/blob/master/CONTRIBUTION.md"
-                >Read this.  </f7-link>
-              </p>
+            <p><strong>Contribution:</strong> 
+            <f7-link external target="_system" 
+                              href="https://github.com/dilawar/HippoApp/blob/master/CONTRIBUTION.md"
+                              >Read this.  </f7-link>
+            </p>
 
-              <h3>Credit</h3>
+            <h3>Credit</h3>
 
-              Logo is designed by <f7-link external href="https://github.com/nunojesus">Nuno
-                Jesus.</f7-link> Art work in splash screen is created by Sweety Meel.
-              NCBS IT section provided server for backend services.
-              </p>
+            Logo is designed by <f7-link external href="https://github.com/nunojesus">Nuno
+              Jesus.</f7-link> Art work in splash screen is created by Sweety Meel.
+            NCBS IT section provided server for backend services.
+            </p>
 
-              <small> <p> &copy; Dilawar Singh 
-                (github: <f7-link external href="https://github.com/dilawar">@dilawar</f7-link>):
-                2019-present. </p>
-              </small>
+            <small> <p> &copy; Dilawar Singh 
+              (github: <f7-link external href="https://github.com/dilawar">@dilawar</f7-link>):
+              2019-present. </p>
+            </small>
 
-              <h3>Disclaimer</h3>
+            <h3>Disclaimer</h3>
 
-              This is <strong>NOT</strong> an official NCBS app. 
-              Developer(s) is/are not repsonsible for any discrepencies 
-              which may arise over the course of time. You may please report 
-              discrepency by writing to developers/maintainers.
+            This is <strong>NOT</strong> an official NCBS app. 
+            Developer(s) is/are not repsonsible for any discrepencies 
+            which may arise over the course of time. You may please report 
+            discrepency by writing to developers/maintainers.
 
-            </f7-block>
-          </f7-page>
-        </f7-popup>
+          </f7-block>
+        </f7-page>
+      </f7-popup>
 
-        <f7-popup :opened="canteenPopup" @popup:closed="canteenPopup = false">
-          <f7-page>
-            <f7-navbar title="Canteen Menu">
-              <f7-nav-right>
-                <f7-link popup-close>Close</f7-link>
-              </f7-nav-right>
-            </f7-navbar>
-          </f7-page>
-        </f7-popup>
+      <f7-popup :opened="canteenPopup" @popup:closed="canteenPopup = false">
+        <f7-page>
+          <f7-navbar title="Canteen Menu">
+            <f7-nav-right>
+              <f7-link popup-close>Close</f7-link>
+            </f7-nav-right>
+          </f7-navbar>
+        </f7-page>
+      </f7-popup>
     </f7-view>
   </f7-app>
 </template>
 
 <script>
+
 // Import Routes...
 import routes from './routes.js';
-
 import moment from 'moment';
 
 let theme = 'auto';
@@ -133,25 +139,25 @@ if (document.location.search.indexOf('theme=') >= 0) {
 }
 
 export default {
-   data() {
-      return {
-         f7params: {
-            theme,
-            routes,
-            id: 'com.dilawar.hippo',
-            isBottom: true,
-            toolbar: {
-               hideOnPageScroll: true,
-            },
-         },
-         infoPopup: false,
-         calendarPopup: false,
-         canteenPopup: false,
-         version: moment().format(),
-      }
-   },
-   mounted: function() {
-      const self = this;
-   },
+  data() {
+    return {
+      f7params: {
+        theme,
+        routes,
+        id: 'com.dilawar.hippo',
+        isBottom: true,
+        toolbar: {
+          hideOnPageScroll: true,
+        },
+      },
+      infoPopup: false,
+      calendarPopup: false,
+      canteenPopup: false,
+      version: moment().format(),
+    }
+  },
+  mounted: function() {
+    const self = this;
+  },
 }
 </script>
