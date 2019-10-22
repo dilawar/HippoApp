@@ -56,6 +56,9 @@
       </f7-list-item>
     </f7-list>
   </f7-block>
+  <f7-block v-else>
+    No booking found.
+  </f7-block>
 
   <!-- THESE ARE CONFIRMED EVENTS -->
   <f7-block v-if="Object.keys(eventGroups).length > 0">
@@ -165,10 +168,14 @@ export default {
     fetchMyTalks: function()
     {
       const self = this;
+      const app = self.$f7;
+      app.dialog.preloader('Fetching your talks...');
       self.promiseWithAuth('me/talk/all')
         .then( function(x) {
           self.myTalks = JSON.parse(x.data).data;
+          app.dialog.close();
         });
+      setTimeout(()=>app.dialog.close(), 3000);
     },
     fetchMyBooking: function(data) 
     {
@@ -185,13 +192,16 @@ export default {
       };
 
       var link = '/mybooking/list/'+moment(self.startDate).format('X');
+      app.dialog.preloader('Fetching your bookings...');
       self.promiseWithAuth(link)
         .then( function(x) {
           var res = JSON.parse(x.data);
           self.requestGroups = res.data.requests;
           self.eventGroups = res.data.events;
+          app.dialog.close();
         }
       );
+      setTimeout(()=>app.dialog.close(), 10000);
     },
     refreshMyBooking: function(event, done) 
     {
@@ -200,11 +210,10 @@ export default {
       setTimeout(() => {
         self.fetchMyBooking();
         done();
-      }, 1000);
+      }, 3000);
     },
     deleteEvent: function(gid, eid) 
     {
-      console.log("Deleting event: ", gid, eid );
       const self = this;
       const app = self.$f7;
       var link = 'mybooking/delete/event/'+gid+'.'+eid;

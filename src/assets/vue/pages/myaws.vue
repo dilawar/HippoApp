@@ -28,37 +28,35 @@
 </template>
 
 <script>
-   export default {
-      data() {
-         const self = this;
-         return {
-            awses: [],
-         };
-      },
-      mounted()
-      {
-         const self = this;
-         self.awses = self.loadStore('me.aws');
-         if(! self.awses )
-            setTimeout( () => self.fetchAws(), 1000);
-      },
-      methods: {
-         fetchAws: function() {
-            const self = this;
-            self.postWithPromise('/me/aws').then( function(json) {
-               let res = JSON.parse(json);
-               if(res.status == 'ok')
-                  self.saveStore('me.aws', res.data);
-               else
-                  console.log( 'Failed to fetch data');
-               self.awses = self.loadStore('me.aws');
-            });
-         },
-         refreshAWS: function(e, done) {
-            const self = this;
-            setTimeout( () => self.fetchAws(), 1000);
-            done();
-         },
-      },
-   }
+export default {
+  data() {
+    const self = this;
+    return {
+      awses: {},
+    };
+  },
+  mounted()
+  {
+    const self = this;
+    self.fetchAws();
+  },
+  methods: {
+    fetchAws: function() {
+      const self = this;
+      const app = self.$f7;
+      app.dialog.preloader('Fetching your AWS...');
+      self.postWithPromise('/me/aws').then( function(x) {
+        self.awses = JSON.parse(x.data).data;
+        app.dialog.close();
+      });
+      setTimeout(() => app.dialog.close(), 3000);
+    },
+    refreshAWS: function(e, done) {
+      const self = this;
+      const app = self.$f7;
+      setTimeout(() => self.fetchAws(), 3000);
+      done();
+    },
+  },
+}
 </script>

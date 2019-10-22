@@ -266,9 +266,9 @@
      {
        const self = this;
        return {
-         jcs: [],
+         jcs: {},
          venues: {},
-         myjcs: [],
+         myjcs: {},
          popupOpened: false,
          jcAdminPresentationPopup: false,
          jcAdminSubscriptionPopup: false,
@@ -302,14 +302,16 @@
        fetchJC: function() 
        {
          const self = this;
+         const app = self.$f7;
          self.myjcs = self.loadStore('me.profile').jcs;
-         console.log( "My JCS ", self.myjcs);
 
+         app.dialog.preloader('Fetching your JCs...');
          self.postWithPromise('/me/jc').then( function(x) {
            let res = JSON.parse(x.data);
            self.jcs = res.data;
-           self.saveStore('me.jcs', res.data);
+           app.dialog.close();
            });
+         setTimeout(() => app.dialog.close(), 3000);
        },
        myJCWithAdminRights: function() {
          const self = this;
@@ -321,6 +323,7 @@
        fetchSubscriptions: function(jcid) 
        {
          const self = this;
+         const app = self.$f7;
          self.thisJC.jc_id = jcid;
          self.postWithPromise('/jc/subscriptions/'+jcid)
            .then( function(x) {
@@ -348,7 +351,7 @@
        },
        refreshJC: function(e, done) {
          const self = this;
-         setTimeout(() => self.fetchJC(), 500);
+         setTimeout(() => self.fetchJC(), 1000);
          done();
        },
        isMyJC: function(jc) {

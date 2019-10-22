@@ -146,187 +146,159 @@
 </template>
 
 <script>
-   export default {
-      data() {
-         const self = this;
-         return {
-            courses: [],
-            runningCourses: [],
-            metadata: [],
-            thisCourse: {},
-            feedbackPopup: false,
-            questions: {},
-            feedback: {},
-         };
-      },
-      mounted()
-      {
-         const self = this;
-         self.courses = self.loadStore('me.course');
-         if(self.courses.length == 0)
-            setTimeout(() => self.fetchCourses(), 1000);
+export default {
+  data() {
+    const self = this;
+    return {
+      courses: {},
+      runningCourses: {},
+      metadata: {},
+      thisCourse: {},
+      feedbackPopup: false,
+      questions: {},
+      feedback: {},
+    };
+  },
+  mounted()
+  {
+    const self = this;
+    const app = self.$f7;
 
-         self.runningCourses = self.loadStore('courses.running');
-         if(self.runningCourses.length == 0)
-            setTimeout(() => self.fetchRunningCourses(), 1000);
+    // Fetch metadata first.
+    self.fetchCoursesMetadata();
+    self.fetchCourses();
+    self.fetchRunningCourses();
 
-         self.metadata = self.loadStore('courses.metadata');
-         if(self.metadata.length == 0)
-            setTimeout(() => self.fetchCoursesMetadata(), 1000);
+  },
+  methods: {
+    fetchCoursesPromise: function() {
+      const self = this;
+      const app = self.$f7;
+      return self.postWithPromise('/me/course')
+        .then( function(x) {
+          self.courses = JSON.parse(x.data).data;
+        });
+    },
+    fetchCourses: function() {
+      const self = this;
+      const app = self.$f7;
+      app.dialog.preloader('Fetching your courses...');
+      self.fetchCoursesPromise().then(function(x) {
+        app.dialog.close();
+      });
+      setTimeout(() => app.dialog.close(), 5000);
+    },
+    fetchCoursesMetadata: function() {
+      const self = this;
+      self.postWithPromise('/courses/metadata/'+btoa('all'))
+        .then( function(x) {
+          self.metadata =  JSON.parse(x.data).data;
+        });
+    },
+    fetchRunningCourses: function() {
+      const self = this;
+      self.postWithPromise('/courses/running')
+        .then( function(x) {
+          self.runningCourses = JSON.parse(x.data).data;
+        });
+    },
+    refreshCourses: function(e, done) {
+      const self = this;
+      //setTimeout( () => self.fetchCoursesMetadata(), 1000);
+      setTimeout(() => self.fetchCourses(), 1000);
+      setTimeout(() => self.fetchRunningCourses(), 1000);
+      done();
+    },
+    registerCourse: function(course, regType='CREDIT') {
+      const self = this;
+      const app = self.$f7;
 
-      },
-      methods: {
-         fetchCoursesPromise: function() {
-            const self = this;
-            const app = self.$f7;
-            return self.postWithPromise('/me/course')
-             .then( function(x) {
-               let res = JSON.parse(x.data);
-               if(res.status == 'ok')
-               {
-                  self.saveStore('me.course', res.data);
-                  self.courses = res.data;
-               }
-               else
-               {
-                  console.log( 'Failed to fetch data');
-                  self.courses = self.loadStore('me.course');
-               }
+      /* console.log( regType + "ing course " + course.id ); */
+      // NOTE:course.id can have characters which are not allowed in URL at
+      // server.
+      app.preloader.show();
+      self.postWithPromise("/courses/register/"+btoa(course.id)+"/"+regType)
+        .then(function(x) {
+          let res = JSON.parse(x.data);
+          if( res.status == 'ok')
+            self.fetchCoursesPromise().then(function(x) {
+              app.preloader.hide();
             });
-         },
-         fetchCourses: function() {
-            const self = this;
-            const app = self.$f7;
-            console.log("Fetching courses..");
-            app.dialog.preloader('Fetching your courses...');
-            self.fetchCoursesPromise().then( function(x) {
-               app.dialog.close();
-            });
-            setTimeout(() => app.dialog.close(), 5000);
-         },
-         fetchCoursesMetadata: function() {
-            const self = this;
-            console.log("Fetching courses metadata ...");
-            self.postWithPromise('/courses/metadata/'+btoa('all'))
-             .then( function(x) {
-               let res = JSON.parse(x.data);
-               if(res.status == 'ok')
-                  self.saveStore('courses.metadata', res.data);
-               else
-                  console.log( 'Failed to fetch data');
-               self.metadata = self.loadStore('courses.metadata');
-            });
-         },
-         fetchRunningCourses: function() {
-            const self = this;
-            console.log("Fetching running courses..");
-            self.postWithPromise('/courses/running')
-             .then( function(x) {
-               let res = JSON.parse(x.data);
-               if(res.status == 'ok')
-                  self.saveStore('courses.running', res.data);
-               else
-                  console.log( 'Failed to fetch data');
-               self.runningCourses = self.loadStore('courses.running');
-            });
-         },
-         refreshCourses: function(e, done) {
-            const self = this;
-            setTimeout( () => self.fetchCourses(), 1000);
-            setTimeout( () => self.fetchRunningCourses(), 1000);
-            setTimeout( () => self.fetchCoursesMetadata(), 1000);
-            done();
-         },
-         registerCourse: function(course, regType='CREDIT') {
-            const self = this;
-            const app = self.$f7;
+          else
+            navigator.notification.alert("Failed to update course", null , "Course", "OK");
+        });
+      setTimeout( () => app.preloader.hide(), 5000);
+    },
+    alreadyRegistered: function(cid) {
+      const self = this;
+      let res = self.courses.filter(x => 
+        cid == (x.course_id+"-"+x.semester+"-"+x.year)
+      );
+      /* console.log(res, 'register', cid); */
+      if(res.length==1)
+        return res[0].type;
+      return "";
+    },
+    showFeedback: function(course)
+    {
+      // NOTE: Disabling feedback from the app.
+      const self = this;
+      return;
 
-            /* console.log( regType + "ing course " + course.id ); */
-            // NOTE:course.id can have characters which are not allowed in URL at
-            // server.
-            app.preloader.show();
-            self.postWithPromise("/courses/register/"+btoa(course.id)+"/"+regType)
-               .then(function(x) {
-                  let res = JSON.parse(x.data);
-                  if( res.status == 'ok')
-                     self.fetchCoursesPromise().then(function(x) {
-                        app.preloader.hide();
-                     });
-                  else
-                     navigator.notification.alert("Failed to update course", null , "Course", "OK");
-            });
-            setTimeout( () => app.preloader.hide(), 5000);
-         },
-         alreadyRegistered: function(cid) {
-            const self = this;
-            let res = self.courses.filter(x => 
-               cid == (x.course_id+"-"+x.semester+"-"+x.year)
-            );
-            /* console.log(res, 'register', cid); */
-            if(res.length==1)
-               return res[0].type;
-            return "";
-         },
-         showFeedback: function(course)
-         {
-            // NOTE: Disabling feedback from the app.
-            const self = this;
-            return;
+      const app = self.$f7;
+      console.log( "Giving feedback for ", course);
+      self.thisCourse = course;
+      app.preloader.show();
+      self.postWithPromise('/courses/feedback/questions')
+        .then( function(x) {
+          self.questions = JSON.parse(x.data).data;
 
-            const app = self.$f7;
-            console.log( "Giving feedback for ", course);
-            self.thisCourse = course;
-            app.preloader.show();
-            self.postWithPromise('/courses/feedback/questions')
-               .then( function(x) {
-                  self.questions = JSON.parse(x.data).data;
- 
-                  // Populate feedback so we can bind values. This is bit
-                  // contrived.
-                  Object.keys(self.questions).map(
-                     function(k, i) {
-                        Object.keys(self.questions[k]).map(
-                           function(i, e) {
-                              const qid = self.questions[k][i].id;
-                              self.feedback[qid] = {"response": ""};
-                           });
-                     })
-               });
-            let cid = course.course_id + '-' + course.semester + '-' + course.year;
-            self.postWithPromise('/courses/feedback/get/'+btoa(cid))
-               .then( function(x) {
-                  console.log("Getting old feedback for ",cid);
-                  let data = JSON.parse(x.data).data;
-                  self.feedback = data;
-                  app.preloader.hide();
-               });
-            setTimeout(() => app.preloader.hide(), 3000);
-            self.feedbackPopup = true;
-         },
-         oldResponse: function(qid, _default=null){
-            const self = this;
-            if(! self.feedback)
-               return _default;
-            else if(self.feedback.length == 0)
-               return _default;
-            else if( null == self.feedback)
-               return _default;
+          // Populate feedback so we can bind values. This is bit
+          // contrived.
+          Object.keys(self.questions).map(
+            function(k, i) {
+              Object.keys(self.questions[k]).map(
+                function(i, e) {
+                  const qid = self.questions[k][i].id;
+                  self.feedback[qid] = {"response": ""};
+                });
+            })
+        });
+      let cid = course.course_id + '-' + course.semester + '-' + course.year;
+      self.postWithPromise('/courses/feedback/get/'+btoa(cid))
+        .then( function(x) {
+          console.log("Getting old feedback for ",cid);
+          let data = JSON.parse(x.data).data;
+          self.feedback = data;
+          app.preloader.hide();
+        });
+      setTimeout(() => app.preloader.hide(), 3000);
+      self.feedbackPopup = true;
+    },
+    oldResponse: function(qid, _default=null){
+      const self = this;
+      if(! self.feedback)
+        return _default;
+      else if(self.feedback.length == 0)
+        return _default;
+      else if( null == self.feedback)
+        return _default;
 
-            if(qid in self.feedback)
-               return self.feedback[qid]['response'];
-            return _default;
-         },
-         submitFeedback: function( ) {
-            const self = this;
-            console.log( "data is ", self.feedback);
-            let cid = self.thisCourse.id;
-            self.postWithPromise('/courses/feedback/submit/'+btoa(cid))
-               .then( function(x) {
-                  console.log("Submitting  feedback for ",cid);
-                  app.preloader.hide();
-               });
-            setTimeout(() => app.preloader.hide(), 3000);
-         }
-      },
-   }
+      if(qid in self.feedback)
+        return self.feedback[qid]['response'];
+      return _default;
+    },
+    submitFeedback: function( ) {
+      const self = this;
+      console.log( "data is ", self.feedback);
+      let cid = self.thisCourse.id;
+      self.postWithPromise('/courses/feedback/submit/'+btoa(cid))
+        .then( function(x) {
+          console.log("Submitting  feedback for ",cid);
+          app.preloader.hide();
+        });
+      setTimeout(() => app.preloader.hide(), 3000);
+    }
+  },
+}
 </script>
