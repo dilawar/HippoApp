@@ -233,170 +233,163 @@
 import moment from 'moment';
 
 export default {
-   data() {
+  data() {
+    const self = this;
+    return {
+      lendPopup: false,
+      editPopup: false,
+      popupAction: 'New',
+      inventories: {},
+      inventory: {
+        name: '',
+        scientific_name: '',
+        vendor: 'UNSPECIFIED',
+        quantity_with_unit: '1 nos',
+        description: '',
+        location: '',
+        status: 'VALID',
+        expiry_date: '',
+        person_in_charge: self.getLogin(),
+        faculty_in_charge: '',
+        requires_booking: 'NO',
+        item_condition: 'FUNCTIONAL',
+        id: '',
+        thumbnails: [],
+        borrowing: [{ borrower : '' }],
+      },
+      dropzoneOptions: {
+        url: self.$store.state.api + '/upload/images',
+        thumbnailWidth: 150,
+        maxFilesize: 5,
+        resizeWidth: 500,
+        acceptedFiles: "image/*",
+        addRemoveLinks: true,
+        autoProcessQueue: false, // do not upload automatically.
+        headers: self.apiPostData(),
+      },
+    };
+  },
+  mounted: function() {
+    const self = this;
+    self.fetchInventories();
+  },
+  methods: { 
+    fetchInventories: function() {
       const self = this;
-      return {
-         lendPopup: false,
-         editPopup: false,
-         popupAction: 'New',
-         inventories: [],
-         inventory: {
-            name: '',
-            scientific_name: '',
-            vendor: 'UNSPECIFIED',
-            quantity_with_unit: '1 nos',
-            description: '',
-            location: '',
-            status: 'VALID',
-            expiry_date: '',
-            person_in_charge: self.getLogin(),
-            faculty_in_charge: '',
-            requires_booking: 'NO',
-            item_condition: 'FUNCTIONAL',
-            id: '',
-            thumbnails: [],
-            borrowing: [{ borrower : '' }],
-         },
-         dropzoneOptions: {
-            url: self.$store.state.api + '/upload/images',
-            thumbnailWidth: 150,
-            maxFilesize: 5,
-            resizeWidth: 500,
-            acceptedFiles: "image/*",
-            addRemoveLinks: true,
-            autoProcessQueue: false, // do not upload automatically.
-            headers: self.apiPostData(),
-         },
-      };
-   },
-   mounted: function() {
+      const app = self.$f7;
+      app.dialog.preloader('Fetching inventories...');
+      self.postWithPromise( '/labinventory/list/')
+        .then(function(x) {
+          self.inventories = JSON.parse(x.data).data;
+          app.dialog.close();
+        });
+      setTimeout(() => app.dialog.close(), 3000);
+    },
+    ptrRefreshInventory: function(event, done) {
       const self = this;
-      self.inventories = self.loadStore('me.inventories');
-   },
-   methods: { 
-      fetchInventories: function() {
-         const self = this;
-         const app = self.$f7;
-         self.postWithPromise( '/labinventory/list/').then(
-            function(json) {
-               let res = JSON.parse(json);
-               if( res.status == 'ok') {
-                  self.inventories = res.data;
-                  self.saveStore('me.inventories', self.inventories);
-               }
-               else
-               {
-                  console.log( "Failed to fetch inventory");
-                  self.inventories = self.loadStore('me.inventories');
-               }
-            }
-         );
-      },
-      ptrRefreshInventory: function(event, done) {
-         const self = this;
-         setTimeout( () => {
-            self.fetchInventories();
-            done();
-         }, 1000);
-      },
-      inventoryToCard: function(items) {
-         const self = this;
-         self.cards = [];
-      },
-      addItemToInventory: function() 
-      {
-         const self = this;
-         self.popupAction = "New";
-         self.inventory.person_in_charge = self.getLogin();
-         self.inventory.status = 'VALID';
+      setTimeout(() => {
+        self.fetchInventories();
+        done();
+      }, 1000);
+    },
+    inventoryToCard: function(items) {
+      const self = this;
+      self.cards = [];
+    },
+    addItemToInventory: function() 
+    {
+      const self = this;
+      self.popupAction = "New";
+      self.inventory.person_in_charge = self.getLogin();
+      self.inventory.status = 'VALID';
 
-         if(self.inventory.borrowing.length == 0)
+      if(self.inventory.borrowing.length == 0)
+        self.inventory.borrowing.push({borrower: ''});
+      self.editPopup = true;
+    },
+    submitNewInventory: function( ) 
+    {
+      const self = this;
+      self.promiseWithAuth( 'labinventory/create', self.inventory).then(
+        function(x) {
+          let res = JSON.parse(x.data).data;
+          console.log( "Created inventory", res.id );
+          self.inventory = res;
+          if(self.inventory.borrowing.length == 0)
             self.inventory.borrowing.push({borrower: ''});
-         self.editPopup = true;
-      },
-      submitNewInventory: function( ) 
-      {
-         const self = this;
-         self.promiseWithAuth( 'labinventory/create', self.inventory).then(
-            function( json ) {
-               let res = JSON.parse(json)['data'];
-               console.log( "Created inventory", res.id );
-               self.inventory = res;
-               if(self.inventory.borrowing.length == 0)
-                  self.inventory.borrowing.push({borrower: ''});
 
-               // Before we upload, make sure to send inventory_id in $_POST.
-               self.$refs.inventoryDZ.processQueue();
-            });
-         setTimeout( () => self.fetchInventories(), 1000);
-      },
-      submitUpdateInventory: function(card) {
-         const self = this;
-         self.promiseWithAuth( 'labinventory/update', card).then(
-            function( json ) {
-               let res = JSON.parse(json)['data'];
-               // Now upload images if any.
-               // Before uploading image, add corresponding inventory id to the image.
-               self.$refs.inventoryDZ.processQueue();
-            });
-         setTimeout( () => self.fetchInventories(), 1000);
-      },
-      submitDeleteInventory: function(id) {
-         const self = this;
-         console.log( "deleting item", id);
-         setTimeout( () => {
-            self.sendRequest( 'labinventory/delete/'+id);
-         }, 1000);
-         self.fetchInventories();
-      },
-      lendInventory: function(inv) {
-         const self = this;
-         self.popupAction = "Lend";
-         self.inventory = inv;
+          // Before we upload, make sure to send inventory_id in $_POST.
+          self.$refs.inventoryDZ.processQueue();
+        });
+      setTimeout( () => self.fetchInventories(), 1000);
+    },
+    submitUpdateInventory: function(card) {
+      const self = this;
+      self.promiseWithAuth( 'labinventory/update', card).then(
+        function(x) {
+          let res = JSON.parse(x.data).data;
+          // Now upload images if any.
+          // Before uploading image, add corresponding inventory id to the image.
+          self.$refs.inventoryDZ.processQueue();
+        });
+      setTimeout( () => self.fetchInventories(), 1000);
+    },
+    submitDeleteInventory: function(id) {
+      const self = this;
+      console.log( "deleting item", id);
+      setTimeout( () => {
+        self.sendRequest( 'labinventory/delete/'+id);
+      }, 1000);
+      self.fetchInventories();
+    },
+    lendInventory: function(inv) {
+      const self = this;
+      self.popupAction = "Lend";
+      self.inventory = inv;
 
-         // Make sure to have default fields setup.
-         if(self.inventory.borrowing.length == 0)
-            self.inventory.borrowing.push({ borrower : '' });
+      // Make sure to have default fields setup.
+        if(self.inventory.borrowing.length == 0)
+      self.inventory.borrowing.push({ borrower : '' });
 
-         self.lendPopup = true;
-      },
-      editInventory: function(inv) {
-         const self = this;
-         console.log( "Updating inventory ", inv.id );
-         self.thumbnails = inv.thumbnails;
-         self.popupAction = "Edit";
-         self.inventory = inv;
+      self.lendPopup = true;
+    },
+    editInventory: function(inv) {
+      const self = this;
+      console.log( "Updating inventory ", inv.id );
+      self.thumbnails = inv.thumbnails;
+      self.popupAction = "Edit";
+      self.inventory = inv;
 
-         // Make sure to have a borrowing field set.
-         if( self.inventory.borrowing.length == 0)
-            self.inventory.borrowing.push({borrower : '' });
+      // Make sure to have a borrowing field set.
+        if( self.inventory.borrowing.length == 0)
+      self.inventory.borrowing.push({borrower : '' });
 
-         self.editPopup = true;
-      },
-      submitLendInventory: function( inv ) {
-         const self = this;
-         self.inventory = inv;
-         self.sendRequest( 'labinventory/lend', inv);
-      },
-      submitClearLending: function( inv ) {
-         const self = this;
-         self.sendRequest('labinventory/gotback/'+inv.id);
-         setTimeout( () => self.fetchInventories(), 1000);
-      },
-      onImageSendingAddExternalID: function(img, xhr, formData) {
-         const self = this;
-         // Add external id to formData.
-         formData.append("inventory_id", self.inventory.id);
-      },
-      removeImage: function( id ) {
-         const self = this;
-         setTimeout( () => {
-            self.sendRequest('images/delete/' + id );
-            // Remove this thumbnail from the page whether we succeed or not.
-            self.inventory.thumbnails = self.inventory.thumbnails.filter(th =>th.id!=id);
-         }, 1000);
-      },
-   },
+      self.editPopup = true;
+    },
+    submitLendInventory: function( inv ) {
+      const self = this;
+      self.inventory = inv;
+      self.sendRequest( 'labinventory/lend', inv);
+    },
+    submitClearLending: function( inv ) {
+      const self = this;
+      self.sendRequest('labinventory/gotback/'+inv.id);
+      setTimeout( () => self.fetchInventories(), 1000);
+    },
+    onImageSendingAddExternalID: function(img, xhr, formData) {
+      const self = this;
+      // Add external id to formData.
+        formData.append("inventory_id", self.inventory.id);
+    },
+    removeImage: function( id ) {
+      const self = this;
+      setTimeout( () => {
+        self.sendRequest('images/delete/' + id );
+        // Remove this thumbnail from the page whether we succeed or not.
+          self.inventory.thumbnails = self.inventory.thumbnails.filter(th =>th.id!=id);
+      }, 1000);
+    },
+  },
 };
 
 </script>

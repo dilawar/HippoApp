@@ -26,11 +26,13 @@
              <l-polyline v-for="(arr, key) in hotlines" 
                          :lat-lngs="arr" 
                          :key="key"
-                         color="green"
-                         :weight="5"
-                         :smoothFactor="2.0"
+                         color="blue"
+                         :weight="8"
+                         :smoothFactor="3.0"
                          >
              </l-polyline>
+
+             <l-marker :lat-lng="myPos"></l-marker>
 
              <!-- Latest position -->
              <l-marker v-for="(p, key) in latestPos" 
@@ -82,6 +84,7 @@ export default {
          geosearchOptions: {},
          hotlines: {},
          latestPos: [],
+         myPos: [0, 0],
          repeat: 0,
          lastUpdatedOn: [],
          CustomControl :  L.Control.extend({
@@ -100,6 +103,13 @@ export default {
    mounted: function() {
       const self = this;
       self.map = self.$refs.osm.mapObject;
+      navigator.geolocation.getCurrentPosition( function(loc) {
+            self.myPos = [ loc.coords.latitude, loc.coords.longitude];
+            console.log( "Current location: ", self.myPos, loc.coords)
+         }, function(x) {
+            console.log( "Failed to locate.");
+         }
+         );
 
       if( self.map )
          self.flashDiv = new self.CustomControl().addTo(self.map);
@@ -179,9 +189,9 @@ export default {
       fetchLatestRoute: function() {
          const self = this;
 
-         self.postWithPromise("/geolocation/latest/10")
-            .then(function(json) {
-               let res = JSON.parse(json);
+         self.postWithPromise("/geolocation/latest/60")
+            .then(function(x) {
+               let res = JSON.parse(x.data);
                if(res.status !== "ok") 
                   return
 
@@ -201,8 +211,7 @@ export default {
                      html: self.str2Moment(pts[0].timestamp, 'YYYY-MM-DD HH:mm:ss').fromNow(),
                      options: { 
                         icon: L.divIcon({
-                           className : 'location-head-icon',
-                           html: '<i class="fa fa-map-pin fa-2x"></i>'
+                           html: '<i class="fa fa-bus fa-2x"></i>'
                            }),
                         },
                      });

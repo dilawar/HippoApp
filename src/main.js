@@ -6,13 +6,24 @@ import Dropzone from "vue2-dropzone";
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 Vue.component('vue-dropzone', Dropzone);
 
-// Multi uploader.
-import MultipleFileUploader from '@updivision/vue2-multi-uploader'
-Vue.component('v-multifile-uploader', MultipleFileUploader);
+// linkify
+import linkify from 'vue-linkify';
+Vue.directive('linkified', linkify);
 
+// Editor
+import { VueEditor, Quill } from 'vue2-editor';
+Vue.component('vue-editor', VueEditor);
+
+// Multi uploader.
+// import MultipleFileUploader from '@updivision/vue2-multi-uploader'
+// Vue.component('v-multifile-uploader', MultipleFileUploader);
 // import VueQrcodeReader from "vue-qrcode-reader";
 // Vue.use(VueQrcodeReader);
 // import 'vue-qrcode-reader/dist/vue-qrcode-reader.css';
+
+// Autocomplete
+import Autocomplete from 'vuejs-auto-complete';
+Vue.component('v-autocomplete', Autocomplete);
 
 // OSM and leaflet.
 import {LMap, LTileLayer, LMarker, LPolyline, LPopup, LTooltip, LControlLayers} from 'vue2-leaflet';
@@ -39,10 +50,6 @@ Icon.Default.mergeOptions({
 
 // GoogleMap services.
 import { OpenStreetMapProvider, GoogleProvider } from 'leaflet-geosearch'; 
-
-//// fixme: Lightweight timeline.
-//import LightTimeline from 'vue-light-timeline';
-//Vue.use(LightTimeline);
 
 // Moment 
 import moment from 'moment';
@@ -121,8 +128,11 @@ Vue.mixin({
          var t = moment(time, "hh:mm:ss").format("hh:mm A");
          return d+', '+t;
       },
+      today : function() {
+         return moment().format();
+      },
       dbDateTime: function(date) {
-         return moment(date).format('YYYY-MM-DDTHH:mm');
+         return moment(date).format('YYYY-MM-DD HH:mm');
       },
       datetime2Moment: function(timestamp) {
          return moment(timestamp, 'YYYY-MM-DD HH:mm:ss');
@@ -166,12 +176,20 @@ Vue.mixin({
          // If API key is found then user is logged in.
          const self = this;
          const apiKey = self.$localStorage.get('HIPPO-API-KEY');
-         if( apiKey && apiKey.trim().length > 0 )
+         if(apiKey && apiKey.trim().length > 1)
             return true;
          return false;
       },
+      whoAmI: function() {
+         const self = this;
+         return self.$localStorage.get('HIPPO-LOGIN');
+      },
       formatKey: function(key) {
          return key.split('_').join(' ').toUpperCase();
+      },
+      getAPIUrl: function() {
+         const self = this;
+         return self.$store.state.api;
       },
       postWithPromise: function(endpoint) {
          const self = this;
@@ -191,17 +209,20 @@ Vue.mixin({
       fetchAndStore: function(endpoint, key) {
          const self = this;
          const app = self.$f7;
-         app.request.post(self.$store.state.api+'/'+endpoint
-            , self.apiPostData()
-            , function(json)
-            {
-               const res = JSON.parse(json);
-               if(res.status=='ok')
+         if(! isUserAuthenticated())
+         {
+            self.$localStorage.set(key, '{}');
+            return '';
+         }
+         app.request.promise.post(self.$store.state.api+'/'+endpoint
+            , self.apiPostData() )
+            .then( function(x) {
+               const res = JSON.parse(x.data);
+               if(res.status==='ok')
                   self.$localStorage.set(key, JSON.stringify(res.data));
                else
-                  console.log('Warn: Failed to fetch ',);
-            }
-         );
+                  console.log('Warn: Failed to fetch from '+endpoint);
+            });
       },
       saveStore: function(key, data) {
          const self=this;
@@ -218,14 +239,20 @@ Vue.mixin({
       loadStoreStr: function(key) {
          return this.$localStorage.get(key, '');
       },
+      isMobileApp: function() {
+         // From  https://stackoverflow.com/a/13252184/1805129
+         return (window.cordova || window.PhoneGap || window.phonegap) 
+             && /^file:\/{3}[^\/]/i.test(window.location.href) 
+             && /ios|iphone|ipod|ipad|android/i.test(navigator.userAgent);
+      },
       sendRequest: function(endpoint, post) {
          const self = this;
          const app = self.$f7;
          app.dialog.preloader();
          let data = { ...self.apiPostData(), ...post};
          app.request.promise.post(self.$store.state.api+'/'+endpoint, data)
-            .then( function(json) {
-               const res = JSON.parse(json);
+            .then( function(x) {
+               const res = JSON.parse(x.data);
                app.dialog.close();
                return;
             }
@@ -241,8 +268,8 @@ Vue.mixin({
          for(let k in coords)
             data[k] = coords[k];
          app.request.promise.post(self.$store.state.api+'/'+endpoint, data)
-            .then( function(json) {
-               const res = JSON.parse(json);
+            .then( function(x) {
+               const res = JSON.parse(x.data);
                return res.status;
             }
          );
@@ -251,10 +278,33 @@ Vue.mixin({
          const self = this;
          self.fetchAndStore( '/venue/list/all', 'venues');
       },
+      venueInfo: function(vid) {
+         const self = this;
+         var venue = self.loadStore('venues')[vid];
+         if(venue)
+            return venue.name;
+         return vid;
+      },
       fetchProfile: function() {
          const self = this;
          const app = self.$f7;
          self.fetchAndStore('/me/profile', 'me.profile');
+      },
+      getRoles: function() {
+         const self = this;
+         var profile = self.loadStore('me.profile');
+         if(! profile)
+            return '';
+
+         if(! ('roles' in profile))
+         {
+            setTimeout(()=> {
+               self.fetchProfile();
+               profile = self.loadStore('me.profile');
+               return profile.roles.split(',');
+            }, 1000);
+         }
+         return profile.roles.split(',');
       },
       filterSchema: function(schema, toremove) 
       {
@@ -271,11 +321,18 @@ Vue.mixin({
          console.log('type is ', ret);
          return ret;
       },
+      searchPeopleURI: function(q, what) {
+         const self = this;
+         return self.getAPIUrl() + '/search/'+what+'/'+encodeURIComponent(q);
+      },
       fetchNotifications: function() {
          const self = this;
+         if(! self.isUserAuthenticated())
+            return;
+
          self.postWithPromise( 'notifications/get' ).then(
-            function(json) {
-               let notifications = JSON.parse(json).data;
+            function(x) {
+               let notifications = JSON.parse(x.data).data;
                self.saveStore("notifications", notifications);
             }
          );
@@ -287,7 +344,7 @@ Vue.mixin({
          // for available properties.
          let data = self.loadStore('notifications');
          const nots = data.filter( x => x.is_read == false);
-         if( nots.length > 0)
+         if(nots.length > 0)
             cordova.plugins.notification.local.schedule(nots);
       },
       removeFromArray: function(arr) {
@@ -317,6 +374,48 @@ Vue.mixin({
          const self = this;
          const app = self.$f7;
          app.preloader.hide();
+      },
+      isAdmin: function() 
+      {
+         const self = this;
+         if(! self.isUserAuthenticated())
+            return false;
+         var roles = self.loadStore('me.profile').roles;
+         if(roles)
+            return roles.includes('ADMIN');
+         return false;
+      },
+      _get: function(obj, key, o=null) {
+         if(! obj)
+            return o;
+         else if(obj == null)
+            return o;
+         else if(obj.length == 0)
+            return o;
+         return obj.includes(key)?obj[key]:o;
+      },
+   },
+   // Vue filter for parsing phone numbers.
+   'filters' : {
+      'phone' : function (phone) {
+         return phone.replace(/([+]91|0)?(\d{3})(\d{3})(\d{4})/
+            , '<a href="tel:$1$2$3$4"><i class="fa fa-phone"></i>$1$2$3$4</a>'
+         );
+      },
+      'clockTime' : function(time) {
+         return moment(time, 'HH:mm:ss').format('HH:mm A');
+      },
+      'date' : function(time) {
+         return moment(time, 'YYYY-MM-DD').format('(ddd) MMM DD');
+      },
+      'name' : function(login) {
+         return login.first_name + ' ' + login.last_name;
+      },
+      'tt' : function(text) {
+         return "<tt>" + text + "</tt>";
+      },
+      'firstUpper': function(x) {
+         return x.substring(0,1).toUpperCase() + x.substring(1).toLowerCase();
       },
    },
 });
@@ -360,13 +459,13 @@ export default new Vue({
       onDeviceReady : function(x) {
          const self = this;
          console.log( "Add onDeviceReady callback here.");
-         ///////////////////////////////////////////////////////////////
+
          // Notifications 
-         ///////////////////////////////////////////////////////////////
          cordova.plugins.notification.local.on("click", function(not) {
             // On click show notification page.
             self.$f7router.navigate('/notifications');
          }, self);
+
          cordova.plugins.notification.local.on("clear", function(not) {
             setTimeout( () => {
                self.postWithPromise('/notifications/dismiss/' + not.id);

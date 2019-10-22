@@ -1,30 +1,48 @@
 import Home from './assets/vue/pages/home.vue';
-import AboutPage from './assets/vue/pages/about.vue';
 import ProfilePage from './assets/vue/pages/myprofile.vue';
 import NotificationPage from './assets/vue/pages/notifications.vue';
 import AccomodationPage from './assets/vue/pages/accomodation.vue';
 import CanteenPage from './assets/vue/pages/canteen.vue';
 import AWSPage from './assets/vue/pages/myaws.vue';
+import JCPage from './assets/vue/pages/myjc.vue';
+import CoursePage from './assets/vue/pages/mycourse.vue';
 import PanelLeftPage from './assets/vue/pages/panel-left.vue';
-import PanelTimelinePage from './assets/vue/pages/panel-right-timeline.vue';
+import PanelRightPage from './assets/vue/pages/panel-right.vue';
 import WhatWhereWhenPage from './assets/vue/pages/whatwherewhen.vue';
 import FormPage from './assets/vue/pages/form.vue';
-import DynamicRoutePage from './assets/vue/pages/dynamic-route.vue';
+
 import BookingPage from './assets/vue/pages/booking.vue';
+import SmartBookingPage from './assets/vue/pages/smartbook.vue';
+import RegisterEventWithSpeaker from './assets/vue/pages/event-with-speaker.vue';
+
+import BookEvent from './assets/vue/pages/book-event.vue';
 import MyBookingPage from './assets/vue/pages/mybooking.vue';
 import MyInventoryPage from './assets/vue/pages/myinventory.vue';
-import BookThisVenuePage from './assets/vue/pages/bookthisvenue.vue';
 import EventPage from './assets/vue/pages/events.vue';
+import UpdateTalkPage from './assets/vue/pages/updatetalk.vue';
+
+
 import TravelPage from './assets/vue/pages/travel.vue';
 import NCBSMap from './assets/vue/pages/map.vue';
 import OSM from './assets/vue/pages/osm.vue';
 import TransportPage from './assets/vue/pages/transport.vue';
 import ColorThemes from './assets/vue/pages/color-themes.vue';
-import Chat from './assets/vue/pages/chat.vue';
 import SearchPage from './assets/vue/pages/search.vue';
 import Vuex from './assets/vue/pages/vuex.vue';
 import InventoryPage from './assets/vue/pages/inventory.vue';
 import NoticeBoards from './assets/vue/pages/noticeboards.vue';
+
+
+
+// BMV ADMIN
+import BmvBookingRequests from './assets/vue/pages/bmv_booking_requests.vue';
+import BmvEvents from './assets/vue/pages/bmv_events.vue';
+
+// ACAD ADMIN 
+import AcadAdminAWSRoster from './assets/vue/pages/acad_aws_roster.vue';
+import AcadAdminAWS from './assets/vue/pages/acad_aws.vue';
+import AcadAdminCourses from './assets/vue/pages/acad_courses.vue';
+import UpdateCoursePage from './assets/vue/pages/updatecourse.vue';
 
 export default [
    {
@@ -40,6 +58,38 @@ export default [
       component: PanelLeftPage
    },
    {
+      path: '/adminpanel/',
+      component: PanelRightPage
+   },
+   {
+      path: '/bmvadmin/bookingrequests/',
+      component: BmvBookingRequests
+   },
+   {
+      path: '/bmvadmin/events/',
+      component: BmvEvents
+   },
+   {
+      path: '/updatetalk/:talkid/',
+      component: UpdateTalkPage
+   },
+   {
+      path: '/updatecourse/:courseid/',
+      component: UpdateCoursePage
+   },
+   {
+      path: '/acadadmin/aws/',
+      component: AcadAdminAWS
+   },
+   {
+      path: '/acadadmin/awsroster/',
+      component: AcadAdminAWSRoster
+   },
+   {
+      path: '/acadadmin/courses/',
+      component: AcadAdminCourses
+   },
+   {
       path: '/myprofile/',
       component: ProfilePage
    },
@@ -50,6 +100,14 @@ export default [
    {
       path: '/myaws/',
       component: AWSPage
+   },
+   {
+      path: '/myjc/',
+      component: JCPage
+   },
+   {
+      path: '/mycourse/',
+      component: CoursePage
    },
    {
       path: '/accomodation/',
@@ -68,16 +126,24 @@ export default [
       component: MyInventoryPage
    },
    {
-      path: '/timelinepanel/:venue',
-      component: PanelTimelinePage
-   },
-   {
       path: '/whatwherewhen/',
       component: WhatWhereWhenPage
    },
    {
       path: '/booking/',
       component: BookingPage
+   },
+   {
+      path: '/smartbook/',
+      component: SmartBookingPage
+   },
+   {
+      path: '/register-event-with-speaker/:eventType',
+      component: RegisterEventWithSpeaker
+   },
+   {
+      path: '/bookevent/:externalId/:evType',
+      component: BookEvent
    },
    {
       path: '/map/',
@@ -90,11 +156,6 @@ export default [
    {
       path: '/mybooking/',
       component: MyBookingPage
-   },
-   {
-      path: '/book/:venue/:startDateTime/:endDateTime/',
-      component: BookThisVenuePage,
-      pushState: false,
    },
    {
       path: '/events/',
@@ -113,19 +174,11 @@ export default [
       component: FormPage
    },
    {
-      path: '/dynamic-route/blog/:blogId/post/:postId/',
-      component: DynamicRoutePage
-   },
-   {
       path: '/search/',
       component: SearchPage
    },
    {
-      path: '/noticeboards/:board',
+      path: '/noticeboards/:boardName',
       component: NoticeBoards
-   },
-   {
-      path: '/vuex/',
-      component: Vuex
    },
 ]

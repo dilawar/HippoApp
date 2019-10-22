@@ -3,7 +3,7 @@
 }
 
 body {
-    max-width: 600px;
+    max-width: 800px;
     align-self: auto;
     margin: 0px auto;
 }
@@ -235,13 +235,13 @@ input {
 }
 
 .location-head-icon {
-    min-width: 25px;
-    min-height: 25px;
+    min-width: 20px;
+    min-height: 30px;
     display: flex;
     background-color: yellow;
-    vertical-align: middle;
+    vertical-align: top;
     justify-content: center;
-    align-items:center;
+    align-items:bottom;
     border-radius: 50%;
 }
 
@@ -257,5 +257,21 @@ input {
     position: absolute;
     left: 50%;
     top: -10%;
+}
+
+div.watermark {
+    position:absolute;
+    right: -10%;
+    bottom: 25%;
+    z-index:0;
+    display:flex;
+    color:lightred;
+    font-size:50px;
+    transform:rotate(-90deg);
+}
+
+.input-no-outline {
+    outline: none!important;
+    border: none;
 }
 

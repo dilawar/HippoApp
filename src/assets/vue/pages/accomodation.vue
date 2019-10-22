@@ -18,90 +18,121 @@
 
      <!-- List of accomodations -->
      <f7-block>
+        <f7-block-title>Available Accomodations</f7-block-title>
+
         <f7-photo-browser ref="standalone"></f7-photo-browser>
 
-        <f7-list class="searchbar-not-found">
-           <f7-list-item title="Nothing found"></f7-list-item>
-        </f7-list>
-
-        <f7-list accordion-list 
-                 media-list no-hairlines
-                 class="searchbar-found search-list-acc"
+        <f7-card v-for="(acc, key) in accomodations.list" 
+                 :key="key"
+                 v-if="acc.status=='AVAILABLE'"
                  >
-           <f7-list-item accordion-item 
-                         swipeout
-                         v-for="(acc, key) in accomodations.list" 
-                         :key="key"
-                         >
-             <f7-icon v-if="favouriteAccomodations.includes(acc.id)"
-                      icon="fa fa-bookmark fa-2x"
-                      slot="media" >
-             </f7-icon>
 
-             <f7-swipeout-actions left>
-                <f7-swipeout-button v-if="! favouriteAccomodations.includes(acc.id)"
-                                    @click="addToFavoriteAcc(acc.id)"
-                                    > Favourite
-                </f7-swipeout-button>
-                <f7-swipeout-button v-else 
-                                    @click="removeFromFavoriteAcc(acc.id)"
-                                    > Unfavorite
-                </f7-swipeout-button>
-             </f7-swipeout-actions>
-
-           <div slot="header" style="font-size:small;margin-left:2px"> 
-              <span style="color:green">{{acc.status }} | {{acc.available_for}}</span>.
-           </div>
-           <div slot="title">
-              {{acc.type}}, {{acc.open_vacancies}} vacancy.
-           </div>
-           <div slot="subtitle">
-              <f7-icon icon="fa fa-map-marker fa-fw"></f7-icon> {{acc.address}}
-           </div>
-           <div slot="footer">
-              Posted by {{acc.created_by}}, {{str2Moment(acc.created_on).fromNow()}} 
-           </div>
-           <f7-accordion-content class="acc-content">
-              <f7-block style="background-color:#aaffffaa;font-size:small">
-                 <div> 
-                    <f7-icon icon="fa fa-clock-o fa-fw"></f7-icon>
-                    Available from {{str2Moment(acc.available_from,
-                    'YYYY-MM-DD').format('MMM DD')}}.
+           <!-- header -->
+           <f7-card-header
+              :style="`font-size:90%;background-color:${stringToColour(acc.status)}`" 
+              >
+                 <div>
+                    {{acc.type}}, Available from {{humanReadableDate(acc.available_from)}}
                  </div>
+                 <div> {{acc.address}} </div>
+        </f7-card-header>
 
-                 <span v-for="(val, key) in acc">
-                    <span v-if="showKeys.find(k => k===key) && val.length > 0">
-                       <span style="font-size:70%">{{formatKey(key)}}</span>
-                       <span style="margin-right:2ex;">{{val}}</span>
-                       <br />
-                    </span>
+        <!-- Card content -->
+        <f7-card-content v-linkified>
+           <br />
+           <span v-for="(val, key) in acc">
+                 <span v-if="showKeys.find(k => k===key) && val.length > 0">
+                    <span style="font-size:70%">{{formatKey(key)}}</span>
+                    <!-- filter does not work with v-html. moutache doesn't
+                       render html. Hence this hack: see
+                       https://github.com/vuejs/vue/issues/4352
+                    -->
+                    <span style="margin-right:2ex;"
+                          v-html="$options.filters.phone(val)"></span>
+                    <br />
                  </span>
-                 <div v-if="acc.last_modified_on" style="color:green;text-align:right">
-                    <f7-icon icon="fa fa-bell fa-fw"></f7-icon>
-                    Last changed: {{str2Moment(acc.last_modified_on, 'YYYY-MM-DD HH:mm:ss').fromNow()}}
+              </span>
+
+           <div  style="font-size:x-small;">
+              <f7-icon icon="fa fa-bell fa-fw"></f7-icon>
+              Posted by: {{acc.created_by}}, {{str2Moment(acc.created_on).fromNow()}}
+              <span v-if="acc.last_modified_on">
+                 (modified {{str2Moment(acc.last_modified_on
+                     , 'YYYY-MM-DD HH:mm:ss').fromNow()}})
+              </span>
+           </div>
+        </f7-card-content>
+
+        <!-- Card footer -->
+        <f7-card-footer style="font-size:small;padding:0px">
+           <f7-button small @click="updateAction(acc)" >Update </f7-button>
+           <f7-button small :href="'/osm/accomodation/'+acc.id+'/'">Locate</f7-button>
+           <f7-button small 
+                      v-if="isUserAuthenticated()" 
+                      @click="addComment(acc)"
+                      >Comment ({{acc.num_comments}})
+           </f7-button>
+
+        </f7-card-footer>
+     </f7-card>
+  </f7-block>
+
+  <f7-block>
+     <f7-block-title>Unavailable Accomodations</f7-block-title>
+        <f7-card v-for="(acc, key) in accomodations.list" 
+                 :key="key"
+                 v-if="acc.status!='AVAILABLE'"
+                 >
+
+           <!-- header -->
+           <f7-card-header
+              :style="`font-size:90%;background-color:${stringToColour(acc.status)}`" 
+              >
+                 <div>
+                    {{acc.type}}, Available from {{humanReadableDate(acc.available_from)}}
                  </div>
 
-                 <f7-row style="margin-top:1ex;font-size:medium">
-                    <f7-col v-if="acc.created_by===getLogin()">
-                       <f7-link @click="updateAction(acc)" >Update </f7-link>
-                    </f7-col>
-                    <f7-col>
-                       <f7-link :href="'/osm/accomodation/'+acc.id+'/'">Locate</f7-link>
-                    </f7-col>
-                    <f7-col>
-                       <f7-link v-if="isUserAuthenticated()" 
-                                style="float:right"
-                                @click="addComment(acc)"
-                                >Comment ({{acc.num_comments}})
-                       </f7-link>
-                    </f7-col>
-              </f7-row>
+                 <div> {{acc.address}} </div>
+        </f7-card-header>
 
-           </f7-block>
-           </f7-accordion-content>
-           </f7-list-item>
-     </f7-list>
+        <!-- Card content -->
+        <f7-card-content v-linkified>
+           <span v-for="(val, key) in acc">
+              <span v-if="showKeys.find(k => k===key) && val.length > 0">
+                 <span style="font-size:70%">{{formatKey(key)}}</span>
+                 <!-- filter does not work with v-html. moutache doesn't
+                    render html. Hence this hack: see
+                    https://github.com/vuejs/vue/issues/4352
+                 -->
+                 <span style="margin-right:2ex;"
+                       v-html="$options.filters.phone(val)"></span>
+                 <br />
+              </span>
+           </span>
 
+           <div class="watermark">{{acc.status}}</div>
+
+           <div  style="font-size:x-small;">
+              <f7-icon icon="fa fa-bell fa-fw"></f7-icon>
+              Posted by: {{acc.created_by}}, {{str2Moment(acc.created_on).fromNow()}}
+              <span v-if="acc.last_modified_on">
+                 (modified {{str2Moment(acc.last_modified_on
+                     , 'YYYY-MM-DD HH:mm:ss').fromNow()}})
+              </span>
+           </div>
+        </f7-card-content>
+        <!-- Card footer -->
+        <f7-card-footer style="font-size:small;padding:0px">
+           <f7-button small @click="updateAction(acc)" >Update </f7-button>
+           <f7-button small :href="'/osm/accomodation/'+acc.id+'/'">Locate</f7-button>
+           <f7-button small 
+                      v-if="isUserAuthenticated()" 
+                      @click="addComment(acc)"
+                      >Comment ({{acc.num_comments}})
+           </f7-button>
+
+        </f7-card-footer>
+     </f7-card>
   </f7-block>
 
   <!-- FAB to create accomodation -->
@@ -125,59 +156,53 @@
 
         <f7-block>
 
-           <!-- Submit comment. -->
-           <f7-list media-list no-hairlines>
-
-              <f7-list-item v-if="thisAccomodation"
-                            :footer="'Created by ' + thisAccomodation.created_by"
-                            :text="thisAccomodation.type+' at '+ thisAccomodation.address"
-                            >
-              </f7-list-item>
-
-              <f7-list-input label="Comment"
-                             :value="thisComment"
-                             @input="thisComment = $event.target.value"
-                             :resizable="true"
-                             required
-                             type="textarea" 
-                             >
-              </f7-list-input>
-              <f7-list-item>
-                 <f7-button raised 
-                            popup-close
-                            fill 
-                            @click="submitComment(thisAccomodation.id)" 
-                            slot="after"
-                            >
-                            Submit
-                 </f7-button>
-                 <f7-button raised popup-close slot="title">Cancel</f7-button>
-              </f7-list-item>
-           </f7-list>
-        </f7-block>
-
+        <!-- Submit comment. -->
         <f7-block>
-           <f7-block-title small>Existing comments</f7-block-title>
-           <f7-list media-list no-hairlines>
-              <!-- Existing comments. -->
-              <f7-list-item v-for="(c, key) in comments"
-                            :key="key"
-                            :text="c.comment"
-                            :footer="'By ' + c.commenter"
-                            style="background-color:Ivory"
-                            >
-                   <f7-link v-if="c.commenter===getLogin()"
-                            slot="after"
-                            @click="deleteComment(c.id)"
-                            >
-                            Delete
-                   </f7-link>
-              </f7-list-item>
-           </f7-list>
+           <f7-card v-for="(c, key) in comments" :key="key">
+              <f7-card-content :padding="false" style="margin:2px"> 
+                 {{c.comment}} 
+              </f7-card-content>
+              <f7-card-footer style="font-size:small">
+                 <div> By {{c.commenter}} </div>
+                 <div>
+                    <f7-button small  v-if="c.commenter===getLogin()"
+                                      slot="after"
+                                      @click="deleteComment(c.id)"
+                                      >Delete
+                    </f7-button>
+                 </div>
+              </f7-card-footer>
+           </f7-card>
         </f7-block>
 
-     </f7-page>
-  </f7-popup>
+        <!-- Input comment -->
+
+        <f7-list media-list no-hairlines>
+           <f7-list-input :value="thisComment"
+                          @input="thisComment = $event.target.value"
+                          :resizable="true"
+                          placeholder="Your comment here"
+                          required
+                          type="textarea" 
+                          >
+           </f7-list-input>
+           <f7-list-item>
+              <f7-button raised 
+                         popup-close
+                         fill 
+                         @click="submitComment(thisAccomodation.id)" 
+                         slot="after"
+                         >
+                         Submit
+              </f7-button>
+              <f7-button raised popup-close slot="title">Cancel</f7-button>
+           </f7-list-item>
+        </f7-list>
+
+     </f7-block>
+  </f7-page>
+
+</f7-popup>
 
   <f7-popup :opened="popupOpened" @popup:closed="popupOpened = false">
      <f7-page>
@@ -233,14 +258,14 @@
                           > {{val}} </option>
               </f7-list-input>
 
-                 <f7-list-input label="Address"
-                                type="text"
-                                :input="false" 
-                                >
-                    <input id="autocomplete-dropdown-expand"  
-                           :value="accomodation.address"
-                           slot="input" type="text" />
-                 </f7-list-input>
+               <f7-list-input label="Address"
+                              type="text"
+                              :input="false" 
+                              >
+                  <input id="autocomplete-dropdown-expand"  
+                         :value="accomodation.address"
+                         slot="input" type="text" />
+               </f7-list-input>
 
               <f7-list-input label="Description"
                              :value="accomodation.description"
@@ -367,8 +392,8 @@ export default {
 
       // Get all accomodations.
       self.postWithPromise( '/accomodation/list').then(
-         function(json) {
-            self.accomodations = JSON.parse(json).data;
+         function(x) {
+            self.accomodations = JSON.parse(x.data).data;
             self.saveStore('accomodations', self.accomodations);
          }
       );
@@ -411,10 +436,10 @@ export default {
          const self = this;
          const app = self.$f7;
          app.dialog.preloader();
-         self.postWithPromise( '/accomodation/list' ).then( 
-            function(json) 
+         self.postWithPromise( '/accomodation/list/50' ).then( 
+            function(x) 
             {
-               let res = JSON.parse(json);
+               let res = JSON.parse(x.data);
                if(res.status == "ok")
                {
                   self.accomodations = res.data;
@@ -479,8 +504,8 @@ export default {
          self.thisAccomodation = acc;
 
          self.postWithPromise('/accomodation/comment/list/'+acc.id).then(
-            function(json) {
-               let res = JSON.parse(json);
+            function(x) {
+               let res = JSON.parse(x.data);
                if(res.status == 'ok')
                   self.comments = res.data.comments;
             });

@@ -83,31 +83,35 @@ export default {
       };
    },
    mounted() {
-      const self = this;
-      self.inventories = self.loadStore('inventories');
-      if( ! self.inventories || self.inventories.length == 0)
-      {
-         // Get all inventory.
-         console.log( "Fetching inventories ... " );
-         self.postWithPromise( '/inventory/list/100').then(
-            function(json) 
-            {
-               self.inventories = JSON.parse(json).data;
-               self.saveStore('inventories', self.inventories);
-            }
-         );
-      }
-      self.toItems(self.inventories.list);
+     const self = this;
+     const app = self.$f7;
+     self.inventories = self.loadStore('inventories');
+     if( ! self.inventories || self.inventories.length == 0)
+     {
+       // Get all inventory.
+       app.dialog.preloader('Fetching inventory');
+       self.postWithPromise( '/inventory/list/100').then(
+         function(x) 
+         {
+           self.inventories = JSON.parse(x.data).data;
+           self.saveStore('inventories', self.inventories);
+           app.dialog.close();
+         }
+       );
+     }
+     setTimeout(() => app.dialog.close(), 3000);
+     self.toItems(self.inventories.list);
    },
    methods: { 
       fetchInventory: function() {
          const self = this;
          const app = self.$f7;
          
+        app.dialog.preloader('Fetching inventory...');
          self.postWithPromise( '/inventory/list')
-            .then(function(json) {
-               let res = JSON.parse(json);
-               if(res.status == 'ok')
+            .then(function(x) {
+               let res = JSON.parse(x.data);
+               if(res.status === 'ok')
                {
                   self.inventories = res.data;
                   self.saveStore('inventories', self.inventories);
@@ -115,9 +119,10 @@ export default {
                else
                   self.inventories = self.loadStore('inventories');
                self.toItems(self.inventories.list);
+              app.dialog.close();
             }
          );
-         app.ptr.done();
+        setTimeout(() => app.dialog.close(), 3000);
       },
       toItems: function( invItems ) 
       {
@@ -158,9 +163,8 @@ export default {
          console.log( "Fetching image ", ids );
          self.photos = [];
          self.promiseWithAuth('images/get/'+ids).then( 
-            function( json ) {
-               let res = JSON.parse(json);
-               console.log(res);
+           function( x ) {
+               let res = JSON.parse(x.data);
                if(res)
                {
                   res = res.data[ids];
