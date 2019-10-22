@@ -3,7 +3,7 @@
     <f7-navbar title="Admin panel"></f7-navbar>
 
       <!-- More information here -->
-      <f7-block v-if="roles.includes('BOOKMYVENUE_ADMIN')">
+      <f7-block v-if="getRoles().includes('BOOKMYVENUE_ADMIN')">
       <f7-block-title>BookMyVenue Admin</f7-block-title>
         <f7-list>
           <f7-list-item link="/bmvadmin/bookingrequests/" 
@@ -25,7 +25,7 @@
         </f7-list>
       </f7-block>
 
-      <f7-block v-if="roles.includes('ACAD_ADMIN')">
+      <f7-block v-if="getRoles().includes('ACAD_ADMIN')">
       <f7-block-title>Acad Admin</f7-block-title>
         <f7-list>
           <f7-list-item link="/acadadmin/aws/" 
@@ -56,11 +56,11 @@
 
       </f7-block>
 
-      <f7-block v-if="roles.includes('SERVICES_ADMIN')">
+      <f7-block v-if="getRoles().includes('SERVICES_ADMIN')">
       <f7-block-title>Services Admin</f7-block-title>
       </f7-block>
 
-      <f7-block v-if="roles.includes('ADMIN')">
+      <f7-block v-if="getRoles().includes('ADMIN')">
       <f7-block-title>Hippo Admin</f7-block-title>
       </f7-block>
    </f7-page>
@@ -75,13 +75,11 @@ export default {
       alreadyLoggedIn: false,
       notifications: [],
       profile: self.$store.getters.profile,
-      roles: '',
     };
   },
   mounted: function() {
     const self = this;
-    self.roles = self.profile.roles.split(',');
-    console.log('roles ', self.roles);
+    const app = self.$f7;
   },
 }
 </script>

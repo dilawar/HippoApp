@@ -1,10 +1,11 @@
 <template>
    <f7-page ptr ptr:refresh="refreshPage">
+
       <f7-navbar title="Annual Work Seminar" back-link="Back">
       </f7-navbar>
 
       <!-- POPUP ASSIGN -->
-      <f7-popup :opened="openAssignPopup" @popup:close="openAssignPopup = false">
+      <f7-popup :opened="openAssignPopup" @popup:close="openAssignPopup=false">
         <f7-page>
           <f7-navbar title="Assign AWS">
             <f7-nav-right>
@@ -106,7 +107,6 @@
           Assign AWS
         </f7-button>
       </f7-block-title>
-
       <f7-block>
         <f7-list media-list accordion-list
                  no-hairlines
@@ -160,161 +160,212 @@
               <f7-icon icon="fa fa-check fa-fw"></f7-icon>
             </div>
           </f7-list-item>
-          <f7-list-item>
-          </f7-list-item>
         </f7-list>
-
       </f7-block>
+
+      <!-- Upcoming schedule -->
+      <f7-block-title>
+        Computed Temporary Schedule
+        <f7-button small color="yellow" fill 
+                         style="float:right"
+                         @click="computeSchedule()">
+          Compute Schedule
+        </f7-button>
+      </f7-block-title>
+      <f7-block>
+        <div v-for="(awses, date) in schedule" 
+             style="border-top:1px solid lightgray"
+             :key="date">
+          <f7-row>
+            <f7-col> {{awses[0].date|date}}</f7-col>
+            <f7-col v-for="(aws, key) in awses" :key="key" no-gap>
+              {{aws.speaker}}<sup>{{aws.num_aws}}</sup>
+
+              <br />
+              <span style="font-size:xx-small">{{aws.specialization}}
+              <br />
+              Last AWS {{str2Moment(aws['date'], 'YYYY-MM-DD')
+                .diff(str2Moment(aws.last_aws_date, 'YYYY-MM-DD'), 'days')}} ago
+              </span>
+            </f7-col>
+          </f7-row>
+        </div>
+      </f7-block>
+
    </f7-page>
 
 </template>
 
 <script>
-  export default {
-    data() {
+import moment from 'moment';
+export default {
+  data() {
+    const self = this;
+    return {
+      thisAWS: {date:'', speaker:'', venue:'', title:'', abstract:''},
+      upcomingAWS: [],
+      popupTitle: 'Review request',
+      openAssignPopup: false,
+      openEditPopup: false,
+      popupAction: '',
+      resules: [],
+      schedule: {},
+    };
+  },
+  mounted()
+  {
+    const self = this;
+    const app = self.$f7;
+
+    self.fetchUpcomingAws();
+    self.fetchSchedule();
+
+    // Autocomplete.
+    app.autocomplete.create({
+      inputEl : '#autocomplete_aws_speaker',
+      openIn: 'dropdown',
+      //expandInput: true,
+
+      source: function(q, render)
+      {
+        const autocomplete = this;
+        var results = [];
+
+        if(2 >= q.length)
+        {
+          render(results);
+          return;
+        }
+
+        autocomplete.preloaderShow();
+
+        self.promiseWithAuth('search/awsspeaker/'+q)
+          .then( function(x) {
+            let res = JSON.parse(x.data);
+            results = res.map(a=> a.login);
+            autocomplete.preloaderHide();
+            render(results);
+          });
+      },
+      on: {
+        change: function(val) {
+          self.thisAWS.speaker = val[0];
+        },
+      },
+    });
+
+  },
+  methods : {
+    refreshData: function()
+    {
       const self = this;
-      return {
-        thisAWS: {date:'', speaker:'', venue:'', title:'', abstract:''},
-        upcomingAWS: [],
-        popupTitle: 'Review request',
-        openAssignPopup: false,
-        openEditPopup: false,
-        popupAction: '',
-        resules: [],
-      };
     },
-    mounted()
+    refreshPage: function()
+    {
+      const self = this;
+    },
+    fetchUpcomingAws: function() 
     {
       const self = this;
       const app = self.$f7;
-
-      self.fetchUpcomingAws();
-
-      // Autocomplete.
-      app.autocomplete.create({
-        inputEl : '#autocomplete_aws_speaker',
-        openIn: 'dropdown',
-        //expandInput: true,
-
-        source: function(q, render)
-        {
-          const autocomplete = this;
-          var results = [];
-
-          if(2 >= q.length)
+      app.preloader.show();
+      self.promiseWithAuth('/acadadmin/aws/upcoming')
+        .then( function(x) {
+          self.upcomingAWS = JSON.parse(x.data).data;
+          app.preloader.hide();
+        });
+      setTimeout(() => app.preloader.hide(), 3000);
+    },
+    fetchSchedule: function()
+    {
+      const self = this;
+      self.promiseWithAuth('/info/aws_schedule')
+        .then( function(x) {
+          self.schedule = JSON.parse(x.data).data;
+        });
+    },
+    addAWSSchedule: function(date, aws) 
+    {
+      const self = this;
+      self.thisDate = date;
+      if(! aws)
+        self.thisAWS = {date:'', speaker:'', venue:''};
+      else
+        self.thisAWS = aws;
+      self.thisAWS.date = date;
+      self.thisAWS.speaker = '';
+      self.popupTitle = "Add to AWS Schedule";
+      self.popupAction = 'Assign';
+      self.openAssignPopup = true;
+    },
+    editAWSClick: function(aws) 
+    {
+      const self = this;
+      self.thisAWS = aws;
+      self.popupTitle = "Editing AWS";
+      self.popupAction = 'Edit';
+      self.openEditPopup = true;
+    },
+    editThisAWS: function()
+    {
+      const self = this;
+      self.sendRequest('acadadmin/aws/update', self.thisAWS);
+      setTimeout(()=>self.fetchUpcomingAws(), 500);
+    },
+    assignThisAWS: function()
+    {
+      const self = this;
+      const app = self.$f7;
+      console.log('thisAWS', self.thisAWS);
+      self.thisAWS.date = self.dbDate(self.thisAWS.date);
+      app.dialog.preloader('Assigning AWS...');
+      self.promiseWithAuth('/acadadmin/aws/assign', self.thisAWS)
+        .then( function(x) {
+          app.dialog.close();
+          var res = JSON.parse(x.data).data;
+          if(! res.success)
+            self.notify('Failed', res.msg);
+          else
+            self.notify('Success', res.msg);
+        });
+      setTimeout(() => self.fetchUpcomingAws(), 1000);
+    },
+    computeSchedule: function()
+    {
+      const self = this;
+      const app = self.$f7;
+      app.preloader.show();
+      self.promiseWithAuth('acadadmin/reschedule')
+        .then(function(x) {
+          let res = JSON.parse(x.data).data;
+          self.fetchSchedule();
+          app.preloader.hide();
+        });
+      setTimeout(() => app.preloader.hide(), 3000);
+    },
+    cancelAWS: function(aws) 
+    {
+      const self = this;
+      const app = self.$f7;
+      app.dialog.prompt("Please give some reason..."
+        , "Cancelling AWS ..."
+        , function(value) {
+          if( value.length <= 8)
           {
-            render(results);
+            app.dialog.alert("At least 8 char..."
+              , "Reason is too short.", null);
             return;
           }
-
-          autocomplete.preloaderShow();
-
-          self.promiseWithAuth('search/awsspeaker/'+q)
+          aws['reason'] = value;
+          console.log('aws', aws);
+          self.promiseWithAuth('acadadmin/aws/cancel', aws)
             .then( function(x) {
-              let res = JSON.parse(x.data);
-              results = res.map(a=> a.login);
-              autocomplete.preloaderHide();
-              render(results);
+              self.fetchUpcomingAws();
             });
-        },
-        on: {
-          change: function(val) {
-            self.thisAWS.speaker = val[0];
-          },
-        },
-      });
-
+        }, function(ev) {
+          console.log( 'NAH');
+        });
     },
-    methods : {
-      refreshData: function()
-      {
-        const self = this;
-      },
-      refreshPage: function()
-      {
-        const self = this;
-      },
-      fetchUpcomingAws: function() 
-      {
-        const self = this;
-        const app = self.$f7;
-        app.preloader.show();
-        self.promiseWithAuth('/acadadmin/aws/upcoming')
-          .then( function(x) {
-            self.upcomingAWS = JSON.parse(x.data).data;
-            app.preloader.hide();
-          });
-        setTimeout(() => app.preloader.hide(), 3000);
-      },
-      addAWSSchedule: function(date, aws) 
-      {
-        const self = this;
-        self.thisDate = date;
-        if(! aws)
-          self.thisAWS = {date:'', speaker:'', venue:''};
-        else
-          self.thisAWS = aws;
-        self.thisAWS.date = date;
-        self.thisAWS.speaker = '';
-        self.popupTitle = "Add to AWS Schedule";
-        self.popupAction = 'Assign';
-        self.openAssignPopup = true;
-      },
-      editAWSClick: function(aws) 
-      {
-        const self = this;
-        self.thisAWS = aws;
-        self.popupTitle = "Editing AWS";
-        self.popupAction = 'Edit';
-        self.openEditPopup = true;
-      },
-      editThisAWS: function()
-      {
-        const self = this;
-        self.sendRequest('acadadmin/aws/update', self.thisAWS);
-        setTimeout(()=>self.fetchUpcomingAws(), 500);
-      },
-      assignThisAWS: function()
-      {
-        const self = this;
-        const app = self.$f7;
-        console.log('thisAWS', self.thisAWS);
-        self.thisAWS.date = self.dbDate(self.thisAWS.date);
-        app.dialog.preloader('Assigning AWS...');
-        self.promiseWithAuth('/acadadmin/aws/assign', self.thisAWS)
-          .then( function(x) {
-            app.dialog.close();
-            var res = JSON.parse(x.data).data;
-            if(! res.success)
-              self.notify('Failed', res.msg);
-            else
-              self.notify('Success', res.msg);
-          });
-        setTimeout(() => self.fetchUpcomingAws(), 1000);
-      },
-      cancelAWS: function(aws) 
-      {
-        const self = this;
-        const app = self.$f7;
-        app.dialog.prompt("Please give some reason..."
-          , "Cancelling AWS ..."
-          , function(value) {
-            if( value.length <= 8)
-            {
-              app.dialog.alert("At least 8 char..."
-                , "Reason is too short.", null);
-              return;
-            }
-            aws['reason'] = value;
-            console.log('aws', aws);
-            self.promiseWithAuth('acadadmin/aws/cancel', aws)
-              .then( function(x) {
-                self.fetchUpcomingAws();
-              });
-          }, function(ev) {
-            console.log( 'NAH');
-          });
-      },
-    },
-  }
+  },
+}
 </script>
