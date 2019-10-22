@@ -117,7 +117,7 @@
             href="/smartbook/" 
             fab-close
             >
-            <f7-icon ios="f7:add" aurora="f7:add" md="material:add"></f7-icon>
+            <f7-icon icon="fa fa-plus"></f7-icon>
     </f7-fab>
 
     <!-- LOGIN SCREEN  -->
