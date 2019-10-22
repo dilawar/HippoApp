@@ -13,21 +13,24 @@
           </f7-navbar>
 
           <f7-block>
-            <f7-list no-hairlines>
+            <f7-list no-hairlines media-list>
 
-              <f7-list-input :value="thisAWS.date" 
-                     type="date"
-                     label="Date">
+              <f7-list-input :input="false" label="Date">
+                <date-picker lang="en"
+                             slot="input"
+                             v-model="thisAWS.date"
+                             format="YYYY-MM-DD"
+                             type="date">
+                </date-picker>
               </f7-list-input>
 
               <f7-list-input :value="thisAWS.venue" 
-                     label="Venue">
+                             label="Venue" 
+                             readonly
+                             placeholder="Hippo will assign one automatically">
               </f7-list-input>
 
-              <f7-list-input label="Speaker"
-                     type="text"
-                     :input="false"
-                     >
+              <f7-list-input label="Speaker" type="text" :input="false">
                  <input id="autocomplete_aws_speaker"  
                         :value="thisAWS.speaker"
                         @input="thisAWS.speaker = $event.target.value"
@@ -36,9 +39,8 @@
             </f7-list>
             <f7-row>
               <f7-col>
-                <f7-button popup-close raised outline
-                           @click="assignThisAWS()"
-                           > Assign
+                <f7-button popup-close raised @click="assignThisAWS()"> 
+                  Assign
                 </f7-button>
               </f7-col>
             </f7-row>
@@ -98,6 +100,7 @@
       <f7-block-title small>
         Upcoming Annual Work Seminars
         <f7-button small 
+                   raised fill color="yellow"
                    @click="openAssignPopup=true"
                    style="float:right">
           Assign AWS
@@ -171,7 +174,7 @@
     data() {
       const self = this;
       return {
-        thisAWS: [],
+        thisAWS: {date:'', speaker:'', venue:'', title:'', abstract:''},
         upcomingAWS: [],
         popupTitle: 'Review request',
         openAssignPopup: false,
@@ -207,9 +210,9 @@
           autocomplete.preloaderShow();
 
           self.promiseWithAuth('search/awsspeaker/'+q)
-            .then( (x) => {
-              var res = JSON.parse(x.data).data;
-              results = res.map(x=> x.login);
+            .then( function(x) {
+              let res = JSON.parse(x.data);
+              results = res.map(a=> a.login);
               autocomplete.preloaderHide();
               render(results);
             });
@@ -235,13 +238,13 @@
       {
         const self = this;
         const app = self.$f7;
-        app.dialog.preloader("Fetching upcoming AWSs");
+        app.preloader.show();
         self.promiseWithAuth('/acadadmin/aws/upcoming')
           .then( function(x) {
             self.upcomingAWS = JSON.parse(x.data).data;
-            app.dialog.close();
+            app.preloader.hide();
           });
-        setTimeout(() => app.dialog.close(), 5000);
+        setTimeout(() => app.preloader.hide(), 3000);
       },
       addAWSSchedule: function(date, aws) 
       {
@@ -275,15 +278,19 @@
       {
         const self = this;
         const app = self.$f7;
-        app.dialog.preloader();
+        console.log('thisAWS', self.thisAWS);
+        self.thisAWS.date = self.dbDate(self.thisAWS.date);
+        app.dialog.preloader('Assigning AWS...');
         self.promiseWithAuth('/acadadmin/aws/assign', self.thisAWS)
           .then( function(x) {
             app.dialog.close();
             var res = JSON.parse(x.data).data;
             if(! res.success)
-              navigator.notification.alert(res.msg, null, 'Failed...', 'OK');
+              self.notify('Failed', res.msg);
+            else
+              self.notify('Success', res.msg);
           });
-        setTimeout(() => self.fetchUpcomingAws(), 500);
+        setTimeout(() => self.fetchUpcomingAws(), 1000);
       },
       cancelAWS: function(aws) 
       {

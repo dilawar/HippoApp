@@ -353,7 +353,7 @@ Vue.mixin({
       },  
       notify: function(header, msg, timeout=3000) 
       {
-         const app = self.$f7;
+         const app = this.$f7;
          app.notification.create({
             title: header,
             subtitle: msg,
