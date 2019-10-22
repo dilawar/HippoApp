@@ -45,35 +45,34 @@
 
       </f7-page>
     </f7-popup>
-    <f7-block>
-      <f7-row>
-        <f7-col>
-          <input id="autocomplete_hippo_login" 
-                    type="input" 
-                    placeholder="Hippo login"
-            />
-        </f7-col>
-        <f7-col>
-          <f7-button @click="addToAWSRoster(thisSpeaker)">
-            Add To Roster
-          </f7-button>
-        </f7-col>
-      </f7-row>
 
+    <f7-block>
       <f7-block-title small> 
         Total {{speakers.length}} speakers.
       </f7-block-title>
       <f7-list media-list
                accordion-list
                no-hairlines
-               class="aws-roster"
-               >
+               class="aws-roster">
+
+        <f7-list-input :input="false" label="Type login to add to roster">
+          <input id="autocomplete_hippo_login" 
+                 slot="input"
+                 placeholder="Type login to add to roster"/>
+        </f7-list-input>
+
         <f7-list-item v-for="(speaker, key) in speakers"
                       :key="key"
                       accordion-item
                       >
-          <div slot="subtitle">{{speaker|name}} ({{speaker.login}})</div>
-          <div slot="footer">{{speaker.pi_or_host}}</div>
+          <div slot="title">{{speaker|name}} ({{speaker.login}})</div>
+          <div slot="text">{{speaker.pi_or_host}} | {{speaker.specialization}} </div>
+          <div slot="after">{{speaker.num_aws}} </div>
+          <div slot="header">Last AWS {{speaker.days_since_aws}} days ago</div>
+          <f7-icon slot="media" 
+               v-if="speaker.days_since_aws >= 730" 
+               icon="fa fa-bolt fa-2x">
+          </f7-icon>
 
           <!-- accordion content -->
           <f7-accordion-content>
@@ -116,7 +115,6 @@ export default {
     app.autocomplete.create({
       inputEl : '#autocomplete_hippo_login',
       openIn: 'dropdown',
-      //expandInput: true,
 
       source: function(q, render)
       {
@@ -142,6 +140,11 @@ export default {
       on: {
         change: function(val) {
           self.thisSpeaker.login = val[0];
+          app.dialog.confirm("Add to AWS roster?", self.thisSpeaker.login
+            , function(v) {
+              console.log('Adding ' + val[0] + ' to roster');
+              self.addToAWSRoster();
+            }, null);
         },
       },
     });
@@ -174,9 +177,12 @@ export default {
           var res = JSON.parse(x.data).data;
           app.dialog.close();
           if(! res.success)
-            navigator.notifications.alert(res.msg, null, "Failed");
+            self.notify('Failed', res.msg);
           else
+          {
+            self.notify('Success', res.msg);
             thisSpeaker.login = '';
+          }
         });
       setTimeout(()=> app.dialog.close(), 5000);
     },
@@ -195,7 +201,14 @@ export default {
             console.log("Removing user " + login);
             self.promiseWithAuth('acadadmin/awsroster/remove/'+login,{reason:value})
               .then( function(x) {
-                self.speakers = self.speakers.filter(a => a.login !== login);
+                let res = JSON.parse(x.data).data;
+                if(res.success)
+                {
+                  self.speakers = self.speakers.filter(a => a.login !== login);
+                  self.notify('Success', res.msg);
+                }
+                else
+                  self.notify('Failed', res.msg);
               });
         });
     },

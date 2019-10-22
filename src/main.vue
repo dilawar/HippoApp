@@ -4,7 +4,7 @@
     <f7-panel left cover>
        <f7-view name="left" url="/userpanel/" ></f7-view>
     </f7-panel>
-    <f7-panel right cover>
+    <f7-panel right cover @panel:open="getRoles()">
        <f7-view name="right" url="/adminpanel/" ></f7-view>
     </f7-panel>
 
@@ -158,6 +158,8 @@ export default {
   },
   mounted: function() {
     const self = this;
+  },
+  methods: {
   },
 }
 </script>

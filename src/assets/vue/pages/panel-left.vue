@@ -84,7 +84,6 @@
                <f7-icon slot="media" icon="fa fa-archive fa-2x"></f7-icon>
             </f7-list-item>
 
-
          </f7-list>
 
    </f7-page>

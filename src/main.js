@@ -165,7 +165,7 @@ Vue.mixin({
          const self = this;
          return {
             'HIPPO-API-KEY': self.$localStorage.get('HIPPO-API-KEY'), 
-            'login': self.$localStorage.get('HIPPO-LOGIN')
+            'login': self.$store.getters.login
          };
       },
       getLogin: function() {
@@ -288,23 +288,14 @@ Vue.mixin({
       fetchProfile: function() {
          const self = this;
          const app = self.$f7;
-         self.fetchAndStore('/me/profile', 'me.profile');
+         self.promiseWithAuth('/me/profile').then(function(x) {
+            self.$store.commit('PROFILE', JSON.parse(x.data).data);
+         });
       },
       getRoles: function() {
          const self = this;
-         var profile = self.loadStore('me.profile');
-         if(! profile)
-            return '';
-
-         if(! ('roles' in profile))
-         {
-            setTimeout(()=> {
-               self.fetchProfile();
-               profile = self.loadStore('me.profile');
-               return profile.roles.split(',');
-            }, 1000);
-         }
-         return profile.roles.split(',');
+         //console.log('xxx roles ...', self.$store.state.profile());
+         return self.$store.getters.profile.roles.split(',');
       },
       filterSchema: function(schema, toremove) 
       {
@@ -357,6 +348,17 @@ Vue.mixin({
          }
          return arr; 
       },  
+      notify: function(header, msg, timeout=3000) 
+      {
+         const app = this.$f7;
+         app.notification.create({
+            title: header,
+            subtitle: msg,
+            closeTimeout: timeout,
+            closeOnClick: true,
+            swipeToClose: true,
+         }).open();
+      },
       deleteComment: function(id) {
          const self = this;
          self.sendRequest('/comment/delete/'+id);
@@ -375,15 +377,23 @@ Vue.mixin({
          const app = self.$f7;
          app.preloader.hide();
       },
+      signOut: function() {
+         console.log('Signing out');
+         const self = this;
+         self.$localStorage.set('HIPPO-API-KEY', '');
+         self.$localStorage.set('HIPPO-LOGIN', '');
+         self.$f7router.refreshPage();
+      },
       isAdmin: function() 
       {
          const self = this;
          if(! self.isUserAuthenticated())
             return false;
-         var roles = self.loadStore('me.profile').roles;
+         let roles = self.$store.getters.profile.roles;
+         console.log('is admin ', roles);
          if(roles)
             return roles.includes('ADMIN');
-         return false;
+         return '';
       },
       _get: function(obj, key, o=null) {
          if(! obj)
