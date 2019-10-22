@@ -3,7 +3,7 @@
     <f7-navbar>
       <f7-nav-left>
         <!-- LEFT PANEL -->
-        <f7-link v-if="alreadyLoggedIn" 
+        <f7-link v-if="isUserAuthenticated()" 
                  panel-open="left" 
                  icon="fa fa-bars fw">
         </f7-link>
@@ -11,8 +11,8 @@
 
       <f7-nav-title>NCBS Hippo</f7-nav-title>
       <f7-nav-right>
-        <f7-link v-if="alreadyLoggedIn"
-                 icon="fa fa-sign-out-alt" @click="signOut" 
+        <f7-link v-if="isUserAuthenticated()"
+                 icon="fa fa-sign-out" @click="signOut" 
                  panel-close
                  header="Logout"
                  slot="media">
@@ -27,7 +27,7 @@
         </f7-link>
 
         <!-- RIGHT PANEL -->
-        <f7-link v-if="amIAnAdmin" 
+        <f7-link v-if="isAdmin()" 
                  panel-open="right" 
                  icon="fa fa-bars fa-fw"
                  color="red">
@@ -44,16 +44,7 @@
           <f7-icon slot="media" icon="fa fa-bus fa-2x"></f7-icon>
         </f7-list-item>
 
-        <!--
-        <f7-list-item v-if="alreadyLoggedIn" 
-                      link="/search/" 
-                      title="Search" 
-                      footer="Limited information from Interanet search"
-                      panel-close>
-          <f7-icon slot="media" icon="fa fa-search fa-2x"></f7-icon>
-        </f7-list-item>
-        -->
-        <f7-list-item v-if="alreadyLoggedIn"
+        <f7-list-item v-if="isUserAuthenticated()"
                       link="/inventory/" 
                       title="Inventory" 
                       footer="Search and borrow"
@@ -79,7 +70,7 @@
       </f7-list>
     </f7-block>
 
-    <f7-block v-if="! alreadyLoggedIn">
+    <f7-block v-if="! isUserAuthenticated()">
       <f7-list media-list no-hairlines>
         <f7-list-item>
           <div slot="after">
@@ -109,7 +100,7 @@
     <f7-block v-else></f7-block>
 
     <!-- FAB Right Bottom (Blue) -->
-    <f7-fab v-if="alreadyLoggedIn" 
+    <f7-fab v-if="isUserAuthenticated()" 
             text="BOOK"
             position="right-bottom"
             slot="fixed" 
@@ -168,8 +159,6 @@
 export default {
   data() {
     return {
-      alreadyLoggedIn: false,
-      amIAnAdmin: false,
       isHippoAlive: false,
       username: '',
       password: '',
@@ -207,10 +196,6 @@ export default {
         mainView.router.back();
       }
     }, false);
-
-    self.alreadyLoggedIn = self.isUserAuthenticated();
-    if(self.alreadyLoggedIn)
-      self.amIAnAdmin = self.isAdmin();
 
     // Check if hippo is alive
     self.promiseWithAuth('status').then(function(x) {
@@ -274,13 +259,10 @@ export default {
             self.$localStorage.set('HIPPO-API-KEY', res.data.apikey);
             self.$localStorage.set('GOOGLE-MAP-API-KEY', res.data.gmapapikey);
             self.$localStorage.set('HIPPO-LOGIN', self.username);
-            self.alreadyLoggedIn = true;
             self.postWithPromise('me/profile')
               .then(function(x) {
                 self.profile = JSON.parse(x.data).data;
                 self.saveStore('me.profile', self.profile);
-                self.amIAnAdmin = self.profile.roles.includes('_ADMIN');
-                console.log('Admin', self.amIAnAdmin);
               });
 
             self.$f7router.refreshPage();
@@ -290,14 +272,6 @@ export default {
           app.dialog.close();
         });
       setTimeout(() => app.dialog.close(), 2000);
-    },
-    signOut: function() {
-      const self = this;
-      console.log( "Signing out.");
-      self.$localStorage.set('HIPPO-API-KEY', '');
-      self.$localStorage.set('HIPPO-LOGIN', '');
-      self.alreadyLoggedIn = false;
-      self.$f7router.refreshPage();
     },
     youAreNotLoggedIn: function() {
       const app = this.$f7;

@@ -1,9 +1,8 @@
 <template>
-   <f7-page @page:init="refreshData" @page:refresh="refreshData">
-      <f7-navbar title="Admin panel" back-link="Back"></f7-navbar>
+  <f7-page>
+    <f7-navbar title="Admin panel"></f7-navbar>
 
       <!-- More information here -->
-
       <f7-block v-if="roles.includes('BOOKMYVENUE_ADMIN')">
       <f7-block-title>BookMyVenue Admin</f7-block-title>
         <f7-list>
@@ -81,17 +80,23 @@
         roles: '',
       };
     },
-    mounted()
-    {
+    mounted: function() {
+      console.log('Panel is opening');
       const self = this;
-      self.postWithPromise('/me/profile').then(function(x) {
-        self.profile = JSON.parse(x.data).data;
-        self.roles = self.profile.roles.split(',');
-      });
+      self.fetchData();
     },
     methods : {
       refreshData: function(ev, done) {
         const self = this;
+      },
+      fetchData()
+      {
+        const self = this;
+        console.log('Admin panel beforein');
+        self.postWithPromise('/me/profile').then(function(x) {
+          self.profile = JSON.parse(x.data).data;
+          self.roles = self.profile.roles.split(',');
+        });
       },
     },
   }

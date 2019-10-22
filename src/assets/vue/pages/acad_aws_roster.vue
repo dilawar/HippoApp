@@ -174,9 +174,12 @@ export default {
           var res = JSON.parse(x.data).data;
           app.dialog.close();
           if(! res.success)
-            navigator.notifications.alert(res.msg, null, "Failed");
+            self.notify('Failed', res.msg);
           else
+          {
+            self.notify('Success', res.msg);
             thisSpeaker.login = '';
+          }
         });
       setTimeout(()=> app.dialog.close(), 5000);
     },
@@ -195,7 +198,14 @@ export default {
             console.log("Removing user " + login);
             self.promiseWithAuth('acadadmin/awsroster/remove/'+login,{reason:value})
               .then( function(x) {
-                self.speakers = self.speakers.filter(a => a.login !== login);
+                let res = JSON.parse(x.data).data;
+                if(res.success)
+                {
+                  self.speakers = self.speakers.filter(a => a.login !== login);
+                  self.notify('Success', res.msg);
+                }
+                else
+                  self.notify('Failed', res.msg);
               });
         });
     },

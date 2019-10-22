@@ -15,10 +15,13 @@
           <f7-block>
             <f7-list no-hairlines>
 
-              <f7-list-input :value="thisAWS.date" label="Date">
+              <f7-list-input :value="thisAWS.date" 
+                     type="date"
+                     label="Date">
               </f7-list-input>
 
-              <f7-list-input :value="thisAWS.venue" label="Venue">
+              <f7-list-input :value="thisAWS.venue" 
+                     label="Venue">
               </f7-list-input>
 
               <f7-list-input label="Speaker"
@@ -92,15 +95,25 @@
       </f7-popup>
 
 
-      <f7-block-title small>Upcoming Annual Work Seminars</f7-block-title>
-      <f7-block>
+      <f7-block-title small>
+        Upcoming Annual Work Seminars
+        <f7-button small 
+                   @click="openAssignPopup=true"
+                   style="float:right">
+          Assign AWS
+        </f7-button>
+      </f7-block-title>
 
+      <f7-block>
         <f7-list media-list accordion-list
+                 no-hairlines
                  v-for="(AWSes, date) in upcomingAWS"
                  :key="'aws'+date"
                  >
 
-          <f7-block-title>{{date | date }}, {{venueInfo(AWSes[0].venue)}} </f7-block-title>
+          <f7-block-title style="color:black">
+            {{date | date }}, {{venueInfo(AWSes[0].venue)}} 
+          </f7-block-title>
           <f7-list-item v-if="AWSes.length < 3">
             <div slot="title" text-color="gray">Some slots are empty ...</div>
             <f7-button @click="addAWSSchedule(date, AWSes[0])"
@@ -138,11 +151,13 @@
               </f7-block>
             </f7-accordion-content>
             <div slot="media" v-if="aws.acknowledged==='NO'">
-              <f7-icon fa="question-circle-o fa-2x"></f7-icon>
+              <f7-icon icon="fa fa-question fa-2x"></f7-icon>
             </div>
             <div slot="media" v-else>
-              <f7-icon fa="check fa-fw"></f7-icon>
+              <f7-icon icon="fa fa-check fa-fw"></f7-icon>
             </div>
+          </f7-list-item>
+          <f7-list-item>
           </f7-list-item>
         </f7-list>
 

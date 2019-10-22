@@ -287,19 +287,18 @@ Vue.mixin({
       },
       getRoles: function() {
          const self = this;
-         var profile = self.loadStore('me.profile');
-         if(! profile)
-            return '';
+         console.log('Getting roles...');
+         self.profile = self.loadStore('me.profile');
+         if(! self.profile)
+            self.fetchProfile();
 
-         if(! ('roles' in profile))
+         if(! ('roles' in self.profile))
          {
-            setTimeout(()=> {
-               self.fetchProfile();
-               profile = self.loadStore('me.profile');
-               return profile.roles.split(',');
-            }, 1000);
+            self.fetchProfile();
+            self.profile = self.loadStore('me.profile');
+            return self.profile.roles.split(',');
          }
-         return profile.roles.split(',');
+         return self.profile.roles.split(',');
       },
       filterSchema: function(schema, toremove) 
       {
@@ -352,6 +351,17 @@ Vue.mixin({
          }
          return arr; 
       },  
+      notify: function(header, msg, timeout=3000) 
+      {
+         const app = self.$f7;
+         app.notification.create({
+            title: header,
+            subtitle: msg,
+            closeTimeout: timeout,
+            closeOnClick: true,
+            swipeToClose: true,
+         }).open();
+      },
       deleteComment: function(id) {
          const self = this;
          self.sendRequest('/comment/delete/'+id);
@@ -369,6 +379,15 @@ Vue.mixin({
          const self = this;
          const app = self.$f7;
          app.preloader.hide();
+      },
+      signOut: function() {
+         console.log('Signing out');
+         const self = this;
+         self.$localStorage.set('HIPPO-API-KEY', '');
+         self.$localStorage.set('HIPPO-LOGIN', '');
+         self.alreadyLoggedIn = false;
+         //self.$f7router.navigate('/', {reloadAll:true});
+         self.$f7router.refreshPage();
       },
       isAdmin: function() 
       {
