@@ -209,6 +209,11 @@ Vue.mixin({
       fetchAndStore: function(endpoint, key) {
          const self = this;
          const app = self.$f7;
+         if(! isUserAuthenticated())
+         {
+            self.$localStorage.set(key, '{}');
+            return '';
+         }
          app.request.promise.post(self.$store.state.api+'/'+endpoint
             , self.apiPostData() )
             .then( function(x) {
