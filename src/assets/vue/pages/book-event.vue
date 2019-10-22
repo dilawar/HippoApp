@@ -454,7 +454,6 @@ export default {
               , closeOnClick: true
               , closeTimeout: 5000,
             }).open();
-
             // Go back and refresh previous page. The states has changed and we
             // must fetch updated data.
             self.$f7router.back({force:true, ignoreCache:true});

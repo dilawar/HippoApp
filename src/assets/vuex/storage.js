@@ -9,8 +9,8 @@ export default new Vuex.Store({
    state: {
       user: '',
       alreadyLoggedIn: false,
-      //api : 'https://ncbs.res.in/hippo/api',
-      api : 'http://172.16.223.30/hippo/api',
+      api : 'https://ncbs.res.in/hippo/api',
+      //api : 'http://172.16.223.30/hippo/api',
       key : '',
       tobook: null,
       OSM: {
