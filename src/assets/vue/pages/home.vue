@@ -256,26 +256,24 @@ export default {
 
           if( res.status =='ok' && res.data.apikey != '')
           {
-            self.$localStorage.set('HIPPO-API-KEY', res.data.apikey);
-            self.$localStorage.set('GOOGLE-MAP-API-KEY', res.data.gmapapikey);
-            self.$localStorage.set('HIPPO-LOGIN', self.username);
+            // This goes in local store. Persistent till user logged out.
+            self.$store.commit('HIPPO_API_KEY', res.data.apikey);
+
+            // Store in vuex
+            self.$store.commit('GOOGLE_MAP_API_KEY', res.data.gmapapikey);
+            self.$store.commit('USER_LOGGED', self.username);
+
             self.postWithPromise('me/profile')
               .then(function(x) {
-                self.profile = JSON.parse(x.data).data;
-                self.saveStore('me.profile', self.profile);
+                self.$store.commit('PROFILE', JSON.parse(x.data).data);
               });
-
             self.$f7router.refreshPage();
           }
           else
             app.dialog.alert("Failed to login. Try again.", "Error");
           app.dialog.close();
         });
-      setTimeout(() => app.dialog.close(), 2000);
-    },
-    youAreNotLoggedIn: function() {
-      const app = this.$f7;
-      app.dialog.alert("Access denied. Login first.", "Prohibited");
+      setTimeout(()=>app.dialog.close(), 2000);
     },
     shutdown: function() {
       navigator.app.exitApp();

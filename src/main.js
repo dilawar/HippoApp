@@ -165,7 +165,7 @@ Vue.mixin({
          const self = this;
          return {
             'HIPPO-API-KEY': self.$localStorage.get('HIPPO-API-KEY'), 
-            'login': self.$localStorage.get('HIPPO-LOGIN')
+            'login': self.$store.getters.login
          };
       },
       getLogin: function() {
@@ -283,22 +283,14 @@ Vue.mixin({
       fetchProfile: function() {
          const self = this;
          const app = self.$f7;
-         self.fetchAndStore('/me/profile', 'me.profile');
+         self.promiseWithAuth('/me/profile').then(function(x) {
+            self.$store.commit('PROFILE', JSON.parse(x.data).data);
+         });
       },
       getRoles: function() {
          const self = this;
-         console.log('Getting roles...');
-         self.profile = self.loadStore('me.profile');
-         if(! self.profile)
-            self.fetchProfile();
-
-         if(! ('roles' in self.profile))
-         {
-            self.fetchProfile();
-            self.profile = self.loadStore('me.profile');
-            return self.profile.roles.split(',');
-         }
-         return self.profile.roles.split(',');
+         //console.log('xxx roles ...', self.$store.state.profile());
+         return self.$store.getters.profile.roles.split(',');
       },
       filterSchema: function(schema, toremove) 
       {
@@ -385,8 +377,6 @@ Vue.mixin({
          const self = this;
          self.$localStorage.set('HIPPO-API-KEY', '');
          self.$localStorage.set('HIPPO-LOGIN', '');
-         self.alreadyLoggedIn = false;
-         //self.$f7router.navigate('/', {reloadAll:true});
          self.$f7router.refreshPage();
       },
       isAdmin: function() 
@@ -394,10 +384,11 @@ Vue.mixin({
          const self = this;
          if(! self.isUserAuthenticated())
             return false;
-         var roles = self.loadStore('me.profile').roles;
+         let roles = self.$store.getters.profile.roles;
+         console.log('is admin ', roles);
          if(roles)
             return roles.includes('ADMIN');
-         return false;
+         return '';
       },
       _get: function(obj, key, o=null) {
          if(! obj)

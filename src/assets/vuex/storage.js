@@ -7,12 +7,14 @@ let osmAttr = '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStr
 
 export default new Vuex.Store({
    state: {
-      user: '',
+      user: localStorage.getItem('HIPPO-LOGIN'),
       alreadyLoggedIn: false,
       //api : 'https://ncbs.res.in/hippo/api',
       api : 'http://172.16.223.30/hippo/api',
-      key : '',
+      key : localStorage.getItem('HIPPO-API-KEY'),
+      apiKeyGMap: '',
       tobook: null,
+      profile: {},
       OSM: {
          tileProviders: [ 
             {
@@ -42,27 +44,38 @@ export default new Vuex.Store({
          venueIcon: L.divIcon( {className: 'fa fa-map-marker fa-2x' }),
       },
    },
-   actions: {
-      userLogged ({commit}, user) {
-         commit('USER_LOGGED', user)
+   getters: {
+      profile: state => {
+         return state.profile;
       },
-      keyLogger ( {commit}, key ) {
-         commit('HIPPO_API_KEY', key)
+      roles: state => {
+         return state.profile.roles.split(',');
       },
-      addBookingData( {commit}, data){
-         commit('ADD_BOOKING_DATA', data)
+      login: state => {
+         return state.user;
       },
    },
    mutations: {
       USER_LOGGED (state, user) {
          state.user = user;
          state.alreadyLoggedIn = true;
+         localStorage.setItem('HIPPO-LOGIN', user);
       },
       HIPPO_API_KEY (state, key) {
          state.key = key;
+         localStorage.setItem('HIPPO-API-KEY', key);
       },
       ADD_BOOKING_DATA(state, data) {
          state.tobook = data;
-      }
+      },
+      ROLES(state, roles) {
+         state.roles = roles;
+      },
+      PROFILE(state, data) {
+         state.profile = data;
+      },
+      GOOGLE_MAP_API_KEY(state, key) {
+         state.apiKeyGMap = key;
+      },
    },
 });

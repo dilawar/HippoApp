@@ -63,41 +63,32 @@
       <f7-block v-if="roles.includes('ADMIN')">
       <f7-block-title>Hippo Admin</f7-block-title>
       </f7-block>
-
-
    </f7-page>
 </template>
 
 <script>
-  export default {
-    data() {
+export default {
+  data() {
+    const self = this;
+    return {
+      username: 'Guest',
+      alreadyLoggedIn: false,
+      notifications: [],
+      profile: self.$store.getters.profile,
+      roles: '',
+    };
+  },
+  mounted: function() {
+    const self = this;
+    if('roles' in self.profile)
+      self.roles = self.profile.roles.split(',');
+    else
+      self.roles = '';
+  },
+  methods : {
+    refreshData: function(ev, done) {
       const self = this;
-      return {
-        username: 'Guest',
-        alreadyLoggedIn: false,
-        profile: { 'roles':[] },
-        notifications: [],
-        roles: '',
-      };
     },
-    mounted: function() {
-      console.log('Panel is opening');
-      const self = this;
-      self.fetchData();
-    },
-    methods : {
-      refreshData: function(ev, done) {
-        const self = this;
-      },
-      fetchData()
-      {
-        const self = this;
-        console.log('Admin panel beforein');
-        self.postWithPromise('/me/profile').then(function(x) {
-          self.profile = JSON.parse(x.data).data;
-          self.roles = self.profile.roles.split(',');
-        });
-      },
-    },
-  }
+  },
+}
 </script>
