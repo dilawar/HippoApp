@@ -94,7 +94,12 @@
             <f7-col>
             </f7-col>
             <f7-col>
-              <f7-button raised fill login-screen-open=".hippo-login-screen">Login</f7-button>
+              <f7-button raised 
+                         fill 
+                         :disabled="! isHippoAlive"
+                         login-screen-open=".hippo-login-screen">
+                {{isHippoAlive?'Login':'Pinging Hippo server...'}}
+              </f7-button>
             </f7-col>
           </f7-row>
         </f7-list-item>
@@ -169,6 +174,7 @@ export default {
       username: '',
       password: '',
       flashes: { a: {title:'a'}, b: {title:'b'}},
+      profile: { roles:'' },
     };
   },
   mounted()
@@ -251,7 +257,18 @@ export default {
       app.request.promise.post( self.$store.state.api+"/authenticate"
         , {login:self.username, password: btoa(self.password)})
         .then(function(x) {
-          var res = JSON.parse(x.data);
+          try {
+            var res = JSON.parse(x.data);
+          } catch (e) {
+            /* handle error */
+              app.notification.create({title:'Invalid response from server'
+                , subtitle: 'Is your username/password correct?'
+                , closeTimeout: 5000
+                , closeOnClick: true, closeButton: true
+              }).open();
+            return;
+          }
+
           if( res.status =='ok' && res.data.apikey != '')
           {
             self.$localStorage.set('HIPPO-API-KEY', res.data.apikey);
@@ -259,7 +276,7 @@ export default {
             self.$localStorage.set('HIPPO-LOGIN', self.username);
             self.alreadyLoggedIn = true;
             self.postWithPromise('me/profile')
-              .then( function(x) {
+              .then(function(x) {
                 self.profile = JSON.parse(x.data).data;
                 self.saveStore('me.profile', self.profile);
                 self.amIAnAdmin = self.profile.roles.includes('_ADMIN');
