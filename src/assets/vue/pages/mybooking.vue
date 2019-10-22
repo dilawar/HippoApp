@@ -7,7 +7,7 @@
 
   <f7-block v-if="Object.keys(requestGroups).length>0">
     <f7-block-title>
-      <f7-icon icon="far fa-bell fa-2x"></f7-icon>
+      <f7-icon icon="fa fa-bell-o fa-2x"></f7-icon>
       Pending booking requests...</f7-block-title>
     <f7-list media-list>
       <f7-list-item accordion-item
@@ -63,7 +63,7 @@
   <!-- THESE ARE CONFIRMED EVENTS -->
   <f7-block v-if="Object.keys(eventGroups).length > 0">
     <f7-block-title>
-      <f7-icon icon="far fa-thumbs-up fa-2x"></f7-icon>
+      <f7-icon icon="fa fa-thumbs-up-o fa-2x"></f7-icon>
       Confirmed bookings...
     </f7-block-title>
     <f7-list media-list>

@@ -70,7 +70,7 @@ import Framework7Icons from 'framework7-icons/css/framework7-icons.css'
 import MaterialIcons from 'material-design-icons/iconfont/material-icons.css'
 
 // Import Fontawesome Theme Styles
-import FontAwesome from '@fortawesome/fontawesome-free/css/all.css'
+import FontAwesome from 'font-awesome/css/font-awesome.css'
 
 // Import App Custom Styles
 import AppStyles from './assets/sass/main.scss'

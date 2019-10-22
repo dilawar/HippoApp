@@ -13,7 +13,7 @@
                           panel-close
                           >
                <span slot="media" class="fa-stack" v-if="notifications.length>=0">
-                  <i class="far fa-bell fa-stack-2x"></i>
+                  <i class="fa fa-bell-o fa-stack-2x"></i>
                   <i class="fa fa-stack circle-red">{{notifications.length}}</i>
                </span>
             </f7-list-item>
