@@ -1,10 +1,11 @@
 <template>
    <f7-page ptr ptr:refresh="refreshPage">
+
       <f7-navbar title="Annual Work Seminar" back-link="Back">
       </f7-navbar>
 
       <!-- POPUP ASSIGN -->
-      <f7-popup :opened="openAssignPopup" @popup:close="openAssignPopup = false">
+      <f7-popup :opened="openAssignPopup" @popup:close="openAssignPopup=false">
         <f7-page>
           <f7-navbar title="Assign AWS">
             <f7-nav-right>
@@ -106,7 +107,6 @@
           Assign AWS
         </f7-button>
       </f7-block-title>
-
       <f7-block>
         <f7-list media-list accordion-list
                  no-hairlines
@@ -160,11 +160,24 @@
               <f7-icon icon="fa fa-check fa-fw"></f7-icon>
             </div>
           </f7-list-item>
-          <f7-list-item>
-          </f7-list-item>
         </f7-list>
-
       </f7-block>
+
+      <!-- Upcoming schedule -->
+      <f7-block-title>Computated schedule</f7-block-title>
+      <f7-block>
+        <div v-for="(awses, date) in schedule" 
+             style="border-top:1px solid lightgray"
+             :key="date">
+          <f7-row>
+            <f7-col> {{awses[0].date|date}}</f7-col>
+            <f7-col v-for="(aws, key) in awses" :key="key" no-gap>
+              {{aws.speaker}}
+            </f7-col>
+          </f7-row>
+        </div>
+      </f7-block>
+
    </f7-page>
 
 </template>
@@ -181,6 +194,7 @@
         openEditPopup: false,
         popupAction: '',
         resules: [],
+        schedule: {},
       };
     },
     mounted()
@@ -189,6 +203,7 @@
       const app = self.$f7;
 
       self.fetchUpcomingAws();
+      self.fetchSchedule();
 
       // Autocomplete.
       app.autocomplete.create({
@@ -245,6 +260,14 @@
             app.preloader.hide();
           });
         setTimeout(() => app.preloader.hide(), 3000);
+      },
+      fetchSchedule: function()
+      {
+        const self = this;
+        self.promiseWithAuth('/info/aws_schedule')
+          .then( function(x) {
+            self.schedule = JSON.parse(x.data).data;
+          });
       },
       addAWSSchedule: function(date, aws) 
       {
