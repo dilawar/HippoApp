@@ -176,7 +176,7 @@ Vue.mixin({
          // If API key is found then user is logged in.
          const self = this;
          const apiKey = self.$localStorage.get('HIPPO-API-KEY');
-         if( apiKey && apiKey.trim().length > 0 )
+         if(apiKey && apiKey.trim().length > 1)
             return true;
          return false;
       },
@@ -344,7 +344,7 @@ Vue.mixin({
          // for available properties.
          let data = self.loadStore('notifications');
          const nots = data.filter( x => x.is_read == false);
-         if( nots.length > 0)
+         if(nots.length > 0)
             cordova.plugins.notification.local.schedule(nots);
       },
       removeFromArray: function(arr) {
