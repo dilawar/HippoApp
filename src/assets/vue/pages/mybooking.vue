@@ -1,21 +1,21 @@
 <template>
-  <f7-page ptr @ptr:refresh="refreshMyBooking" 
-           @page:init="fetchMyBooking"
-           @page:refresh="fetchMyBooking">
+  <f7-page>
   <f7-navbar title="My Bookings" back-link="Back">
   </f7-navbar>
 
   <f7-block v-if="Object.keys(requestGroups).length>0">
     <f7-block-title>
       <f7-icon icon="fa fa-bell-o fa-2x"></f7-icon>
-      Pending booking requests...</f7-block-title>
+      Pending booking requests...
+    </f7-block-title>
+
     <f7-list media-list>
       <f7-list-item accordion-item
                     v-for="(requests, gid, index) in requestGroups" 
                     :title="requests[0].title"
                     :key="gid"
                     :header="requests[0].venue">
-        <font slot="after" color="blue">{{requests.length}} pending</font>
+        <font slot="header" color="blue">{{requests.length}} pending</font>
         <f7-accordion-content>
           <f7-block inset style="background-color:lightyellow">
             <div>{{requests[0].title}}</div>
@@ -57,7 +57,7 @@
     </f7-list>
   </f7-block>
   <f7-block v-else>
-    No booking found.
+    <f7-block-title small> No pending request found.  </f7-block-title>
   </f7-block>
 
   <!-- THESE ARE CONFIRMED EVENTS -->
@@ -71,8 +71,9 @@
                     v-for="(events, gid, index) in eventGroups" 
                     :title="events[0].title"
                     :footer="events[0].venue" 
+                    @click="popupEditGroupEvent(events[0])"
                     :key="gid">
-        <div slot="after">{{events.length}} confirmed</div>
+        <div slot="header">{{events.length}} confirmed</div>
         <f7-accordion-content>
           <f7-list media-list>
             <!-- DELETE THE WHOLE GROUP -->
@@ -122,7 +123,7 @@
     <f7-list media-list>
       <f7-list-item v-for="(talk, key) in myTalks"
                     :key="key"
-                    :link="'/updatetalk/'+talk.id+'/'">
+                    @click="$f7router.navigate('/updatetalk/'+talk.id+'/')">
         <div slot="title">{{talk.class}} by {{talk.speaker}}</div>
         <div slot="text">{{talk.title}}</div>
 
@@ -138,7 +139,57 @@
       <f7-list-item></f7-list-item>
     </f7-list>
   </f7-block>
-  </f7-page>
+
+  <!-- POPUPS -->
+  <!-- POPUP  -->
+  <f7-popup :opened="popupEvent" @popup:close="popupEvent = false">
+    <f7-page>
+      <f7-navbar title="Update event(s)">
+        <f7-nav-right>
+          <f7-link popup-close>Close</f7-link>
+        </f7-nav-right>
+      </f7-navbar>
+  
+      <f7-block>
+
+        <f7-list media-list>
+
+          <f7-list-input label="Class" 
+                         :value="thisEvent.class"
+                         type="select"
+                         @input="thisEvent.class=$event.target.value">
+            <option v-for="(cls, key) in classes" :key="cls" :value="cls">{{cls}}</option>
+          </f7-list-input>
+
+          <f7-list-input :value="thisEvent.title" 
+                 type="textarea"
+                 label="Title"
+                 @input="thisEvent.title=$event.target.value">
+          </f7-list-input>
+
+          <f7-list-input :value="thisEvent.description" 
+                 label="Description"
+                 type="texteditor"
+                 @input="thisEvent.description=$event.target.value">
+          </f7-list-input>
+
+          <f7-list-input label="Add to NCBS Calendar" 
+                         :value="thisEvent.is_public_event"
+                         type="select"
+                         @input="thisEvent.is_public_event=$event.target.value">
+            <option v-for="(opt, key) in ['YES', 'NO']" :key="key" :value="opt">
+              {{opt}}
+            </option>
+          </f7-list-input>
+
+          <f7-list-item>
+            <f7-button slot="after"popup-close raised @click="updateEvent()">Update</f7-button>
+          </f7-list-item>
+        </f7-list>
+      </f7-block>
+    </f7-page>
+  </f7-popup>
+</f7-page>
 </template>
 
 <script>
@@ -156,13 +207,24 @@ export default {
 
       // This talk and associated popup.
       thisTalk: [],
-      popupTalk: false,
+
+      // events.
+      thisEvent: {},
+      popupEvent: false,
+
+      // Classes of events.
+      classes: [],
     };
   },
   mounted: function() {
     const self = this;
     self.fetchMyBooking();
     self.fetchMyTalks();
+
+    self.promiseWithAuth('info/bmv/bookingclasses')
+      .then( function(x) {
+        self.classes = JSON.parse(x.data).data.all;
+      });
   },
   methods: { 
     fetchMyTalks: function()
@@ -279,11 +341,20 @@ export default {
         closeButton: true,
       }).open();
     },
-    openTalkPopup: function(talk) {
+    popupEditGroupEvent: function(event) {
       const self = this;
-      self.thisTalk = talk;
-      self.popupTalk = true;
+      self.thisEvent = event;
+      self.popupEvent = true;
     },
+    updateEvent: function()
+    {
+      const self = this;
+      self.promiseWithAuth('/me/event/update', self.thisTalk).then(
+        function(x) {
+          let res = JSON.parse(x.data);
+          console.log('Done');
+        });
+    }
   },
 };
 </script>
