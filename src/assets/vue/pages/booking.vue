@@ -107,9 +107,9 @@ export default {
       // Currently only NOPUBLIC type of bookings are allowed.
       self.postWithPromise('/config/bookmyvenue.nopublic.class')
       .then(
-         function(json) 
+         function(x) 
          {
-            const res = JSON.parse(json);
+            const res = JSON.parse(x.data);
             if( res.status=='ok')
             {
                self.classes = res.data;
@@ -142,9 +142,9 @@ export default {
             +self.startTimeStamp+'/'+self.endTimeStamp;
 
          app.request.post( link, this.apiPostData()
-            , function(json) 
+            , function(x) 
             {
-               var res = JSON.parse(json);
+               var res = JSON.parse(x.data);
                if(res.status == 'ok')
                {
                   self.venuesStatus = res.data.venues;

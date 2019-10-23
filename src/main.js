@@ -21,6 +21,10 @@ Vue.component('vue-editor', VueEditor);
 // Vue.use(VueQrcodeReader);
 // import 'vue-qrcode-reader/dist/vue-qrcode-reader.css';
 
+// light timelight 
+import LightTimeline from 'vue-light-timeline';
+Vue.use(LightTimeline);
+
 // Autocomplete
 import Autocomplete from 'vuejs-auto-complete';
 Vue.component('v-autocomplete', Autocomplete);
