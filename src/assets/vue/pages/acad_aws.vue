@@ -177,10 +177,12 @@
              style="border-top:1px solid lightgray"
              :key="date">
           <f7-row>
-            <f7-col> {{awses[0].date|date}}</f7-col>
+            <f7-col> 
+              <f7-button small @click="acceptSchedule(awses)">Accept</f7-button>
+              {{awses[0].date|date}}
+            </f7-col>
             <f7-col v-for="(aws, key) in awses" :key="key" no-gap>
               {{aws.speaker}}<sup>{{aws.num_aws}}</sup>
-
               <br />
               <span style="font-size:xx-small">{{aws.specialization}}
               <br />
@@ -283,6 +285,17 @@ export default {
         .then( function(x) {
           self.schedule = JSON.parse(x.data).data;
         });
+    },
+    acceptSchedule: function(awses)
+    {
+      const self = this;
+      for(let key in awses)
+      {
+        self.thisAWS = awses[key];
+        console.log(key, self.thisAWS);
+        self.assignThisAWS();
+      }
+      self.computeSchedule();
     },
     addAWSSchedule: function(date, aws) 
     {

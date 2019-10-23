@@ -35,13 +35,12 @@ export default {
   data() {
     const self = this;
     return {
-      profile: self.fetchProfile(),
+      profile: self.$store.getters.profile,
     };
   },
   mounted()
   {
     const self = this;
-    self.profile = JSON.parse(self.$localStorage.get('me.profile', '[]'));
     self.profile['jcs'] = Object.keys(self.profile.jcs).join(',');
   },
   methods: {

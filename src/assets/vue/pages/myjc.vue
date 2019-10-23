@@ -303,7 +303,7 @@
        {
          const self = this;
          const app = self.$f7;
-         self.myjcs = self.loadStore('me.profile').jcs;
+         self.myjcs = self.$store.getters.profile.jcs;
 
          app.dialog.preloader('Fetching your JCs...');
          self.postWithPromise('/me/jc').then( function(x) {

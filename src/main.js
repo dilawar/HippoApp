@@ -294,7 +294,7 @@ Vue.mixin({
       },
       getRoles: function() {
          const self = this;
-         if(self.$store.getters.profile)
+         if(self.$store.getters.profile.roles)
             return self.$store.getters.profile.roles.split(',');
          return 'USER';
       },
