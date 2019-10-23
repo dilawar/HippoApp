@@ -275,3 +275,21 @@ div.watermark {
     border: none;
 }
 
+.with_photography_club {
+    background: url(https://ncbs.res.in/hippo/info/photography_club);
+    background-size: cover;
+    background-position: center center;
+    background-color: transparent;
+    transition: background 500ms ease-in 200ms;
+}
+
+.hippo-login-screen {
+    background-color: transparent;
+}
+
+.with_photography_club ul {
+    background: rgba(255, 255, 255, 0.6) !important;
+    border-radius: 5px;
+    font-size: large !important;
+}
+
