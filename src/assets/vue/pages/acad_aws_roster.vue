@@ -68,9 +68,9 @@
           <div slot="title">{{speaker|name}} ({{speaker.login}})</div>
           <div slot="text">{{speaker.pi_or_host}} | {{speaker.specialization}} </div>
           <div slot="after">{{speaker.num_aws}} </div>
-          <div slot="header">Last AWS {{speaker.days_since_aws}} days ago</div>
+          <div slot="header">Last AWS {{speaker.days_since_last_aws}} days ago</div>
           <f7-icon slot="media" 
-               v-if="speaker.days_since_aws >= 730" 
+               v-if="speaker.days_since_last_aws >= 730" 
                icon="fa fa-bolt fa-2x">
           </f7-icon>
 
