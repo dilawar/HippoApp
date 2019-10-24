@@ -29,13 +29,13 @@
                                color="red"
                                fill small 
                                @click="deleteThisRequest(requests[0].gid)">
-                      Delete All
+                      Delete all
                     </f7-button>
                   </f7-col>
                   <f7-col>
                     <f7-button fill small 
                                @click="popupEditGroupRequest(requests[0])">
-                      Edit All
+                      Edit all
                     </f7-button>
                   </f7-col>
                 </f7-row>
@@ -144,9 +144,9 @@
 
   <!-- POPUPS -->
   <!-- POPUP  -->
-  <f7-popup :opened="popupEvent" @popup:close="popupEvent = false">
+  <f7-popup :opened="popupEditBooking" @popup:close="popupEditBooking = false">
     <f7-page>
-      <f7-navbar title="Update event(s)">
+      <f7-navbar title="Update Booking(s)">
         <f7-nav-right>
           <f7-link popup-close>Close</f7-link>
         </f7-nav-right>
@@ -157,35 +157,41 @@
         <f7-list media-list>
 
           <f7-list-input label="Class" 
-                         :value="thisEvent.class"
+                         :value="thisBooking.class"
                          type="select"
-                         @input="thisEvent.class=$event.target.value">
+                         @input="thisBooking.class=$event.target.value">
             <option v-for="(cls, key) in classes" :key="cls" :value="cls">{{cls}}</option>
           </f7-list-input>
 
-          <f7-list-input :value="thisEvent.title" 
+          <f7-list-input :value="thisBooking.title" 
                  type="textarea"
                  label="Title"
-                 @input="thisEvent.title=$event.target.value">
+                 @input="thisBooking.title=$event.target.value">
           </f7-list-input>
 
-          <f7-list-input :value="thisEvent.description" 
+          <f7-list-input :value="thisBooking.description" 
                  label="Description"
                  type="texteditor"
-                 @input="thisEvent.description=$event.target.value">
+                 @input="thisBooking.description=$event.target.value">
           </f7-list-input>
 
           <f7-list-input label="Add to NCBS Calendar" 
-                         :value="thisEvent.is_public_event"
+                         :value="thisBooking.is_public_event"
                          type="select"
-                         @input="thisEvent.is_public_event=$event.target.value">
+                         @input="thisBooking.is_public_event=$event.target.value">
             <option v-for="(opt, key) in ['YES', 'NO']" :key="key" :value="opt">
-              {{opt}}
+            {{opt}}
             </option>
           </f7-list-input>
 
           <f7-list-item>
-            <f7-button slot="after"popup-close raised @click="updateEvent()">Update</f7-button>
+            <f7-button slot="after" 
+                       popup-close 
+                       raised 
+                       fill
+                       @click="updateBooking()">
+              Update
+            </f7-button>
           </f7-list-item>
         </f7-list>
       </f7-block>
@@ -205,14 +211,10 @@ export default {
       eventGroups: [],
       myTalks: [],
       startDate: moment(),
-      endDate: '',
-
-      // This talk and associated popup.
-      thisTalk: [],
 
       // events.
-      thisEvent: {},
-      popupEvent: false,
+      thisBooking: {confirmed:false, title:'', description:''},
+      popupEditBooking: false,
 
       // Classes of events.
       classes: [],
@@ -345,17 +347,35 @@ export default {
     },
     popupEditGroupEvent: function(event) {
       const self = this;
-      self.thisEvent = event;
-      self.popupEvent = true;
+      self.thisBooking = event;
+      self.thisBooking.confirmed = true;
+      self.popupEditBooking = true;
     },
-    updateEvent: function()
+    popupEditGroupRequest: function(request) {
+      const self = this;
+      self.thisBooking = request;
+      self.thisBooking.confirmed = false;
+      self.popupEditBooking = true;
+    },
+    updateBooking: function()
     {
       const self = this;
-      self.promiseWithAuth('/me/event/update', self.thisTalk).then(
+      let endpoint = '';
+      if(self.thisBooking.confirmed)
+        endpoint = '/me/event/update/' + self.thisBooking.gid + '.' 
+          + self.thisBooking.eid;
+      else
+        endpoint = '/me/request/update/' + self.thisBooking.gid + '.' 
+          + self.thisBooking.rid;
+      self.promiseWithAuth(endpoint, self.thisBooking).then(
         function(x) {
-          let res = JSON.parse(x.data);
-          console.log('Done');
+          let res = JSON.parse(x.data).data;
+          if(res.success)
+            self.notify('Success', 'Updated bookings.');
+          else
+            self.notify('Failed', 'Could not update bookings.');
         });
+      self.fetchMyBooking();
     }
   },
 };
