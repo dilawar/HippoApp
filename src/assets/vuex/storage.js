@@ -11,7 +11,7 @@ export default new Vuex.Store({
       alreadyLoggedIn: false,
       //api : 'https://ncbs.res.in/hippo/api',
       api : 'http://172.16.223.30/hippo/api',
-      key : localStorage.getItem('HIPPO-API-KEY'),
+      apikey : localStorage.getItem('HIPPO-API-KEY'),
       apiKeyGMap: '',
       tobook: null,
       profile: {},
@@ -54,6 +54,9 @@ export default new Vuex.Store({
       login: state => {
          return state.user;
       },
+      apikey: state => {
+         return state.apikey;
+      },
    },
    mutations: {
       USER_LOGGED (state, user) {
@@ -62,8 +65,8 @@ export default new Vuex.Store({
          localStorage.setItem('HIPPO-LOGIN', user);
       },
       HIPPO_API_KEY (state, key) {
-         state.key = key;
          localStorage.setItem('HIPPO-API-KEY', key);
+         state.apikey = key;
       },
       ADD_BOOKING_DATA(state, data) {
          state.tobook = data;

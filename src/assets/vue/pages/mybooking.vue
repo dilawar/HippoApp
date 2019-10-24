@@ -17,37 +17,40 @@
                     :header="requests[0].venue">
         <font slot="header" color="blue">{{requests.length}} pending</font>
         <f7-accordion-content>
-          <f7-block inset style="background-color:lightyellow">
+          <f7-block inset>
             <div>{{requests[0].title}}</div>
 
             <f7-list media-list margin="10px">
 
-              <f7-list-item v-if="requests.length > 1">
-                <f7-button color="red"
-                           fill small 
-                           @click="deleteThisRequest(requests[0].gid)"
-                           raised>
-                  Delete whole group
-                </f7-button>
+              <f7-list-item>
+                <f7-row>
+                  <f7-col>
+                    <f7-button v-if="requests.length > 1"
+                               color="red"
+                               fill small 
+                               @click="deleteThisRequest(requests[0].gid)">
+                      Delete All
+                    </f7-button>
+                  </f7-col>
+                  <f7-col>
+                    <f7-button fill small 
+                               @click="popupEditGroupRequest(requests[0])">
+                      Edit All
+                    </f7-button>
+                  </f7-col>
+                </f7-row>
               </f7-list-item>
 
-              <f7-list-item swipeout
-                            @swipeout:deleted="deleteThisRequest(val.gid, val.rid)"
-                            v-for="(val, index) in requests" 
+              <f7-list-item v-for="(val, index) in requests" 
                             :key="val.gid+'.'+val.rid" 
                             :title="humanReadableDateTime(val.date,val.start_time)+' ('+val.venue+')'">
 
-                <!-- SWIPEOUT IF IT IS AN MOBILE APP. ELSE USE BUTTON -->
-                <f7-swipeout-actions right v-if="isMobileApp()">
-                  <f7-swipeout-button delete>Delete</f7-swipeout-button>
-                </f7-swipeout-actions>
-
-                <f7-button v-else 
-                           small raised 
+                <f7-button small raised 
                            color="red"
-                           fill slot="after"
-                                @click="deleteThisRequest(val.gid, val.rid)"> 
-                  Delete
+                           tooltip="Delete this booking only"
+                           icon="fa fa-trash fa-fw"
+                           slot="after"
+                           @click="deleteThisRequest(val.gid, val.rid)"> 
                 </f7-button>
               </f7-list-item>
             </f7-list>
@@ -71,43 +74,42 @@
                     v-for="(events, gid, index) in eventGroups" 
                     :title="events[0].title"
                     :footer="events[0].venue" 
-                    @click="popupEditGroupEvent(events[0])"
                     :key="gid">
         <div slot="header">{{events.length}} confirmed</div>
         <f7-accordion-content>
-          <f7-list media-list>
-            <!-- DELETE THE WHOLE GROUP -->
-            <f7-list-item v-if="events.length > 1">
-              <f7-button raised> Delete whole group </f7-button>
-            </f7-list-item>
+          <f7-block >
+            <f7-list media-list>
+              <!-- DELETE THE WHOLE GROUP -->
+              <f7-list-item v-if="events.length > 1">
+                <f7-button raised> Delete whole group </f7-button>
+                <f7-link @click="popupEditGroupEvent(events[0])">Edit Group</f7-link>
+              </f7-list-item>
 
-            <!-- DELETE EACH ELEMENT -->
-            <f7-list-item swipeout 
-                          v-for="(val, index) in events" 
-                          @swipeout:deleted="deleteEvent(val.gid, val.eid)"
-                          :key="val.gid+'.'+val.eid" 
-                          :title="humanReadableDateTime(val.date, val.start_time)">
-              <f7-icon slot="media" icon="fa fa-check-circle"></f7-icon>
-
-              <!-- ON MOBILE -->
-              <f7-swipeout-actions right v-if="isMobileApp()">
-                <f7-swipeout-button delete
-                                    color="blue"
-                                    title="Deleting request?" 
-                                    confirm-text="Cancel booking?">
-                  Cancel
-                </f7-swipeout-button>
-              </f7-swipeout-actions>
-
-              <!-- ELSE -->
-              <f7-button @click="deleteEvent(val.gid, val.eid)"
-                                    color="red" fill
-                                    slot="after"
-                                    small>
-                Delete
-              </f7-button>
-            </f7-list-item>
-          </f7-list>
+              <!-- DELETE EACH ELEMENT -->
+              <f7-list-item swipeout 
+                            v-for="(val, index) in events" 
+                            @swipeout:deleted="deleteEvent(val.gid, val.eid)"
+                            :key="val.gid+'.'+val.eid" 
+                            :title="humanReadableDateTime(val.date, val.start_time)">
+                <f7-row slot="after">
+                  <f7-col>
+                    <f7-button @click="deleteEvent(val.gid,val.eid)" 
+                               small raised
+                               icon="fa fa-trash fa-fw"
+                               color="red">
+                    </f7-button>
+                  </f7-col>
+                  <f7-col>
+                    <f7-button @click="updateEvent(val)" 
+                               small raised
+                               icon="fa fa-pencil fa-fw"
+                               color="blue">
+                    </f7-button>
+                  </f7-col>
+                </f7-row>
+              </f7-list-item>
+            </f7-list>
+          </f7-block>
         </f7-accordion-content>
       </f7-list-item>
       <f7-list-item></f7-list-item>
