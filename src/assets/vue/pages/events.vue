@@ -86,8 +86,8 @@ export default {
          const app = self.$f7;
          app.dialog.preloader();
          self.postWithPromise('/publicevents/'+moment(self.startDate).format('X')+'/20')
-            .then( function(json) {
-               self.events = JSON.parse(json).data;
+            .then( function(x) {
+               self.events = JSON.parse(x.data).data;
                self.saveStore('pubevents', self.events);
                app.dialog.close();
                app.ptr.done();
@@ -109,9 +109,9 @@ export default {
          let link = "/publicevents/" + 
             moment(self.startDate).format('X')+"/10/"+self.events.length;
          self.postWithPromise(link).then(
-            function(json) {
+            function(x) {
                try {
-                  let events = JSON.parse(json).data;
+                  let events = JSON.parse(x.data).data;
                   self.events = self.events.concat(events);
                   self.saveStore('pubevents', self.events);
                   console.log( "Total events ", self.events.length);

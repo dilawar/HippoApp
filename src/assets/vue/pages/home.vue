@@ -1,5 +1,5 @@
 <template>
-  <f7-page>
+  <f7-page class="with_photography_club">
     <f7-navbar>
       <f7-nav-left>
         <!-- LEFT PANEL -->
@@ -66,13 +66,11 @@
                       panel-close>
           <f7-icon slot="media" icon="fa fa-bullhorn fa-2x"></f7-icon>
         </f7-list-item>
-
       </f7-list>
     </f7-block>
-
-    <f7-block v-if="! isUserAuthenticated()">
+    <f7-block v-if="! isUserAuthenticated()" style="float:right;background:none;">
       <f7-list media-list no-hairlines>
-        <f7-list-item>
+        <f7-list-item style="background:none">
           <div slot="after">
             <font v-if="isHippoAlive">Hippo is alive. You may login.</font>
             <font v-else>
@@ -86,6 +84,7 @@
             </f7-col>
             <f7-col>
               <f7-button raised 
+                         outline
                          fill 
                          :disabled="! isHippoAlive"
                          login-screen-open=".hippo-login-screen">
@@ -101,10 +100,10 @@
 
     <!-- FAB Right Bottom (Blue) -->
     <f7-fab v-if="isUserAuthenticated()" 
-            text="BOOK"
+            text="Book"
             position="right-bottom"
             slot="fixed" 
-            color="green"
+            color="blue"
             href="/smartbook/" 
             fab-close
             >
@@ -138,7 +137,7 @@
               <f7-button login-screen-close raised login-screen-close>Cancel</f7-button>
             </f7-col>
             <f7-col width="45">
-              <f7-button @click="signIn" raised login-screen-close>Sign In</f7-button>
+              <f7-button @click="signIn()" raised login-screen-close>Sign In</f7-button>
             </f7-col>
           </f7-row>
 

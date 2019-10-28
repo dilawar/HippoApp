@@ -54,6 +54,9 @@ export default new Vuex.Store({
       login: state => {
          return state.user;
       },
+      apikey: state => {
+         return state.apikey;
+      },
    },
    mutations: {
       USER_LOGGED (state, user) {
@@ -62,8 +65,8 @@ export default new Vuex.Store({
          localStorage.setItem('HIPPO-LOGIN', user);
       },
       HIPPO_API_KEY (state, key) {
-         state.key = key;
          localStorage.setItem('HIPPO-API-KEY', key);
+         state.apikey = key;
       },
       ADD_BOOKING_DATA(state, data) {
          state.tobook = data;

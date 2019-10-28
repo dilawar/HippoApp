@@ -21,6 +21,10 @@ Vue.component('vue-editor', VueEditor);
 // Vue.use(VueQrcodeReader);
 // import 'vue-qrcode-reader/dist/vue-qrcode-reader.css';
 
+// light timelight 
+import LightTimeline from 'vue-light-timeline';
+Vue.use(LightTimeline);
+
 // Autocomplete
 import Autocomplete from 'vuejs-auto-complete';
 Vue.component('v-autocomplete', Autocomplete);
@@ -175,8 +179,9 @@ Vue.mixin({
       isUserAuthenticated: function() {
          // If API key is found then user is logged in.
          const self = this;
-         const apiKey = self.$localStorage.get('HIPPO-API-KEY');
-         if(apiKey && apiKey.trim().length > 1)
+         const apiKey = self.$store.getters.apikey;
+         console.log('API KEY ', apiKey);
+         if(apiKey && apiKey.trim().length > 0)
             return true;
          return false;
       },

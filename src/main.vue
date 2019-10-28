@@ -9,13 +9,8 @@
     </f7-panel>
 
     <f7-view main url="/" tab tab-active>
-      <!--
-        Enable it if we need it to put toolbar on the bottom page. The
-        backbutton has started working fine again.
-      -->
 
-      <f7-toolbar bottom-md tabber labels
-                  style="font-size:xx-small">
+      <f7-toolbar bottom-md tabber labels style="font-size:xx-small">
 
         <f7-link text="Back"
                  icon="fa fa-step-backward fa-2x"
@@ -27,14 +22,6 @@
                  @click="$f7.views.main.router.navigate('/home/')" 
                  >
         </f7-link>
-
-        <!--
-        <f7-link @click="infoPopup=true"
-                 icon-only 
-                 text="Info"
-                 icon="fa fa-info fa-2x">
-        </f7-link>
-        -->
 
         <f7-link v-if="isUserAuthenticated()" 
                  text="People"
@@ -60,7 +47,7 @@
                  text="Calendar"
                  icon="fa fa-calendar fa-2x">
         </f7-link>
-        <f7-link icon-only  v-else
+        <f7-link icon-only v-else
                  href="/events/"
                  text="Calendar"
                  icon="fa fa-calendar-o fa-2x">
@@ -68,9 +55,9 @@
 
       </f7-toolbar>
 
+      <!-- INFO POPUP -->
       <f7-popup :opened="infoPopup" @popup:closed="infoPopup = false">
         <f7-page>
-
           <f7-navbar title="Info">
             <f7-nav-right>
               <f7-link popup-close>Close</f7-link>

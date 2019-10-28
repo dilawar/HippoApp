@@ -1,53 +1,56 @@
 <template>
-  <f7-page ptr @ptr:refresh="refreshMyBooking" 
-           @page:init="fetchMyBooking"
-           @page:refresh="fetchMyBooking">
+  <f7-page>
   <f7-navbar title="My Bookings" back-link="Back">
   </f7-navbar>
 
   <f7-block v-if="Object.keys(requestGroups).length>0">
     <f7-block-title>
       <f7-icon icon="fa fa-bell-o fa-2x"></f7-icon>
-      Pending booking requests...</f7-block-title>
+      Pending booking requests...
+    </f7-block-title>
+
     <f7-list media-list>
       <f7-list-item accordion-item
                     v-for="(requests, gid, index) in requestGroups" 
                     :title="requests[0].title"
                     :key="gid"
                     :header="requests[0].venue">
-        <font slot="after" color="blue">{{requests.length}} pending</font>
+        <font slot="header" color="blue">{{requests.length}} pending</font>
         <f7-accordion-content>
-          <f7-block inset style="background-color:lightyellow">
+          <f7-block inset>
             <div>{{requests[0].title}}</div>
 
             <f7-list media-list margin="10px">
 
-              <f7-list-item v-if="requests.length > 1">
-                <f7-button color="red"
-                           fill small 
-                           @click="deleteThisRequest(requests[0].gid)"
-                           raised>
-                  Delete whole group
-                </f7-button>
+              <f7-list-item>
+                <f7-row>
+                  <f7-col>
+                    <f7-button v-if="requests.length > 1"
+                               color="red"
+                               fill small 
+                               @click="deleteThisRequest(requests[0].gid)">
+                      Delete all
+                    </f7-button>
+                  </f7-col>
+                  <f7-col>
+                    <f7-button fill small 
+                               @click="popupEditGroupRequest(requests[0])">
+                      Edit all
+                    </f7-button>
+                  </f7-col>
+                </f7-row>
               </f7-list-item>
 
-              <f7-list-item swipeout
-                            @swipeout:deleted="deleteThisRequest(val.gid, val.rid)"
-                            v-for="(val, index) in requests" 
+              <f7-list-item v-for="(val, index) in requests" 
                             :key="val.gid+'.'+val.rid" 
                             :title="humanReadableDateTime(val.date,val.start_time)+' ('+val.venue+')'">
 
-                <!-- SWIPEOUT IF IT IS AN MOBILE APP. ELSE USE BUTTON -->
-                <f7-swipeout-actions right v-if="isMobileApp()">
-                  <f7-swipeout-button delete>Delete</f7-swipeout-button>
-                </f7-swipeout-actions>
-
-                <f7-button v-else 
-                           small raised 
+                <f7-button small raised 
                            color="red"
-                           fill slot="after"
-                                @click="deleteThisRequest(val.gid, val.rid)"> 
-                  Delete
+                           tooltip="Delete this booking only"
+                           icon="fa fa-trash fa-fw"
+                           slot="after"
+                           @click="deleteThisRequest(val.gid, val.rid)"> 
                 </f7-button>
               </f7-list-item>
             </f7-list>
@@ -57,7 +60,7 @@
     </f7-list>
   </f7-block>
   <f7-block v-else>
-    No booking found.
+    <f7-block-title small> No pending request found.  </f7-block-title>
   </f7-block>
 
   <!-- THESE ARE CONFIRMED EVENTS -->
@@ -72,41 +75,41 @@
                     :title="events[0].title"
                     :footer="events[0].venue" 
                     :key="gid">
-        <div slot="after">{{events.length}} confirmed</div>
+        <div slot="header">{{events.length}} confirmed</div>
         <f7-accordion-content>
-          <f7-list media-list>
-            <!-- DELETE THE WHOLE GROUP -->
-            <f7-list-item v-if="events.length > 1">
-              <f7-button raised> Delete whole group </f7-button>
-            </f7-list-item>
+          <f7-block >
+            <f7-list media-list>
+              <!-- DELETE THE WHOLE GROUP -->
+              <f7-list-item v-if="events.length > 1">
+                <f7-button raised> Delete whole group </f7-button>
+                <f7-link @click="popupEditGroupEvent(events[0])">Edit Group</f7-link>
+              </f7-list-item>
 
-            <!-- DELETE EACH ELEMENT -->
-            <f7-list-item swipeout 
-                          v-for="(val, index) in events" 
-                          @swipeout:deleted="deleteEvent(val.gid, val.eid)"
-                          :key="val.gid+'.'+val.eid" 
-                          :title="humanReadableDateTime(val.date, val.start_time)">
-              <f7-icon slot="media" icon="fa fa-check-circle"></f7-icon>
-
-              <!-- ON MOBILE -->
-              <f7-swipeout-actions right v-if="isMobileApp()">
-                <f7-swipeout-button delete
-                                    color="blue"
-                                    title="Deleting request?" 
-                                    confirm-text="Cancel booking?">
-                  Cancel
-                </f7-swipeout-button>
-              </f7-swipeout-actions>
-
-              <!-- ELSE -->
-              <f7-button @click="deleteEvent(val.gid, val.eid)"
-                                    color="red" fill
-                                    slot="after"
-                                    small>
-                Delete
-              </f7-button>
-            </f7-list-item>
-          </f7-list>
+              <!-- DELETE EACH ELEMENT -->
+              <f7-list-item swipeout 
+                            v-for="(val, index) in events" 
+                            @swipeout:deleted="deleteEvent(val.gid, val.eid)"
+                            :key="val.gid+'.'+val.eid" 
+                            :title="humanReadableDateTime(val.date, val.start_time)">
+                <f7-row slot="after">
+                  <f7-col>
+                    <f7-button @click="deleteEvent(val.gid,val.eid)" 
+                               small raised
+                               icon="fa fa-trash fa-fw"
+                               color="red">
+                    </f7-button>
+                  </f7-col>
+                  <f7-col>
+                    <f7-button @click="updateEvent(val)" 
+                               small raised
+                               icon="fa fa-pencil fa-fw"
+                               color="blue">
+                    </f7-button>
+                  </f7-col>
+                </f7-row>
+              </f7-list-item>
+            </f7-list>
+          </f7-block>
         </f7-accordion-content>
       </f7-list-item>
       <f7-list-item></f7-list-item>
@@ -122,7 +125,7 @@
     <f7-list media-list>
       <f7-list-item v-for="(talk, key) in myTalks"
                     :key="key"
-                    :link="'/updatetalk/'+talk.id+'/'">
+                    @click="$f7router.navigate('/updatetalk/'+talk.id+'/')">
         <div slot="title">{{talk.class}} by {{talk.speaker}}</div>
         <div slot="text">{{talk.title}}</div>
 
@@ -138,7 +141,63 @@
       <f7-list-item></f7-list-item>
     </f7-list>
   </f7-block>
-  </f7-page>
+
+  <!-- POPUPS -->
+  <!-- POPUP  -->
+  <f7-popup :opened="popupEditBooking" @popup:close="popupEditBooking = false">
+    <f7-page>
+      <f7-navbar title="Update Booking(s)">
+        <f7-nav-right>
+          <f7-link popup-close>Close</f7-link>
+        </f7-nav-right>
+      </f7-navbar>
+  
+      <f7-block>
+
+        <f7-list media-list>
+
+          <f7-list-input label="Class" 
+                         :value="thisBooking.class"
+                         type="select"
+                         @input="thisBooking.class=$event.target.value">
+            <option v-for="(cls, key) in classes" :key="cls" :value="cls">{{cls}}</option>
+          </f7-list-input>
+
+          <f7-list-input :value="thisBooking.title" 
+                 type="textarea"
+                 label="Title"
+                 @input="thisBooking.title=$event.target.value">
+          </f7-list-input>
+
+          <f7-list-input :value="thisBooking.description" 
+                 label="Description"
+                 type="texteditor"
+                 @input="thisBooking.description=$event.target.value">
+          </f7-list-input>
+
+          <f7-list-input label="Add to NCBS Calendar" 
+                         :value="thisBooking.is_public_event"
+                         type="select"
+                         @input="thisBooking.is_public_event=$event.target.value">
+            <option v-for="(opt, key) in ['YES', 'NO']" :key="key" :value="opt">
+            {{opt}}
+            </option>
+          </f7-list-input>
+
+          <f7-list-item>
+            <f7-button slot="after" 
+                       popup-close 
+                       raised 
+                       fill
+                       @click="updateBooking()">
+              Update
+            </f7-button>
+          </f7-list-item>
+        </f7-list>
+      </f7-block>
+    </f7-page>
+  </f7-popup>
+</f7-page>
 </template>
 
 <script>
@@ -152,17 +211,24 @@ export default {
       eventGroups: [],
       myTalks: [],
       startDate: moment(),
-      endDate: '',
 
-      // This talk and associated popup.
-      thisTalk: [],
-      popupTalk: false,
+      // events.
+      thisBooking: {confirmed:false, title:'', description:''},
+      popupEditBooking: false,
+
+      // Classes of events.
+      classes: [],
     };
   },
   mounted: function() {
     const self = this;
     self.fetchMyBooking();
     self.fetchMyTalks();
+
+    self.promiseWithAuth('info/bmv/bookingclasses')
+      .then( function(x) {
+        self.classes = JSON.parse(x.data).data.all;
+      });
   },
   methods: { 
     fetchMyTalks: function()
@@ -279,11 +345,38 @@ export default {
         closeButton: true,
       }).open();
     },
-    openTalkPopup: function(talk) {
+    popupEditGroupEvent: function(event) {
       const self = this;
-      self.thisTalk = talk;
-      self.popupTalk = true;
+      self.thisBooking = event;
+      self.thisBooking.confirmed = true;
+      self.popupEditBooking = true;
     },
+    popupEditGroupRequest: function(request) {
+      const self = this;
+      self.thisBooking = request;
+      self.thisBooking.confirmed = false;
+      self.popupEditBooking = true;
+    },
+    updateBooking: function()
+    {
+      const self = this;
+      let endpoint = '';
+      if(self.thisBooking.confirmed)
+        endpoint = '/me/event/update/' + self.thisBooking.gid + '.' 
+          + self.thisBooking.eid;
+      else
+        endpoint = '/me/request/update/' + self.thisBooking.gid + '.' 
+          + self.thisBooking.rid;
+      self.promiseWithAuth(endpoint, self.thisBooking).then(
+        function(x) {
+          let res = JSON.parse(x.data).data;
+          if(res.success)
+            self.notify('Success', 'Updated bookings.');
+          else
+            self.notify('Failed', 'Could not update bookings.');
+        });
+      self.fetchMyBooking();
+    }
   },
 };
 </script>
