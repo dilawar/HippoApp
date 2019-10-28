@@ -205,7 +205,7 @@
       <f7-list-item v-else>
         <f7-button small raised 
                    :disabled="! thisEvent.isRegistered" 
-                   :href="'/bookevent/talks.'+thisEvent.id"
+                   :href="'/bookevent/talks.'+thisEvent.id+'/'+thisEvent.type"
                    slot="after">
           Book a venue
         </f7-button>
