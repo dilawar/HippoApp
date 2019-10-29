@@ -253,7 +253,7 @@ export default {
             return;
           }
 
-          if( res.status =='ok' && res.data.apikey != '')
+          if( res.status==='ok' && res.data.apikey!=='')
           {
             // This goes in local store. Persistent till user logged out.
             self.$store.commit('HIPPO_API_KEY', res.data.apikey);
