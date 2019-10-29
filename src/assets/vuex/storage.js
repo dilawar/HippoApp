@@ -55,7 +55,7 @@ export default new Vuex.Store({
          return state.user;
       },
       apikey: state => {
-         return state.apikey;
+         return state.key;
       },
    },
    mutations: {
