@@ -9,9 +9,9 @@ export default new Vuex.Store({
    state: {
       user: localStorage.getItem('HIPPO-LOGIN'),
       alreadyLoggedIn: false,
-      //api : 'https://ncbs.res.in/hippo/api',
-      api : 'http://172.16.223.30/hippo/api',
-      apikey : localStorage.getItem('HIPPO-API-KEY'),
+      api : 'https://ncbs.res.in/hippo/api',
+      //api : 'http://172.16.223.30/hippo/api',
+      key : localStorage.getItem('HIPPO-API-KEY'),
       apiKeyGMap: '',
       tobook: null,
       profile: {},

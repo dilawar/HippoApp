@@ -90,32 +90,33 @@
 </template>
 
 <script>
-   export default {
-      data() {
-         const self = this;
-         return {
-            username: 'Guest',
-            alreadyLoggedIn: false,
-            profile: [],
-            notifications: [],
-         };
-      },
-      mounted()
-      {
-         const self = this;
-         self.notifications = self.loadStore('notifications').filter(x =>false==x.is_read);
-         self.username = self.$localStorage.get('HIPPO-LOGIN');
-         self.alreadyLoggedIn = self.isUserAuthenticated();
-         self.fetchProfile();
-         self.profile = self.loadStore('me.profile');
-      },
-      methods : {
-         refreshData: function( ) {
-            const self = this;
-            self.fetchProfile();
-            self.profile = self.loadStore("me.profile");
-            self.alreadyLoggedIn = self.isUserAuthenticated();
-         },
-      },
-   }
+export default {
+  data() {
+    const self = this;
+    return {
+      username: 'Guest',
+      alreadyLoggedIn: false,
+      profile: [],
+      notifications: [],
+    };
+  },
+  mounted()
+  {
+    const self = this;
+    self.notifications = self.loadStore('notifications').filter(x =>false==x.is_read);
+    self.username = self.$localStorage.get('HIPPO-LOGIN');
+    self.alreadyLoggedIn = self.isUserAuthenticated();
+    self.postWithPromise('/me/profile').then(function(x) {
+      self.profile = JSON.parse(x.data).data;
+      self.saveStore('me.profile', self.profile);
+    });
+  },
+  methods : {
+    refreshData: function( ) {
+      const self = this;
+      self.profile = self.loadStore("me.profile");
+      self.alreadyLoggedIn = self.isUserAuthenticated();
+    },
+  },
+}
 </script>

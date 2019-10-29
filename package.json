@@ -22,6 +22,7 @@
     "cheerio": "^1.0.0-rc.3",
     "chokidar": "^2.1.8",
     "clean-webpack-plugin": "^1.0.0",
+    "cordova-minify": "0.0.15",
     "css-loader": "^2.1.0",
     "current-device": "^0.8.2",
     "epipebomb": "^1.0.0",

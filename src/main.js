@@ -214,6 +214,11 @@ Vue.mixin({
       fetchAndStore: function(endpoint, key) {
          const self = this;
          const app = self.$f7;
+         if(! isUserAuthenticated())
+         {
+            self.$localStorage.set(key, '{}');
+            return '';
+         }
          app.request.promise.post(self.$store.state.api+'/'+endpoint
             , self.apiPostData() )
             .then( function(x) {
@@ -336,7 +341,7 @@ Vue.mixin({
          // for available properties.
          let data = self.loadStore('notifications');
          const nots = data.filter( x => x.is_read == false);
-         if( nots.length > 0)
+         if(nots.length > 0)
             cordova.plugins.notification.local.schedule(nots);
       },
       removeFromArray: function(arr) {
