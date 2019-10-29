@@ -15,9 +15,10 @@
             </f7-col>
             <f7-col>
               <f7-list-input @change="fetchCourse()" 
-                                   @input="thisSemester=$event.target.value"
-                                   label="Select Semester" 
-                                   type="select" :value="thisSemester">
+                             @input="thisSemester=$event.target.value"
+                             label="Select Semester" 
+                             type="select" 
+                             :value="thisSemester">
                 <option value="Autumn">Autumn</option>
                 <option value="Spring">Spring</option>
               </f7-list-input>
@@ -26,8 +27,8 @@
         </f7-list-item>
       </f7-list>
 
-      <f7-block style="margin:0px">
-        <f7-block-title>
+      <f7-block>
+        <f7-block-title small>
           Running courses for {{thisYear}}, {{thisSemester}}
         </f7-block-title>
         <f7-list media-list>

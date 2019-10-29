@@ -14,7 +14,7 @@ export default new Vuex.Store({
       apikey : localStorage.getItem('HIPPO-API-KEY'),
       apiKeyGMap: '',
       tobook: null,
-      profile: {},
+      profile: {roles:'USER'},
       OSM: {
          tileProviders: [ 
             {
@@ -49,7 +49,7 @@ export default new Vuex.Store({
          return state.profile;
       },
       roles: state => {
-         return state.profile.roles.split(',');
+         return state.profile.roles;
       },
       login: state => {
          return state.user;
@@ -72,7 +72,7 @@ export default new Vuex.Store({
          state.tobook = data;
       },
       ROLES(state, roles) {
-         state.roles = roles;
+         state.profile.roles = roles;
       },
       PROFILE(state, data) {
          state.profile = data;

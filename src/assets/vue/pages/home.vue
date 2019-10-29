@@ -27,7 +27,7 @@
         </f7-link>
 
         <!-- RIGHT PANEL -->
-        <f7-link v-if="isAdmin()" 
+        <f7-link v-if="rolesCSV.includes('ADMIN')" 
                  panel-open="right" 
                  icon="fa fa-bars fa-fw"
                  color="red">
@@ -162,14 +162,16 @@ export default {
       username: '',
       password: '',
       flashes: { a: {title:'a'}, b: {title:'b'}},
-      profile: { roles:'' },
+      profile: { },
+      rolesCSV: 'USER',
     };
   },
   mounted()
   {
     const self = this;
     const app = self.$f7;
-    var $$ = this.$$;
+
+    self.fetchRoles();
 
     // Listen to Cordova's backbutton event
     document.addEventListener('backbutton', function navigateBack() {
@@ -257,22 +259,32 @@ export default {
           {
             // This goes in local store. Persistent till user logged out.
             self.$store.commit('HIPPO_API_KEY', res.data.apikey);
+            self.$store.commit('USER_LOGGED', self.username);
 
             // Store in vuex
             self.$store.commit('GOOGLE_MAP_API_KEY', res.data.gmapapikey);
-            self.$store.commit('USER_LOGGED', self.username);
 
             self.postWithPromise('me/profile')
               .then(function(x) {
                 self.$store.commit('PROFILE', JSON.parse(x.data).data);
               });
+
+            self.fetchRoles();
             self.$f7router.refreshPage();
           }
           else
             app.dialog.alert("Failed to login. Try again.", "Error");
           app.dialog.close();
         });
-      setTimeout(()=>app.dialog.close(), 2000);
+      setTimeout(() => app.dialog.close(), 2000);
+    },
+    fetchRoles: function() {
+      const self = this;
+      self.promiseWithAuth('me/roles').then( function(x) {
+        var res = JSON.parse(x.data).data;
+        if('roles' in res)
+          self.rolesCSV = res.roles;
+      });
     },
     shutdown: function() {
       navigator.app.exitApp();
