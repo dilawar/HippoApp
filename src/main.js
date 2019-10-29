@@ -384,10 +384,9 @@ Vue.mixin({
          app.preloader.hide();
       },
       signOut: function() {
-         console.log('Signing out');
          const self = this;
-         self.$localStorage.set('HIPPO-API-KEY', '');
-         self.$localStorage.set('HIPPO-LOGIN', '');
+         self.$store.commit('HIPPO_API_KEY', '');
+         self.$store.commit('USER_LOGGED', '');
          self.$f7router.refreshPage();
       },
       isAdmin: function() 
