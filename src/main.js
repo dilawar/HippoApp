@@ -180,7 +180,6 @@ Vue.mixin({
          // If API key is found then user is logged in.
          const self = this;
          const apiKey = self.$store.getters.apikey;
-         console.log('API KEY ', apiKey);
          if(apiKey && apiKey.trim().length > 0)
             return true;
          return false;
@@ -299,9 +298,7 @@ Vue.mixin({
       },
       getRoles: function() {
          const self = this;
-         if(self.$store.getters.profile.roles)
-            return self.$store.getters.profile.roles.split(',');
-         return 'USER';
+         return self.$store.getters.roles;
       },
       filterSchema: function(schema, toremove) 
       {
@@ -388,17 +385,6 @@ Vue.mixin({
          self.$store.commit('HIPPO_API_KEY', '');
          self.$store.commit('USER_LOGGED', '');
          self.$f7router.refreshPage();
-      },
-      isAdmin: function() 
-      {
-         const self = this;
-         if(! self.isUserAuthenticated())
-            return false;
-         let roles = self.$store.getters.profile.roles;
-         console.log('is admin ', roles);
-         if(roles)
-            return roles.includes('ADMIN');
-         return '';
       },
       _get: function(obj, key, o=null) {
          if(! obj)

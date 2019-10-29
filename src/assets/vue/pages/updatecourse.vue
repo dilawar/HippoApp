@@ -5,10 +5,6 @@
 
       <!-- ASSIGN NEW STUDENT -->
       <f7-block strong>
-        <f7-block-title>{{thisCourseId}}. Total {{registrations.length}}
-          registrations.
-        </f7-block-title>
-
         <f7-card>
           <f7-card-content>
             <f7-row >
@@ -42,15 +38,18 @@
           </f7-card-content>
         </f7-card>
 
+        <f7-block-title small>
+          {{thisCourseId}}. Total {{registrations.length}} registrations.
+        </f7-block-title>
 
-        <f7-list media-list>
+        <f7-list media-list no-hairlines>
           <f7-list-item v-for="(st,key) in registrations"
                         :key="key"
                         :title="st.student_id"
                         :after="st.type"
                         @click="onRegSelect(st)"
-                        :footer="'Registered on: '+st.registered_on">
-            <div slot="media">{{st.grade}}</div>
+                        :footer="'Registered on: '+dbDateTime(st.registered_on)">
+            <div slot="media" v-if="st.grade">{{st.grade}}</div>
           </f7-list-item>
 
         </f7-list>
