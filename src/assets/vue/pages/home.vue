@@ -94,9 +94,18 @@
           </f7-row>
         </f7-list-item>
       </f7-list>
-    </f7-block>
 
-    <f7-block v-else></f7-block>
+    </f7-block>
+    <f7-block>
+      <!-- FLASH cards -->
+      <f7-swiper pagination navigation scrollbar :params="{loop:true}">
+        <f7-swiper-slide v-for="(card,key) in flashCards" :key="key">
+          <div style="margin:10%; background-color:rgba(255,255,255,0.75)">
+            {{humanReadableDateTime(card.date, card.time)}} | {{card.title}} 
+          </div>
+        </f7-swiper-slide>
+      </f7-swiper>
+    </f7-block>
 
     <!-- FAB Right Bottom (Blue) -->
     <f7-fab v-if="isUserAuthenticated()" 
@@ -131,6 +140,7 @@
           </f7-list-input>
         </f7-list>
 
+
         <f7-block>
           <f7-row>
             <f7-col width="45">
@@ -161,7 +171,7 @@ export default {
       isHippoAlive: false,
       username: '',
       password: '',
-      flashes: { a: {title:'a'}, b: {title:'b'}},
+      flashCards: {},
       profile: { },
       rolesCSV: 'USER',
     };
@@ -172,6 +182,7 @@ export default {
     const app = self.$f7;
 
     self.fetchRoles();
+    self.fetchFlashCards();
 
     // Listen to Cordova's backbutton event
     document.addEventListener('backbutton', function navigateBack() {
@@ -284,6 +295,13 @@ export default {
         var res = JSON.parse(x.data).data;
         if('roles' in res)
           self.rolesCSV = res.roles;
+      });
+    },
+    fetchFlashCards: function() {
+      const self = this;
+      self.promiseWithAuth('info/flashcards').then( function(x) {
+        self.flashCards = JSON.parse(x.data).data;
+        console.log("Total flash cards: ", self.flashCards.length );
       });
     },
     shutdown: function() {
