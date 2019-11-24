@@ -15,13 +15,21 @@
                     :title="requests[0].title"
                     :key="gid"
                     :header="requests[0].venue">
-        <font slot="header" color="blue">{{requests.length}} pending</font>
+
+        <font slot="header" color="blue" style="float:right">
+          {{requests.length}} Pending
+        </font>
+
         <f7-accordion-content>
-          <f7-block inset>
-            <div>{{requests[0].title}}</div>
+          <f7-block inset style="background-color:lightyellow">
 
-            <f7-list media-list margin="10px">
+            <div>{{requests[0].title}}
+              <span style="font-size:x-small">
+                <tt>IS PUBLIC EVENT={{requests[0].is_public_event}}</tt>
+              </span>
+            </div>
 
+            <f7-list media-list>
               <f7-list-item>
                 <f7-row>
                   <f7-col>
@@ -77,7 +85,7 @@
                     :key="gid">
         <div slot="header">{{events.length}} confirmed</div>
         <f7-accordion-content>
-          <f7-block >
+          <f7-block>
             <f7-list media-list>
               <!-- DELETE THE WHOLE GROUP -->
               <f7-list-item v-if="events.length > 1">
@@ -282,10 +290,12 @@ export default {
     {
       const self = this;
       const app = self.$f7;
+
+      app.dialog.preloader();
+
       var link = 'mybooking/delete/event/'+gid+'.'+eid;
-      console.log('Link is', link);
       self.promiseWithAuth(link)
-        .then( function(x) {
+        .then(function(x) {
           var res = JSON.parse(x.data);
           if( res.status == 'ok')
           {
@@ -297,9 +307,10 @@ export default {
               closeTimeout: 3000,
             }).open();
             self.fetchMyBooking();
+            app.dialog.close();
           }
-        }
-      );
+        });
+      setTimeout(()=> app.dialog.close(), 2000);
     },
     deleteThisRequest: function(gid, rid='')
     {

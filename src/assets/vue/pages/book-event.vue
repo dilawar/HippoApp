@@ -23,11 +23,11 @@
         <f7-list media-list>
           <f7-list-item v-for="(venue, key) in venues" 
                         :key="key"
-                        @click="onVenueSelected(venue.id)">
+                        @click="onVenueSelected(venue)">
             <div slot="header" bg-color="blue">{{venue.note_to_user}}</div>
             <div slot="title">{{venue.name}}</div>
             <div slot="after" v-if="isAvailable(venue)">Available</div>
-            <div slot="footer" v-if="venue.BOOKING_STATUS!=='AVAILABLE'">
+            <div slot="footer" v-if="venue.BOOKING_STATUS !== 'AVAILABLE'">
               {{venue.BOOKING}}
             </div>
             <div slot="header">
@@ -135,28 +135,17 @@
       <!-- NOT READONLY -->
       <f7-list-group v-if="! thisEvent.readonly" media-list>
         <f7-list-input @input="thisBooking.title = $event.target.value"
-                     floating-label 
                      label="Title" 
                      placeholder="At least 6 chars"
                      type="textarea" resizable required 
                      :value="thisBooking.title">
         </f7-list-input>
 
-        <f7-list-input type="texteditor"
-                       label="Description"
-                       :value="thisBooking.description"
-                       @input="thisBooking.description=$event.target.value">
-        </f7-list-input>
-
-        <!--
-        <f7-list-input :input="false">
+        <f7-list-input :input="false" label="Description (optional)">
           <vue-editor ref="description" 
                       slot="input"
-                      placeholder="Description (optional)"
                       v-model="thisBooking.description">
           </vue-editor>
-        </f7-list-input>
-        -->
         </f7-list-input>
 
       </f7-list-group>
@@ -209,7 +198,7 @@
                       @click="popupVenueSelect=true">
         </f7-list-item>
         <f7-list-item v-else>
-          <f7-button small 
+          <f7-button small raised fill
                      slot="after" 
                      :disabled="thisBooking.title.length < 4"
                      @click="openVenueSelectPopup()">
@@ -225,12 +214,11 @@
         <f7-list-item checkbox 
                        title="Add to NCBS Calendar?"
                        :checked="thisBooking.is_public_event==='YES'"
-                       @change="thisBooking.is_public_event=$event.target.value?'YES':'NO'">
+                       @change="thisBooking.is_public_event=$event.target.checked?'YES':'NO'">
         </f7-list-item>
 
         <f7-list-item>
-          <f7-button raised 
-                     small
+          <f7-button raised small fill
                      :disabled="! isBookingValid.status" 
                      @click="bookThisEvent()"
                      slot="after">
@@ -395,8 +383,11 @@ export default {
         return true;
       return false;
     },
-    onVenueSelected: function(venueid)
+    onVenueSelected: function(venue)
     {
+      if(venue.BOOKING_STATUS !== 'AVAILABLE')
+        return;
+      const venueid = venue.id;
       const self = this;
       self.thisBooking.venue = venueid;
       console.log('Selected venue is ' + venueid);
@@ -421,9 +412,7 @@ export default {
       // Attach the repeat_pat for the API.
       self.thisBooking.repeat_pat = pat;
 
-      self.thisBooking.is_public_event = 'YES'
-
-      //console.log('BOOKING', self.thisBooking);
+      console.log('BOOKING', self.thisBooking);
 
       // Assign the class to talk.
       app.dialog.preloader('Sending booking request...');
