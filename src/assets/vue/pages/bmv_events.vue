@@ -1,16 +1,22 @@
 <template>
-   <f7-page infinite @infinite="loadMore">
-      <f7-navbar title="Events" back-link="Back">
-      </f7-navbar>
+  <f7-page infinite @infinite="loadMore">
+    <f7-navbar title="Events" back-link="Back">
+      <f7-subnavbar :inner="false">
+        <f7-searchbar
+          search-container=".event-list"
+          search-in=".item-title, .item-header, .item-subtitle, .item-text">
+        </f7-searchbar>
+      </f7-subnavbar>
+    </f7-navbar>
 
-      <f7-block v-if="getRoles().includes('BOOKMYVENUE_ADMIN')">
-        <f7-list no-hairlines media-list accordion-list>
+      <f7-block v-if="rolesCSV.includes('BOOKMYVENUE_ADMIN')">
+        <f7-list media-list accordion-list class="event-list">
           <f7-list-item v-for="(event, key) in events" :key="key"
                         accordion-item
-                        :bg-color="(event.is_public_event=='YES')?'yellow':''"
+                        :style="event.is_public_event==='YES'?'background-color:yellow':''"
                         @click="openEventPopup(event)"
                         >
-            <div slot="header"> Created by {{event.created_by}} </div>
+            <div slot="footer"> Created by {{event.created_by}} </div>
             <div slot="title"> {{event.title}} </div>
             <div slot="text"> 
               {{event.date | date}} |
@@ -18,7 +24,9 @@
               {{event.end_time | clockTime }}
               (#Events {{event.total}})
             </div>
-            <div slot="subtitle"> {{event.class}} @{{event.venue}} </div>
+            <div slot="header"> {{event.class}} 
+              <span style="float:right"> {{event.venue}}</span>
+            </div>
           </f7-list-item>
         </f7-list>
       </f7-block>
@@ -71,14 +79,15 @@
                               swipeout
                               @swipeout:delete="deleteEvent(event)"
                               >
-                  <div slot="text">
+                  <div slot="title">
                     {{event.date | date}}, 
                     {{event.start_time | clockTime}} to 
                     {{event.end_time | clockTime }}
                   </div>
                   <div slot="footer" v-if="event.is_public_event==='YES'">
-                    PUBLIC EVENT
+                    Public Event
                   </div>
+                  <div slot="footer" v-else>Private Event</div>
                   <div v-if="isMobileApp()"> <!-- MOBILE -->
                     <f7-swipeout-actions right>
                       <f7-swipeout-button delete 
@@ -103,11 +112,11 @@
                   <div slot="footer" v-else> <!-- BROWSER -->
                     <f7-row>
                       <f7-col>
-                        <f7-button small raised color="red"
+                        <f7-button small color="red"
                           @click="deleteEvent(event)">Delete</f7-button>
                       </f7-col>
                       <f7-col>
-                          <f7-button small raised
+                          <f7-button small 
                                      @click="toggleIsPublicEvent(event)">
                             toggle PUBLIC EVENT
                           </f7-button>
@@ -137,12 +146,14 @@
         eventPopup: false,
         popupTitle: 'Review request',
         allowInfinite: true,
+        rolesCSV: '',
       };
     },
     mounted()
     {
       const self = this;
       self.fetchUpcomingEvents();
+      self.fetchRoles();
     },
     methods : {
       refreshData: function( ) {
@@ -219,6 +230,14 @@
         console.log('Deleting event: ', event);
         event['status'] = 'CANCELLED';
         self.updateEvent(event);
+      },
+      fetchRoles: function() {
+        const self = this;
+        self.promiseWithAuth('me/roles').then( function(x) {
+          var res = JSON.parse(x.data).data;
+          if('roles' in res)
+            self.rolesCSV = res.roles;
+        });
       },
       deleteGroup: function(gid) 
       {
