@@ -12,8 +12,8 @@
       <f7-block-title small>
         Total {{requests.length}} requests are pending...
       </f7-block-title>
-      <f7-block v-if="getRoles().includes('BOOKMYVENUE_ADMIN')">
 
+      <f7-block>
         <f7-list no-hairlines 
                  media-list 
                  class="request-list"
@@ -21,7 +21,7 @@
           <f7-list-item v-for="(request, id) in requests"
                         :key="id"
                         accordion-item
-                        :bg-color="(request.is_public_event=='YES')?'yellow':''"
+                        :bg-color="(request.is_public_event==='YES')?'yellow':''"
                         @click="openReviewPopup(request)"
                         >
             <div slot="header"> Created by {{request.created_by}} </div>

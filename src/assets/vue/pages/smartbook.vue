@@ -18,6 +18,7 @@
 
       <f7-list-item checkbox 
                     :checked="sendEmailToAcademic"
+                    @change="changeSendEmailToAcademic"
                     title="Send email(s) to Academic community"
                     footer="Hippo will send email to academic community on the 
                             day of event. I'll also add this to NCBS public 
@@ -27,10 +28,12 @@
 
     <f7-button v-if="sendEmailToAcademic"
                :disabled="! isValidSelection()" 
+               raised filled
                :href="'/register-event-with-speaker/'+eventType">
       Continue
     </f7-button>
     <f7-button v-else 
+               raised filled
                :disabled="! isValidSelection()"
                :href="'/bookevent/0/'+eventType">
       Continue
@@ -54,7 +57,7 @@
             Created on: {{talk.created_on | date}}
           </div>
           <div slot="after">
-            <f7-button small raised 
+            <f7-button small raised filled
                        :href="'/bookevent/talks.'+talk.id+'/'+talk.type">
               Book
             </f7-button>
@@ -77,7 +80,6 @@ export default {
       eventTypes: [],
       eventType: 'UNKNOWN',
       sendEmailToAcademic: false,
-      addToGoogleCalendar: false,
     };
   },
   mounted: function() {
@@ -87,7 +89,6 @@ export default {
 
     self.eventType = 'UNKNOWN';
     self.sendEmailToAcademic = false;
-    self.addToGoogleCalendar = false;
 
     // Currently only NOPUBLIC type of bookings are allowed.
     app.dialog.preloader();
@@ -138,6 +139,10 @@ export default {
        else
         self.sendEmailToAcademic = false;
       return ans;
+    },
+    changeSendEmailToAcademic: function(ev) {
+      const self = this;
+      self.sendEmailToAcademic = ev.target.checked;
     },
   },
 }; 
