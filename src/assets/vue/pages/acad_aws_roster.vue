@@ -1,11 +1,10 @@
 <template>
   <f7-page>
+
     <f7-navbar title="AWS Roster" back-link="Back">
       <f7-subnavbar :inner="false">
-        <f7-searchbar 
-          search-container=".aws-roster"
-          search-in=".item-title, .item-subtitle, .item-header, .item-footer"
-          > 
+        <f7-searchbar search-container=".aws-roster"
+          search-in=".item-title, .item-subtitle, .item-header, .item-footer, .item-text"> 
         </f7-searchbar>
       </f7-subnavbar>
     </f7-navbar>
@@ -50,21 +49,15 @@
       <f7-block-title small> 
         Total {{speakers.length}} speakers.
       </f7-block-title>
-      <f7-list media-list
-               accordion-list
-               no-hairlines
-               class="aws-roster">
-
+      <f7-list media-list accordion-list no-hairlines class="aws-roster">
         <f7-list-input :input="false" label="Type login to add to roster">
           <input id="autocomplete_hippo_login" 
                  slot="input"
                  placeholder="Type login to add to roster"/>
         </f7-list-input>
-
         <f7-list-item v-for="(speaker, key) in speakers"
                       :key="key"
-                      accordion-item
-                      >
+                      accordion-item>
           <div slot="title">{{speaker|name}} ({{speaker.login}})</div>
           <div slot="text">{{speaker.pi_or_host}} | {{speaker.specialization}} </div>
           <div slot="after">{{speaker.num_aws}} </div>
