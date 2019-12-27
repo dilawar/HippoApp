@@ -132,7 +132,7 @@ export default {
         self.promiseWithAuth('search/login/'+q)
           .then( function(x)  {
             var res = JSON.parse(x.data);
-            results = res.map(a=> a.login);
+            results = res.map(a=> a.login + '('+a.pi_or_host+')');
             autocomplete.preloaderHide();
             render(results);
           });
