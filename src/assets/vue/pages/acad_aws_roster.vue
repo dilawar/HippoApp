@@ -115,6 +115,8 @@ export default {
     app.autocomplete.create({
       inputEl : '#autocomplete_hippo_login',
       openIn: 'dropdown',
+      valueProperty: 'login',
+      textProperty: 'nameWithPIOrHost',
 
       source: function(q, render)
       {
@@ -132,14 +134,16 @@ export default {
         self.promiseWithAuth('search/login/'+q)
           .then( function(x)  {
             var res = JSON.parse(x.data);
-            results = res.map(a=> a.login + '('+a.pi_or_host+')');
+            res.map(function(e) {
+              e.nameWithPIOrHost = e.name + ' (PI/HOST: ' + e.pi_or_host + ')';
+            });
             autocomplete.preloaderHide();
-            render(results);
+            render(res);
           });
       },
       on: {
         change: function(val) {
-          self.thisSpeaker.login = val[0];
+          self.thisSpeaker.login = val[0].login;
           app.dialog.confirm("Add to AWS roster?", self.thisSpeaker.login
             , function(v) {
               console.log('Adding ' + val[0] + ' to roster');
