@@ -9,6 +9,42 @@
       </f7-subnavbar>
     </f7-navbar>
 
+    <!-- POPUP ASSIGN AWS. -->
+    <f7-popup :opened="popupAssignAWS" @popup:close="popupAssignAWS = false">
+      <f7-page>
+        <f7-navbar title="Assign AWS">
+          <f7-nav-right>
+            <f7-link popup-close>Close</f7-link>
+          </f7-nav-right>
+        </f7-navbar>
+    
+        <f7-block>
+          <f7-list no-hairlines>
+            <f7-list-input label="Speaker" readonly :value="thisSpeaker | name" >
+            </f7-list-input>
+            <f7-list-input label="PI/HOST Email"
+                           :value="thisSpeaker.pi_or_host"
+                           @input="thisSpeaker.pi_or_host=$event.target.value"
+                           >
+            </f7-list-input> 
+          </f7-list>
+        </f7-block>
+
+        <f7-block>
+          <f7-block-title>Available dates</f7-block-title>
+          <f7-list no-hairlines media-list>
+            <!-- Following dates are available. -->
+            <f7-list-item :key="key"
+                   v-for="(date, key) in availableAWSDates" 
+                   :title="date">
+              <div slot="header"> In {{toNow(date, '')}} </div>
+              <f7-button slot="after"> Assign </f7-button>
+            </f7-list-item>
+          </f7-list>
+        </f7-block>
+      </f7-page>
+    </f7-popup>
+
     <!-- POPUP SPEAKER. CURRENTLY DOES NOTHING. -->
     <f7-popup :opened="popupSpeaker" @popup:close="popupSpeaker = false">
       <f7-page>
@@ -70,12 +106,16 @@
           <!-- accordion content -->
           <f7-accordion-content>
             <f7-block>
-              <f7-col>
-                <f7-button color="red" 
-                  @click="removeFromAwsRoster(speaker.login)">
-                  Remove
-                </f7-button>
-              </f7-col>
+              <f7-row>
+                <f7-col>
+                  <f7-button @click="removeFromAwsRoster(speaker.login)">
+                    Remove
+                  </f7-button>
+                </f7-col>
+                <f7-col v-if="speaker.days_since_last_aws >= 730">
+                  <f7-button @click="assignAWS(speaker)">Assign a slot</f7-button>
+                </f7-col>
+              </f7-row>
             </f7-block>
           </f7-accordion-content>
 
@@ -95,6 +135,8 @@ export default {
       speakers: [],
       thisSpeaker: {},
       popupSpeaker: false,
+      popupAssignAWS: false,
+      availableAWSDates: [],
     };
   },
   mounted()
@@ -188,6 +230,18 @@ export default {
       const self = this;
       self.thisSpeaker = speaker;
       self.popupSpeaker = true;
+    },
+    assignAWS: function(speaker) {
+      const self = this;
+      const app = self.$f7;
+      self.thisSpeaker = speaker;
+      console.log("Try to assign a slot for " + speaker.login);
+      self.promiseWithAuth('acadadmin/awsroster/available_dates/10')
+        .then( function(x) {
+          self.availableAWSDates = JSON.parse(x.data).data;
+          console.log('date: ', self.availableAWSDates);
+          self.popupAssignAWS = true;
+        });
     },
     removeFromAwsRoster: function(login)
     {
