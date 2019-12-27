@@ -22,11 +22,11 @@
         <allow-intent href="market:*"/>
         <splash density="port-hdpi" src="res/screen/android/splash-port-mdpi.png"/>
         <preference name="SplashShowOnlyFirstTime" value="true"/>
-        <!-- <preference name="SplashScreenSpinnerColor" value="blue"/> -->
     </platform>
     <platform name="ios">
         <allow-intent href="itms:*"/>
         <allow-intent href="itms-apps:*"/>
     </platform>
     <allow-navigation href="*"/>
+    <engine name="android" spec="~8.1.0"/>
 </widget>
