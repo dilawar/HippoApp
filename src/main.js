@@ -114,7 +114,7 @@ Vue.mixin({
          return moment(date).format("YYYY-MM-DD");
       },
       humanReadableDate: function( date ) {
-         return moment(date, "YYYY-MM-DD").format("MMM DD");
+         return moment(date, "YYYY-MM-DD").format("MMM DD, YYYY");
       },
       toNow: function(date, time){
          let b = moment(date + ' ' + time, 'YYYY-MM-DD HH:mm:ss');

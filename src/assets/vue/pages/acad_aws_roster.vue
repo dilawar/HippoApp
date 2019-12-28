@@ -19,6 +19,7 @@
         </f7-navbar>
     
         <f7-block>
+          <f7-block-title>You are assigning AWS of</f7-block-title>
           <f7-list no-hairlines>
             <f7-list-input label="Speaker" readonly :value="thisSpeaker | name" >
             </f7-list-input>
@@ -31,12 +32,12 @@
         </f7-block>
 
         <f7-block>
-          <f7-block-title>Available dates</f7-block-title>
+          <f7-block-title>Following dates are available.</f7-block-title>
           <f7-list no-hairlines media-list>
             <!-- Following dates are available. -->
             <f7-list-item :key="key"
                    v-for="(date, key) in availableAWSDates" 
-                   :title="date">
+                   :title="humanReadableDate(date)">
               <div slot="header"> In {{toNow(date, '')}} </div>
               <f7-button slot="after"> Assign </f7-button>
             </f7-list-item>
@@ -95,11 +96,16 @@
                       :key="key"
                       accordion-item>
           <div slot="title">{{speaker|name}} ({{speaker.login}})</div>
-          <div slot="text">{{speaker.pi_or_host}} | {{speaker.specialization}} </div>
+          <div slot="text">PI/Host: {{speaker.pi_or_host}} | {{speaker.specialization}} </div>
           <div slot="after">{{speaker.num_aws}} </div>
-          <div slot="header">Last AWS {{speaker.days_since_last_aws}} days ago</div>
+          <div slot="header">
+            Last AWS {{speaker.days_since_last_aws}} days ago.
+            <span v-if="speaker.upcoming_aws" style="color:red;font-size:medium"> 
+              Upcoming AWS on {{humanReadableDate(speaker.upcoming_aws)}}.
+            </span>
+          </div>
           <f7-icon slot="media" 
-               v-if="speaker.days_since_last_aws >= 730" 
+               v-if="speaker.days_since_last_aws >= 730 && (!  speaker.upcoming_aws)" 
                icon="fa fa-bolt fa-2x">
           </f7-icon>
 
@@ -108,12 +114,14 @@
             <f7-block>
               <f7-row>
                 <f7-col>
-                  <f7-button @click="removeFromAwsRoster(speaker.login)">
-                    Remove
+                  <f7-button small raised @click="removeFromAwsRoster(speaker.login)">
+                    Remove From Roster
                   </f7-button>
                 </f7-col>
-                <f7-col v-if="speaker.days_since_last_aws >= 730">
-                  <f7-button @click="assignAWS(speaker)">Assign a slot</f7-button>
+                <f7-col v-if="speaker.days_since_last_aws >= 400 && (!  speaker.upcoming_aws)">
+                  <f7-button small raised @click="assignAWS(speaker)">
+                    Assign a slot
+                  </f7-button>
                 </f7-col>
               </f7-row>
             </f7-block>
