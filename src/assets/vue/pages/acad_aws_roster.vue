@@ -18,28 +18,26 @@
           </f7-nav-right>
         </f7-navbar>
     
-        <f7-block>
-          <f7-block-title>You are assigning AWS of</f7-block-title>
-          <f7-list no-hairlines>
-            <f7-list-input label="Speaker" readonly :value="thisSpeaker | name" >
-            </f7-list-input>
-            <f7-list-input label="PI/HOST Email"
-                           :value="thisSpeaker.pi_or_host"
-                           @input="thisSpeaker.pi_or_host=$event.target.value"
-                           >
-            </f7-list-input> 
-          </f7-list>
-        </f7-block>
 
         <f7-block>
           <f7-block-title>Following dates are available.</f7-block-title>
+
+          <f7-row>
+            You are assigning AWS date for {{thisSpeaker | name}}.
+            <br />
+            (PI/Host: {{thisSpeaker.pi_or_host}})
+          </f7-row>
+
           <f7-list no-hairlines media-list>
             <!-- Following dates are available. -->
             <f7-list-item :key="key"
                    v-for="(date, key) in availableAWSDates" 
                    :title="humanReadableDate(date)">
               <div slot="header"> In {{toNow(date, '')}} </div>
-              <f7-button slot="after"> Assign </f7-button>
+              <f7-button slot="after" 
+                         @click="assignAWSSlot(thisSpeaker.login, date)">
+                Assign
+              </f7-button>
             </f7-list-item>
           </f7-list>
         </f7-block>
@@ -114,7 +112,8 @@
             <f7-block>
               <f7-row>
                 <f7-col>
-                  <f7-button small raised @click="removeFromAwsRoster(speaker.login)">
+                  <f7-button @click="removeFromAwsRoster(speaker.login)"
+                             small raised color=red>
                     Remove From Roster
                   </f7-button>
                 </f7-col>
@@ -231,6 +230,7 @@ export default {
             thisSpeaker.login = '';
           }
         });
+      self.fetchAWSSpeakers();
       setTimeout(()=> app.dialog.close(), 5000);
     },
     openSpeakerPopup: function(speaker)
@@ -251,11 +251,33 @@ export default {
           self.popupAssignAWS = true;
         });
     },
+    assignAWSSlot: function(login, slotDate) {
+      const self = this;
+      const app = self.$f7;
+
+      console.log("Assigning " + slotDate + " for user " + login + ".");
+
+      // Venue will be assigned by Sever.
+      var thisAWS = {date:self.dbDate(slotDate), speaker: login};
+      app.dialog.preloader('Assigning AWS...', thisAWS);
+      self.promiseWithAuth('/acadadmin/aws/assign', thisAWS)
+        .then( function(x) {
+          app.dialog.close();
+          var res = JSON.parse(x.data).data;
+          if(! res.success)
+            self.notify('Failed', res.msg);
+          else
+            self.notify('Success', res.msg);
+        });
+
+      self.popupAssignAWS = false;
+      self.fetchAWSSpeakers();
+    },
     removeFromAwsRoster: function(login)
     {
       const self = this;
       const app = self.$f7;
-      app.dialog.prompt("Reason?", "Removing from AWS"
+      app.dialog.prompt("Reason?", "Removing from AWS roster."
         , function(value) {
             console.log("Removing user " + login);
             self.promiseWithAuth('acadadmin/awsroster/remove/'+login,{reason:value})

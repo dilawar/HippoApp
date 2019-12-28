@@ -31,7 +31,7 @@
           <f7-list-item link="/acadadmin/aws/" 
                         target="_blank"
                         view=".view-main"
-                        title="Upcoming AWSs" 
+                        title="Annual Work Seminar (AWS)" 
                         panel-close
                         >
           </f7-list-item>
