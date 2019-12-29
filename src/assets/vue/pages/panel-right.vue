@@ -1,5 +1,5 @@
 <template>
-  <f7-page @page:beforein="fetchRoles()">
+  <f7-page @page:init="fetchRoles()">
     <f7-navbar title="Admin panel"></f7-navbar>
 
       <!-- More information here -->
