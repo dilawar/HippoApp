@@ -172,10 +172,10 @@
            style="border-top:1px solid lightgray"
            :key="'xyz'+date">
         <f7-row>
-          <f7-col width="25"> {{awses[0].date | date }} <br />
+          <f7-col width="25"> {{humanReadableDate(awses[0].date)}} <br />
             <f7-button raised small @click="acceptSchedule(awses)">Accept All</f7-button>
           </f7-col>
-          <f7-col width="25" v-for="(aws, key) in awses" :key="key" no-gap>
+          <f7-col width="25" v-for="(aws, key) in awses" :key="'yy'+key" no-gap>
             {{aws.speaker}}<sup>{{aws.num_aws}}</sup>
             <br />
             <span style="font-size:xx-small">{{aws.specialization}}
