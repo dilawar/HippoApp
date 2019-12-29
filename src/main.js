@@ -410,7 +410,7 @@ Vue.mixin({
          return moment(time, 'YYYY-MM-DD').format('(ddd) MMM DD');
       },
       'name' : function(login) {
-         return login.first_name + ' ' + login.last_name;
+         return ' '.join([login.first_name, login.middle_name, login.last_name]);
       },
       'tt' : function(text) {
          return "<tt>" + text + "</tt>";

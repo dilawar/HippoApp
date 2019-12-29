@@ -1,82 +1,82 @@
 <template>
-   <f7-page ptr ptr:refresh="refreshPage">
+  <f7-page ptr ptr:refresh="refreshPage">
 
-      <f7-navbar title="Annual Work Seminars" back-link="Back">
-      </f7-navbar>
+    <f7-navbar title="Annual Work Seminars" back-link="Back">
+    </f7-navbar>
 
-      <!-- POPUP ASSIGN -->
-      <f7-popup :opened="openAssignPopup" @popup:close="openAssignPopup=false">
-        <f7-page>
-          <f7-navbar title="Assign AWS">
-            <f7-nav-right>
-              <f7-link popup-close>Close</f7-link>
-            </f7-nav-right>
-          </f7-navbar>
+    <!-- POPUP ASSIGN -->
+    <f7-popup :opened="openAssignPopup" @popup:close="openAssignPopup=false">
+      <f7-page>
+        <f7-navbar title="Assign AWS">
+          <f7-nav-right>
+            <f7-link popup-close>Close</f7-link>
+          </f7-nav-right>
+        </f7-navbar>
 
-          <f7-block>
-            <f7-list no-hairlines media-list>
+        <f7-block>
+          <f7-list no-hairlines media-list>
 
-              <f7-list-input :input="false" label="Date">
-                <date-picker lang="en"
-                             slot="input"
-                             v-model="thisAWS.date"
-                             format="YYYY-MM-DD"
-                             type="date">
-                </date-picker>
-              </f7-list-input>
+            <f7-list-input :input="false" label="Date">
+              <date-picker lang="en"
+                           slot="input"
+                           v-model="thisAWS.date"
+                           format="YYYY-MM-DD"
+                           type="date">
+              </date-picker>
+            </f7-list-input>
 
-              <f7-list-input :value="thisAWS.venue" 
-                             label="Venue" 
-                             readonly
-                             placeholder="Hippo will assign one automatically">
-              </f7-list-input>
+            <f7-list-input :value="thisAWS.venue" 
+                           label="Venue" 
+                           readonly
+                           placeholder="Hippo will assign one automatically">
+            </f7-list-input>
 
-              <f7-list-input label="Speaker" type="text" :input="false">
-                 <input id="autocomplete_aws_speaker"  
-                        :value="thisAWS.speaker"
-                        @input="thisAWS.speaker = $event.target.value"
-                        slot="input" type="text" />
-              </f7-list-input>
-            </f7-list>
-            <f7-row>
-              <f7-col>
-                <f7-button popup-close raised @click="assignThisAWS()"> 
-                  Assign
-                </f7-button>
-              </f7-col>
-            </f7-row>
-          </f7-block>
-        </f7-page>
-      </f7-popup>
+            <f7-list-input label="Speaker" type="text" :input="false">
+              <input id="autocomplete_aws_speaker"  
+                     :value="thisAWS.speaker"
+                     @input="thisAWS.speaker = $event.target.value"
+                     slot="input" type="text" />
+            </f7-list-input>
+          </f7-list>
+          <f7-row>
+            <f7-col>
+              <f7-button popup-close raised @click="assignThisAWS()"> 
+                Assign
+              </f7-button>
+            </f7-col>
+          </f7-row>
+        </f7-block>
+      </f7-page>
+    </f7-popup>
 
-      <!-- POPUP EDIT -->
-      <f7-popup :opened="openEditPopup" @popup:close="openEditPopup = false">
-        <f7-page>
-          <f7-navbar title="Edit AWS">
-            <f7-nav-right>
-              <f7-link popup-close>Close</f7-link>
-            </f7-nav-right>
-          </f7-navbar>
+    <!-- POPUP EDIT -->
+    <f7-popup :opened="openEditPopup" @popup:close="openEditPopup = false">
+      <f7-page>
+        <f7-navbar title="Edit AWS">
+          <f7-nav-right>
+            <f7-link popup-close>Close</f7-link>
+          </f7-nav-right>
+        </f7-navbar>
 
-          <f7-block>
-            <f7-list no-hairlines>
+        <f7-block>
+          <f7-list no-hairlines>
 
-              <f7-list-input :value="thisAWS.date" label="Date" readonly>
-              </f7-list-input>
+            <f7-list-input :value="thisAWS.date" label="Date" readonly>
+            </f7-list-input>
 
-              <f7-list-input :value="thisAWS.venue"  readonly label="Venue">
-              </f7-list-input>
+            <f7-list-input :value="thisAWS.venue"  readonly label="Venue">
+            </f7-list-input>
 
-              <f7-list-input label="Speaker" readonly :value="thisAWS.speaker">
-              </f7-list-input>
+            <f7-list-input label="Speaker" readonly :value="thisAWS.speaker">
+            </f7-list-input>
 
-              <!-- FOLLOWING ITEMS APPEARS ONLY WHEN EDITING AWS -->
-              <f7-list-input label="Title"
-                             :value="thisAWS.title"
-                             @input="thisAWS.title=$event.target.value"
-                             type="text"
-                             >
-              </f7-list-input>
+            <!-- FOLLOWING ITEMS APPEARS ONLY WHEN EDITING AWS -->
+            <f7-list-input label="Title"
+                           :value="thisAWS.title"
+                           @input="thisAWS.title=$event.target.value"
+                           type="text"
+                           >
+            </f7-list-input>
 
               <f7-list-item label="Description">
                 <vue-editor ref="quillEditor" v-model="thisAWS.abstract">
@@ -92,113 +92,113 @@
                 </f7-button>
               </f7-list-item>
 
-            </f7-list>
-          </f7-block>
-        </f7-page>
-      </f7-popup>
+          </f7-list>
+        </f7-block>
+      </f7-page>
+    </f7-popup>
 
 
-      <f7-block-title small>
-        Upcoming Annual Work Seminars
-        <f7-button small 
-                   raised fill color="yellow"
-                   @click="openAssignPopup=true"
-                   style="float:right">
-          Assign AWS
-        </f7-button>
-      </f7-block-title>
-      <f7-block>
-        <f7-list media-list accordion-list
-                 no-hairlines
-                 v-for="(AWSes, date) in upcomingAWS"
-                 :key="'aws'+date"
-                 >
+    <f7-block-title small>
+      Upcoming Annual Work Seminars
+      <f7-button small 
+                 raised fill color="yellow"
+                             @click="openAssignPopup=true"
+                             style="float:right">
+        Assign AWS
+      </f7-button>
+    </f7-block-title>
+    <f7-block>
+      <f7-list media-list accordion-list
+               no-hairlines
+               v-for="(AWSes, date) in upcomingAWS"
+               :key="'aws'+date"
+               >
 
-          <f7-block-title style="color:black">
-            {{date | date }}, {{venueInfo(AWSes[0].venue)}} 
-          </f7-block-title>
-          <f7-list-item v-if="AWSes.length < 3">
-            <div slot="title" text-color="gray">Some slots are empty ...</div>
-            <f7-button @click="addAWSSchedule(date, AWSes[0])"
-                       slot="after"
-                       small outline raised>
-              Add AWS
-            </f7-button>
-          </f7-list-item>
+               <f7-block-title style="color:black">
+                 {{date | date }}, {{venueInfo(AWSes[0].venue)}} 
+               </f7-block-title>
+        <f7-list-item v-if="AWSes.length < 3">
+          <div slot="title" text-color="gray">Some slots are empty ...</div>
+          <f7-button @click="addAWSSchedule(date, AWSes[0])"
+                            slot="after"
+                            small outline raised>
+            Add AWS
+          </f7-button>
+        </f7-list-item>
 
-          <f7-list-item v-for="(aws, key) in AWSes"
-                        :key="key"
-                        accordion-item
-                        >
-            <div slot="title" v-html="aws.by"></div>
-            <div slot="text" v-html="aws.title"></div>
-            <div slot="footer">{{aws.supervisor_1}}</div>
-            <div slot="footer">{{aws.supervisor_2}}</div>
-            <f7-accordion-content>
-              <f7-block>
-              <div v-html="aws.abstract"></div>
-              <f7-row>
-                <f7-col>
-                  <f7-button small 
-                             fill 
-                             @click="cancelAWS(aws)"
-                             color="red">
-                    Cancel
-                  </f7-button>
-                </f7-col>
-                <f7-col></f7-col>
-                <f7-col>
-                  <f7-button small fill @click="editAWSClick(aws)">Edit</f7-button>
-                </f7-col>
-              </f7-row>
-              </f7-block>
-            </f7-accordion-content>
-            <div slot="media" v-if="aws.acknowledged==='NO'">
-              <f7-icon icon="fa fa-question fa-2x"></f7-icon>
-            </div>
-            <div slot="media" v-else>
-              <f7-icon icon="fa fa-check fa-fw"></f7-icon>
-            </div>
-          </f7-list-item>
-        </f7-list>
-      </f7-block>
+        <f7-list-item v-for="(aws, key) in AWSes"
+                      :key="key"
+                      accordion-item
+                      >
+                      <div slot="title" v-html="aws.by"></div>
+                      <div slot="text" v-html="aws.title"></div>
+                      <div slot="footer">{{aws.supervisor_1}}</div>
+                      <div slot="footer">{{aws.supervisor_2}}</div>
+                      <f7-accordion-content>
+                        <f7-block>
+                          <div v-html="aws.abstract"></div>
+                          <f7-row>
+                            <f7-col>
+                              <f7-button small 
+                                         fill 
+                                         @click="cancelAWS(aws)"
+                                         color="red">
+                                Cancel
+                              </f7-button>
+                            </f7-col>
+                            <f7-col></f7-col>
+                            <f7-col>
+                              <f7-button small fill @click="editAWSClick(aws)">Edit</f7-button>
+                            </f7-col>
+                          </f7-row>
+                        </f7-block>
+                      </f7-accordion-content>
+                      <div slot="media" v-if="aws.acknowledged==='NO'">
+                        <f7-icon icon="fa fa-question fa-2x"></f7-icon>
+                      </div>
+                      <div slot="media" v-else>
+                        <f7-icon icon="fa fa-check fa-fw"></f7-icon>
+                      </div>
+        </f7-list-item>
+      </f7-list>
+    </f7-block>
 
-      <!-- Upcoming schedule -->
-      <f7-block-title>
-        Computed Temporary Schedule
-        <f7-button small color="yellow" fill 
-                         style="float:right"
-                         @click="computeSchedule()">
-          Compute Schedule
-        </f7-button>
-      </f7-block-title>
-      <f7-block>
-        <div v-for="(awses, date) in schedule" 
-             style="border-top:1px solid lightgray"
-             :key="date">
-          <f7-row>
-            <f7-col width="25" .center> 
-              {{awses[0].date|date}}
-              <br />
-              <f7-button raised small @click="acceptSchedule(awses)">Accept All</f7-button>
-            </f7-col>
-            <f7-col width="25" v-for="(aws, key) in awses" :key="key" no-gap>
-              {{aws.speaker}}<sup>{{aws.num_aws}}</sup>
-              <br />
-              <span style="font-size:xx-small">{{aws.specialization}}
+    <!-- Upcoming schedule -->
+    <f7-block-title>
+      Computed Temporary Schedule
+      <f7-button small color="yellow" fill 
+                       style="float:right"
+                       @click="computeSchedule()">
+        Compute Schedule
+      </f7-button>
+    </f7-block-title>
+    <f7-block>
+      <div v-for="(awses, date) in schedule" 
+           style="border-top:1px solid lightgray"
+           :key="date">
+        <f7-row>
+          <f7-col width="25" .center> 
+            {{awses[0].date|date}}
+            <br />
+            <f7-button raised small @click="acceptSchedule(awses)">Accept All</f7-button>
+          </f7-col>
+          <f7-col width="25" v-for="(aws, key) in awses" :key="key" no-gap>
+            {{aws.speaker}}<sup>{{aws.num_aws}}</sup>
+            <br />
+            <span style="font-size:xx-small">{{aws.specialization}}
               <br />
               Last AWS {{str2Moment(aws['date'], 'YYYY-MM-DD')
-                .diff(str2Moment(aws.last_aws_date, 'YYYY-MM-DD'), 'days')}} ago
-              </span>
-            </f7-col>
-            <!-- Add padding. -->
-            <f7-col v-for="i in 3-awses.length" width="25">
-            </f7-col>
-          </f7-row>
-        </div>
-      </f7-block>
+              .diff(str2Moment(aws.last_aws_date, 'YYYY-MM-DD'), 'days')}} ago
+            </span>
+          </f7-col>
+          <!-- Add padding. -->
+          <f7-col v-for="(i,kkk) in 3-awses.length" width="25" :key="kkk">
+          </f7-col>
+        </f7-row>
+      </div>
+    </f7-block>
 
-   </f7-page>
+  </f7-page>
 
 </template>
 

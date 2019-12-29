@@ -72,110 +72,96 @@
 import moment from 'moment';
 
 export default {
-   data() {
-      return {
-         inventories: [],
-         items: [],
-         photos: [],
-         vlData: {
-            items: [],
-         },
-      };
-   },
-   mounted() {
-     const self = this;
-     const app = self.$f7;
-     self.inventories = self.loadStore('inventories');
-     if( ! self.inventories || self.inventories.length == 0)
-     {
-       // Get all inventory.
-       app.dialog.preloader('Fetching inventory');
-       self.postWithPromise( '/inventory/list/100').then(
-         function(x) 
-         {
-           self.inventories = JSON.parse(x.data).data;
-           self.saveStore('inventories', self.inventories);
-           app.dialog.close();
-         }
-       );
-     }
-     setTimeout(() => app.dialog.close(), 3000);
-     self.toItems(self.inventories.list);
-   },
-   methods: { 
-      fetchInventory: function() {
-         const self = this;
-         const app = self.$f7;
-         
-        app.dialog.preloader('Fetching inventory...');
-         self.postWithPromise( '/inventory/list')
-            .then(function(x) {
-               let res = JSON.parse(x.data);
-               if(res.status === 'ok')
-               {
-                  self.inventories = res.data;
-                  self.saveStore('inventories', self.inventories);
-               }
-               else
-                  self.inventories = self.loadStore('inventories');
-               self.toItems(self.inventories.list);
-              app.dialog.close();
+  data() {
+    return {
+      inventories: [],
+      items: [],
+      photos: [],
+      vlData: {
+        items: [],
+      },
+    };
+  },
+  mounted() {
+    const self = this;
+    self.fetchInventory();
+  },
+  methods: { 
+    fetchInventory: function() {
+      const self = this;
+      const app = self.$f7;
+
+      app.dialog.preloader('Fetching inventory...');
+      self.postWithPromise( '/inventory/list')
+        .then(function(x) {
+          let res = JSON.parse(x.data);
+          if(res.status === 'ok')
+          {
+            self.inventories = res.data;
+            self.saveStore('inventories', self.inventories);
+          }
+          else
+            self.inventories = self.loadStore('inventories');
+          self.toItems(self.inventories.list);
+          app.dialog.close();
+        }
+        );
+      setTimeout(() => app.dialog.close(), 3000);
+    },
+    toItems: function( invItems ) 
+    {
+      const self = this;
+      self.items = [];
+      for(var k in invItems)
+      {
+        let inv = invItems[k];
+        self.items.push({
+          title: inv.name,
+          header: inv.item_condition + ', ' + inv.scientific_name,
+          footer: inv.person_in_charge + ' (' + inv.faculty_in_charge + ')',
+          data: inv,
+          text: [inv.name, inv.scientific_name, inv.description,
+            , inv.person_in_charge, inv.faculty_in_charge].join(' ')
+        });
+      }
+      self.vlData.items = self.items;
+    },
+    searchAll: function(query, items) 
+    {
+      const found = [];
+      let q = query.toLowerCase().trim();
+      for (let i = 0; i < items.length; i += 1) 
+        if ( (items[i].text.toLowerCase().indexOf(q) >= 0) || (q === '')) 
+          found.push(i);
+      return found; // return array with mathced indexes
+    },
+    renderExternal: function(vl, vlData) 
+    {
+      const self = this;
+      self.vlData = vlData;
+    },
+    fetchAndDisplayPhoto: function(ids) {
+      const self = this;
+      // Fetching images.
+      ids = ids.join(',');
+      console.log( "Fetching image ", ids );
+      self.photos = [];
+      self.promiseWithAuth('images/get/'+ids).then( 
+        function( x ) {
+          let res = JSON.parse(x.data);
+          if(res)
+          {
+            res = res.data[ids];
+            if(res) {
+              res.forEach( function(k) {
+                self.photos.push( {src : k});
+              });
             }
-         );
-        setTimeout(() => app.dialog.close(), 3000);
-      },
-      toItems: function( invItems ) 
-      {
-         const self = this;
-         self.items = [];
-         for(var k in invItems)
-         {
-            let inv = invItems[k];
-            self.items.push({
-               title: inv.name,
-               header: inv.item_condition + ', ' + inv.scientific_name,
-               footer: inv.person_in_charge + ' (' + inv.faculty_in_charge + ')',
-               data: inv,
-               text: [inv.name, inv.scientific_name, inv.description,
-                  , inv.person_in_charge, inv.faculty_in_charge].join(' ')
-            });
-         }
-         self.vlData.items = self.items;
-      },
-      searchAll: function(query, items) 
-      {
-         const found = [];
-         let q = query.toLowerCase().trim();
-         for (let i = 0; i < items.length; i += 1) 
-            if ( (items[i].text.toLowerCase().indexOf(q) >= 0) || (q === '')) 
-               found.push(i);
-         return found; // return array with mathced indexes
-      },
-      renderExternal: function(vl, vlData) 
-      {
-         const self = this;
-         self.vlData = vlData;
-      },
-      fetchAndDisplayPhoto: function(ids) {
-         const self = this;
-         // Fetching images.
-         ids = ids.join(',');
-         console.log( "Fetching image ", ids );
-         self.photos = [];
-         self.promiseWithAuth('images/get/'+ids).then( 
-           function( x ) {
-               let res = JSON.parse(x.data);
-               if(res)
-               {
-                  res = res.data[ids];
-                  res.forEach( function(k) {
-                     self.photos.push( {src : k});
-                  });
-               }
-               self.$refs.photobrowser.open();
-            });
-      },
-   },
+          }
+          self.$refs.photobrowser.open();
+        });
+    },
+  },
 
 };
 </script>

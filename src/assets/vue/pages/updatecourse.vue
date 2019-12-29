@@ -1,128 +1,129 @@
 <template>
-   <f7-page>
-      <f7-navbar title="Manage Registration/Grade" back-link="Back">
-      </f7-navbar>
+  <f7-page>
+    <f7-navbar title="Manage Registration/Grade" back-link="Back">
+    </f7-navbar>
 
-      <!-- ASSIGN NEW STUDENT -->
-      <f7-block strong>
-        <f7-card>
-          <f7-card-content>
-            <f7-row >
-              <f7-col width="40">
-                <v-autocomplete  placeholder="Student login"
-                                 results-property="email"
-                                 results-display="name"
-                                 results-value="login"
-                                 @selected="(v)=>thisRegistration.student_id=v.selectedObject.login"
-                                 :request-headers="apiPostData()"
-                                 method="post"
-                                 :source="(q)=>searchPeopleURI(q, 'login')">
-                </v-autocomplete>
-              </f7-col>
-              <f7-col width="30">
-                <f7-input label="Type" 
-                          type="select"
-                          @change="thisRegistration.type=$event.target.value"
-                          :value="thisRegistration.type">
-                  <option value="CREDIT" selected>CREDIT</option>
+    <!-- ASSIGN NEW STUDENT -->
+    <f7-block strong>
+      <f7-card>
+        <f7-card-content>
+          <f7-row >
+            <f7-col width="40">
+              <v-autocomplete  placeholder="Student login"
+                               results-property="email"
+                               results-display="name"
+                               results-value="login"
+                               @selected="(v)=>thisRegistration.student_id=v.selectedObject.login"
+                               :request-headers="apiPostData()"
+                               method="post"
+                               :source="(q)=>searchPeopleURI(q, 'login')">
+              </v-autocomplete>
+            </f7-col>
+            <f7-col width="30">
+              <f7-input label="Type" 
+                        type="select"
+                        @change="thisRegistration.type=$event.target.value"
+                        :value="thisRegistration.type">
+                <option value="CREDIT" selected>CREDIT</option>
+                <option value="AUDIT">AUDIT</option>
+              </f7-input>
+            </f7-col>
+            <f7-col width="25">
+              <f7-button @click="addRegistration()"
+                    :disabled="thisRegistration.student_id.length<2">
+                    Register
+              </f7-button>
+            </f7-col>
+          </f7-row>
+        </f7-card-content>
+      </f7-card>
+
+      <f7-block-title small> {{thisCourseId}}: 
+        Total {{registrations.length}} registrations.
+        Click on the row to change registration or to assign grade.
+      </f7-block-title>
+
+      <f7-list media-list no-hairlines>
+        <f7-list-item v-for="(st,key) in registrations"
+                      :key="key"
+                      :title="st.login | name"
+                      :after="st.type"
+                      @click="onRegSelect(st)"
+                      :footer="'Registered on: '+dbDateTime(st.registered_on)">
+          <div slot="media" v-if="st.grade">{{st.grade}}</div>
+        </f7-list-item>
+
+      </f7-list>
+    </f7-block>
+
+    <!-- POPUP  -->
+    <f7-popup :opened="openPopup" @popup:close="openPopup = false">
+      <f7-page>
+        <f7-navbar title="Manage registration">
+          <f7-nav-right>
+            <f7-link popup-close>Close</f7-link>
+          </f7-nav-right>
+        </f7-navbar>
+
+        <f7-block>
+          <f7-block-title>
+            {{thisRegistration.student_id}}, {{thisCourseId}}
+          </f7-block-title>
+
+          <f7-card>
+            <f7-card-content>
+              <f7-list media-list>
+                <f7-list-input label="Registration type" 
+                               type="select"
+                               @change="thisRegistration.type=$event.target.value"
+                               :value="thisRegistration.type">
+                  <option value="CREDIT">CREDIT</option>
                   <option value="AUDIT">AUDIT</option>
-                </f7-input>
-              </f7-col>
-              <f7-col width="25">
-                <f7-button @click="addRegistration()"
-                          :disabled="thisRegistration.student_id.length<2">
-                          Register
-                </f7-button>
-              </f7-col>
-            </f7-row>
-          </f7-card-content>
-        </f7-card>
+                  <f7-button slot="after">Change</f7-button>
+                </f7-list-input>
 
-        <f7-block-title small>
-          {{thisCourseId}}. Total {{registrations.length}} registrations.
-        </f7-block-title>
+                <f7-list-item>
+                  <f7-row>
+                    <f7-col>
+                      <f7-button color="red" fill @click="dropCourse()">Drop</f7-button>
+                    </f7-col>
+                    <f7-col>
+                      <f7-button @click="changeRegistration()">Change</f7-button>
+                    </f7-col>
+                  </f7-row>
+                </f7-list-item>
+              </f7-list>
+            </f7-card-content>
+          </f7-card>
 
-        <f7-list media-list no-hairlines>
-          <f7-list-item v-for="(st,key) in registrations"
-                        :key="key"
-                        :title="st.student_id"
-                        :after="st.type"
-                        @click="onRegSelect(st)"
-                        :footer="'Registered on: '+dbDateTime(st.registered_on)">
-            <div slot="media" v-if="st.grade">{{st.grade}}</div>
-          </f7-list-item>
+          <f7-card>
+            <f7-card-content>
+              <f7-list media-list>
+                <f7-list-input label="Grade" 
+                               type="select"
+                               @change="thisRegistration.grade=$event.target.value"
+                               :value="thisRegistration.grade">
+                  <option v-for="(gr, kye) in availableGrades" :value="gr">
+                  {{gr}}
+                  </option>
+                </f7-list-input>
+                <f7-list-item>
+                  <div slot="header">
+                    To remove existing grade, select 'X'.
+                  </div>
+                  <f7-button slot="after"
+                             :disabled="! thisRegistration.grade"
+                             @click="assignGrade()"
+                             >Assign</f7-button>
+                </f7-list-item>
+              </f7-list>
+            </f7-card-content>
+          </f7-card>
 
-        </f7-list>
-      </f7-block>
-
-      <!-- POPUP  -->
-      <f7-popup :opened="openPopup" @popup:close="openPopup = false">
-        <f7-page>
-          <f7-navbar title="Manage registration">
-            <f7-nav-right>
-              <f7-link popup-close>Close</f7-link>
-            </f7-nav-right>
-          </f7-navbar>
-
-          <f7-block>
-            <f7-block-title>
-              {{thisRegistration.student_id}}, {{thisCourseId}}
-            </f7-block-title>
-
-            <f7-card>
-              <f7-card-content>
-                <f7-list media-list>
-                  <f7-list-input label="Registration type" 
-                                 type="select"
-                                 @change="thisRegistration.type=$event.target.value"
-                                 :value="thisRegistration.type">
-                    <option value="CREDIT">CREDIT</option>
-                    <option value="AUDIT">AUDIT</option>
-                    <f7-button slot="after">Change</f7-button>
-                  </f7-list-input>
-
-                  <f7-list-item>
-                    <f7-row>
-                      <f7-col>
-                        <f7-button color="red" fill @click="dropCourse()">Drop</f7-button>
-                      </f7-col>
-                      <f7-col>
-                        <f7-button @click="changeRegistration()">Change</f7-button>
-                      </f7-col>
-                    </f7-row>
-                  </f7-list-item>
-                </f7-list>
-              </f7-card-content>
-            </f7-card>
-
-            <f7-card>
-              <f7-card-content>
-                <f7-list media-list>
-                  <f7-list-input label="Grade" 
-                                 type="select"
-                                 @change="thisRegistration.grade=$event.target.value"
-                                 :value="thisRegistration.grade">
-                    <option v-for="(gr, kye) in availableGrades" :value="gr">
-                      {{gr}}
-                    </option>
-                  </f7-list-input>
-                  <f7-list-item>
-                    <div slot="header">
-                      To remove existing grade, select 'X'.
-                    </div>
-                    <f7-button slot="after"
-                               :disabled="! thisRegistration.grade"
-                               @click="assignGrade()"
-                      >Assign</f7-button>
-                  </f7-list-item>
-                </f7-list>
-              </f7-card-content>
-            </f7-card>
-
-          </f7-block>
-        </f7-page>
-      </f7-popup>
-   </f7-page>
+        </f7-block>
+      </f7-page>
+    </f7-popup>
+  </f7-page>
 
 </template>
 
