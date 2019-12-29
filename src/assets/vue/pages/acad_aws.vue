@@ -110,26 +110,20 @@
     <f7-block>
       <f7-list media-list accordion-list
                no-hairlines
-               v-for="(AWSes, date) in upcomingAWS"
-               :key="'aws'+date"
-               >
+               v-for="(AWSes, date) in upcomingAWS" :key="date">
 
                <f7-block-title style="color:black">
                  {{date | date }}, {{venueInfo(AWSes[0].venue)}} 
                </f7-block-title>
         <f7-list-item v-if="AWSes.length < 3">
           <div slot="title" text-color="gray">Some slots are empty ...</div>
-          <f7-button @click="addAWSSchedule(date, AWSes[0])"
-                            slot="after"
-                            small outline raised>
+          <f7-button slot="after" small outline raised
+                     @click="addAWSSchedule(date, AWSes[0])">
             Add AWS
           </f7-button>
         </f7-list-item>
 
-        <f7-list-item v-for="(aws, key) in AWSes"
-                      :key="key"
-                      accordion-item
-                      >
+        <f7-list-item v-for="(aws, key) in AWSes" :key="key" accordion-item>
                       <div slot="title" v-html="aws.by"></div>
                       <div slot="text" v-html="aws.title"></div>
                       <div slot="footer">{{aws.supervisor_1}}</div>
@@ -172,14 +166,13 @@
         Compute Schedule
       </f7-button>
     </f7-block-title>
+
     <f7-block>
-      <div v-for="(awses, date) in schedule" 
+      <div v-for="(awses, date) in schedule"
            style="border-top:1px solid lightgray"
-           :key="date">
+           :key="'xyz'+date">
         <f7-row>
-          <f7-col width="25" .center> 
-            {{awses[0].date|date}}
-            <br />
+          <f7-col width="25"> {{awses[0].date | date }} <br />
             <f7-button raised small @click="acceptSchedule(awses)">Accept All</f7-button>
           </f7-col>
           <f7-col width="25" v-for="(aws, key) in awses" :key="key" no-gap>
@@ -191,8 +184,7 @@
               .diff(str2Moment(aws.last_aws_date, 'YYYY-MM-DD'), 'days')}} ago
             </span>
           </f7-col>
-          <!-- Add padding. -->
-          <f7-col v-for="(i,kkk) in 3-awses.length" width="25" :key="kkk">
+          <f7-col v-for="i in 3-awses.length" width="25" :key="'xxx'+i">
           </f7-col>
         </f7-row>
       </div>
