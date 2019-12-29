@@ -166,8 +166,10 @@ export default {
 
     // Fetch metadata first.
     self.fetchCoursesMetadata();
-    self.fetchCourses();
-    self.fetchRunningCourses();
+    setTimeout( function() {
+      self.fetchCourses();
+      self.fetchRunningCourses();
+    }, 2000);
 
   },
   methods: {
