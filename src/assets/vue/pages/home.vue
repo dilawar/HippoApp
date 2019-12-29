@@ -292,9 +292,7 @@ export default {
     fetchRoles: function() {
       const self = this;
       self.promiseWithAuth('me/roles').then( function(x) {
-        var res = JSON.parse(x.data).data;
-        if('roles' in res)
-          self.rolesCSV = res.roles;
+        self.rolesCSV = JSON.parse(x.data).data.roles;
       });
     },
     fetchFlashCards: function() {
