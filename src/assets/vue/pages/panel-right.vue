@@ -1,5 +1,5 @@
 <template>
-  <f7-page>
+  <f7-page @page:beforein="fetchRoles()">
     <f7-navbar title="Admin panel"></f7-navbar>
 
       <!-- More information here -->
@@ -80,11 +80,17 @@ export default {
   },
   mounted: function() {
     const self = this;
-    const app = self.$f7;
-    self.promiseWithAuth('me/profile').then( function(x) {
-      self.roles = JSON.parse(x.data).data.roles.split(',');
-      console.log('Roles are: ', self.roles);
-    });
+    self.fetchRoles();
+  },
+  methods: {
+    fetchRoles: function() {
+      const self = this;
+      const app = self.$f7;
+      self.promiseWithAuth('me/profile').then( function(x) {
+        self.roles = JSON.parse(x.data).data.roles.split(',');
+        console.log('Roles are: ', self.roles);
+      });
+    },
   },
 }
 </script>
