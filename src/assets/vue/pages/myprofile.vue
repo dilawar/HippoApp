@@ -14,15 +14,10 @@
     <f7-block>
       <f7-block-title small>Currently profile is readonly.</f7-block-title>
 
-      <f7-list no-hairlines sortable inner>
-        <f7-list-item
-          v-for="(val, key) in profile"
-          :key="key"
-          :header="formatKey(key)"
-          :title="val"
-          >
-          <!-- <f7-icon slot="media" icon="fa fa-check-square-o fa-fw"></f7-icon> -->
+      <f7-list no-hairlines media-list>
+        <f7-list-item v-for="(val, key) in profile" :key="key" :title="formatKey(key)" :after="val">
         </f7-list-item>
+        <f7-list-item></f7-list-item>
       </f7-list>
     </f7-block>
 
@@ -35,13 +30,18 @@ export default {
   data() {
     const self = this;
     return {
-      profile: self.$store.getters.profile,
+      profile: {},
     };
   },
   mounted()
   {
     const self = this;
-    self.profile['jcs'] = Object.keys(self.profile.jcs).join(',');
+
+    self.postWithPromise('me/profile')
+      .then(function(x) {
+        self.profile = JSON.parse(x.data).data;
+        self.profile['jcs'] = Object.keys(self.profile.jcs).join(',');
+      });
   },
   methods: {
   },
