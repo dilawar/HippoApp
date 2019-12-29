@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "55600696834",
+    "firebase_url": "https://ncbs-hippo-1555150627506.firebaseio.com",
+    "project_id": "ncbs-hippo-1555150627506",
+    "storage_bucket": "ncbs-hippo-1555150627506.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:55600696834:android:3d77b52da47a2a8e",
+        "android_client_info": {
+          "package_name": "com.dilawar.hippo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "55600696834-7oq6pvl4728hkhbn6hq7n9kkcnustvvn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKlXVYMcPM2nxDv0a6LBLfpV8BkZwu_OA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "55600696834-7oq6pvl4728hkhbn6hq7n9kkcnustvvn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
