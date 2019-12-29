@@ -469,30 +469,29 @@ export default new Vue({
             }, 500);
          }, self);
 
-         // // Backbutton.
-         // document.addEventListener("backbutton", function(e){
-         //    const self = this;
-
-         //    console.log( 'back button');
-         //    console.log('panels', app.panel);
-         //    app.views.main.router.back();
-
-
-         //    var leftp = app.panel.left && app.panel.left.opened;
-         //    var rightp = app.panel.right && app.panel.right.opened;
-         //    if ( leftp || rightp ) 
-         //    {
-         //       app.panel.close();
-         //       return false;
-         //    } 
-         //    else if (app.views.main.router.url == '/') 
-         //    {
-         //       app.dialog.confirm('Are you sure you want to exit?', 'Exit MyApp'
-         //          , function() { navigator.app.exitApp();}
-         //          , function() { }
-         //       );
-         //    } 
-         // }, false);
+         //// Backbutton.
+         //document.addEventListener("backbutton", function(e){
+         //   const self = this;
+         //   const app = self.$f7;
+         //   console.log( 'back button');
+         //   //console.log('panels', app.panel);
+         //   //var leftp = app.panel.left && app.panel.left.opened;
+         //   //var rightp = app.panel.right && app.panel.right.opened;
+         //   //if ( leftp || rightp ) 
+         //   //{
+         //   //   app.panel.close();
+         //   //   return false;
+         //   //} 
+         //   //else if (app.views.main.router.url == '/') 
+         //   //{
+         //   //   app.dialog.confirm('Are you sure you want to exit?', 'Exit MyApp'
+         //   //      , function() { navigator.app.exitApp();}
+         //   //      , function() { }
+         //   //   );
+         //   //} 
+         //   //else 
+         //   //   app.views.main.router.back();
+         //}, false);
 
          // Open link in external browser
          window.open = cordova.InAppBrowser.open;
