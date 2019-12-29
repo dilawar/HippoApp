@@ -80,16 +80,20 @@
       </f7-page>
     </f7-popup>
 
+
     <f7-block>
-      <f7-block-title small> 
-        Total {{speakers.length}} speakers.
-      </f7-block-title>
-      <f7-list media-list accordion-list no-hairlines class="aws-roster">
-        <f7-list-input :input="false" label="Type login to add to roster">
+      <f7-list no-hairlines>
+        <f7-list-input :input="false">
           <input id="autocomplete_hippo_login" 
                  slot="input"
                  placeholder="Type login to add to roster"/>
         </f7-list-input>
+      </f7-list>
+    </f7-block>
+
+    <f7-block>
+      <f7-block-title small>Total {{speakers.length}} speakers.</f7-block-title>
+      <f7-list media-list accordion-list no-hairlines class="aws-roster">
         <f7-list-item v-for="(speaker, key) in speakers"
                       :key="key"
                       accordion-item>

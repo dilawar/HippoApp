@@ -1,7 +1,7 @@
 <template>
    <f7-page ptr ptr:refresh="refreshPage">
 
-      <f7-navbar title="Annual Work Seminar" back-link="Back">
+      <f7-navbar title="Annual Work Seminars" back-link="Back">
       </f7-navbar>
 
       <!-- POPUP ASSIGN -->
@@ -177,11 +177,12 @@
              style="border-top:1px solid lightgray"
              :key="date">
           <f7-row>
-            <f7-col> 
-              <f7-button small @click="acceptSchedule(awses)">Accept</f7-button>
+            <f7-col width="25" .center> 
               {{awses[0].date|date}}
+              <br />
+              <f7-button raised small @click="acceptSchedule(awses)">Accept All</f7-button>
             </f7-col>
-            <f7-col v-for="(aws, key) in awses" :key="key" no-gap>
+            <f7-col width="25" v-for="(aws, key) in awses" :key="key" no-gap>
               {{aws.speaker}}<sup>{{aws.num_aws}}</sup>
               <br />
               <span style="font-size:xx-small">{{aws.specialization}}
@@ -189,6 +190,9 @@
               Last AWS {{str2Moment(aws['date'], 'YYYY-MM-DD')
                 .diff(str2Moment(aws.last_aws_date, 'YYYY-MM-DD'), 'days')}} ago
               </span>
+            </f7-col>
+            <!-- Add padding. -->
+            <f7-col v-for="i in 3-awses.length" width="25">
             </f7-col>
           </f7-row>
         </div>
