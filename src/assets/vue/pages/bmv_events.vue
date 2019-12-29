@@ -147,7 +147,7 @@
         eventPopup: false,
         popupTitle: 'Review request',
         allowInfinite: true,
-        rolesCSV: '',
+        rolesCSV: 'USER',
       };
     },
     mounted()
@@ -235,9 +235,8 @@
       fetchRoles: function() {
         const self = this;
         self.promiseWithAuth('me/roles').then( function(x) {
-          var res = JSON.parse(x.data).data;
-          if('roles' in res)
-            self.rolesCSV = res.roles;
+          let res = JSON.parse(x.data).data;
+          self.rolesCSV = res.roles;
         });
       },
       deleteGroup: function(gid) 
