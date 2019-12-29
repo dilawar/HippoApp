@@ -55,7 +55,6 @@ export default {
                container.value = "";
 
                container.style.backgroundColor = 'white';     
-               //container.style.backgroundImage = "url(https://t1.gstatic.com/images?q=tbn:ANd9GcR6FCUMW5bPn8C4PbKak2BJQQsmC-K9-mbYBeFZm1ZM2w2GRy40Ew)";
                container.style.backgroundSize = "100px 100px";
                container.style.width = '110px';
                container.style.height = '15px';
