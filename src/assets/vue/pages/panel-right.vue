@@ -87,7 +87,9 @@ export default {
       const self = this;
       const app = self.$f7;
       self.promiseWithAuth('me/profile').then( function(x) {
-        self.roles = JSON.parse(x.data).data.roles.split(',');
+        var res = JSON.parse(x.data);
+        if(res.data)
+          self.roles = res.data.roles.split(',');
       });
     },
   },

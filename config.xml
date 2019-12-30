@@ -22,6 +22,7 @@
         <allow-intent href="market:*"/>
         <splash density="port-hdpi" src="res/screen/android/splash-port-mdpi.png"/>
         <preference name="SplashShowOnlyFirstTime" value="true"/>
+        <resource-file src="google-services.json" target="app/google-services.json"/>
     </platform>
     <platform name="ios">
         <allow-intent href="itms:*"/>

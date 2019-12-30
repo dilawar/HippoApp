@@ -456,6 +456,11 @@ export default new Vue({
       onDeviceReady : function(x) {
          const self = this;
          console.log( "Add onDeviceReady callback here.");
+         
+         // Firebase
+         cordova.plugins.firebase.messaging.requestPermission().then(function() {
+            console.log("Push messaging is allowed");
+         });
 
          // Notifications 
          cordova.plugins.notification.local.on("click", function(not) {

@@ -13,8 +13,11 @@ init:
 	cordova plugin add cordova-plugin-inappbrowser || echo "A"
 	cordova plugin add cordova-plugin-browsersync || echo "B"
 	#cordova plugin add https://github.com/dilawar/cordova-plugin-background-geolocation --save 
-	cordova plugin add cordova-plugin-local-notification || echo "D"
-	cordova plugin add cordova-plugin-dialogs || echo "D"
+	cordova plugin add cordova-plugin-local-notification --save || echo "D"
+	cordova plugin add cordova-plugin-dialogs --save || echo "E"
+	cordova plugin add cordova-plugin-firebase-messaging --save || echo "F"
+	cordova plugin add cordova-support-google-services --save || echo "F"
+	cordova plugin add cordova-android-play-services-gradle-release || echo "F"
 	npm install
 
 build : 
