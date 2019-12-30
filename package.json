@@ -58,10 +58,13 @@
     "base64-to-image": "^1.0.2",
     "browser-sync": "^2.26.7",
     "cordova-android": "^8.1.0",
+    "cordova-android-firebase-gradle-release": "^4.0.0",
     "cordova-android-play-services-gradle-release": "4.0.0",
     "cordova-browser": "^6.0.0",
     "cordova-custom-config": "^5.1.0",
     "cordova-electron": "^1.1.1",
+    "cordova-plugin-androidx": "^1.0.2",
+    "cordova-plugin-androidx-adapter": "^1.1.0",
     "cordova-plugin-app-event": "^1.2.2",
     "cordova-plugin-background-mode": "git+https://github.com/katzer/cordova-plugin-background-mode.git",
     "cordova-plugin-badge": "^0.8.8",
@@ -146,12 +149,15 @@
       "cordova-plugin-dialogs": {},
       "cordova-support-google-services": {},
       "cordova-plugin-firebase-messaging": {},
-      "cordova-android-play-services-gradle-release": {}
+      "cordova-android-play-services-gradle-release": {},
+      "cordova-android-firebase-gradle-release": {},
+      "cordova-plugin-androidx": {},
+      "cordova-plugin-androidx-adapter": {}
     },
     "platforms": [
       "browser",
-      "android",
-      "electron"
+      "electron",
+      "android"
     ]
   }
 }

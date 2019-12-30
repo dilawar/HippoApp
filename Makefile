@@ -17,7 +17,9 @@ init:
 	cordova plugin add cordova-plugin-dialogs --save || echo "E"
 	cordova plugin add cordova-plugin-firebase-messaging --save || echo "F"
 	cordova plugin add cordova-support-google-services --save || echo "F"
+	cordova plugin add cordova-plugin-androidx || echo "F"
 	cordova plugin add cordova-android-play-services-gradle-release || echo "F"
+	cordova plugin add cordova-android-firebase-gradle-release || echo "F"
 	npm install
 
 build : 
