@@ -455,13 +455,6 @@ export default new Vue({
 
       onDeviceReady : function(x) {
          const self = this;
-         console.log( "Add onDeviceReady callback here.");
-         
-         // Firebase
-         cordova.plugins.firebase.messaging.requestPermission().then(function() {
-            console.log("Push messaging is allowed");
-         });
-
          // Notifications 
          cordova.plugins.notification.local.on("click", function(not) {
             // On click show notification page.
@@ -474,6 +467,19 @@ export default new Vue({
             }, 500);
          }, self);
 
+         // Firebase
+         cordova.plugins.firebase.messaging.requestPermission({forceShow: true}).then(function() {
+            console.log("You'll get foreground notifications when a push message arrives");
+         });
+
+         cordova.plugins.firebase.messaging.onMessage( function(payload) {
+            // console.log("New foreground FCM message.", JSON.stringify(payload));
+         });
+
+         cordova.plugins.firebase.messaging.onBackgroundMessage(function(payload) {
+            // console.log("New background FCM message: ", JSON.stringify(payload));
+         });
+      
          //// Backbutton.
          //document.addEventListener("backbutton", function(e){
          //   const self = this;
