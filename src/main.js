@@ -479,6 +479,11 @@ export default new Vue({
          cordova.plugins.firebase.messaging.onBackgroundMessage(function(payload) {
             // console.log("New background FCM message: ", JSON.stringify(payload));
          });
+
+         // Subscribe to Hippo, NCBS, Emergency
+         cordova.plugins.firebase.messaging.subscribe("hippo");
+         cordova.plugins.firebase.messaging.subscribe("ncbs");
+         cordova.plugins.firebase.messaging.subscribe("emergency");
       
          //// Backbutton.
          //document.addEventListener("backbutton", function(e){
