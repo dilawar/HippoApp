@@ -39,6 +39,7 @@
           <div slot="title">{{course.name}}</div>
           <div slot="footer">{{course.note}}</div>
         </f7-list-item>
+        <f7-list-item></f7-list-item>
       </f7-list>
     </f7-block>
   </f7-page>

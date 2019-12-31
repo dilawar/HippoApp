@@ -47,7 +47,15 @@
           <f7-list-item link="/acadadmin/courses/" 
                         target="_blank"
                         view=".view-main"
-                        title="Courses" 
+                        title="Running Courses" 
+                        panel-close
+                        >
+          </f7-list-item>
+
+          <f7-list-item link="/acadadmin/allcourses/" 
+                        target="_blank"
+                        view=".view-main"
+                        title="All Courses" 
                         panel-close
                         >
           </f7-list-item>
@@ -75,7 +83,7 @@ export default {
       alreadyLoggedIn: false,
       notifications: [],
       profile: self.$store.getters.profile,
-      roles: 'USER',
+      roles: ['USER'],
     };
   },
   mounted: function() {
@@ -86,6 +94,7 @@ export default {
     fetchRoles: function() {
       const self = this;
       const app = self.$f7;
+      console.log("Recursively Fetching roles");
       self.promiseWithAuth('me/profile').then( function(x) {
         var res = JSON.parse(x.data);
         if(res.data)
