@@ -110,10 +110,25 @@
         </f7-block>
       </f7-page>
     </f7-popup>
+
+    <!-- Slot -->
+    <f7-popup :opened="popupAssign" @popup:close="popupAssign = false">
+      <f7-page>
+        <f7-navbar title="Assign a slot">
+          <f7-nav-right>
+            <f7-link popup-close>Close</f7-link>
+          </f7-nav-right>
+        </f7-navbar>
+
+        <f7-block>
+        </f7-block>
+
+      </f7-page>
+    </f7-popup>
     
     <!-- Running courses -->
     <f7-block>
-      <f7-block-title small>
+      <f7-block-title>
         Running courses for {{thisYear}}, {{thisSemester}}
       </f7-block-title>
 
@@ -129,25 +144,33 @@
 
     <!-- All courses -->
     <f7-block>
-      <f7-block-title small>
+
+      <f7-block-title>
         All courses. Click on the list to do more.
-        <f7-searchbar no-shadow
-                      no-hairline
+        <f7-searchbar no-hairlines
                       search-container=".course-list"
                       search-in=".item-title, .item-text, .item-footer, .item-header">
         </f7-searchbar>
       </f7-block-title>
 
-      <f7-list class="course-list">
+      <f7-list class="course-list" media-list>
         <f7-list-item v-for="(course,key) in metadata" 
-                      @click="showCourseMetaData(course)"
-                      :title="course.name"
                       :style="(course.status==='DEACTIVATED')?'background-color:red':''"
+                      :text="course.name"
                       :key="key">
-          <div slot="footer">
+
+          <div slot="header">
+            <f7-link @click="showCourseMetaData(course)" 
+               color="blue"
+               icon="fa fa-pencil fa-fw">
+            </f7-link>
             {{course.id}}, Credit: {{course.credits}}
+
+            <f7-button small color="gray" raised
+              @click="assignSlot(course)" class="pull-right">
+              Assign Slot
+            </f7-button>
           </div>
-          <div slot="after"> {{course.status}} </div>
         </f7-list-item>
         <f7-list-item></f7-list-item>
       </f7-list>
@@ -171,6 +194,7 @@ export default {
       thisSemester: moment().month() <= 6?'Spring':'Autumn',
       openCoursePopup: false,
       popupMetadata: false,
+      popupAssign: false,
       thisCourse: [],
       thisCourseMetadata: { 'instructors' : [] },
     };
@@ -324,6 +348,13 @@ export default {
               self.fetchCourseMetadata();
             });
         }, null);
+    },
+    assignSlot: function(metadata) {
+      const self = this;
+      const app = self.$f7;
+      self.thisCourseMetadata = metadata;
+      self.popupAssign = true;
+      console.log("Assinging slot");
     },
   },
 }
