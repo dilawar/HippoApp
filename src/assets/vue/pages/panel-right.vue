@@ -47,15 +47,7 @@
           <f7-list-item link="/acadadmin/courses/" 
                         target="_blank"
                         view=".view-main"
-                        title="Running Courses" 
-                        panel-close
-                        >
-          </f7-list-item>
-
-          <f7-list-item link="/acadadmin/allcourses/" 
-                        target="_blank"
-                        view=".view-main"
-                        title="All Courses" 
+                        title="Courses" 
                         panel-close
                         >
           </f7-list-item>
@@ -94,10 +86,9 @@ export default {
     fetchRoles: function() {
       const self = this;
       const app = self.$f7;
-      console.log("Recursively Fetching roles");
       self.promiseWithAuth('me/profile').then( function(x) {
         var res = JSON.parse(x.data);
-        if(res.data)
+        if(res.data && res.data.roles)
           self.roles = res.data.roles.split(',');
       });
     },
