@@ -51,6 +51,12 @@
                            >
             </f7-list-input>
 
+            <f7-list-input label="Credit"
+                           :value="thisCourseMetadata.credits"
+                           @input="thisCourseMetadata.credits=$event.target.value"
+                           >
+            </f7-list-input>
+
             <f7-list-input label="Description"
                            type="texteditor"
                            :value="thisCourseMetadata.description"
