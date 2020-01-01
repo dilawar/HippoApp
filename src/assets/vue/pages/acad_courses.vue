@@ -47,12 +47,12 @@
 
             <f7-list-input label="Name"
                            :value="thisCourseMetadata.name"
+                           @input="thisCourseMetadata.name=$event.target.value"
                            >
             </f7-list-input>
 
             <f7-list-input label="Description"
                            type="texteditor"
-                           resizable
                            :value="thisCourseMetadata.description"
                            @texteditor:change="(value)=>thisCourseMetadata.description=value"
                            >
@@ -69,7 +69,7 @@
                   {{thisCourseMetadata['instructor_'+i]}}
                 </div>
                 <div slot="after">
-                  <f7-link @click="removeInstructor(i)"> REMOVE </f7-link> 
+                  <f7-link raised small @click="removeInstructor(i)"> REMOVE </f7-link> 
                 </div>
               </f7-list-item>
 
@@ -78,6 +78,27 @@
               </f7-list-input>
             </f7-list-group>
 
+            <f7-list-group>
+              <f7-list-item>
+                <f7-row>
+                  <f7-col v-if="thisCourseMetadata.status === 'VALID'">
+                    <f7-button color=red raised @click="deactivateCourseMetadata()">
+                      Deactivate
+                    </f7-button>
+                  </f7-col>
+                  <f7-col v-else>
+                    <f7-button color=red raised @click="activateCourseMetadata()">
+                      Activate
+                    </f7-button>
+                  </f7-col>
+                  <f7-col>
+                    <f7-button raised @click="updateCourseMetadata()">
+                      Update
+                    </f7-button>
+                  </f7-col>
+                </f7-row>
+              </f7-list-item>
+            </f7-list-group>
           </f7-list>
 
         </f7-block>
@@ -114,9 +135,13 @@
       <f7-list class="course-list">
         <f7-list-item v-for="(course,key) in metadata" 
                       @click="showCourseMetaData(course)"
+                      :title="course.name"
+                      :style="(course.status==='DEACTIVATED')?'background-color:red':''"
                       :key="key">
-          <div slot="footer">{{course.id}}, Credit: {{course.credits}}</div>
-          <div slot="title">{{course.name}}</div>
+          <div slot="footer">
+            {{course.id}}, Credit: {{course.credits}}
+          </div>
+          <div slot="after"> {{course.status}} </div>
         </f7-list-item>
         <f7-list-item></f7-list-item>
       </f7-list>
@@ -252,6 +277,47 @@ export default {
             });
         });
       setTimeout( () => app.dialog.close(), 1000);
+    },
+    updateCourseMetadata: function() {
+      const self = this;
+      const app = self.$f7;
+      var cid = btoa(self.thisCourseMetadata.id);
+      app.dialog.preloader();
+      self.promiseWithAuth('course/metadata/update/'+cid, self.thisCourseMetadata)
+        .then(function(x) {
+          self.postWithPromise('course/metadata/get/'+cid)
+            .then(function(x) {
+              self.thisCourseMetadata = JSON.parse(x.data).data;
+              app.dialog.close();
+            });
+        });
+      setTimeout( () => app.dialog.close(), 1000);
+    },
+    deactivateCourseMetadata: function() {
+      const self = this;
+      const app = self.$f7;
+      var cid = btoa(self.thisCourseMetadata.id);
+      app.dialog.confirm("Are you sure?", "Deactivating course."
+        , function() {
+          self.postWithPromise('course/metadata/deactivate/'+cid)
+            .then( function(x) {
+              self.popupMetadata = false;
+              self.fetchCourseMetadata();
+            });
+        }, null);
+    },
+    activateCourseMetadata: function() {
+      const self = this;
+      const app = self.$f7;
+      var cid = btoa(self.thisCourseMetadata.id);
+      app.dialog.confirm("Are you sure?", "Activating course."
+        , function() {
+          self.postWithPromise('course/metadata/activate/'+cid)
+            .then( function(x) {
+              self.popupMetadata = false;
+              self.fetchCourseMetadata();
+            });
+        }, null);
     },
   },
 }
