@@ -130,7 +130,7 @@
             <f7-list-input label="Slot" 
                            type="select"
                            :value="thisCourse.slot"
-                           :defaultValue="thisCourse.slot">
+                           @input="thisCourse.slot=$event.target.value">
               <option v-for="(slot, key) in slots" :key="key" :value="key">
                   {{key}}, {{slot.html}}
               </option>
@@ -144,8 +144,8 @@
 
             <f7-list-input label="Venue" 
                            type="select" 
-                           :value="thisCourse.venue"
-                           :defaultValue="thisCourse.venue">
+                           v-model="thisCourse.venue"
+                           @input="thisCourse.venue=$event.target.value">
               <option v-for="(venue, key) in venues" 
                       name="venue" 
                       :key="key" 
@@ -170,6 +170,20 @@
                            type="date" 
                            @change="thisCourse.allow_deregistration_until=$event.target.value"
                            :value="thisCourse.allow_deregistration_until">
+            </f7-list-input>
+
+            <f7-list-input label="Is AUDIT allowed?"
+                           type="select" 
+                           @change="thisCourse.is_audit_allowed=$event.target.value"
+                           v-model="thisCourse.is_audit_allowed">
+              <option value="YES">Yes</option>
+              <option value="No">No</option>
+            </f7-list-input>
+
+            <f7-list-input label="Max registrations?"
+                           type="number" 
+                           @input="thisCourse.max_registration=$event.target.value"
+                           v-model="thisCourse.max_registration">
             </f7-list-input>
 
             <f7-list-input label="url"
@@ -313,7 +327,7 @@ export default {
   {
     const self = this;
     const app = self.$f7;
-    self.fetchRunningCourse();
+    self.fetchRunningCourses();
     self.fetchCourseMetadata();
 
     // Venues.
@@ -389,7 +403,7 @@ export default {
 
   },
   methods : {
-    fetchRunningCourse: function() 
+    fetchRunningCourses: function() 
     {
       const self = this;
       self.postWithPromise('courses/running/'+self.thisYear+'/'+self.thisSemester)
@@ -479,15 +493,17 @@ export default {
     updateRunningCourse: function() {
       const self = this;
       const app = self.$f7;
-      var cid = btoa(self.thisCourse.course_id);
+      var cid = btoa(self.thisCourse.id);
 
       console.log('Updating course: ', self.cid, self.thisCourse);
 
-      self.postWithPromise('course/running/update/'+cid)
+      app.dialog.preloader();
+      self.promiseWithAuth('course/running/update/'+cid, self.thisCourse)
         .then( function(x) {
-          self.popupMetadata = false;
-          self.fetchCourseMetadata();
+          self.fetchRunningCourses();
+          app.dialog.close();
         });
+      setTimeout(() => app.dialog.close(), 1000);
     },
   },
 }
