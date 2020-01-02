@@ -1,62 +1,59 @@
 <template>
    <f7-page page-content ptr @ptr:refresh="refreshCourses">
-      <f7-navbar title="Courses" back-link="Back"></f7-navbar>
+      <f7-navbar title="Courses" back-link="Back">
+      </f7-navbar>
 
-      <f7-block>
-         <f7-block-title>Running Courses</f7-block-title>
+     <f7-block-title>Running Courses</f7-block-title>
 
-         <f7-list accordion-list no-hairlines>
-            <f7-list-item accordion-item 
-                          v-for="(course, key) in runningCourses" 
-                          :key="key"
-                          >
-               <div slot="header">
-                  Credits {{metadata[course.course_id].credits}},
-                  Slot {{course.slot}} @{{course.venue}}, <tt>{{course.course_id}}</tt>
-               </div>
-               <div slot="media" v-if="alreadyRegistered(course.id)" >
-                    <f7-icon icon="fa fa-bookmark fa-2x"></f7-icon>
-               </div>
-               <div slot="footer"> Timeline: {{course.start_date}}  to {{course.end_date}} </div>
-               <div slot="title"> {{metadata[course.course_id].name}} </div>
-               <div slot="footer"> {{course.note}} </div>
+     <f7-list accordion-list no-hairlines>
+        <f7-list-item accordion-item 
+                      v-for="(course, key) in runningCourses" 
+                      :key="key"
+                      >
+           <div slot="header">
+              Credits {{metadata[course.course_id].credits}},
+              Slot {{course.slot}} @{{course.venue}}, <tt>{{course.course_id}}</tt>
+           </div>
+           <div slot="media" v-if="alreadyRegistered(course.id)" >
+                <f7-icon icon="fa fa-bookmark fa-2x"></f7-icon>
+           </div>
+           <div slot="footer"> Timeline: {{course.start_date}}  to {{course.end_date}} </div>
+           <div slot="title"> {{metadata[course.course_id].name}} </div>
+           <div slot="footer"> {{course.note}} </div>
 
-               <f7-accordion-content>
-                  <f7-block>
-                  <p style="font-size:small;margin-left:3%;text-align:justify" 
-                     v-html="metadata[course.course_id].description"></p>
-                  <div>
-                     <p><strong>Instructor(s)</strong></p>
-                     <p v-html="
-                                metadata[course.course_id].instructors"></p>
-                  </div>
+           <f7-accordion-content>
+              <f7-block>
+              <p style="font-size:small;margin-left:3%;text-align:justify" 
+                 v-html="metadata[course.course_id].description"></p>
+              <div>
+                 <p><strong>Instructor(s)</strong></p>
+                 <p v-html="metadata[course.course_id].instructors.html"></p>
+              </div>
 
-                  <f7-row>
-                     <f7-col> 
-                        <f7-button small raised fill color="red"
-                                   v-if="(today()<=dbDate(course.allow_deregistraction_until))
-                                         && alreadyRegistered(course.id)"
-                                          @click="registerCourse(course, 'DROP')"
-                                   >Drop</f7-button>
-                     </f7-col>
-                     <f7-col>
-                        <f7-button small raised fill 
-                           @click="registerCourse(course, 'AUDIT')"
-                           v-if="(course.is_audit_allowed=='YES') && (alreadyRegistered(course.id)!='AUDIT')"
-                           >Audit</f7-button>
-                     </f7-col>
-                     <f7-col> 
-                        <f7-button small raised fill
-                           v-if="alreadyRegistered(course.id) != 'CREDIT'"
-                           @click="registerCourse(course, 'CREDIT')"
-                        >Credit</f7-button> 
-                     </f7-col>
-                  </f7-row>
-                  </f7-block>
-               </f7-accordion-content>
-            </f7-list-item>
-         </f7-list>
-      </f7-block>
+              <f7-row>
+                 <f7-col> 
+                   <f7-button small raised fill color="red"
+                              v-if="(today()<=dbDate(course.allow_deregistraction_until)) && alreadyRegistered(course.id)"
+                              @click="registerCourse(course, 'DROP')"
+                              >Drop</f7-button>
+                 </f7-col>
+                 <f7-col>
+                    <f7-button small raised fill 
+                       @click="registerCourse(course, 'AUDIT')"
+                       v-if="(course.is_audit_allowed=='YES') && (alreadyRegistered(course.id)!='AUDIT')"
+                       >Audit</f7-button>
+                 </f7-col>
+                 <f7-col> 
+                    <f7-button small raised fill
+                       v-if="alreadyRegistered(course.id) != 'CREDIT'"
+                       @click="registerCourse(course, 'CREDIT')"
+                    >Credit</f7-button> 
+                 </f7-col>
+              </f7-row>
+              </f7-block>
+           </f7-accordion-content>
+        </f7-list-item>
+     </f7-list>
 
       <!-- POPUP for giving feedback -->
       <f7-popup :opened="feedbackPopup" @popup:closed="feedbackPopup=false">
