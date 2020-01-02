@@ -403,6 +403,8 @@ Vue.mixin({
          return moment(time, 'YYYY-MM-DD').format('(ddd) MMM DD');
       },
       'name' : function(login) {
+         if(login.middle_name === 'NA')
+            login.middle_name = '';
          return [login.first_name, login.middle_name, login.last_name].join(' ');
       },
       'tt' : function(text) {

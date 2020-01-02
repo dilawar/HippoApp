@@ -289,9 +289,9 @@
         Running courses for {{thisYear}}/{{thisSemester}}.
       </f7-block-title>
 
-      <f7-card v-for="(course,key) in runningCourses" :key="key">
+      <f7-card v-for="(course,key) in runningCourses" :key="key"
+               :padding="false">
         <f7-card-content>
-
           <div>({{course.course_id}}) {{course.name}}
           <span class="pull-right">
             <strong>{{course.venue}}</strong>
@@ -317,7 +317,7 @@
             <small>{{course.note}}</small>
           </div>
 
-          <f7-row class="text-align-center">
+          <f7-row class="text-align-center" style="padding:0;padding-top:10px">
             <f7-col>
               <f7-link :href="'/updatecourse/'+course.id+'/'">
                 Manage Registrations
@@ -337,41 +337,38 @@
     </f7-block>
 
     <!-- All courses -->
-    <f7-block>
+    <f7-block-title>
+      All courses. Click on the list to do more.
+      <f7-searchbar no-hairlines
+                    search-container=".course-list"
+                    search-in=".item-title, .item-text, .item-footer, .item-header">
+      </f7-searchbar>
+    </f7-block-title>
 
-      <f7-block-title>
-        All courses. Click on the list to do more.
-        <f7-searchbar no-hairlines
-                      search-container=".course-list"
-                      search-in=".item-title, .item-text, .item-footer, .item-header">
-        </f7-searchbar>
-      </f7-block-title>
+    <f7-list class="course-list" media-list>
+      <f7-list-item v-for="(course,key) in metadata" 
+                    :style="(course.status==='DEACTIVATED')?'background-color:red':''"
+                    :text="course.name"
+                    :key="key">
 
-      <f7-list class="course-list" media-list>
-        <f7-list-item v-for="(course,key) in metadata" 
-                      :style="(course.status==='DEACTIVATED')?'background-color:red':''"
-                      :text="course.name"
-                      :key="key">
+        <div slot="header">
+          <f7-link @click="showCourseMetaData(course)" 
+             color="blue"
+             icon="fa fa-pencil fa-fw">
+          </f7-link>
+          {{course.id}}, Credit: {{course.credits}}
+          <f7-button small 
+                     raised
+                     :disabled="isARunningCourse(course.id)"
+                     @click="scheduleCourse(course)" 
+                     class="pull-right">
+            Schedule
+          </f7-button>
+        </div>
+      </f7-list-item>
+      <f7-list-item></f7-list-item>
+    </f7-list>
 
-          <div slot="header">
-            <f7-link @click="showCourseMetaData(course)" 
-               color="blue"
-               icon="fa fa-pencil fa-fw">
-            </f7-link>
-            {{course.id}}, Credit: {{course.credits}}
-            <f7-button small 
-                       raised
-                       :disabled="isARunningCourse(course.id)"
-                       @click="scheduleCourse(course)" 
-                       class="pull-right">
-              Schedule
-            </f7-button>
-          </div>
-        </f7-list-item>
-        <f7-list-item></f7-list-item>
-      </f7-list>
-
-    </f7-block>
 
   </f7-page>
 </template>
@@ -425,6 +422,11 @@ export default {
         // Allright, now check if slot, venue is available for given dates.
         for(var key of Object.keys(self.runningCourses)) {
           var course = self.runningCourses[key];
+
+          // Ignore the self.
+          if(course.id === self.thisCourse.id)
+            continue;
+
           if(parseInt(course.slot) === parseInt(self.thisCourse.slot) 
             && course.venue === self.thisCourse.venue)
           {
