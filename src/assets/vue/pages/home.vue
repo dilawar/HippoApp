@@ -101,7 +101,8 @@
       <f7-swiper pagination navigation scrollbar :params="{loop:true}">
         <f7-swiper-slide v-for="(card,key) in flashCards" :key="key">
           <div style="margin:15%; padding:10px;border-radius:20px; background-color:rgba(255,255,255,0.75)">
-            {{humanReadableDateTime(card.date, card.time)}} | {{card.title}} 
+            {{humanReadableDateTime(card.date, card.time)}} | {{card.venue}} 
+              | {{card.title}}
           </div>
         </f7-swiper-slide>
       </f7-swiper>
