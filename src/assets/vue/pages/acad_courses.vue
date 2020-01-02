@@ -4,11 +4,12 @@
     <f7-navbar title="Courses" back-link="Back">
     </f7-navbar>
 
+    <!-- Select year/semester here -->
     <f7-list>
       <f7-list-item>
         <f7-row>
           <f7-col>
-            <f7-list-input @change="fetchCourse()" 
+            <f7-list-input @change="fetchRunningCourses()" 
                                @input="thisYear=$event.target.value"
                                label="Select Year"
                                type="number" 
@@ -16,20 +17,20 @@
             </f7-list-input>
           </f7-col>
           <f7-col>
-            <f7-list-input @change="fetchCourse()" 
+            <f7-list-input @change="fetchRunningCourses()" 
                                  @input="thisSemester=$event.target.value"
                                  label="Select Semester" 
                                  type="select" 
                                  :value="thisSemester">
-              <option value="Autumn">Autumn</option>
-              <option value="Spring">Spring</option>
+              <option value="AUTUMN">Autumn</option>
+              <option value="SPRING">Spring</option>
             </f7-list-input>
           </f7-col>
         </f7-row>
       </f7-list-item>
     </f7-list>
 
-    <!-- Metadata popup.  -->
+    <!-- POPUP: Handle course information.  -->
     <f7-popup :opened="popupMetadata" @popup:close="popupMetadata = false">
       <f7-page>
         <f7-navbar title="Update course information">
@@ -119,7 +120,6 @@
             <f7-link popup-close>Close</f7-link>
           </f7-nav-right>
         </f7-navbar>
-
 
         <f7-block-title>
           {{thisCourse.name}} <br /> {{thisCourse.id}}
@@ -211,12 +211,18 @@
             <f7-row>
               <f7-col>
                 <f7-button raised fill @click="removeRunningCourse()" color="red">
-                  Remove course
+                  Remove This Course
                 </f7-button>
               </f7-col>
               <f7-col>
-                <f7-button raised @click="updateRunningCourse()">
-                  Update
+                <!-- If already assigned then we are updating. else we are
+                  adding. 
+                -->
+                <f7-button raised @click="addRunningCourse()" v-if="thisCourse.is_new">
+                  Add To Running Courses
+                </f7-button>
+                <f7-button raised @click="updateRunningCourse()" v-else>
+                  Update Running Course
                 </f7-button>
               </f7-col>
             </f7-row>
@@ -353,8 +359,11 @@
                icon="fa fa-pencil fa-fw">
             </f7-link>
             {{course.id}}, Credit: {{course.credits}}
-            <f7-button small color="gray" raised
-              @click="scheduleCourse(course)" class="pull-right">
+            <f7-button small 
+                       raised
+                       :disabled="isARunningCourse(course.id)"
+                       @click="scheduleCourse(course)" 
+                       class="pull-right">
               Schedule
             </f7-button>
           </div>
@@ -381,16 +390,18 @@ export default {
       slots: [],
       runningCourses: [],
       thisYear: moment().format('YYYY'),
-      thisSemester: moment().month() <= 6?'Spring':'Autumn',
+      thisSemester: moment().month() <= 6?'SPRING':'AUTUMN',
       openCoursePopup: false,
       popupMetadata: false,
       popupCurrentCourse: false,
       popupAssignSlot: false,
-      thisCourse : { 'name':'','course_id':'', 'id' : ''
+      thisCourse : { 'name':''
+        ,'course_id':'', 'id' : ''
         , 'start_date':'', 'end_date':'', 'venue':''
         , 'slot':'', 'allow_deregistration_until':''
         , 'ignore_tiles': ''
         , 'is_audit_allowed': 'YES', 'max_registration': -1
+        , 'is_new' : true
         , 'note':'', 'url':''},
       thisCourseStatus: 'UNKNOWN',
       thisCourseMetadata: { 'instructors' : [] },
@@ -594,13 +605,31 @@ export default {
 
       // Deep copy because we gonna compare with every runningCourse after changing it.
       self.thisCourse = JSON.parse(JSON.stringify(course));
+      self.thisCourse.is_new = false;   // Updating existing course.
       self.popupCurrentCourse = true;
     },
     updateRunningCourse: function() {
       const self = this;
       const app = self.$f7;
       app.dialog.preloader();
+      console.log('thisCourse : ', self.thisCourse);
+
       self.promiseWithAuth('course/running/update', self.thisCourse)
+        .then( function(x) {
+          var res = JSON.parse(x.data).data;
+          self.fetchRunningCourses();
+          app.dialog.alert(res.msg, "Running course", null);
+          app.dialog.close();
+        });
+      setTimeout(() => app.dialog.close(), 1000);
+    },
+    addRunningCourse: function() {
+      const self = this;
+      const app = self.$f7;
+      app.dialog.preloader();
+      console.log('thisCourse : ', self.thisCourse);
+
+      self.promiseWithAuth('course/running/add', self.thisCourse)
         .then( function(x) {
           var res = JSON.parse(x.data).data;
           self.fetchRunningCourses();
@@ -631,10 +660,11 @@ export default {
       const self = this;
       const app = self.$f7;
       self.thisCourse = {...self.thisCourse, ...{ 'name': course.name
-        , 'course_id' : course.id 
+        , 'course_id' : course.id
         , 'id' : course.id + '-' + self.thisSemester + '-' + self.thisYear
         , 'venue' : self.thisVenue
         , 'slot' : self.thisSlot
+        , 'is_new': true     // its is being added to table first time.
       }};
       self.popupCurrentCourse = true;
       self.checkVenueSlot(self.thisCourse.venue, self.thisCourse.slot);
@@ -663,6 +693,14 @@ export default {
           break;
         }
       }
+    },
+    isARunningCourse: function(id) {
+      const self = this;
+      for(var key of Object.keys(self.runningCourses)) {
+        if(id === self.runningCourses[key].course_id)
+          return true;
+      }
+      return false;
     },
   },
 }
