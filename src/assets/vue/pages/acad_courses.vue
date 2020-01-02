@@ -139,7 +139,7 @@
           <f7-list-input label="Ignore Tiles"
                          inline-label
                          type="text" 
-                         @change="thisCourse.ignore_titles=$event.target.value"
+                         @change="thisCourse.ignore_tiles=$event.target.value"
                          :value="thisCourse.ignore_tiles">
           </f7-list-input>
 
@@ -389,6 +389,7 @@ export default {
       thisCourse : { 'name':'','course_id':'', 'id' : ''
         , 'start_date':'', 'end_date':'', 'venue':''
         , 'slot':'', 'allow_deregistration_until':''
+        , 'ignore_tiles': ''
         , 'is_audit_allowed': 'YES', 'max_registration': -1
         , 'note':'', 'url':''},
       thisCourseStatus: 'UNKNOWN',
@@ -601,9 +602,9 @@ export default {
       app.dialog.preloader();
       self.promiseWithAuth('course/running/update', self.thisCourse)
         .then( function(x) {
-          var res = JSON.parse(x.data);
+          var res = JSON.parse(x.data).data;
           self.fetchRunningCourses();
-          navigator.notification.alert(res.msg);
+          app.dialog.alert(res.msg, "Running course", null);
           app.dialog.close();
         });
       setTimeout(() => app.dialog.close(), 1000);
@@ -617,7 +618,7 @@ export default {
           self.promiseWithAuth('course/running/remove', self.thisCourse)
             .then( function(x) {
               var res = JSON.parse(x.data).data;
-              navigator.notification.alert(res.msg, null, "Course removed.");
+              app.dialog.alert(res.msg, "Course removed.", null);
               app.dialog.preloader();
               self.fetchRunningCourses();
               app.dialog.close();
