@@ -112,7 +112,7 @@
     </f7-popup>
 
     <!-- Slot -->
-    <f7-popup :opened="popupAssign" @popup:close="popupAssign = false">
+    <f7-popup :opened="popupCurrentCourse" @popup:close="popupCurrentCourse=false">
       <f7-page>
         <f7-navbar title="Assign a slot">
           <f7-nav-right>
@@ -120,10 +120,86 @@
           </f7-nav-right>
         </f7-navbar>
 
+
+        <f7-block-title small>
+          Updating running course '{{thisCourse.course_id}}'
+        </f7-block-title>
+
         <f7-block>
+          <f7-list media-list no-hairlines>
+            <f7-list-input label="Slot" 
+                           type="select"
+                           :value="thisCourse.slot"
+                           :defaultValue="thisCourse.slot">
+              <option v-for="(slot, key) in slots" :key="key" :value="key">
+                  {{key}}, {{slot.html}}
+              </option>
+            </f7-list-input>
+
+            <f7-list-input label="Ignore Tiles"
+                           type="text" 
+                           @change="thisCourse.ignore_titles=$event.target.value"
+                           :value="thisCourse.ignore_tiles">
+            </f7-list-input>
+
+            <f7-list-input label="Venue" 
+                           type="select" 
+                           :value="thisCourse.venue"
+                           :defaultValue="thisCourse.venue">
+              <option v-for="(venue, key) in venues" 
+                      name="venue" 
+                      :key="key" 
+                      :value="venue.id">
+                {{venue.id}}
+              </option>
+            </f7-list-input>
+
+            <f7-list-input label="Start Date"
+                           type="date" 
+                           @change="thisCourse.start_date=$event.target.value"
+                           :value="thisCourse.start_date">
+            </f7-list-input>
+
+            <f7-list-input label="End Date"
+                           type="date" 
+                           @change="thisCourse.end_date=$event.target.value"
+                           :value="thisCourse.end_date">
+            </f7-list-input>
+
+            <f7-list-input label="Allow Dropping until?"
+                           type="date" 
+                           @change="thisCourse.allow_deregistration_until=$event.target.value"
+                           :value="thisCourse.allow_deregistration_until">
+            </f7-list-input>
+
+            <f7-list-input label="url"
+                           type="url" 
+                           @change="thisCourse.url=$event.target.value"
+                           :value="thisCourse.url">
+            </f7-list-input>
+
+            <f7-list-input label="Note"
+                           type="textarea" 
+                           @change="thisCourse.note=$event.target.value"
+                           :value="thisCourse.note">
+            </f7-list-input>
+
+            <f7-list-item>
+              <f7-row>
+                <f7-col>
+                  <f7-button raised>Cancel</f7-button>
+                </f7-col>
+                <f7-col>
+                  <f7-button raised @click="updateRunningCourse()">Update</f7-button>
+                </f7-col>
+              </f7-row>
+            </f7-list-item>
+
+          </f7-list>
         </f7-block>
 
       </f7-page>
+
     </f7-popup>
     
     <!-- Running courses -->
@@ -132,14 +208,46 @@
         Running courses for {{thisYear}}, {{thisSemester}}
       </f7-block-title>
 
-      <f7-list media-list>
-        <f7-list-item v-for="(course,key) in runningCourses" :key="key"
-                      :link="'/updatecourse/'+course.id+'/'">
-          <div slot="header">{{course.course_id}}, Slot {{course.slot}}, {{course.venue}}</div>
-          <div slot="title">{{course.name}}</div>
-          <div slot="footer">{{course.note}}</div>
-        </f7-list-item>
-      </f7-list>
+      <f7-card v-for="(course,key) in runningCourses" :key="key">
+        <f7-card-header>
+          {{course.venue}}
+          <span class="pull-right">
+            slot {{course.slot}}, {{course.ignore_tiles}}
+          </span>
+        </f7-card-header>
+        <f7-card-content>
+          <div>{{course.course_id}}, {{course.name}}</div>
+          <div>{{course.start_date | date}} to {{course.end_date | date}}</div>
+
+          <div style="font-size:small;margin:5px;padding:10px;">
+            <f7-row>
+              <f7-col>Max Registrations: {{course.max_registration}}</f7-col>
+              <f7-col>Is Audit Allowed?: {{course.is_audit_allowed}}</f7-col>
+            </f7-row>
+            <f7-row>
+              <f7-col>URL: {{course.url}}</f7-col>
+            </f7-row>
+          </div>
+
+          <div>{{course.note}}</div>
+
+          <f7-row class="text-align-center">
+            <f7-col>
+              <f7-link :href="'/updatecourse/'+course.id+'/'">
+                Manage Registrations
+              </f7-link>
+            </f7-col>
+            <f7-col>
+              <f7-link @click="showCurrentCourse(course)">
+                Edit
+              </f7-link>
+            </f7-col>
+          </f7-row>
+        </f7-card-content>
+
+      </f7-card>
+
+
     </f7-block>
 
     <!-- All courses -->
@@ -189,14 +297,16 @@ export default {
     return {
       thisData: [],
       metadata: [],
+      slots: [],
       runningCourses: [],
       thisYear: moment().format('YYYY'),
       thisSemester: moment().month() <= 6?'Spring':'Autumn',
       openCoursePopup: false,
       popupMetadata: false,
-      popupAssign: false,
-      thisCourse: [],
+      popupCurrentCourse: false,
+      thisCourse: {},
       thisCourseMetadata: { 'instructors' : [] },
+      venues: {},
     };
   },
   mounted()
@@ -206,7 +316,18 @@ export default {
     self.fetchRunningCourse();
     self.fetchCourseMetadata();
 
-    // Autocomplete
+    // Venues.
+    self.postWithPromise('venue/list/all')
+      .then( function(x) {
+        self.venues = JSON.parse(x.data).data;
+      });
+
+    // Slots.
+    self.postWithPromise('/course/slot/all')
+      .then( function(x) {
+        self.slots = JSON.parse(x.data).data;
+      });
+
     // Autocomplete.
     app.autocomplete.create({
       inputEl : '#autocomplete-instructor',
@@ -349,12 +470,24 @@ export default {
             });
         }, null);
     },
-    assignSlot: function(metadata) {
+    showCurrentCourse: function(course) {
       const self = this;
       const app = self.$f7;
-      self.thisCourseMetadata = metadata;
-      self.popupAssign = true;
-      console.log("Assinging slot");
+      self.thisCourse = course;
+      self.popupCurrentCourse = true;
+    },
+    updateRunningCourse: function() {
+      const self = this;
+      const app = self.$f7;
+      var cid = btoa(self.thisCourse.course_id);
+
+      console.log('Updating course: ', self.cid, self.thisCourse);
+
+      self.postWithPromise('course/running/update/'+cid)
+        .then( function(x) {
+          self.popupMetadata = false;
+          self.fetchCourseMetadata();
+        });
     },
   },
 }
