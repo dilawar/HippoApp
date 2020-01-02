@@ -111,117 +111,176 @@
       </f7-page>
     </f7-popup>
 
-    <!-- Slot -->
+    <!-- POPUP: Manage running courses. -->
     <f7-popup :opened="popupCurrentCourse" @popup:close="popupCurrentCourse=false">
       <f7-page>
-        <f7-navbar title="Assign a slot">
+        <f7-navbar title="Update running courses">
           <f7-nav-right>
             <f7-link popup-close>Close</f7-link>
           </f7-nav-right>
         </f7-navbar>
 
 
+        <f7-block-title>
+          {{thisCourse.name}} <br /> {{thisCourse.id}}
+        </f7-block-title>
+
+        <f7-list media-list no-hairlines>
+          <f7-list-input label="Slot" 
+                         inline-label
+                         type="select"
+                         :value="thisCourse.slot"
+                         @input="thisCourse.slot=$event.target.value">
+            <option v-for="(slot, key) in slots" :key="key" :value="key">
+            {{key}}, {{slot.html}}
+            </option>
+          </f7-list-input>
+
+          <f7-list-input label="Ignore Tiles"
+                         inline-label
+                         type="text" 
+                         @change="thisCourse.ignore_titles=$event.target.value"
+                         :value="thisCourse.ignore_tiles">
+          </f7-list-input>
+
+          <f7-list-input label="Venue" 
+                         inline-label
+                         type="select" 
+                         v-model="thisCourse.venue"
+                         @input="thisCourse.venue=$event.target.value">
+            <option v-for="(venue, key) in venues" 
+                    name="venue" 
+                    :key="key" 
+                    :value="venue.id">
+            {{venue.id}}
+            </option>
+          </f7-list-input>
+
+          <f7-list-input label="Start Date"
+                         inline-label
+                         type="date" 
+                         @input="thisCourse.start_date=$event.target.value"
+                         :value="thisCourse.start_date">
+          </f7-list-input>
+
+          <f7-list-input label="End Date"
+                         inline-label
+                         type="date" 
+                         @input="thisCourse.end_date=$event.target.value"
+                         :value="thisCourse.end_date">
+          </f7-list-input>
+
+          <f7-list-input label="Allow Dropping until?"
+                         inline-label
+                         type="date" 
+                         @change="thisCourse.allow_deregistration_until=$event.target.value"
+                         :value="thisCourse.allow_deregistration_until">
+          </f7-list-input>
+
+          <f7-list-input label="Is AUDIT allowed?"
+                         inline-label
+                         type="select" 
+                         @change="thisCourse.is_audit_allowed=$event.target.value"
+                         v-model="thisCourse.is_audit_allowed">
+            <option value="YES">Yes</option>
+            <option value="No">No</option>
+          </f7-list-input>
+
+          <f7-list-input label="Max registrations?"
+                         inline-label
+                         type="number" 
+                         @input="thisCourse.max_registration=$event.target.value"
+                         v-model="thisCourse.max_registration">
+          </f7-list-input>
+
+          <f7-list-input label="url"
+                         inline-label
+                         type="url" 
+                         @change="thisCourse.url=$event.target.value"
+                         :value="thisCourse.url">
+          </f7-list-input>
+
+          <f7-list-input label="Note"
+                         inline-label
+                         type="textarea" 
+                         @change="thisCourse.note=$event.target.value"
+                         :value="thisCourse.note">
+          </f7-list-input>
+
+          <f7-list-item v-if="thisCourseStatus === 'OK'">
+            <f7-row>
+              <f7-col>
+                <f7-button raised fill @click="removeRunningCourse()" color="red">
+                  Remove course
+                </f7-button>
+              </f7-col>
+              <f7-col>
+                <f7-button raised @click="updateRunningCourse()">
+                  Update
+                </f7-button>
+              </f7-col>
+            </f7-row>
+          </f7-list-item>
+          <f7-list-button v-else>
+            <f7-button raised disabled> {{thisCourseStatus}} </f7-button>
+          </f7-list-button>
+
+        </f7-list>
+
+      </f7-page>
+    </f7-popup>
+
+    <!-- Assign popup slot -->
+    <f7-popup :opened="popupAssignSlot" @popup:close="popupAssignSlot=false">
+      <f7-page>
+        <f7-navbar title="Assign slot/venue">
+          <f7-nav-right>
+            <f7-link popup-close>Close</f7-link>
+          </f7-nav-right>
+        </f7-navbar>
+
         <f7-block-title small>
-          Updating running course '{{thisCourse.course_id}}'
+          Assigning slot and venue: <br />
+          {{thisCourse.name}} ({{thisCourse.id}}).
         </f7-block-title>
 
         <f7-block>
           <f7-list media-list no-hairlines>
-            <f7-list-input label="Slot" 
-                           type="select"
-                           :value="thisCourse.slot"
-                           @input="thisCourse.slot=$event.target.value">
+            <f7-list-input label="Available Slots"
+                           @input="checkVenueSlot(thisVenue, $event.target.value)"
+                           :value="thisSlot"
+                           type="select">
               <option v-for="(slot, key) in slots" :key="key" :value="key">
-                  {{key}}, {{slot.html}}
+              {{key}}
               </option>
             </f7-list-input>
-
-            <f7-list-input label="Ignore Tiles"
-                           type="text" 
-                           @change="thisCourse.ignore_titles=$event.target.value"
-                           :value="thisCourse.ignore_tiles">
-            </f7-list-input>
-
-            <f7-list-input label="Venue" 
-                           type="select" 
-                           v-model="thisCourse.venue"
-                           @input="thisCourse.venue=$event.target.value">
-              <option v-for="(venue, key) in venues" 
-                      name="venue" 
-                      :key="key" 
-                      :value="venue.id">
-                {{venue.id}}
+            <f7-list-input label="Available Venues" 
+                           @input="checkVenueSlot($event.target.value, thisSlot)"
+                           :value="thisVenue"
+                           type="select">
+              <option v-for="(venue, key) in venues" :key="key" :value="venue.id">
+              {{venue.id}}
               </option>
             </f7-list-input>
-
-            <f7-list-input label="Start Date"
-                           type="date" 
-                           @change="thisCourse.start_date=$event.target.value"
-                           :value="thisCourse.start_date">
-            </f7-list-input>
-
-            <f7-list-input label="End Date"
-                           type="date" 
-                           @change="thisCourse.end_date=$event.target.value"
-                           :value="thisCourse.end_date">
-            </f7-list-input>
-
-            <f7-list-input label="Allow Dropping until?"
-                           type="date" 
-                           @change="thisCourse.allow_deregistration_until=$event.target.value"
-                           :value="thisCourse.allow_deregistration_until">
-            </f7-list-input>
-
-            <f7-list-input label="Is AUDIT allowed?"
-                           type="select" 
-                           @change="thisCourse.is_audit_allowed=$event.target.value"
-                           v-model="thisCourse.is_audit_allowed">
-              <option value="YES">Yes</option>
-              <option value="No">No</option>
-            </f7-list-input>
-
-            <f7-list-input label="Max registrations?"
-                           type="number" 
-                           @input="thisCourse.max_registration=$event.target.value"
-                           v-model="thisCourse.max_registration">
-            </f7-list-input>
-
-            <f7-list-input label="url"
-                           type="url" 
-                           @change="thisCourse.url=$event.target.value"
-                           :value="thisCourse.url">
-            </f7-list-input>
-
-            <f7-list-input label="Note"
-                           type="textarea" 
-                           @change="thisCourse.note=$event.target.value"
-                           :value="thisCourse.note">
-            </f7-list-input>
-
-            <f7-list-item>
-              <f7-row>
-                <f7-col>
-                  <f7-button raised fill @click="removeRunningCourse()" color="red">
-                    Remove course
-                  </f7-button>
-                </f7-col>
-                <f7-col>
-                  <f7-button raised @click="updateRunningCourse()">Update</f7-button>
-                </f7-col>
-              </f7-row>
-            </f7-list-item>
-
+            <f7-button raised 
+                       v-if="thisSlotVenueStatus === 'OK'"
+                       @click="assignSlotVenue()">
+              Assign
+            </f7-button>
+            <f7-button small v-else disabled>{{thisSlotVenueStatus}}</f7-button>
           </f7-list>
+
+
+
         </f7-block>
 
       </f7-page>
-
     </f7-popup>
     
     <!-- Running courses -->
     <f7-block>
       <f7-block-title>
-        Running courses for {{thisYear}}, {{thisSemester}}
+        Running courses for {{thisYear}}/{{thisSemester}}.
       </f7-block-title>
 
       <f7-card v-for="(course,key) in runningCourses" :key="key">
@@ -295,8 +354,8 @@
             </f7-link>
             {{course.id}}, Credit: {{course.credits}}
             <f7-button small color="gray" raised
-              @click="assignSlot(course)" class="pull-right">
-              Assign Slot
+              @click="scheduleCourse(course)" class="pull-right">
+              Schedule
             </f7-button>
           </div>
         </f7-list-item>
@@ -315,7 +374,9 @@ export default {
   data() {
     const self = this;
     return {
-      thisData: [],
+      thisSlot: '',
+      thisVenue:  '',
+      thisSlotVenueStatus: '',
       metadata: [],
       slots: [],
       runningCourses: [],
@@ -324,10 +385,46 @@ export default {
       openCoursePopup: false,
       popupMetadata: false,
       popupCurrentCourse: false,
-      thisCourse: {},
+      popupAssignSlot: false,
+      thisCourse : { 'name':'','course_id':'', 'id' : ''
+        , 'start_date':'', 'end_date':'', 'venue':''
+        , 'slot':'', 'allow_deregistration_until':''
+        , 'is_audit_allowed': 'YES', 'max_registration': -1
+        , 'note':'', 'url':''},
+      thisCourseStatus: 'UNKNOWN',
       thisCourseMetadata: { 'instructors' : [] },
       venues: {},
     };
+  },
+  watch : {
+    'thisCourse': {
+      handler : function(val, oldval) {
+        const self = this;
+        const app = self.$f7;
+        var keys = ['slot', 'venue', 'start_date', 'end_date'];
+        for(const key of keys) {
+          if(! val[key]) {
+            console.log(key, val[key]);
+            self.thisCourseStatus =  key + ' is not assigned';
+            return true;
+          }
+        }
+
+        // Allright, now check if slot, venue is available for given dates.
+        for(var key of Object.keys(self.runningCourses)) {
+          var course = self.runningCourses[key];
+          if(parseInt(course.slot) === parseInt(self.thisCourse.slot) 
+            && course.venue === self.thisCourse.venue)
+          {
+            self.thisCourseStatus = course.name + " is running on this slot/venue";
+            return true;
+          }
+        }
+        self.thisCourseStatus =  "OK";
+        return true;
+      },
+      deep: true
+    },
   },
   mounted()
   {
@@ -337,7 +434,7 @@ export default {
     self.fetchCourseMetadata();
 
     // Venues.
-    self.postWithPromise('venue/list/all')
+    self.postWithPromise('venue/list/course')
       .then( function(x) {
         self.venues = JSON.parse(x.data).data;
       });
@@ -493,20 +590,20 @@ export default {
     showCurrentCourse: function(course) {
       const self = this;
       const app = self.$f7;
-      self.thisCourse = course;
+
+      // Deep copy because we gonna compare with every runningCourse after changing it.
+      self.thisCourse = JSON.parse(JSON.stringify(course));
       self.popupCurrentCourse = true;
     },
     updateRunningCourse: function() {
       const self = this;
       const app = self.$f7;
-      var cid = btoa(self.thisCourse.id);
-
-      console.log('Updating course: ', self.cid, self.thisCourse);
-
       app.dialog.preloader();
-      self.promiseWithAuth('course/running/update/'+cid, self.thisCourse)
+      self.promiseWithAuth('course/running/update', self.thisCourse)
         .then( function(x) {
+          var res = JSON.parse(x.data);
           self.fetchRunningCourses();
+          navigator.notification.alert(res.msg);
           app.dialog.close();
         });
       setTimeout(() => app.dialog.close(), 1000);
@@ -514,14 +611,13 @@ export default {
     removeRunningCourse: function() {
       const self = this;
       const app = self.$f7;
-      var cid = btoa(self.thisCourse.id);
       app.dialog.confirm("Are you sure? All registrations will be lost?"
         , "Removing course?"
         , function() {
-          self.promiseWithAuth('course/running/remove/'+cid, self.thisCourse)
+          self.promiseWithAuth('course/running/remove', self.thisCourse)
             .then( function(x) {
               var res = JSON.parse(x.data).data;
-              cordova.notification.alert(res.msg, null, "Course removed.");
+              navigator.notification.alert(res.msg, null, "Course removed.");
               app.dialog.preloader();
               self.fetchRunningCourses();
               app.dialog.close();
@@ -529,7 +625,44 @@ export default {
             setTimeout(() => app.dialog.close(), 1000);
             self.popupCurrentCourse = false;
         }, null);
-    }
+    },
+    scheduleCourse: function(course) {
+      const self = this;
+      const app = self.$f7;
+      self.thisCourse = {...self.thisCourse, ...{ 'name': course.name
+        , 'course_id' : course.id 
+        , 'id' : course.id + '-' + self.thisSemester + '-' + self.thisYear
+        , 'venue' : self.thisVenue
+        , 'slot' : self.thisSlot
+      }};
+      self.popupCurrentCourse = true;
+      self.checkVenueSlot(self.thisCourse.venue, self.thisCourse.slot);
+    },
+    checkVenueSlot: function(venue, slot) {
+      const self = this;
+      const app = self.$f7;
+      self.thisVenue = venue;
+      self.thisSlot = slot;
+      if( ! (self.thisVenue && self.thisSlot))
+      {
+        self.thisSlotVenueStatus = "Select both venue/slot."
+        return;
+      }
+
+      // Now check venue and slotashmirathi1
+      self.thisSlotVenueStatus = "OK";
+
+      for(var key of Object.keys(self.runningCourses)) {
+        var course = self.runningCourses[key];
+        console.log('x', course.slot, course.venue, self.thisSlot, self.thisVenue);
+        console.log('y', course.slot == self.thisSlot, course.venue == self.thisVenue);
+        if(parseInt(course.slot) === parseInt(self.thisSlot) && course.venue === self.thisVenue)
+        {
+          self.thisSlotVenueStatus = course.name + " is running on this slot/venue";
+          break;
+        }
+      }
+    },
   },
 }
 </script>
