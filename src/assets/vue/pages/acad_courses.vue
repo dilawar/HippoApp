@@ -201,7 +201,9 @@
             <f7-list-item>
               <f7-row>
                 <f7-col>
-                  <f7-button raised>Cancel</f7-button>
+                  <f7-button raised fill @click="removeRunningCourse()" color="red">
+                    Remove course
+                  </f7-button>
                 </f7-col>
                 <f7-col>
                   <f7-button raised @click="updateRunningCourse()">Update</f7-button>
@@ -223,15 +225,18 @@
       </f7-block-title>
 
       <f7-card v-for="(course,key) in runningCourses" :key="key">
-        <f7-card-header>
-          {{course.venue}}
+        <f7-card-content>
+
+          <div>({{course.course_id}}) {{course.name}}
           <span class="pull-right">
+            <strong>{{course.venue}}</strong>
             slot {{course.slot}}, {{course.ignore_tiles}}
           </span>
-        </f7-card-header>
-        <f7-card-content>
-          <div>{{course.course_id}}, {{course.name}}</div>
-          <div>{{course.start_date | date}} to {{course.end_date | date}}</div>
+          </div>
+
+          <div class="text-small">
+            {{course.start_date | date}} to {{course.end_date | date}}
+          </div>
 
           <div style="font-size:small;margin:5px;padding:10px;">
             <f7-row>
@@ -243,7 +248,9 @@
             </f7-row>
           </div>
 
-          <div>{{course.note}}</div>
+          <div class="bg-color-lightblue">
+            <small>{{course.note}}</small>
+          </div>
 
           <f7-row class="text-align-center">
             <f7-col>
@@ -287,7 +294,6 @@
                icon="fa fa-pencil fa-fw">
             </f7-link>
             {{course.id}}, Credit: {{course.credits}}
-
             <f7-button small color="gray" raised
               @click="assignSlot(course)" class="pull-right">
               Assign Slot
@@ -505,6 +511,25 @@ export default {
         });
       setTimeout(() => app.dialog.close(), 1000);
     },
+    removeRunningCourse: function() {
+      const self = this;
+      const app = self.$f7;
+      var cid = btoa(self.thisCourse.id);
+      app.dialog.confirm("Are you sure? All registrations will be lost?"
+        , "Removing course?"
+        , function() {
+          self.promiseWithAuth('course/running/remove/'+cid, self.thisCourse)
+            .then( function(x) {
+              var res = JSON.parse(x.data).data;
+              cordova.notification.alert(res.msg, null, "Course removed.");
+              app.dialog.preloader();
+              self.fetchRunningCourses();
+              app.dialog.close();
+            });
+            setTimeout(() => app.dialog.close(), 1000);
+            self.popupCurrentCourse = false;
+        }, null);
+    }
   },
 }
 </script>
