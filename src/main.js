@@ -403,6 +403,8 @@ Vue.mixin({
          return moment(time, 'YYYY-MM-DD').format('(ddd) MMM DD');
       },
       'name' : function(login) {
+         if(login.middle_name === 'NA')
+            login.middle_name = '';
          return [login.first_name, login.middle_name, login.last_name].join(' ');
       },
       'tt' : function(text) {
@@ -455,8 +457,6 @@ export default new Vue({
 
       onDeviceReady : function(x) {
          const self = this;
-         console.log( "Add onDeviceReady callback here.");
-
          // Notifications 
          cordova.plugins.notification.local.on("click", function(not) {
             // On click show notification page.
@@ -469,6 +469,24 @@ export default new Vue({
             }, 500);
          }, self);
 
+         // Firebase
+         cordova.plugins.firebase.messaging.requestPermission({forceShow: true}).then(function() {
+            console.log("You'll get foreground notifications when a push message arrives");
+         });
+
+         cordova.plugins.firebase.messaging.onMessage( function(payload) {
+            // console.log("New foreground FCM message.", JSON.stringify(payload));
+         });
+
+         cordova.plugins.firebase.messaging.onBackgroundMessage(function(payload) {
+            // console.log("New background FCM message: ", JSON.stringify(payload));
+         });
+
+         // Subscribe to Hippo, NCBS, Emergency
+         cordova.plugins.firebase.messaging.subscribe("hippo");
+         cordova.plugins.firebase.messaging.subscribe("ncbs");
+         cordova.plugins.firebase.messaging.subscribe("emergency");
+      
          //// Backbutton.
          //document.addEventListener("backbutton", function(e){
          //   const self = this;

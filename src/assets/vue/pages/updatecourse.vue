@@ -5,41 +5,39 @@
 
     <!-- ASSIGN NEW STUDENT -->
     <f7-block strong>
-      <f7-card>
-        <f7-card-content>
-          <f7-row >
-            <f7-col width="40">
-              <v-autocomplete  placeholder="Student login"
-                               results-property="email"
-                               results-display="name"
-                               results-value="login"
-                               @selected="(v)=>thisRegistration.student_id=v.selectedObject.login"
-                               :request-headers="apiPostData()"
-                               method="post"
-                               :source="(q)=>searchPeopleURI(q, 'login')">
-              </v-autocomplete>
-            </f7-col>
-            <f7-col width="30">
-              <f7-input label="Type" 
-                        type="select"
-                        @change="thisRegistration.type=$event.target.value"
-                        :value="thisRegistration.type">
-                <option value="CREDIT" selected>CREDIT</option>
-                <option value="AUDIT">AUDIT</option>
-              </f7-input>
-            </f7-col>
-            <f7-col width="25">
-              <f7-button @click="addRegistration()"
-                    :disabled="thisRegistration.student_id.length<2">
-                    Register
-              </f7-button>
-            </f7-col>
-          </f7-row>
-        </f7-card-content>
-      </f7-card>
+
+      <f7-row >
+        <f7-col width="40">
+          <v-autocomplete  placeholder="Student login"
+                           results-property="email"
+                           results-display="name"
+                           results-value="login"
+                           @selected="(v)=>thisRegistration.student_id=v.selectedObject.login"
+                           :request-headers="apiPostData()"
+                           method="post"
+                           :source="(q)=>searchPeopleURI(q, 'login')">
+          </v-autocomplete>
+        </f7-col>
+        <f7-col width="25">
+          <f7-input label="Type" 
+                    type="select"
+                    @input="thisRegistration.type=$event.target.value"
+                    :value="thisRegistration.type">
+            <option value="CREDIT" selected>CREDIT</option>
+            <option value="AUDIT">AUDIT</option>
+          </f7-input>
+        </f7-col>
+        <f7-col width="25">
+          <f7-button @click="addRegistration()"
+                :disabled="thisRegistration.student_id.length<2">
+                Register
+          </f7-button>
+        </f7-col>
+      </f7-row>
 
       <f7-block-title small> {{thisCourseId}}: 
         Total {{registrations.length}} registrations.
+        <br />
         Click on the row to change registration or to assign grade.
       </f7-block-title>
 

@@ -101,7 +101,8 @@
       <f7-swiper pagination navigation scrollbar :params="{loop:true}">
         <f7-swiper-slide v-for="(card,key) in flashCards" :key="key">
           <div style="margin:15%; padding:10px;border-radius:20px; background-color:rgba(255,255,255,0.75)">
-            {{humanReadableDateTime(card.date, card.time)}} | {{card.title}} 
+            {{humanReadableDateTime(card.date, card.time)}} | {{card.venue}} 
+              | {{card.title}}
           </div>
         </f7-swiper-slide>
       </f7-swiper>
@@ -181,40 +182,18 @@ export default {
     const self = this;
     const app = self.$f7;
 
-    self.fetchRoles();
-    self.fetchFlashCards();
-
-    // Listen to Cordova's backbutton event
-    document.addEventListener('backbutton', function navigateBack() {
-      // Use Framework7's router to navigate back
-      var mainView = app.views.main;
-
-      var leftp = app.panel.left && app.panel.left.opened;
-      var rightp = app.panel.right && app.panel.right.opened;
-
-      if (leftp || rightp) 
-      {
-        app.panel.close();
-        return false;
-      } 
-      else if ($$('.modal-in').length > 0) 
-      {
-        app.dialog.close();
-        app.popup.close();
-        return false;
-      } else if (app.views.main.router.url == '/') {
-        navigator.app.exitApp();
-      } else {
-        mainView.router.back();
-      }
-    }, false);
 
     // Check if hippo is alive
     self.promiseWithAuth('status').then(function(x) {
-        var res = JSON.parse(x.data);
-        if( res.status =='ok' && res.data.status == 'alive')
-          self.isHippoAlive = true;
-      });
+      var res = JSON.parse(x.data);
+      if( res.status ==='ok' && res.data.status === 'alive')
+      {
+        console.log('Hippo is alive.');
+        self.isHippoAlive = true;
+      }
+    });
+
+    self.fetchFlashCards();
 
     // Fetch the transport as well.
     self.promiseWithAuth('transport').then(function(x) {
@@ -222,6 +201,8 @@ export default {
         if( res.status=='ok')
           self.$localStorage.set('transport', JSON.stringify(res.data));
       });
+
+    self.fetchRoles();
 
     // Get notification now and display them.
     setTimeout(() => {self.fetchNotifications();}, 500);
@@ -244,6 +225,7 @@ export default {
         /* handle error */
         console.log("Could not display notifications.");
       }}, 60*60*1000);
+
   },
   methods: {
     signIn: function()
@@ -292,8 +274,9 @@ export default {
     fetchRoles: function() {
       const self = this;
       self.promiseWithAuth('me/roles').then( function(x) {
-        var res = JSON.parse(x.data).data;
-        self.rolesCSV = res.roles;
+        var res = JSON.parse(x.data);
+        if(res.data.roles)
+          self.rolesCSV = res.data.roles;
       });
     },
     fetchFlashCards: function() {

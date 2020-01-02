@@ -75,7 +75,7 @@ export default {
       alreadyLoggedIn: false,
       notifications: [],
       profile: self.$store.getters.profile,
-      roles: 'USER',
+      roles: ['USER'],
     };
   },
   mounted: function() {
@@ -87,7 +87,9 @@ export default {
       const self = this;
       const app = self.$f7;
       self.promiseWithAuth('me/profile').then( function(x) {
-        self.roles = JSON.parse(x.data).data.roles.split(',');
+        var res = JSON.parse(x.data);
+        if(res.data && res.data.roles)
+          self.roles = res.data.roles.split(',');
       });
     },
   },
