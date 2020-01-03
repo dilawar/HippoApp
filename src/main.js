@@ -1,5 +1,5 @@
 // Import Vue
-import Vue from 'vue'
+import Vue from 'vue';
 
 // Import css from dropzone.
 import Dropzone from "vue2-dropzone";
