@@ -94,19 +94,17 @@
           </f7-row>
         </f7-list-item>
       </f7-list>
+    </f7-block>
 
-    </f7-block>
-    <f7-block>
-      <!-- FLASH cards -->
-      <f7-swiper pagination navigation scrollbar :params="{loop:true}">
-        <f7-swiper-slide v-for="(card,key) in flashCards" :key="key">
-          <div style="margin:15%; padding:10px;border-radius:20px; background-color:rgba(255,255,255,0.75)">
-            {{humanReadableDateTime(card.date, card.time)}} | {{card.venue}} 
-              | {{card.title}}
-          </div>
-        </f7-swiper-slide>
-      </f7-swiper>
-    </f7-block>
+    <!-- FLASH cards -->
+    <f7-swiper navigation :params="{loop:true}">
+      <f7-swiper-slide v-for="(card,key) in flashCards" :key="key">
+        <div style="margin:8%; padding:5px;border-radius:10px; background-color:rgba(255,255,255,0.75)">
+          {{humanReadableDateTime(card.date, card.time)}} | {{card.venue}} 
+          | {{card.title}}
+        </div>
+      </f7-swiper-slide>
+    </f7-swiper>
 
     <!-- FAB Right Bottom (Blue) -->
     <f7-fab v-if="isUserAuthenticated()" 

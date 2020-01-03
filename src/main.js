@@ -446,7 +446,7 @@ export default new Vue({
          } 
          else if (app.views.main.router.url == '/') 
          {
-            app.dialog.confirm('Are you sure you want to exit?', 'Exit MyApp'
+            app.dialog.confirm('Are you sure?', 'Exit Hippo?'
                , function() { navigator.app.exitApp();}
                , function() { }
             );

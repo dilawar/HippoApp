@@ -1,139 +1,134 @@
 <template>
   <f7-page page-content ptr @ptr:refresh="fetchAccomodations">
-     <f7-navbar title="Accomodation" back-link="Back">
-        <f7-nav-right>
-           <f7-link class="searchbar-enable" 
-                    data-searchbar=".searchbar-acc" 
-                    icon-ios="f7:search" icon-aurora="f7:search" icon-md="material:search"
-                                                                 >
-           </f7-link>
-        </f7-nav-right>
-        <f7-searchbar class="searchbar-acc"
-                      expandable
-                      search-container=".search-list-acc"
-                      search-in=".item-title,.item-subtitle,.item-footer,.acc-content,.accordian-item-content"
-                      >
-        </f7-searchbar>
-     </f7-navbar>
+    <f7-navbar title="Accomodation" back-link="Back">
+      <f7-nav-right>
+        <f7-link class="searchbar-enable" 
+                 data-searchbar=".searchbar-acc" 
+                 icon-ios="f7:search" icon-aurora="f7:search" icon-md="material:search"
+                                                              >
+        </f7-link>
+      </f7-nav-right>
+      <f7-searchbar class="searchbar-acc"
+                    expandable
+                    search-container=".search-list-acc"
+                    search-in=".item-title,.item-subtitle,.item-footer,.acc-content,.accordian-item-content"
+                    >
+      </f7-searchbar>
+    </f7-navbar>
 
-     <!-- List of accomodations -->
-     <f7-block>
-        <f7-block-title>Available Accomodations</f7-block-title>
+   <!-- List of accomodations -->
+    <f7-photo-browser ref="standalone"></f7-photo-browser>
 
-        <f7-photo-browser ref="standalone"></f7-photo-browser>
+    <f7-block-title medium>Available Accomodations</f7-block-title>
+    <f7-card v-for="(acc, key) in accomodations.list" 
+             :key="key"
+             v-if="acc.status=='AVAILABLE'"
+             >
 
-        <f7-card v-for="(acc, key) in accomodations.list" 
-                 :key="key"
-                 v-if="acc.status=='AVAILABLE'"
-                 >
+             <!-- header -->
+      <f7-card-header
+        :style="`font-size:90%;background-color:${stringToColour(acc.status)}`" 
+        >
+        <div>
+          {{acc.type}}, Available from {{humanReadableDate(acc.available_from)}}
+        </div>
+        <div> {{acc.address}} </div>
+      </f7-card-header>
 
-           <!-- header -->
-           <f7-card-header
-              :style="`font-size:90%;background-color:${stringToColour(acc.status)}`" 
-              >
-                 <div>
-                    {{acc.type}}, Available from {{humanReadableDate(acc.available_from)}}
-                 </div>
-                 <div> {{acc.address}} </div>
-        </f7-card-header>
+      <!-- Card content -->
+      <f7-card-content v-linkified>
+        <br />
+        <span v-for="(val, key) in acc">
+          <span v-if="showKeys.find(k => k===key) && val.length > 0">
+            <span style="font-size:70%">{{formatKey(key)}}</span>
+            <!-- filter does not work with v-html. moutache doesn't
+              render html. Hence this hack: see
+              https://github.com/vuejs/vue/issues/4352
+            -->
+            <span style="margin-right:2ex;"
+                  v-html="$options.filters.phone(val)"></span>
+            <br />
+          </span>
+        </span>
 
-        <!-- Card content -->
-        <f7-card-content v-linkified>
-           <br />
-           <span v-for="(val, key) in acc">
-                 <span v-if="showKeys.find(k => k===key) && val.length > 0">
-                    <span style="font-size:70%">{{formatKey(key)}}</span>
-                    <!-- filter does not work with v-html. moutache doesn't
-                       render html. Hence this hack: see
-                       https://github.com/vuejs/vue/issues/4352
-                    -->
-                    <span style="margin-right:2ex;"
-                          v-html="$options.filters.phone(val)"></span>
-                    <br />
-                 </span>
-              </span>
+        <div  style="font-size:x-small;">
+          <f7-icon icon="fa fa-bell fa-fw"></f7-icon>
+          Posted by: {{acc.created_by}}, {{str2Moment(acc.created_on).fromNow()}}
+          <span v-if="acc.last_modified_on">
+            (modified {{str2Moment(acc.last_modified_on
+            , 'YYYY-MM-DD HH:mm:ss').fromNow()}})
+          </span>
+        </div>
+      </f7-card-content>
 
-           <div  style="font-size:x-small;">
-              <f7-icon icon="fa fa-bell fa-fw"></f7-icon>
-              Posted by: {{acc.created_by}}, {{str2Moment(acc.created_on).fromNow()}}
-              <span v-if="acc.last_modified_on">
-                 (modified {{str2Moment(acc.last_modified_on
-                     , 'YYYY-MM-DD HH:mm:ss').fromNow()}})
-              </span>
-           </div>
-        </f7-card-content>
+      <!-- Card footer -->
+      <f7-card-footer style="font-size:small;padding:0px">
+        <f7-button small @click="updateAction(acc)" >Update </f7-button>
+        <f7-button small :href="'/osm/accomodation/'+acc.id+'/'">Locate</f7-button>
+        <f7-button small 
+                   v-if="isUserAuthenticated()" 
+                   @click="addComment(acc)"
+                   >Comment ({{acc.num_comments}})
+        </f7-button>
 
-        <!-- Card footer -->
-        <f7-card-footer style="font-size:small;padding:0px">
-           <f7-button small @click="updateAction(acc)" >Update </f7-button>
-           <f7-button small :href="'/osm/accomodation/'+acc.id+'/'">Locate</f7-button>
-           <f7-button small 
-                      v-if="isUserAuthenticated()" 
-                      @click="addComment(acc)"
-                      >Comment ({{acc.num_comments}})
-           </f7-button>
+      </f7-card-footer>
+    </f7-card>
 
-        </f7-card-footer>
-     </f7-card>
-  </f7-block>
+    <f7-block-title>Unavailable Accomodations</f7-block-title>
+    <f7-card v-for="(acc, key) in accomodations.list" 
+             :key="key"
+             v-if="acc.status!='AVAILABLE'"
+             >
 
-  <f7-block>
-     <f7-block-title>Unavailable Accomodations</f7-block-title>
-        <f7-card v-for="(acc, key) in accomodations.list" 
-                 :key="key"
-                 v-if="acc.status!='AVAILABLE'"
-                 >
+             <!-- header -->
+      <f7-card-header
+        :style="`font-size:90%;background-color:${stringToColour(acc.status)}`" 
+        >
+        <div>
+          {{acc.type}}, Available from {{humanReadableDate(acc.available_from)}}
+        </div>
 
-           <!-- header -->
-           <f7-card-header
-              :style="`font-size:90%;background-color:${stringToColour(acc.status)}`" 
-              >
-                 <div>
-                    {{acc.type}}, Available from {{humanReadableDate(acc.available_from)}}
-                 </div>
+        <div> {{acc.address}} </div>
+      </f7-card-header>
 
-                 <div> {{acc.address}} </div>
-        </f7-card-header>
+      <!-- Card content -->
+      <f7-card-content v-linkified>
+        <span v-for="(val, key) in acc">
+          <span v-if="showKeys.find(k => k===key) && val.length > 0">
+            <span style="font-size:70%">{{formatKey(key)}}</span>
+            <!-- filter does not work with v-html. moutache doesn't
+              render html. Hence this hack: see
+              https://github.com/vuejs/vue/issues/4352
+            -->
+            <span style="margin-right:2ex;"
+                  v-html="$options.filters.phone(val)"></span>
+            <br />
+          </span>
+        </span>
 
-        <!-- Card content -->
-        <f7-card-content v-linkified>
-           <span v-for="(val, key) in acc">
-              <span v-if="showKeys.find(k => k===key) && val.length > 0">
-                 <span style="font-size:70%">{{formatKey(key)}}</span>
-                 <!-- filter does not work with v-html. moutache doesn't
-                    render html. Hence this hack: see
-                    https://github.com/vuejs/vue/issues/4352
-                 -->
-                 <span style="margin-right:2ex;"
-                       v-html="$options.filters.phone(val)"></span>
-                 <br />
-              </span>
-           </span>
+        <div class="watermark">{{acc.status}}</div>
 
-           <div class="watermark">{{acc.status}}</div>
+        <div  style="font-size:x-small;">
+          <f7-icon icon="fa fa-bell fa-fw"></f7-icon>
+          Posted by: {{acc.created_by}}, {{str2Moment(acc.created_on).fromNow()}}
+          <span v-if="acc.last_modified_on">
+            (modified {{str2Moment(acc.last_modified_on
+            , 'YYYY-MM-DD HH:mm:ss').fromNow()}})
+          </span>
+        </div>
+      </f7-card-content>
+      <!-- Card footer -->
+      <f7-card-footer style="font-size:small;padding:0px">
+        <f7-button small @click="updateAction(acc)" >Update </f7-button>
+        <f7-button small :href="'/osm/accomodation/'+acc.id+'/'">Locate</f7-button>
+        <f7-button small 
+                   v-if="isUserAuthenticated()" 
+                   @click="addComment(acc)"
+                   >Comment ({{acc.num_comments}})
+        </f7-button>
 
-           <div  style="font-size:x-small;">
-              <f7-icon icon="fa fa-bell fa-fw"></f7-icon>
-              Posted by: {{acc.created_by}}, {{str2Moment(acc.created_on).fromNow()}}
-              <span v-if="acc.last_modified_on">
-                 (modified {{str2Moment(acc.last_modified_on
-                     , 'YYYY-MM-DD HH:mm:ss').fromNow()}})
-              </span>
-           </div>
-        </f7-card-content>
-        <!-- Card footer -->
-        <f7-card-footer style="font-size:small;padding:0px">
-           <f7-button small @click="updateAction(acc)" >Update </f7-button>
-           <f7-button small :href="'/osm/accomodation/'+acc.id+'/'">Locate</f7-button>
-           <f7-button small 
-                      v-if="isUserAuthenticated()" 
-                      @click="addComment(acc)"
-                      >Comment ({{acc.num_comments}})
-           </f7-button>
-
-        </f7-card-footer>
-     </f7-card>
-  </f7-block>
+      </f7-card-footer>
+    </f7-card>
 
   <!-- FAB to create accomodation -->
   <f7-fab v-if="isUserAuthenticated()"
@@ -386,51 +381,53 @@ export default {
          }),
       };
    },
-   mounted() {
-      const self = this;
-      const app = self.$f7;
+  mounted() {
+    const self = this;
+    const app = self.$f7;
 
-      // Get all accomodations.
-      self.postWithPromise( '/accomodation/list').then(
-         function(x) {
-            self.accomodations = JSON.parse(x.data).data;
-            self.saveStore('accomodations', self.accomodations);
-         }
-      );
-
-      // Autocomplete.
-      app.autocomplete.create({
-         inputEl : '#autocomplete-dropdown-expand',
-         openIn: 'dropdown',
-         valueProperty: 'address',
-         limit: 5,
-
-         source: function(q, render) {
-            var autocomplete = this;
-            if(q.length === 0)
-            {
-               render(results);
-               return;
-            }
-            autocomplete.preloaderShow();
-            var res = [];
-            self.accomodation.address = q;
-            self.mapProvider.search({query: q}).then( (results) => {
-               console.log(results);
-               //render(results);
-               res = results.map(x => x.label);
-               autocomplete.preloaderHide();
-               render(res);
-            });
-         },
-         on: {
-            change: function(val) {
-               console.log('Changed to ', val);
-               self.accomodation.address = val[0];
-            },
-         },
+    // Get all accomodations.
+    self.postWithPromise( '/accomodation/list').then(
+      function(x) {
+        app.dialog.preloader();
+        self.accomodations = JSON.parse(x.data).data;
+        self.saveStore('accomodations', self.accomodations);
+        app.dialog.close();
       });
-   },
+    setTimeout(() => app.dialog.close(), 1000);
+
+    // Autocomplete.
+    app.autocomplete.create({
+      inputEl : '#autocomplete-dropdown-expand',
+      openIn: 'dropdown',
+      valueProperty: 'address',
+      limit: 5,
+
+      source: function(q, render) {
+        var autocomplete = this;
+        if(q.length === 0)
+        {
+          render(results);
+          return;
+        }
+        autocomplete.preloaderShow();
+        var res = [];
+        self.accomodation.address = q;
+        self.mapProvider.search({query: q}).then( (results) => {
+          console.log(results);
+          //render(results);
+          res = results.map(x => x.label);
+          autocomplete.preloaderHide();
+          render(res);
+        });
+      },
+      on: {
+        change: function(val) {
+          console.log('Changed to ', val);
+          self.accomodation.address = val[0];
+        },
+      },
+    });
+  },
    methods: { 
       fetchAccomodations: function() {
          const self = this;
