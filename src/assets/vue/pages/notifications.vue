@@ -28,8 +28,16 @@
    <f7-block-header>
      <f7-row>
        <f7-col noGap width="25" v-for="(tag, key) in boards" :key="key">
-         <f7-link @click="unsubscribeForum(tag)" icon="fa fa-bell-o" v-if="subscriptions.includes(tag)">{{tag}}</f7-link>
-         <f7-link @click="subscribeForum(tag)" icon="fa fa-bell-slash-o" v-else>{{tag}}</f7-link>
+         <f7-link @click="unsubscribeForum(tag)"
+                  icon="fa fa-bell-o" 
+                  v-if="subscriptions.includes(tag)">
+           {{tag}}
+         </f7-link>
+         <f7-link @click="subscribeForum(tag)"
+                  icon="fa fa-bell-slash-o" 
+                  v-else>
+           {{tag}}
+         </f7-link>
        </f7-col>
      </f7-row>
    </f7-block-header>

@@ -239,7 +239,6 @@ export default {
         .then(function(x) {
           try {
             var res = JSON.parse(x.data);
-            cordova.plugins.firebase.messaging.subscribe(self.username);
           } catch (e) {
             /* handle error */
               app.notification.create({title:'Invalid response from server'
