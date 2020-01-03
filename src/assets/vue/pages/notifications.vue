@@ -24,8 +24,17 @@
    </f7-list>
    </f7-block>
 
-   <f7-block-title>Read notifications</f7-block-title>
    <f7-block>
+   <f7-block-header>
+     <f7-row>
+       <f7-col noGap width="25" v-for="(tag, key) in boards" :key="key">
+         <f7-link @click="unsubscribeForum(tag)" icon="fa fa-bell-o" v-if="subscriptions.includes(tag)">{{tag}}</f7-link>
+         <f7-link @click="subscribeForum(tag)" icon="fa fa-bell-slash-o" v-else>{{tag}}</f7-link>
+       </f7-col>
+     </f7-row>
+   </f7-block-header>
+
+   <f7-block-title medium>Notifications</f7-block-title>
    <f7-list media-list>
       <!-- Read items. -->
       <f7-list-item v-for="(item, key) in notifications.filter(x=>x.is_read==true)"
@@ -52,47 +61,73 @@
 import moment from 'moment';
 
 export default {
-   data() {
+  data() {
+    const self = this;
+    return {
+      notifications: self.loadStore('notifications'),
+      boards: [],
+      subscriptions: [],
+    };
+  },
+  mounted() {
+    const self = this;
+    self.notifications = self.loadStore('notifications');
+    self.refreshForum();
+  },
+  methods: { 
+    refreshNotification: function(e, done) {
       const self = this;
-      return {
-         notifications: self.loadStore('notifications'),
-      };
-   },
-   mounted() {
+      setTimeout( () => {
+        self.fetchNotifications();
+        done();
+      }, 1500);
+    },
+    refreshForum: function() {
       const self = this;
-      self.notifications = self.loadStore('notifications');
-   },
-   methods: { 
-      refreshNotification: function(e, done) {
-         const self = this;
-         setTimeout( () => {
-            self.fetchNotifications();
-            done();
-         }, 1500);
-      },
-      markNotificationRead: function(nid) {
-         const self = this;
-         setTimeout( () => {
-            self.sendRequest( '/notifications/markread/'+nid);
-            // Mark it read.
-            self.notifications.forEach((v, i) => {
-               if( v.id == nid )
-                  self.notifications[i].is_read = true;
-            });
-         }, 1000);
+      self.postWithPromise('/forum/alltags').then( function(x) {
+        self.boards = JSON.parse(x.data).data;
+      });
+      self.postWithPromise('/forum/subscriptions').then( function(x) {
+        self.subscriptions = JSON.parse(x.data).data;
+      });
+    },
+    markNotificationRead: function(nid) {
+      const self = this;
+      setTimeout( () => {
+        self.sendRequest( '/notifications/markread/'+nid);
+        // Mark it read.
+        self.notifications.forEach((v, i) => {
+          if( v.id == nid )
+            self.notifications[i].is_read = true;
+        });
+      }, 1000);
 
-      },
-      markNotificationUnread: function(nid) {
-         const self = this;
-         setTimeout( () => {
-            self.sendRequest( '/notifications/markunread/'+nid);
-            // Mark it unread.
-            self.notifications.forEach((v, i) => {
-               if( v.id == nid )
-                  self.notifications[i].is_read = false;
-            });
-         }, 1000);
-      },
-   },
+    },
+    markNotificationUnread: function(nid) {
+      const self = this;
+      setTimeout( () => {
+        self.sendRequest( '/notifications/markunread/'+nid);
+        // Mark it unread.
+        self.notifications.forEach((v, i) => {
+          if( v.id == nid )
+            self.notifications[i].is_read = false;
+        });
+      }, 1000);
+    },
+    subscribeForum: function(board) {
+      const self = this;
+      self.postWithPromise('/forum/subscribe/'+board).then( function(x) {
+        self.refreshForum();
+        cordova.plugins.firebase.messaging.subscribe(board);
+      });
+    },
+    unsubscribeForum: function(board) {
+      const self = this;
+      self.postWithPromise('/forum/unsubscribe/'+board).then( function(x) {
+        self.refreshForum();
+        cordova.plugins.firebase.messaging.unsubscribe(board);
+      });
+    },
+  },
 };
 </script>
