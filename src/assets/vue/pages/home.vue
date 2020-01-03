@@ -260,8 +260,6 @@ export default {
               .then(function(x) {
                 self.$store.commit('PROFILE', JSON.parse(x.data).data);
               });
-
-            self.fetchRoles();
             self.$f7router.refreshPage();
           }
           else

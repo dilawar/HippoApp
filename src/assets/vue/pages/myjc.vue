@@ -3,8 +3,7 @@
       <f7-navbar title="Journal Clubs" back-link="Back"></f7-navbar>
 
       <f7-block v-if="isAdminOfAnyJC()"
-                style="margin:1pt; padding:10pt; align:center"
-                >
+                style="margin:1pt; padding:10pt; align:center">
         <f7-row>
           <f7-col>
             <f7-link @click="managePresentation()">Assign Presentations</f7-link>
@@ -15,36 +14,35 @@
         </f7-row>
       </f7-block>
 
-      <f7-block>
-        <f7-list  accordion-list>
-          <f7-list-item v-for="(jc, key) in jcs" :key="key" accordion-item>
-            <div slot="footer">By {{jc.presenter}} |  Acknowleged: {{jc.acknowledged}} </div>
-            <div slot="header"> 
-                {{jc.jc_id}} | {{humanReadableDateTime(jc.date,jc.time)}} at {{jc.venue}}
-            </div>
-            <div slot="title"> {{jc.title}} </div>
-            <f7-accordion-content style="background-color:Ivory">
-              <span inset style="font-size:small" v-html="jc.description"></span>
+      <f7-block-header>Upcoming JCs</f7-block-header>
+      <f7-list  accordion-list no-hairlines>
+        <f7-list-item v-for="(jc, key) in jcs" :key="key" accordion-item>
+          <div slot="footer">By {{jc.presenter}} |  Acknowleged: {{jc.acknowledged}} </div>
+          <div slot="header"> 
+              {{jc.jc_id}} | {{humanReadableDateTime(jc.date,jc.time)}} at {{jc.venue}}
+          </div>
+          <div slot="title"> {{jc.title}} </div>
+          <f7-accordion-content style="background-color:Ivory">
+            <span inset style="font-size:small" v-html="jc.description"></span>
 
-              <div style="background-color:white">
-              <f7-row>
-                <f7-col v-if="isPresenterMe(jc.presenter) && jc.acknowledged==='NO'">
-                  <f7-button small @click="acknowledgeJC(jc.id)">Acknowledge</f7-button>
-                </f7-col>
-                <f7-col v-if="amIJCAdmin(jc.jc_id)">
-                  <f7-button small color="red" @click="removeJC(jc.id)">Remove</f7-button>
-                </f7-col>
-                <f7-col v-if="isPresenterMe(jc.presenter) || amIJCAdmin(jc.jc_id)">
-                  <f7-button small @click="editJC(jc)">Edit</f7-button>
-                </f7-col>
-              </f7-row>
-              </div>
-            </f7-accordion-content>
-          </f7-list-item>
-          <f7-list-item>
-          </f7-list-item>
-        </f7-list>
-      </f7-block>
+            <div style="background-color:white">
+            <f7-row>
+              <f7-col v-if="isPresenterMe(jc.presenter) && jc.acknowledged==='NO'">
+                <f7-button small @click="acknowledgeJC(jc.id)">Acknowledge</f7-button>
+              </f7-col>
+              <f7-col v-if="amIJCAdmin(jc.jc_id)">
+                <f7-button small color="red" @click="removeJC(jc.id)">Remove</f7-button>
+              </f7-col>
+              <f7-col v-if="isPresenterMe(jc.presenter) || amIJCAdmin(jc.jc_id)">
+                <f7-button small @click="editJC(jc)">Edit</f7-button>
+              </f7-col>
+            </f7-row>
+            </div>
+          </f7-accordion-content>
+        </f7-list-item>
+        <f7-list-item>
+        </f7-list-item>
+      </f7-list>
 
       <!-- NORMAL POPUP -->
       <f7-popup :opened="popupOpened" @popup:closed="popupOpened = false">
@@ -95,37 +93,36 @@
           </f7-navbar>
 
           <f7-block>
-             <f7-list form no-hairlines>
+            <f7-list form no-hairlines>
+              <!-- list of USER jc for which she is admin -->
+              <f7-list-input label="Your JC"
+                             type="select"
+                             @input="fetchJCInfo($event.target.value)"
+                             >
+                             <option value="None">Please choose ... </option>
+                             <option v-for="(jcid, key) in myJCWithAdminRights()"
+                                     :selected="(jcid==thisJC.jc_id)?true:false"
+                                     :value="jcid"
+                                     >{{jcid}}
+                             </option>
+              </f7-list-input>
 
-                <!-- list of USER jc for which she is admin -->
-                <f7-list-input label="Your JC"
-                               type="select"
-                               @input="fetchJCInfo($event.target.value)"
-                               >
-                     <option value="None">Please choose ... </option>
-                     <option v-for="(jcid, key) in myJCWithAdminRights()"
-                             :selected="(jcid==thisJC.jc_id)?true:false"
-                             :value="jcid"
-                             >{{jcid}}
-                     </option>
-                </f7-list-input>
-
-                <f7-list-input label="Presenter"
-                               :value="thisJC.presenter"
-                               @input="thisJC.presenter = $event.target.value"
-                               :required="true"
-                               >
-                </f7-list-input>
+              <f7-list-input label="Presenter"
+                             :value="thisJC.presenter"
+                             @input="thisJC.presenter = $event.target.value"
+                             :required="true"
+                             >
+              </f7-list-input>
 
                 <!--
-                <f7-list-input label="Date"
-                               type="date" 
-                               placeholder="Select date" 
-                               :value="thisJC.date"
-                               @input="thisJC.date = $event.target.value"
-                               :required="true"
-                               >
-                </f7-list-input>
+                  <f7-list-input label="Date"
+                  type="date" 
+                  placeholder="Select date" 
+                  :value="thisJC.date"
+                  @input="thisJC.date = $event.target.value"
+                  :required="true"
+                  >
+                  </f7-list-input>
                 -->
 
                 <f7-list-item>
@@ -146,37 +143,37 @@
                                >
                 </f7-list-input>
 
-                <!--
-                <f7-list-item>
-                   <date-picker v-model="thisJC.time" 
-                                v-bind:value="thisJC.time"
-                                lang="en"
-                                placeholder="Time"
-                                :minute-step="15"
-                                format="HH:mm A"
-                                type="time">
-                   </date-picker>
-                </f7-list-item>
-                -->
+                  <!--
+                    <f7-list-item>
+                    <date-picker v-model="thisJC.time" 
+                    v-bind:value="thisJC.time"
+                    lang="en"
+                    placeholder="Time"
+                    :minute-step="15"
+                    format="HH:mm A"
+                    type="time">
+                    </date-picker>
+                    </f7-list-item>
+                  -->
 
-                <f7-list-input label="Venue" 
-                               type="select"
-                               @input="thisJC.venue = $event.target.value"
-                               >
-                  <option :value="thisJC.venue" selected> 
-                    {{thisJC.info.venue}}
-                  </option>
-                  <option v-for="(venue, id) in venues" 
-                          :key="id" :value="venue.id"
-                          >
-                    {{venue.id}}
-                  </option>
-                </f7-list-input>
+                  <f7-list-input label="Venue" 
+                                 type="select"
+                                 @input="thisJC.venue = $event.target.value"
+                                 >
+                                 <option :value="thisJC.venue" selected> 
+                                 {{thisJC.info.venue}}
+                                 </option>
+                    <option v-for="(venue, id) in venues" 
+                            :key="id" :value="venue.id"
+                            >
+                            {{venue.id}}
+                    </option>
+                  </f7-list-input>
 
-                <f7-button small raised @click="assignPresenter()">
-                  Assign
-                </f7-button>
-             </f7-list>
+                  <f7-button small raised @click="assignPresenter()">
+                    Assign
+                  </f7-button>
+            </f7-list>
           </f7-block>
 
         </f7-page>
@@ -252,220 +249,226 @@
           <f7-block v-else>
             Please select a JC.
           </f7-block>
-
         </f7-page>
       </f7-popup>
-
    </f7-page>
-
 </template>
 
 <script>
-   export default {
-     data()
-     {
-       const self = this;
-       return {
-         jcs: {},
-         venues: {},
-         myjcs: {},
-         popupOpened: false,
-         jcAdminPresentationPopup: false,
-         jcAdminSubscriptionPopup: false,
-         popupTitle: 'Invalid title',
-         subscriptions: {},
-         thisJCSubscrptions: [],
-         thisLogin: '',
-         thisJC: { title: ''
-           , jc_id: ''
-           , presenter: ''
-           , description: '' 
-           , url: ''
-           , paperurl: ''
-           , date: ''
-           , time: ''
-           , venue: ''
-           , info: {venue: '', time:''}  // Store default parameters and other info.
-         },
-       };
-     },
-     mounted()
-     {
-       const self = this;
-       if(! self.venues)
-         self.fetchVenues();
-       else
-         self.venues = self.loadStore('venues');
-       self.fetchJC();
-     },
-     methods: {
-       fetchJC: function() 
-       {
-         const self = this;
-         const app = self.$f7;
-         self.myjcs = self.$store.getters.profile.jcs;
+export default {
+  data()
+  {
+    const self = this;
+    return {
+      jcs: {},
+      venues: {},
+      myjcs: {},
+      popupOpened: false,
+      jcAdminPresentationPopup: false,
+      jcAdminSubscriptionPopup: false,
+      popupTitle: 'Invalid title',
+      subscriptions: {},
+      thisJCSubscrptions: [],
+      thisLogin: '',
+      thisJC: { title: ''
+        , jc_id: ''
+        , presenter: ''
+        , description: '' 
+        , url: ''
+        , paperurl: ''
+        , date: ''
+        , time: ''
+        , venue: ''
+        , info: {venue: '', time:''}  // Store default parameters and other info.
+      },
+    };
+  },
+  mounted()
+  {
+    const self = this;
+    if(! self.venues)
+      self.fetchVenues();
+    else
+      self.venues = self.loadStore('venues');
+    self.fetchJC();
+  },
+  methods: {
+    fetchJC: function() 
+    {
+      const self = this;
+      const app = self.$f7;
 
-         app.dialog.preloader('Fetching your JCs...');
-         self.postWithPromise('/me/jc').then( function(x) {
-           let res = JSON.parse(x.data);
-           self.jcs = res.data;
-           app.dialog.close();
-           });
-         setTimeout(() => app.dialog.close(), 3000);
-       },
-       myJCWithAdminRights: function() {
-         const self = this;
-         var adminJCS = Object.keys(self.myjcs).filter( 
-           x => self.myjcs[x]['subscription_type'] === 'ADMIN'
-         );
-         return adminJCS;
-       },
-       fetchSubscriptions: function(jcid) 
-       {
-         const self = this;
-         const app = self.$f7;
-         self.thisJC.jc_id = jcid;
-         self.postWithPromise('/jc/subscriptions/'+jcid)
-           .then( function(x) {
-             let res = JSON.parse(x.data);
-             self.thisJCSubscrptions = res.data;
-             self.subscriptions[jcid] = res.data;
-           });
-       },
-       fetchJCInfo: function(jcid)
-       {
-         const self = this;
-         self.thisJC.jc_id = jcid;
+      // Name of JCs for which I am a member.
+      app.dialog.preloader('Fetching JCs...');
+      self.postWithPromise('/me/jclist').then( function(x) {
+        self.myjcs = JSON.parse(x.data).data;
+        console.log('MyJCS', self.myjcs);
+      });
 
-         self.postWithPromise('/jc/info/'+jcid)
-           .then(function(x) {
-             let res = JSON.parse(x.data);
-             self.thisJC.info = res.data;
-             // Add time.
-             self.thisJC.time = self.thisJC.info.time;
-             self.thisJC.venue = self.thisJC.info.venue;
+      self.postWithPromise('/me/jc').then( function(x) {
+        let res = JSON.parse(x.data);
+        self.jcs = res.data;
+        app.dialog.close();
+      });
+      setTimeout(() => app.dialog.close(), 3000);
+    },
+    myJCWithAdminRights: function() {
+      const self = this;
+      if(! self.myjcs)
+        return [];
+      var adminJCS = Object.keys(self.myjcs).filter( 
+        x => self.myjcs[x]['subscription_type'] === 'ADMIN'
+      );
+      return adminJCS;
+    },
+    fetchSubscriptions: function(jcid) 
+    {
+      const self = this;
+      const app = self.$f7;
+      self.thisJC.jc_id = jcid;
+      self.postWithPromise('/jc/subscriptions/'+jcid)
+        .then( function(x) {
+          let res = JSON.parse(x.data);
+          self.thisJCSubscrptions = res.data;
+          self.subscriptions[jcid] = res.data;
+        });
+    },
+    fetchJCInfo: function(jcid)
+    {
+      const self = this;
+      self.thisJC.jc_id = jcid;
 
-             if(! self.subscriptions.hasOwnProperty(jcid))
-               self.fetchSubscriptions(jcid);
-           });
-       },
-       refreshJC: function(e, done) {
-         const self = this;
-         setTimeout(() => self.fetchJC(), 1000);
-         done();
-       },
-       isMyJC: function(jc) {
-         const self = this;
-         if(self.myjcs)
-           return Object.keys(self.myjcs).includes(jc);
-         return false;
-       },
-       isPresenterMe: function(presenter) {
-         const self = this;
-         return presenter === self.whoAmI();
-       },
-       isAdminOfAnyJC: function() {
-         const self = this;
-         let isAdmin = false;
-         Object.keys(self.myjcs).forEach( function(key) {
-           console.log('Subs type ', self.myjcs[key]['subscription_type']);
-           if(self.myjcs[key]['subscription_type'] === 'ADMIN')
-             isAdmin = true;
-         });
-         return isAdmin;
-       },
-       amIJCAdmin: function(jcid) {
-         const self = this;
-         if(! self.myjcs)
-            return false;
-         if( ! Object.keys(self.myjcs).includes(jcid))
-           return false;
-         return self.myjcs[jcid]['subscription_type'] === 'ADMIN';
-       },
-       editJC: function(jc) {
-         const self = this;
-         self.thisJC = jc;
-         console.log('This JC: ', self.thisJC);
-         self.popupTitle = 'Editing JC entry';
-         self.popupOpened = true;
-       },
-       submitJCChanges: function() {
-         const self = this;
-         self.popupOpened = false;
-         self.promiseWithAuth('/jc/update', self.thisJC).then(
-           function(x) {
-             self.fetchJC();
-           }
-         );
-       },
-       acknowledgeJC: function(jcid) {
-         const self = this;
-         setTimeout( () => {
-           self.sendRequest('/jc/acknowledge/' + jcid)
-           self.fetchJC();
-         }, 1000);
-       },
-       removeJC: function(jcid) {
-         const self = this;
-         self.promiseWithAuth('/jcadmin/remove/' + jcid)
-           .then( function(x) {
-             self.fetchJC();
-           });
-       },
-       managePresentation: function() {
-         const self = this;
-         self.popupTitle = "Assign presenter";
-         self.jcAdminPresentationPopup = true;
-       },
-       manageSubscription: function() {
-         const self = this;
-         self.popupTitle = "Manage subscriptions";
-         self.jcAdminSubscriptionPopup = true;
-       },
-       assignPresenter: function() {
-         const self = this;
-         // console.log('Submitting', self.thisJC);
-         self.promiseWithAuth('/jcadmin/assign', self.thisJC)
-          .then( function(x) {
-             self.fetchJC();
-          });
-           self.jcAdminPresentationPopup = false;
-       },
-       unsubscribeFromJC: function(login, jcid) {
-         const self = this;
-         self.promiseWithAuth('/jcadmin/unsubscribe/'+jcid+'/'+login)
-          .then( function(x) {
-             self.fetchSubscriptions(jcid);
-          });
-       },
-       subscribeToJC: function(login, jcid) {
-         const self = this;
-         const app = self.$f7;
-         self.promiseWithAuth('/jcadmin/subscribe/'+jcid+'/'+login)
-          .then( function(x) {
-            let res = JSON.parse(x.data).data;
-            if(res.success)
-            {
-              app.alert(res.msg, "Success", null);
-              self.fetchSubscriptions(jcid);
-            }
-            else
-              app.alert(res.msg, "Failed", null);
-          });
-       },
-       assignPresentationDateSwiper: function(login, jcid) 
-       {
-         const self = this;
-         console.log("Assigning " + login + " to " + jcid );
-         self.jcAdminSubscriptionPopup = false;
-         self.popupTitle = "Assigning " + login + " a presentation date";
-         self.fetchJCInfo(jcid);
-         setTimeout( () => {
-           self.thisJC.presenter = login;
-           self.thisJC.jc_id = jcid;
-           self.jcAdminPresentationPopup = true;
-         }, 500);
-       },
-     },
-   }
+      self.postWithPromise('/jc/info/'+jcid)
+        .then(function(x) {
+          let res = JSON.parse(x.data);
+          self.thisJC.info = res.data;
+          // Add time.
+          self.thisJC.time = self.thisJC.info.time;
+          self.thisJC.venue = self.thisJC.info.venue;
+
+          if(! self.subscriptions.hasOwnProperty(jcid))
+            self.fetchSubscriptions(jcid);
+        });
+    },
+    refreshJC: function(e, done) {
+      const self = this;
+      setTimeout(() => self.fetchJC(), 1000);
+      done();
+    },
+    isMyJC: function(jc) {
+      const self = this;
+      if(self.myjcs)
+        return Object.keys(self.myjcs).includes(jc);
+      return false;
+    },
+    isPresenterMe: function(presenter) {
+      const self = this;
+      return presenter === self.whoAmI();
+    },
+    isAdminOfAnyJC: function() {
+      const self = this;
+      let isAdmin = false;
+      if(! self.myjcs)
+        return isAdmin;
+      Object.keys(self.myjcs).forEach( function(key) {
+        console.log('Subs type ', self.myjcs[key]['subscription_type']);
+        if(self.myjcs[key]['subscription_type'] === 'ADMIN')
+          isAdmin = true;
+      });
+      return isAdmin;
+    },
+    amIJCAdmin: function(jcid) {
+      const self = this;
+      if(! self.myjcs)
+        return false;
+      if( ! Object.keys(self.myjcs).includes(jcid))
+        return false;
+      return self.myjcs[jcid]['subscription_type'] === 'ADMIN';
+    },
+    editJC: function(jc) {
+      const self = this;
+      self.thisJC = jc;
+      console.log('This JC: ', self.thisJC);
+      self.popupTitle = 'Editing JC entry';
+      self.popupOpened = true;
+    },
+    submitJCChanges: function() {
+      const self = this;
+      self.popupOpened = false;
+      self.promiseWithAuth('/jc/update', self.thisJC).then(
+        function(x) {
+          self.fetchJC();
+        }
+      );
+    },
+    acknowledgeJC: function(jcid) {
+      const self = this;
+      setTimeout( () => {
+        self.sendRequest('/jc/acknowledge/' + jcid)
+        self.fetchJC();
+      }, 1000);
+    },
+    removeJC: function(jcid) {
+      const self = this;
+      self.promiseWithAuth('/jcadmin/remove/' + jcid)
+        .then( function(x) {
+          self.fetchJC();
+        });
+    },
+    managePresentation: function() {
+      const self = this;
+      self.popupTitle = "Assign presenter";
+      self.jcAdminPresentationPopup = true;
+    },
+    manageSubscription: function() {
+      const self = this;
+      self.popupTitle = "Manage subscriptions";
+      self.jcAdminSubscriptionPopup = true;
+    },
+    assignPresenter: function() {
+      const self = this;
+      // console.log('Submitting', self.thisJC);
+      self.promiseWithAuth('/jcadmin/assign', self.thisJC)
+        .then( function(x) {
+          self.fetchJC();
+        });
+      self.jcAdminPresentationPopup = false;
+    },
+    unsubscribeFromJC: function(login, jcid) {
+      const self = this;
+      self.promiseWithAuth('/jcadmin/unsubscribe/'+jcid+'/'+login)
+        .then( function(x) {
+          self.fetchSubscriptions(jcid);
+        });
+    },
+    subscribeToJC: function(login, jcid) {
+      const self = this;
+      const app = self.$f7;
+      self.promiseWithAuth('/jcadmin/subscribe/'+jcid+'/'+login)
+        .then( function(x) {
+          let res = JSON.parse(x.data).data;
+          if(res.success)
+          {
+            app.alert(res.msg, "Success", null);
+            self.fetchSubscriptions(jcid);
+          }
+          else
+            app.alert(res.msg, "Failed", null);
+        });
+    },
+    assignPresentationDateSwiper: function(login, jcid) 
+    {
+      const self = this;
+      console.log("Assigning " + login + " to " + jcid );
+      self.jcAdminSubscriptionPopup = false;
+      self.popupTitle = "Assigning " + login + " a presentation date";
+      self.fetchJCInfo(jcid);
+      setTimeout( () => {
+        self.thisJC.presenter = login;
+        self.thisJC.jc_id = jcid;
+        self.jcAdminPresentationPopup = true;
+      }, 500);
+    },
+  },
+}
 </script>
