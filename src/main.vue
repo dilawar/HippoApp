@@ -4,12 +4,11 @@
     <f7-panel left cover>
        <f7-view name="left" url="/userpanel/" ></f7-view>
     </f7-panel>
-    <f7-panel right cover @panel:open="getRoles()">
+    <f7-panel right cover @panel:open="fetchRoles()">
        <f7-view name="right" url="/adminpanel/" ></f7-view>
     </f7-panel>
 
-    <f7-view main url="/" tab tab-active>
-
+    <f7-view main url="/" tab tab-active> 
       <f7-toolbar bottom-md tabber labels style="font-size:xx-small">
 
         <f7-link text="Back"
@@ -145,8 +144,18 @@ export default {
   },
   mounted: function() {
     const self = this;
+    console.log('Roles are', self.roles);
   },
   methods: {
+    fetchRoles: function() {
+      const self = this;
+      console.log('Right panel open');
+      self.postWithPromise('me/roles').then( function(x) {
+        const res = JSON.parse(x.data).data.roles;
+        self.$store.commit("ROLES", res.split(','));
+        return true;
+      });
+    },
   },
 }
 </script>

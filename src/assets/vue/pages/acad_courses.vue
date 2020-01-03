@@ -1,34 +1,8 @@
 <template>
   <f7-page>
-
     <f7-navbar title="Courses" back-link="Back">
     </f7-navbar>
 
-    <!-- Select year/semester here -->
-    <f7-list>
-      <f7-list-item>
-        <f7-row>
-          <f7-col>
-            <f7-list-input @change="fetchRunningCourses()" 
-                               @input="thisYear=$event.target.value"
-                               label="Select Year"
-                               type="number" 
-                               :value="thisYear">
-            </f7-list-input>
-          </f7-col>
-          <f7-col>
-            <f7-list-input @change="fetchRunningCourses()" 
-                                 @input="thisSemester=$event.target.value"
-                                 label="Select Semester" 
-                                 type="select" 
-                                 :value="thisSemester">
-              <option value="AUTUMN">Autumn</option>
-              <option value="SPRING">Spring</option>
-            </f7-list-input>
-          </f7-col>
-        </f7-row>
-      </f7-list-item>
-    </f7-list>
 
     <!-- POPUP: Handle course information.  -->
     <f7-popup :opened="popupMetadata" @popup:close="popupMetadata = false">
@@ -43,22 +17,31 @@
 
           <f7-list media-list no-hairlines>
 
-            <f7-list-input label="ID" readonly :value="thisCourseMetadata.id">
+            <f7-list-input label="ID" 
+                           inline-label
+                           :value="thisCourseMetadata.id"
+                           @change="thisCourseMetadata.id=$event.target.value">
             </f7-list-input>
 
             <f7-list-input label="Name"
+                           inline-label
                            :value="thisCourseMetadata.name"
-                           @input="thisCourseMetadata.name=$event.target.value"
+                           @change="thisCourseMetadata.name=$event.target.value"
                            >
             </f7-list-input>
 
             <f7-list-input label="Credit"
+                           inline-label
                            :value="thisCourseMetadata.credits"
-                           @input="thisCourseMetadata.credits=$event.target.value"
+                           type="number" 
+                           min="0"
+                           validate
+                           @change="thisCourseMetadata.credits=$event.target.value"
                            >
             </f7-list-input>
 
             <f7-list-input label="Description"
+                           float-label
                            type="texteditor"
                            :value="thisCourseMetadata.description"
                            @texteditor:change="(value)=>thisCourseMetadata.description=value"
@@ -88,19 +71,35 @@
             <f7-list-group>
               <f7-list-item>
                 <f7-row>
-                  <f7-col v-if="thisCourseMetadata.status === 'VALID'">
+                  <f7-col v-if="thisCourseMetadata.status === 'VALID' && ! thisCourseMetadata.is_new">
                     <f7-button color=red raised @click="deactivateCourseMetadata()">
                       Deactivate
                     </f7-button>
                   </f7-col>
-                  <f7-col v-else>
-                    <f7-button color=red raised @click="activateCourseMetadata()">
+                  <f7-col v-if="thisCourseMetadata.status !== 'VALID' && ! thisCourseMetadata.is_new">
+                    <f7-button color=red raised @click="activateCourseMetaata()">
                       Activate
                     </f7-button>
                   </f7-col>
                   <f7-col>
-                    <f7-button raised @click="updateCourseMetadata()">
-                      Update
+                    <f7-button raised 
+                               @click="thisCourseMetadata.is_new?addNewCourseMetadata():updateCourseMetadata()"
+                               v-if="'OK' === thisCourseMetadataStatus">
+                      Submit Course
+                    </f7-button>
+                    <f7-button raised disabled v-else>
+                      {{thisCourseMetadataStatus}}
+                    </f7-button>
+                  </f7-col>
+                </f7-row>
+              </f7-list-item>
+              <f7-list-item>
+                <f7-row v-if="thisCourseMetadata.id && !  thisCourseMetadata.is_new">
+                  <f7-col>
+                    <f7-button icon="fa fa-danger" small 
+                               @click="deleteThisCourseMetadata()"
+                               color=red>
+                      Delete This course
                     </f7-button>
                   </f7-col>
                 </f7-row>
@@ -131,9 +130,11 @@
                          type="select"
                          :value="thisCourse.slot"
                          @input="thisCourse.slot=$event.target.value">
+            <option>Please select a slot...</option>
             <option v-for="(slot, key) in slots" :key="key" :value="key">
             {{key}}, {{slot.html}}
             </option>
+            <option key="XXX" value="NONE">No Slot</option>
           </f7-list-input>
 
           <f7-list-input label="Ignore Tiles"
@@ -284,66 +285,95 @@
     </f7-popup>
     
     <!-- Running courses -->
-    <f7-block>
-      <f7-block-title>
-        Running courses for {{thisYear}}/{{thisSemester}}.
-      </f7-block-title>
+    <f7-block-header>
+      <!-- Select year/semester here -->
+      Select <tt>YEAR</tt> and <tt>SEMESTER</tt> to see the running courses.
+      <f7-row style="margin-top:15px">
+        <f7-col width="45">
+          <f7-input @change="fetchRunningCourses()" 
+                       @input="thisYear=$event.target.value"
+                       label="Year"
+                       type="number" 
+                       :value="thisYear">
+          </f7-input>
+        </f7-col>
+        <f7-col width="45">
+          <f7-input @change="fetchRunningCourses()" 
+                       @input="thisSemester=$event.target.value"
+                       label="Semester" 
+                       type="select" 
+                       :value="thisSemester">
+            <option value="AUTUMN">Autumn</option>
+            <option value="SPRING">Spring</option>
+          </f7-input>
+        </f7-col>
+      </f7-row>
+    </f7-block-header>
 
-      <f7-card v-for="(course,key) in runningCourses" :key="key"
-               :padding="false">
-        <f7-card-content>
-          <div>({{course.course_id}}) {{course.name}}
+    <f7-block-title medium>
+      Running Courses in {{thisYear}}/{{thisSemester}}.
+    </f7-block-title>
+
+    <f7-card v-for="(course,key) in runningCourses" :key="key"
+             :padding="false">
+      <f7-card-content>
+        <div>({{course.course_id}}) {{course.name}}
           <span class="pull-right">
             <strong>{{course.venue}}</strong>
             slot {{course.slot}}, {{course.ignore_tiles}}
           </span>
-          </div>
+        </div>
 
-          <div class="text-small">
-            {{course.start_date | date}} to {{course.end_date | date}}
-          </div>
+        <div class="text-small">
+          {{course.start_date | date}} to {{course.end_date | date}}
+        </div>
 
-          <div style="font-size:small;margin:5px;padding:10px;">
-            <f7-row>
-              <f7-col>Max Registrations: {{course.max_registration}}</f7-col>
-              <f7-col>Is Audit Allowed?: {{course.is_audit_allowed}}</f7-col>
-            </f7-row>
-            <f7-row>
-              <f7-col>URL: {{course.url}}</f7-col>
-            </f7-row>
-          </div>
-
-          <div class="bg-color-lightblue">
-            <small>{{course.note}}</small>
-          </div>
-
-          <f7-row class="text-align-center" style="padding:0;padding-top:10px">
-            <f7-col>
-              <f7-link :href="'/updatecourse/'+course.id+'/'">
-                Manage Registrations
-              </f7-link>
-            </f7-col>
-            <f7-col>
-              <f7-link @click="showCurrentCourse(course)">
-                Edit
-              </f7-link>
-            </f7-col>
+        <div style="font-size:small;margin:5px;padding:10px;">
+          <f7-row>
+            <f7-col>Max Registrations: {{course.max_registration}}</f7-col>
+            <f7-col>Is Audit Allowed?: {{course.is_audit_allowed}}</f7-col>
           </f7-row>
-        </f7-card-content>
+          <f7-row>
+            <f7-col>URL: {{course.url}}</f7-col>
+          </f7-row>
+        </div>
 
-      </f7-card>
+        <div class="bg-color-yellow">
+          <small>{{course.note}}</small>
+        </div>
 
+        <f7-row class="text-align-center" style="padding:0;padding-top:0px">
+          <f7-col>
+            <f7-link :href="'/updatecourse/'+course.id+'/'">
+              Manage Registrations
+            </f7-link>
+          </f7-col>
+          <f7-col>
+            <f7-link @click="showCurrentCourse(course)">
+              Edit
+            </f7-link>
+          </f7-col>
+        </f7-row>
+      </f7-card-content>
 
-    </f7-block>
+    </f7-card>
+
 
     <!-- All courses -->
-    <f7-block-title>
-      All courses. Click on the list to do more.
+    <f7-block strong medium-inset>
+      <f7-block-title medium> All Courses 
+        <div style="font-size:small" class="float-right">
+          <f7-button fill small @click="addNewCourseMetadataPopup()">
+            Add New Course
+          </f7-button>
+        </div>
+      </f7-block-title>
+    <f7-block-header>
       <f7-searchbar no-hairlines
                     search-container=".course-list"
                     search-in=".item-title, .item-text, .item-footer, .item-header">
       </f7-searchbar>
-    </f7-block-title>
+    </f7-block-header>
 
     <f7-list class="course-list" media-list>
       <f7-list-item v-for="(course,key) in metadata" 
@@ -368,13 +398,16 @@
       </f7-list-item>
       <f7-list-item></f7-list-item>
     </f7-list>
+    </f7-block>
 
 
   </f7-page>
 </template>
 
 <script>
+
 import moment from 'moment';
+import Vue from 'vue';
 
 export default {
   data() {
@@ -401,7 +434,13 @@ export default {
         , 'is_new' : true
         , 'note':'', 'url':''},
       thisCourseStatus: 'UNKNOWN',
-      thisCourseMetadata: { 'instructors' : [] },
+      thisCourseMetadata: {'id':''
+        , 'name':'', 'credits':'0', 'description': ''
+        , 'instructor_1':'', 'instructor_2':'', 'instructor_3':''
+        , 'instructor_4':'', 'instructor_5':'', 'instructor_6':''
+        , 'instructor_extras':'', 'comment':'', 'is_new':true
+        , 'instructors' : []},
+      thisCourseMetadataStatus: 'UNKNOWN',
       venues: {},
     };
   },
@@ -427,6 +466,10 @@ export default {
           if(course.id === self.thisCourse.id)
             continue;
 
+          // Don't compare NONE slot.
+          if(self.thisCourse.slot === 'NONE')
+            break;
+
           if(parseInt(course.slot) === parseInt(self.thisCourse.slot) 
             && course.venue === self.thisCourse.venue)
           {
@@ -435,6 +478,22 @@ export default {
           }
         }
         self.thisCourseStatus =  "OK";
+        return true;
+      },
+      deep: true
+    },
+    'thisCourseMetadata': {
+      handler : function(val, oldval) {
+        const self = this;
+        const app = self.$f7;
+        var keys = ['id', 'name', 'credits'];
+        for(const key of keys) {
+          if(! val[key]) {
+            self.thisCourseMetadataStatus =  key + ' is not assigned';
+            return true;
+          }
+        }
+        self.thisCourseMetadataStatus = 'OK';
         return true;
       },
       deep: true
@@ -498,22 +557,25 @@ export default {
           {
             if(self.thisCourseMetadata['instructor_'+i])
               continue;
+
             console.log('Found empty instructor slot');
-            self.thisCourseMetadata['instructor_'+i] = val[0].email;
+
+            // Use Vue.set of vue can detect the change.
+            Vue.set(self.thisCourseMetadata, 'instructor_'+i, val[0].email);
             console.log(i, self.thisCourseMetadata['instructor_'+i]);
             break;
           }
-          app.dialog.preloader();
-          var cid = btoa(self.thisCourseMetadata.id);
-          self.promiseWithAuth('course/metadata/update/'+cid, self.thisCourseMetadata)
-            .then(function(x) {
-              self.postWithPromise('course/metadata/get/'+cid)
-                .then(function(x) {
-                  self.thisCourseMetadata = JSON.parse(x.data).data;
-                  app.dialog.close();
-                });
-            });
-          setTimeout( () => app.dialog.close(), 1000);
+          //app.dialog.preloader();
+          //var cid = btoa(self.thisCourseMetadata.id);
+          //self.promiseWithAuth('course/metadata/update/'+cid, self.thisCourseMetadata)
+          //  .then(function(x) {
+          //    self.postWithPromise('course/metadata/get/'+cid)
+          //      .then(function(x) {
+          //        self.thisCourseMetadata = JSON.parse(x.data).data;
+          //        app.dialog.close();
+          //      });
+          //  });
+          //setTimeout( () => app.dialog.close(), 1000);
         },
       },
     });
@@ -540,24 +602,44 @@ export default {
       console.log('Editing metadata');
       const self = this;
       self.thisCourseMetadata = metadata;
+      self.thisCourseMetadata['is_new']=false;
+      self.popupMetadata = true;
+    },
+    addNewCourseMetadataPopup: function() {
+      const self = this;
+      self.thisCourseMetadata['is_new'] = true;
+      for(var key of ['id', 'name', 'credits'])
+        self.thisCourseMetadata[key] = '';
       self.popupMetadata = true;
     },
     removeInstructor: function(whichInstructor) {
       // Remove instructor from this course.
       const self = this;
       const app = self.$f7;
-
+      //var cid = btoa(self.thisCourseMetadata.id);
+      //app.dialog.preloader();
+      self.thisCourseMetadata['instructor_'+whichInstructor] = '';
+      //self.promiseWithAuth('course/metadata/update/'+cid, self.thisCourseMetadata)
+      //  .then(function(x) {
+      //    self.postWithPromise('course/metadata/get/'+cid)
+      //      .then(function(x) {
+      //        self.thisCourseMetadata = JSON.parse(x.data).data;
+      //        app.dialog.close();
+      //      });
+      //  });
+      //setTimeout( () => app.dialog.close(), 1000);
+    },
+    addNewCourseMetadata: function() {
+      const self = this;
+      const app = self.$f7;
       var cid = btoa(self.thisCourseMetadata.id);
       app.dialog.preloader();
-      self.thisCourseMetadata['instructor_'+whichInstructor] = '';
-      self.promiseWithAuth('course/metadata/update/'+cid, self.thisCourseMetadata)
+      self.promiseWithAuth('course/metadata/add', self.thisCourseMetadata)
         .then(function(x) {
-          self.postWithPromise('course/metadata/get/'+cid)
-            .then(function(x) {
-              self.thisCourseMetadata = JSON.parse(x.data).data;
-              app.dialog.close();
-            });
+          self.fetchCourseMetadata();
+          app.dialog.close();
         });
+      self.popupMetadata = false;
       setTimeout( () => app.dialog.close(), 1000);
     },
     updateCourseMetadata: function() {
@@ -565,7 +647,7 @@ export default {
       const app = self.$f7;
       var cid = btoa(self.thisCourseMetadata.id);
       app.dialog.preloader();
-      self.promiseWithAuth('course/metadata/update/'+cid, self.thisCourseMetadata)
+      self.promiseWithAuth('course/metadata/update', self.thisCourseMetadata)
         .then(function(x) {
           self.postWithPromise('course/metadata/get/'+cid)
             .then(function(x) {
@@ -573,6 +655,7 @@ export default {
               app.dialog.close();
             });
         });
+      self.popupMetadata = false;
       setTimeout( () => app.dialog.close(), 1000);
     },
     deactivateCourseMetadata: function() {
@@ -601,6 +684,25 @@ export default {
             });
         }, null);
     },
+    deleteThisCourseMetadata: function() {
+      const self = this;
+      const app = self.$f7;
+      var cid = btoa(self.thisCourseMetadata.id);
+      app.dialog.confirm("Are you sure?", "Deleting course."
+        , function() {
+          self.postWithPromise('course/metadata/delete/'+cid)
+            .then( function(x) {
+              self.popupMetadata = false;
+              self.fetchCourseMetadata();
+            });
+        }, null);
+    },
+    isValidCourseMetadata: function() {
+      const self = this;
+      const app = self.$f7;
+      return true;
+
+    },
     showCurrentCourse: function(course) {
       const self = this;
       const app = self.$f7;
@@ -613,32 +715,24 @@ export default {
     updateRunningCourse: function() {
       const self = this;
       const app = self.$f7;
-      app.dialog.preloader();
-      console.log('thisCourse : ', self.thisCourse);
-
       self.promiseWithAuth('course/running/update', self.thisCourse)
         .then( function(x) {
           var res = JSON.parse(x.data).data;
           self.fetchRunningCourses();
-          app.dialog.alert(res.msg, "Running course", null);
-          app.dialog.close();
+          navigator.notification.alert(res.msg, null, "Updated course");
         });
-      setTimeout(() => app.dialog.close(), 1000);
+      self.popupCurrentCourse = false;
     },
     addRunningCourse: function() {
       const self = this;
       const app = self.$f7;
-      app.dialog.preloader();
-      console.log('thisCourse : ', self.thisCourse);
-
       self.promiseWithAuth('course/running/add', self.thisCourse)
         .then( function(x) {
           var res = JSON.parse(x.data).data;
           self.fetchRunningCourses();
-          app.dialog.alert(res.msg, "Running course", null);
-          app.dialog.close();
+          navigator.notification.alert(res.msg, null, "Added new course");
         });
-      setTimeout(() => app.dialog.close(), 1000);
+      self.popupCurrentCourse = false;
     },
     removeRunningCourse: function() {
       const self = this;
@@ -687,8 +781,6 @@ export default {
 
       for(var key of Object.keys(self.runningCourses)) {
         var course = self.runningCourses[key];
-        console.log('x', course.slot, course.venue, self.thisSlot, self.thisVenue);
-        console.log('y', course.slot == self.thisSlot, course.venue == self.thisVenue);
         if(parseInt(course.slot) === parseInt(self.thisSlot) && course.venue === self.thisVenue)
         {
           self.thisSlotVenueStatus = course.name + " is running on this slot/venue";

@@ -205,8 +205,9 @@ export default {
     self.fetchRoles();
 
     // Get notification now and display them.
-    setTimeout(() => {self.fetchNotifications();}, 500);
-    setTimeout(() => {self.displayNotifications();}, 500);
+    setTimeout(() => {self.fetchNotifications();}, 1000);
+    setTimeout(() => {self.displayNotifications();}, 1000);
+
     // Call fetchNotifications in the background. every minutes.
     // FIXME:  Make it very 10 minutes later.
     setInterval( function() {
