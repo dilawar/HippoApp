@@ -1,9 +1,9 @@
 <template>
-  <f7-page @page:init="fetchRoles()">
+  <f7-page>
     <f7-navbar title="Admin panel"></f7-navbar>
 
       <!-- More information here -->
-      <f7-block v-if="roles.includes('BOOKMYVENUE_ADMIN')">
+      <f7-block v-if="$store.getters.roles.includes('BOOKMYVENUE_ADMIN')">
       <f7-block-title>BookMyVenue Admin</f7-block-title>
         <f7-list>
           <f7-list-item link="/bmvadmin/bookingrequests/" 
@@ -25,7 +25,7 @@
         </f7-list>
       </f7-block>
 
-      <f7-block v-if="roles.includes('ACAD_ADMIN')">
+      <f7-block v-if="$store.getters.roles.includes('ACAD_ADMIN')">
       <f7-block-title>Acad Admin</f7-block-title>
         <f7-list>
           <f7-list-item link="/acadadmin/aws/" 
@@ -56,11 +56,11 @@
 
       </f7-block>
 
-      <f7-block v-if="roles.includes('SERVICES_ADMIN')">
+      <f7-block v-if="$store.getters.roles.includes('SERVICES_ADMIN')">
       <f7-block-title>Services Admin</f7-block-title>
       </f7-block>
 
-      <f7-block v-if="roles.includes('ADMIN')">
+      <f7-block v-if="$store.getters.roles.includes('ADMIN')">
       <f7-block-title>Hippo Admin</f7-block-title>
       </f7-block>
    </f7-page>
@@ -75,23 +75,13 @@ export default {
       alreadyLoggedIn: false,
       notifications: [],
       profile: self.$store.getters.profile,
-      roles: ['USER'],
+      roles: self.$store.getters.roles,
     };
   },
   mounted: function() {
     const self = this;
-    self.fetchRoles();
   },
   methods: {
-    fetchRoles: function() {
-      const self = this;
-      const app = self.$f7;
-      self.promiseWithAuth('me/profile').then( function(x) {
-        var res = JSON.parse(x.data);
-        if(res.data && res.data.roles)
-          self.roles = res.data.roles.split(',');
-      });
-    },
   },
 }
 </script>

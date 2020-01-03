@@ -488,6 +488,7 @@ export default new Vue({
          cordova.plugins.firebase.messaging.subscribe("emergency");
       
          //// Backbutton.
+         document.addEventListener("backbutton", self.onBackButton, false);
          //document.addEventListener("backbutton", function(e){
          //   const self = this;
          //   const app = self.$f7;
