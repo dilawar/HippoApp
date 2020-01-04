@@ -3,7 +3,7 @@
     <f7-navbar title="Transport" back-link="Back"></f7-navbar>
 
   <!-- Select days buttons. -->
-  <f7-block-header>
+  <f7-block>
   <f7-row>
     <f7-col noGap v-for="d in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']" :key="'col'+d">
       <f7-button small :key="d" :fill="(d==thisDay)?true:false" @click="changeDay(d)">
@@ -11,7 +11,6 @@
       </f7-button>
     </f7-col>
   </f7-row>
-
   <f7-row>
     <f7-col noGap 
             width="33" 
@@ -24,31 +23,59 @@
       </f7-button>
     </f7-col>
   </f7-row>
-  </f7-block-header>
+  </f7-block>
 
-  <f7-list media-list>
-    <f7-list-item v-for="(t, key) in theseEntries" :key="key">
-      <f7-icon slot="media" :icon="transportIcon(t.vehicle)">
-      </f7-icon>
-      <div slot="title">
-        {{str2Moment(t.trip_start_time, 'HH:mm:ss').format('hh:mm A')}}
-      </div>
-    </f7-list-item>
-  </f7-list>
+  <f7-block inset>
+    <f7-list media-list>
+      <f7-list-item v-for="(t, key) in theseEntries" 
+                    @click="editEntry(t)"
+                    :key="key">
+        <f7-icon slot="media" :icon="transportIcon(t.vehicle)">
+        </f7-icon>
+        <div slot="title">
+          {{str2Moment(t.trip_start_time, 'HH:mm:ss').format('hh:mm A')}}
+        </div>
+        <div slot="footer">{{t.comment}}</div>
+      </f7-list-item>
+    </f7-list>
+  </f7-block>
 
-  <!-- POPUP -->
   <!-- POPUP  -->
-  <f7-popup :opened="openPopup" @popup:close="openPopup = false">
+  <f7-popup :opened="popupEdit" @popup:close="popupEdit = false">
     <f7-page>
-      <f7-navbar title="Popup title">
+      <f7-navbar title="Edit Entry">
         <f7-nav-right>
           <f7-link popup-close>Close</f7-link>
         </f7-nav-right>
       </f7-navbar>
   
       <f7-block>
+
         <f7-list no-hairlines>
+
+          <f7-list-input label="Start time"
+                         inline-label
+                         type="time"
+                         :value="thisEntry.trip_start_time"
+                         @change="thisEntry.trip_start_time=$event.target.input">
+          </f7-list-input>
+
+          <f7-list-input label="End time"
+                         inline-label
+                         type="time"
+                         :value="thisEntry.trip_end_time"
+                         @change="thisEntry.trip_end_time=$event.target.input">
+          </f7-list-input>
+
+          <f7-list-input label="Comment"
+                         inline-label
+                         type="textarea"
+                         :value="thisEntry.comment"
+                         @change="thisEntry.comment=$event.target.input">
+          </f7-list-input>
+
         </f7-list>
+
         <f7-row>
           <f7-col>
             <f7-button popup-close raised outline
@@ -72,11 +99,12 @@ export default {
   data() {
     const self = this;
     return {
-      thisRoute: self.loadStore('thisRoute') || {'pickup_point':'NCBS', 'drop_point': 'Mandara'},
+      thisRoute: self.loadStore('thisRoute') || { 
+        'pickup_point':'NCBS', 'drop_point': 'Mandara'},
       nowTime: moment(),
       thisDay: moment().format('ddd'),
       transport: {'timetable':{}, 'routes': self.thisRoute},
-      openPopup: false,
+      popupEdit: false,
       // This goes onto a poup showing route map.
       thisRouteMap: '<p>No route found.</p>',
       thisEntry: {},
@@ -138,13 +166,17 @@ export default {
       if( ! self.transport.timetable)
         return {};
 
-      console.log('thisRoute', self.thisRoute);
       var t = self.transport.timetable[self.thisDay.toLowerCase()];
       var pickup = self.thisRoute.pickup_point.toLowerCase();
       var drop = self.thisRoute.drop_point.toLowerCase();
       t = t[pickup];
       t = t[drop];
       self.theseEntries = Object.values(t);
+    },
+    editEntry: function(t) {
+      const self = this;
+      self.thisEntry = JSON.parse(JSON.stringify(t));
+      self.popupEdit = true;
     },
     routeMap: function(url) {
       const self = this;
@@ -158,7 +190,6 @@ export default {
       const self = this;
       self.thisRoute = route;
       console.log('selected route: ', route);
-      self.saveStore('thisRoute', route);
       self.fetchTransport();
     },
     isSameRoute: function(a, b) {
