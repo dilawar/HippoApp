@@ -72,8 +72,7 @@ export default {
   data() {
     const self = this;
     return {
-      thisRoute: self.loadStore('thisRoute') || {'pickup_point':'NCBS',
-        'drop_point': 'Mandara'},
+      thisRoute: self.loadStore('thisRoute') || {'pickup_point':'NCBS', 'drop_point': 'Mandara'},
       nowTime: moment(),
       thisDay: moment().format('ddd'),
       transport: {'timetable':{}, 'routes': self.thisRoute},
@@ -113,9 +112,9 @@ export default {
       return icon;
     },
     changeDay: function(data) {
-      console.log('Changing day ', data);
       const self = this;
       self.thisDay = data;
+      self.fetchTransport();
     },
     fetchTransport: function() 
     {
@@ -158,6 +157,7 @@ export default {
     selectRoute: function(route) {
       const self = this;
       self.thisRoute = route;
+      console.log('selected route: ', route);
       self.saveStore('thisRoute', route);
       self.fetchTransport();
     },
