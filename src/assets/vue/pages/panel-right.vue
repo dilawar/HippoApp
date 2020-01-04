@@ -57,7 +57,16 @@
       </f7-block>
 
       <f7-block v-if="$store.getters.roles.includes('SERVICES_ADMIN')">
-      <f7-block-title>Services Admin</f7-block-title>
+        <f7-block-title>Services Admin</f7-block-title>
+        <f7-list>
+          <f7-list-item link="/serviceadmin/transport/" 
+                        target="_blank"
+                        view=".view-main"
+                        title="Transport" 
+                        panel-close
+                        >
+          </f7-list-item>
+        </f7-list>
       </f7-block>
 
       <f7-block v-if="$store.getters.roles.includes('ADMIN')">
