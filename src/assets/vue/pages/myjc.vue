@@ -2,24 +2,57 @@
    <f7-page page-content ptr @ptr:refresh="refreshJC">
       <f7-navbar title="Journal Clubs" back-link="Back"></f7-navbar>
 
-      <f7-block v-if="isAdminOfAnyJC()"
-                style="margin:1pt; padding:10pt; align:center">
+      <f7-block-header>
         <f7-row>
-          <f7-col>
-            <f7-link @click="managePresentation()">Assign Presentations</f7-link>
-          </f7-col>
-          <f7-col>
-            <f7-link @click="manageSubscription()">Manage Subscriptions</f7-link>
+          <f7-col col="25" v-for="(jc,key) in alljcs" :key="key">
+            <f7-button icon="fa fa-toggle-on fa-fw" 
+                       tooltip="Subscribed."
+                       @click="unsubscribeMeFromJC(jc.id)"
+                       small 
+                       v-if="Object.keys(myjcs).includes(jc.id)">
+              {{jc.id}}
+            </f7-button>
+            <f7-button icon="fa fa-toggle-off fa-fw" 
+                       tooltip="Unsubscribed."
+                       @click="subscribeMeToJC(jc.id)"
+                       small 
+                       v-else>
+              {{jc.id}}
+            </f7-button>
           </f7-col>
         </f7-row>
-      </f7-block>
+      </f7-block-header>
+
+      <f7-block-header v-if="isAdminOfAnyJC()">
+        <f7-row class="text-align-center">
+          <f7-col>
+            <f7-button small @click="managePresentation()">Assign
+              Presentations</f7-button>
+          </f7-col>
+          <f7-col>
+            <f7-button small @click="manageSubscription()">Manage
+              Subscriptions</f7-button>
+          </f7-col>
+        </f7-row>
+      </f7-block-header>
 
       <f7-block-header>Upcoming JCs</f7-block-header>
-      <f7-list  accordion-list no-hairlines>
-        <f7-list-item v-for="(jc, key) in jcs" :key="key" accordion-item>
-          <div slot="footer">By {{jc.presenter}} |  Acknowleged: {{jc.acknowledged}} </div>
+      <f7-list accordion-list no-hairlines>
+        <f7-list-item v-for="(jc, key) in jcs" 
+                      :key="key" 
+                      accordion-item>
+
+          <div slot="after" 
+               v-if="Object.keys(myjcs).includes(jc.jc_id)"
+               class="text-color-black"
+               >
+            <strong>{{jc.jc_id}}</strong>
+          </div>
+          <div slot="after" v-else class="text-color-gray">{{jc.jc_id}}</div>
+
+          <div slot="footer">By {{jc.presenter}}, Acknowleged: {{jc.acknowledged}} </div>
           <div slot="header"> 
-              {{jc.jc_id}} | {{humanReadableDateTime(jc.date,jc.time)}} at {{jc.venue}}
+            {{humanReadableDateTime(jc.date,jc.time)}} at {{jc.venue}}
           </div>
           <div slot="title"> {{jc.title}} </div>
           <f7-accordion-content style="background-color:Ivory">
@@ -263,6 +296,7 @@ export default {
       jcs: {},
       venues: {},
       myjcs: {},
+      alljcs: {},
       popupOpened: false,
       jcAdminPresentationPopup: false,
       jcAdminSubscriptionPopup: false,
@@ -300,9 +334,13 @@ export default {
 
       // Name of JCs for which I am a member.
       app.dialog.preloader('Fetching JCs...');
-      self.postWithPromise('/me/jclist').then( function(x) {
+      self.postWithPromise('/me/jc/list').then( function(x) {
         self.myjcs = JSON.parse(x.data).data;
         console.log('MyJCS', self.myjcs);
+      });
+
+      self.postWithPromise('/jc/info/all').then( function(x) {
+        self.alljcs = JSON.parse(x.data).data;
       });
 
       self.postWithPromise('/me/jc').then( function(x) {
@@ -403,18 +441,23 @@ export default {
     },
     acknowledgeJC: function(jcid) {
       const self = this;
-      setTimeout( () => {
-        self.sendRequest('/jc/acknowledge/' + jcid)
-        self.fetchJC();
-      }, 1000);
-    },
-    removeJC: function(jcid) {
-      const self = this;
-      self.promiseWithAuth('/jcadmin/remove/' + jcid)
+      const app = self.$f7;
+      self.postWithPromise('/jc/acknowledge/' + jcid)
         .then( function(x) {
           self.fetchJC();
         });
     },
+    removeJC: function(jcid) {
+      const self = this;
+      const app = self.$f7;
+      app.notification.confirm( "Are you sure?", "Removing JC",
+        function( ) {
+          self.promiseWithAuth('/jcadmin/remove/' + jcid)
+            .then( function(x) {
+              self.fetchJC();
+            })}
+        , null);
+    }, 
     managePresentation: function() {
       const self = this;
       self.popupTitle = "Assign presenter";
@@ -436,25 +479,55 @@ export default {
     },
     unsubscribeFromJC: function(login, jcid) {
       const self = this;
+      const app = self.$f7;
       self.promiseWithAuth('/jcadmin/unsubscribe/'+jcid+'/'+login)
         .then( function(x) {
-          self.fetchSubscriptions(jcid);
+          if(login === self.$store.login)
+            self.fetchJC();
+          else
+            self.fetchSubscriptions(jcid);
+          app.dialog.close();
         });
+      setTimeout(() => app.dialog.close(), 1000);
+    },
+    unsubscribeMeFromJC: function(jcid) {
+      const self = this;
+      const app = self.$f7;
+      app.dialog.preloader("Unsubscribing you from " + jcid);
+      self.promiseWithAuth('/me/jc/unsubscribe/'+jcid)
+        .then( function(x) {
+          self.fetchJC();
+          app.dialog.close();
+        });
+      setTimeout(() => app.dialog.close(), 1000);
     },
     subscribeToJC: function(login, jcid) {
       const self = this;
       const app = self.$f7;
+      app.dialog.preloader();
       self.promiseWithAuth('/jcadmin/subscribe/'+jcid+'/'+login)
         .then( function(x) {
           let res = JSON.parse(x.data).data;
-          if(res.success)
-          {
-            app.alert(res.msg, "Success", null);
+          if(res.success) {
+            app.dialog.alert(res.msg, "Success", null);
             self.fetchSubscriptions(jcid);
           }
           else
             app.alert(res.msg, "Failed", null);
+          app.dialog.close();
         });
+      setTimeout(() => app.dialog.close(), 1000);
+    },
+    subscribeMeToJC: function(jcid) {
+      const self = this;
+      const app = self.$f7;
+      app.dialog.preloader("Subscribing you to " + jcid);
+      self.promiseWithAuth('/me/jc/subscribe/'+jcid)
+        .then( function(x) {
+          self.fetchJC();
+          app.dialog.close();
+        });
+      setTimeout(() => app.dialog.close(), 1000);
     },
     assignPresentationDateSwiper: function(login, jcid) 
     {
