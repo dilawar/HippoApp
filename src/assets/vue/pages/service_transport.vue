@@ -1,323 +1,172 @@
 <template>
-  <f7-page ptr @ptr:refresh="fetchTransportAgain" 
-           @page:beforein="pageBeforeIn"
-           @page:afterin="pageAfterIn"
-           page-content>
+  <f7-page page-content>
     <f7-navbar title="Transport" back-link="Back"></f7-navbar>
 
-    <f7-fab position="right-bottom" slot="fixed" color="green" href="/osm/liveroute/60">
-      <f7-icon icon="fa fa-map fa-2x"></f7-icon>
-    </f7-fab>
-
   <!-- Select days buttons. -->
-  <f7-block accordion-list>
-
   <f7-block-header>
   <f7-row>
     <f7-col noGap v-for="d in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']" :key="'col'+d">
-      <f7-button small :key="d" :fill="(d==selectedDay)?true:false" @click="changeDay(d)">
+      <f7-button small :key="d" :fill="(d==thisDay)?true:false" @click="changeDay(d)">
         {{d}}
       </f7-button>
     </f7-col>
   </f7-row>
+
   <f7-row>
-    <f7-col noGap width="50" medium="33" 
-            v-for="(route, key) in transport.routes" :key="key">
-      <f7-button small>
-        {{route.pickup_point}} to {{route.drop_point}}
+    <f7-col noGap 
+            width="33" 
+            medium="15" 
+            v-for="(route, key) in transport.routes" 
+            :key="key">
+      <f7-button small @click="selectRoute(route)"
+                 :fill="isSameRoute(thisRoute,route)">
+        {{route.pickup_point}}→{{route.drop_point}}
       </f7-button>
     </f7-col>
   </f7-row>
-
   </f7-block-header>
 
-     <f7-list accordion-list no-hairlines>
-     <f7-list-item accordion-item 
-                   v-for="(route, key) in transport.routes" 
-                   :key="key"
-            >
-            <div slot="title" style="font-size:large;margin-bottom:10px">
-               <f7-icon icon="fa fa-map-marker fa-fw"></f7-icon>
-               {{route.pickup_point}} to {{ route.drop_point }}
-            </div>
-            <span slot="footer"> {{ nextTrip(route) }}</span>
+  <f7-list media-list>
+    <f7-list-item v-for="(t, key) in theseEntries" :key="key">
+      <f7-icon slot="media" :icon="transportIcon(t.vehicle)">
+      </f7-icon>
+      <div slot="title">
+        {{str2Moment(t.trip_start_time, 'HH:mm:ss').format('hh:mm A')}}
+      </div>
+    </f7-list-item>
+  </f7-list>
 
-           <f7-accordion-content>
-              <f7-list media-list inner
-                       style="padding:0px;margin:0px"
-                 >
-              <f7-list-item v-for="(t, key) in thisRouteTimetable(route)"
-                            :key="key"
-                            v-if="isUpcomingTrip(t)"
-                            style="padding:0px;margin:0px"
-                            swipeout
-                            >
-                 <f7-swipeout-actions right>
-                    <f7-swipeout-button @click="showRoute(t)">Show This Route
-                    </f7-swipeout-button>
-                 </f7-swipeout-actions>
+  <!-- POPUP -->
+  <!-- POPUP  -->
+  <f7-popup :opened="openPopup" @popup:close="openPopup = false">
+    <f7-page>
+      <f7-navbar title="Popup title">
+        <f7-nav-right>
+          <f7-link popup-close>Close</f7-link>
+        </f7-nav-right>
+      </f7-navbar>
+  
+      <f7-block>
+        <f7-list no-hairlines>
+        </f7-list>
+        <f7-row>
+          <f7-col>
+            <f7-button popup-close raised outline
+                       @click="onClick()"
+                       > DO SOMETHING
+            </f7-button>
+          </f7-col>
+        </f7-row>
+      </f7-block>
+    </f7-page>
+  </f7-popup>
 
-                   <div slot="title">
-                      {{str2Moment(t.trip_start_time, 'HH:mm:ss').format('hh:mm A')}}
-                   </div>
-                  <f7-icon slot="media"
-                     :icon="transportIcon(t.vehicle,t.trip_start_time,t.day)">
-                  </f7-icon>
-
-                  <span slot='after' v-if="isUpcomingTrip(t)">
-                    {{ str2Moment(t.trip_start_time, 'HH:mm:ss').fromNow() }}
-                 </span>
-
-              </f7-list-item>
-           </f7-list>
-
-        </f7-accordion-content>
-
-     </f7-list-item>
-     </f7-list>
-
-  </f7-block>
-
-  <!-- FAB
-  <f7-fab position="right-bottom" fab-extended color="green">
-     <f7-icon icon="fa fa-map-marker fa-2x"></f7-icon>
-     <f7-icon ios="f7:close" aurora="f7:close" md="material:close"></f7-icon>
-     <f7-fab-buttons position="left">
-        <f7-fab-button  extended
-                        fab-close 
-                        tooltip="NCBS to Mandara"
-                        @click="routeFromTo('NCBS', 'Mandara')"
-                        >
-                        <small>N→M</small>
-        </f7-fab-button>
-        <f7-fab-button tooltip="Mandara to NCBS"
-                       fab-close
-                       @click="routeFromTo('Mandara', 'NCBS')"
-                       >
-              <small>M→N</small>
-        </f7-fab-button>
-        <f7-fab-button fab-close
-                       @click="routeFromTo('NCBS', 'IISc')"
-                       tooltip="NCBS to IISc"
-                       >
-                       <small>N→I</small>
-        </f7-fab-button>
-        <f7-fab-button fab-close
-                       @click="routeFromTo('IISc', 'NCBS')"
-                       tooltip="IISc to NCBS"
-                       >
-              <small>I→N</small>
-        </f7-fab-button>
-     </f7-fab-buttons>
-  </f7-fab>
-  -->
-
-  <f7-block v-if="! tracking === 'Stop'" style="align:bottom">
-  <div>If you are inside a vehicle, click on <tt>TRACK</tt> button to anonymously
-     share you location. We use it to display live location and create routes.
-  </div>
-  </f7-block>
 </f7-page>
+
 </template>
 
 <script>
 import moment from 'moment'
 
 export default {
-   data() {
+  data() {
+    const self = this;
+    return {
+      thisRoute: self.loadStore('thisRoute') || {'pickup_point':'NCBS',
+        'drop_point': 'Mandara'},
+      nowTime: moment(),
+      thisDay: moment().format('ddd'),
+      transport: {'timetable':{}, 'routes': self.thisRoute},
+      openPopup: false,
+      // This goes onto a poup showing route map.
+      thisRouteMap: '<p>No route found.</p>',
+      thisEntry: {},
+      theseEntries: {},
+    };
+  },
+  mounted: function() {
+    const self = this;
+    self.fetchTransport();
+  },
+  methods: { 
+    isUpcomingTrip: function(t) {
       const self = this;
-      return {
-         thisDay: moment().format('ddd'),
-         pickup: self.loadStoreStr('lastPickup') || 'NCBS',
-         drop : self.loadStoreStr('lastDrop') || 'Mandara',
-         nowTime: moment(),
-         selectedDay: moment().format('ddd'),
-         transport: [],
-         thisTimetable: [], 
-         popupOpened: false,
-         // This goes onto a poup showing route map.
-         thisRouteMap: '<p>No route found.</p>',
-         tracking: (self.loadStoreStr('tracking') === '')?'Start':'Stop', 
-      };
-   },
-   mounted: function() {
+      console.log('x', t.day, self.thisDay );
+      if(t.day.toLowerCase() === self.thisDay.toLowerCase())
+        if(self.str2Moment(t.trip_start_time, 'HH:mm:ss') >= self.str2Moment())
+          return true;
+      if(self.str2Moment(t.day,"ddd") > self.str2Moment(self.thisDay,"ddd"))
+        return true;
+      return false;
+    },
+    transportIcon: function(vehicle) {
       const self = this;
-      self.transport = self.loadStore('transport');
-      // If nothing found then only fetch. LAZY.
-      if(self.transport.timetable.length == 0)
-         self.fetchTransport();
-      self.filterTransport();
-   },
-   methods: { 
-      isUpcomingTrip: function(t) {
-         const self = this;
-         console.log('x', t.day, self.thisDay );
-         if(t.day.toLowerCase() === self.thisDay.toLowerCase())
-            if(self.str2Moment(t.trip_start_time, 'HH:mm:ss') >= self.str2Moment())
-               return true;
-         if(self.str2Moment(t.day,"ddd") > self.str2Moment(self.thisDay,"ddd"))
-            return true;
-         return false;
-      },
-      transportIcon: function(vehicle, startTime, day) {
-         const self = this;
-         var icon = 'fa ';
-         vehicle = vehicle.toLowerCase();
-         if(vehicle == 'shuttle')
-            icon += ' fa-bus'
-         else if(vehicle == 'buggy')
-            icon += ' fa-bug';
-         else
-            icon += ' fa-bus';
+      var icon = 'fa ';
+      vehicle = vehicle.toLowerCase();
+      if(vehicle == 'shuttle')
+        icon += ' fa-bus'
+      else if(vehicle == 'buggy')
+        icon += ' fa-bug';
+      else
+        icon += ' fa-bus';
+      icon += ' fa-2x';
+      return icon;
+    },
+    changeDay: function(data) {
+      console.log('Changing day ', data);
+      const self = this;
+      self.thisDay = data;
+    },
+    fetchTransport: function() 
+    {
+      const self         = this;
+      const app          = self.$f7;
+      var endpoint = self.thisDay;
+      if(self.thisRoute.pickup_point)
+        endpoint += '/' + self.thisRoute.pickup_point;
+      if(self.thisRoute.drop_point)
+        endpoint +=  '/' + self.thisRoute.drop_point;
 
-         if(self.isNextTrip(startTime, day))
-            icon += ' fa-spin fa-pulse fa-2x';
+      self.postWithPromise('/transport/'+endpoint)
+        .then( function(x) {
+          var res = JSON.parse(x.data);
+          self.transport = res.data;
+          self.getTimetable();
+        });
+    },
+    getTimetable: function() {
+      const self = this;
+      if( ! self.transport.timetable)
+        return {};
 
-         icon += ' fa-fw';
-         return icon;
-      },
-      isNextTrip: function(startTime, day)
-      {
-         const self = this;
-         if( self.selectedDay != day )
-            return false;
-         var tt = moment(startTime, 'HH:mm:ss');
-         var now = moment();
-         var minutesToLeave = tt.diff(now, 'minutes');
-         if(minutesToLeave > 0 && minutesToLeave < 30)
-            return true;
-         return false;
-      },
-      filterTransport: function()
-      {
-         const self = this;
-         let d = self.transport.timetable[self.selectedDay.toLowerCase()];
-         if(d)
-            d = d[self.pickup.toLowerCase()];
-         if(d)
-            d = d[self.drop.toLowerCase()];
-         self.thisTimetable = Object.values(d);
-      },
-      routeFromTo: function(pickup, drop)
-      {
-         const self = this;
-         self.pickup = pickup;
-         self.drop = drop;
-         self.saveStoreStr('lastPickup', self.pickup);
-         self.saveStoreStr('lastDrop', self.drop);
-         // Change timetable else DOM won't render
-         self.filterTransport( );
-      },
-      changeDay: function(data) {
-         console.log('Changing day ', data);
-         const self = this;
-         self.selectedDay = data;
-
-         // Change timetable else DOM wont change 
-         self.filterTransport( );
-      },
-      fetchTransportAgain: function( ) {
-         const self = this;
-         self.fetchTransport();
-         self.$f7.ptr.done();
-      },
-      fetchTransport: function( ) 
-      {
-         const self         = this;
-         const app          = self.$f7;
-         self.postWithPromise('/transport').then(
-            function(x)
-            {
-               var res = JSON.parse(x.data);
-               // to make sure it triggers the rendering.
-               if(res.status == "ok")
-               {
-                  self.transport = res.data;
-                  self.saveStore('transport', res.data);
-                  self.filterTransport();
-               }
-               else
-               {
-                  console.log("Failed to fetch transport.");
-                  self.transport = self.loadStore("transport");
-               }
-            }
-         );
-      },
-      routeMap: function(url) {
-         const self = this;
-         self.thisRouteMap = url;
-         self.popupOpened = true;
-      },
-      thisRouteTimetable: function(route) {
-         const self = this;
-         let d = self.transport.timetable[self.selectedDay.toLowerCase()];
-         if(d)
-            d = d[route.pickup_point.toLowerCase()];
-         if(d) 
-            d = d[route.drop_point.toLowerCase()];
-         return Object.values(d);
-      },
-      nextTrip: function(route) {
-         const self = this;
-
-         let thisTimeTable = self.thisRouteTimetable(route);
-         let nextTrip = null;
-         for(let k in thisTimeTable)
-         {
-            let x = thisTimeTable[k];
-            let t = self.str2Moment(x.day + ' ' + x.trip_start_time, 'ddd HH:mm:ss');
-            if( t > moment())
-            {
-               nextTrip = t
-               break;
-            }
-         }
-         if(nextTrip)
-            return 'Next trip ' + nextTrip.fromNow();
-         return 'All trips are over!';
-      },
-      trackMe: function()
-      {
-         const self = this;
-         const app = self.$f7;
-
-         if(self.tracking === 'Start') 
-         {
-             BackgroundGeolocation.configure({
-                locationProvider: BackgroundGeolocation.ACTIVITY_PROVIDER,
-                //locationProvider: BackgroundGeolocation.RAW_PROVIDER,
-                desiredAccuracy: BackgroundGeolocation.LOW_ACCURACY,
-                stationaryRadius: 10,
-                distanceFilter: 30,
-                notificationTitle: 'Background Tracking',
-                notificationText: 'enabled',
-                debug: false,
-                interval: 10000,
-                fastestInterval: 5000,
-                activitiesInterval: 10000,
-            });
-
-            BackgroundGeolocation.start();
-            BackgroundGeolocation.on('location', function(loc) {
-               self.sendCoordinates('/geolocation/submit', loc);
-            });
-
-            // When successful, flip the button text.
-            self.tracking = 'Stop';
-         }
-         else 
-         {
-            self.saveStoreStr('tracking', self.tracking);
-            BackgroundGeolocation.removeAllListeners();
-            console.log( 'Switching off location tracking.');
-            self.tracking = 'Start';
-         }
-      },
-      showRoute: function() {
-         console.log( "Show me this route" );
-      },
-   },
+      console.log('thisRoute', self.thisRoute);
+      var t = self.transport.timetable[self.thisDay.toLowerCase()];
+      var pickup = self.thisRoute.pickup_point.toLowerCase();
+      var drop = self.thisRoute.drop_point.toLowerCase();
+      t = t[pickup];
+      t = t[drop];
+      self.theseEntries = Object.values(t);
+    },
+    routeMap: function(url) {
+      const self = this;
+      self.thisRouteMap = url;
+      self.openPopup = true;
+    },
+    showRoute: function() {
+      console.log( "Show me this route" );
+    },
+    selectRoute: function(route) {
+      const self = this;
+      self.thisRoute = route;
+      self.saveStore('thisRoute', route);
+      self.fetchTransport();
+    },
+    isSameRoute: function(a, b) {
+      if(a.pickup_point == b.pickup_point && a.drop_point == b.drop_point)
+        return true;
+      return false;
+    },
+  },
 };
 
 </script>
