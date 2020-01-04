@@ -95,10 +95,9 @@
                 </f7-list-input>
 
                 <f7-list-input label="Description"
-                               resizable
                                :value="thisJC.description"
                                @input="thisJC.description = $event.target.value"
-                               type="textarea"
+                               type="texteditor"
                                >
                 </f7-list-input>
 
@@ -194,7 +193,7 @@
                                  @input="thisJC.venue = $event.target.value"
                                  >
                                  <option :value="thisJC.venue" selected> 
-                                 {{thisJC.info.venue}}
+                                 {{thisJC.venue}}
                                  </option>
                     <option v-for="(venue, id) in venues" 
                             :key="id" :value="venue.id"
@@ -324,16 +323,17 @@ export default {
       self.fetchVenues();
     else
       self.venues = self.loadStore('venues');
-    self.fetchJC();
+    self.fetchJC(true);
   },
   methods: {
-    fetchJC: function() 
+    fetchJC: function(preloader=false)
     {
       const self = this;
       const app = self.$f7;
 
       // Name of JCs for which I am a member.
-      app.dialog.preloader('Fetching JCs...');
+      if(preloader)
+        app.dialog.preloader('Fetching JCs...');
       self.postWithPromise('/me/jc/list').then( function(x) {
         self.myjcs = JSON.parse(x.data).data;
         console.log('MyJCS', self.myjcs);
@@ -346,9 +346,12 @@ export default {
       self.postWithPromise('/me/jc').then( function(x) {
         let res = JSON.parse(x.data);
         self.jcs = res.data;
-        app.dialog.close();
+        if(preloader)
+          app.dialog.close();
       });
-      setTimeout(() => app.dialog.close(), 3000);
+
+      if(preloader)
+        setTimeout(() => app.dialog.close(), 3000);
     },
     myJCWithAdminRights: function() {
       const self = this;
@@ -409,7 +412,6 @@ export default {
       if(! self.myjcs)
         return isAdmin;
       Object.keys(self.myjcs).forEach( function(key) {
-        console.log('Subs type ', self.myjcs[key]['subscription_type']);
         if(self.myjcs[key]['subscription_type'] === 'ADMIN')
           isAdmin = true;
       });
@@ -432,19 +434,23 @@ export default {
     },
     submitJCChanges: function() {
       const self = this;
+      const app = self.$f7;
       self.popupOpened = false;
+      app.dialog.preloader("Updating JC entry...");
       self.promiseWithAuth('/jc/update', self.thisJC).then(
         function(x) {
-          self.fetchJC();
+          self.fetchJC(false);
+          app.dialog.close();
         }
       );
+      setTimeout(() => app.dialog.close(), 2000);
     },
     acknowledgeJC: function(jcid) {
       const self = this;
       const app = self.$f7;
       self.postWithPromise('/jc/acknowledge/' + jcid)
         .then( function(x) {
-          self.fetchJC();
+          self.fetchJC(false);
         });
     },
     removeJC: function(jcid) {
@@ -454,7 +460,7 @@ export default {
         function( ) {
           self.promiseWithAuth('/jcadmin/remove/' + jcid)
             .then( function(x) {
-              self.fetchJC();
+              self.fetchJC(false);
             })}
         , null);
     }, 
@@ -473,7 +479,7 @@ export default {
       // console.log('Submitting', self.thisJC);
       self.promiseWithAuth('/jcadmin/assign', self.thisJC)
         .then( function(x) {
-          self.fetchJC();
+          self.fetchJC(false);
         });
       self.jcAdminPresentationPopup = false;
     },
