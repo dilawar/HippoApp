@@ -197,14 +197,6 @@ export default {
     });
 
     self.fetchFlashCards();
-
-    // Fetch the transport as well.
-    self.promiseWithAuth('transport').then(function(x) {
-        const res = JSON.parse(x.data);
-        if( res.status=='ok')
-          self.$localStorage.set('transport', JSON.stringify(res.data));
-      });
-
     self.fetchRoles();
 
     // Get notification now and display them.
@@ -212,7 +204,7 @@ export default {
     setTimeout(() => {self.displayNotifications();}, 1000);
 
     // Call fetchNotifications in the background. every minutes.
-    // FIXME:  Make it very 10 minutes later.
+    // FIXME:  Make it query 15 minutes later.
     setInterval( function() {
       console.log("Fetching notitication");
       try {
