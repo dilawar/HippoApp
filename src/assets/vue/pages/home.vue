@@ -74,33 +74,27 @@
       </f7-row>
     </f7-block>
 
-    <f7-block v-if="! isUserAuthenticated()" style="float:right;background:none;">
-      <f7-list media-list no-hairlines>
-        <f7-list-item style="background:none">
+    <f7-block-footer v-if="! isUserAuthenticated()" class="pull-right">
+      <f7-list no-hairlines>
+        <f7-list-item class="align-content-center">
           <div slot="after">
-            <font v-if="isHippoAlive">Hippo is alive. You may login.</font>
+            <font v-if="isHippoAlive" style="font-size:small">
+              <strong>Hippo is alive.</strong>
+            </font>
             <font v-else>
               <f7-preloader color="blue"></f7-preloader> Pinging Hippo ...
             </font>
           </div>
         </f7-list-item>
         <f7-list-item>
-          <f7-row slow="root">
-            <f7-col>
-            </f7-col>
-            <f7-col>
-              <f7-button raised 
-                         outline
-                         fill 
-                         :disabled="! isHippoAlive"
-                         login-screen-open=".hippo-login-screen">
-                {{isHippoAlive?'Login':'Pinging Hippo server...'}}
-              </f7-button>
-            </f7-col>
-          </f7-row>
+          <f7-button raised outline fill 
+                     :disabled="! isHippoAlive"
+                     login-screen-open=".hippo-login-screen">
+            {{isHippoAlive?'Login':'Pinging Hippo server...'}}
+          </f7-button>
         </f7-list-item>
       </f7-list>
-    </f7-block>
+    </f7-block-footer>
 
     <!-- FLASH cards -->
     <f7-swiper navigation :params="{loop:true}">
