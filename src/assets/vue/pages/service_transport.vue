@@ -6,18 +6,18 @@
   <f7-block>
   <f7-row>
     <f7-col noGap v-for="d in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']" :key="'col'+d">
-      <f7-button small :key="d" :fill="(d==thisDay)?true:false" @click="changeDay(d)">
+      <f7-button :key="d" :fill="(d==thisDay)?true:false" @click="changeDay(d)">
         {{d}}
       </f7-button>
     </f7-col>
   </f7-row>
   <f7-row>
     <f7-col noGap 
-            width="33" 
-            medium="15" 
+            width="50" 
+            medium="25" 
             v-for="(route, key) in transport.routes" 
             :key="key">
-      <f7-button small @click="selectRoute(route)"
+      <f7-button @click="selectRoute(route)"
                  :fill="isSameRoute(thisRoute,route)">
         {{route.pickup_point}}→{{route.drop_point}}
       </f7-button>
@@ -27,9 +27,8 @@
 
   <f7-block inset>
     <f7-list media-list>
-      <f7-list-item v-for="(t, key) in theseEntries" 
-                    @click="editEntry(t)"
-                    :key="key">
+      <f7-list-button @click="addNewEntry()">Add new</f7-list-button>
+      <f7-list-item v-for="(t, key) in theseEntries" @click="editEntry(t)" :key="key">
         <f7-icon slot="media" :icon="transportIcon(t.vehicle)">
         </f7-icon>
         <div slot="title">
@@ -48,8 +47,11 @@
           <f7-link popup-close>Close</f7-link>
         </f7-nav-right>
       </f7-navbar>
-  
+
       <f7-block>
+        <f7-block-header>
+          From : {{thisRoute.pickup_point}} to {{thisRoute.drop_point}}.
+        </f7-block-header>
 
         <f7-list no-hairlines>
 
@@ -67,9 +69,16 @@
                          @change="thisEntry.trip_end_time=$event.target.input">
           </f7-list-input>
 
+          <f7-list-input label="Vehicle"
+                         inline-label
+                         type="text"
+                         :value="thisEntry.vehicle"
+                         @change="thisEntry.comment=$event.target.input">
+          </f7-list-input>
+
           <f7-list-input label="Comment"
                          inline-label
-                         type="textarea"
+                         type="text"
                          :value="thisEntry.comment"
                          @change="thisEntry.comment=$event.target.input">
           </f7-list-input>
@@ -99,21 +108,22 @@ export default {
   data() {
     const self = this;
     return {
-      thisRoute: self.loadStore('thisRoute') || { 
-        'pickup_point':'NCBS', 'drop_point': 'Mandara'},
+      thisRoute: self.loadStore('thisRoute'),
       nowTime: moment(),
       thisDay: moment().format('ddd'),
       transport: {'timetable':{}, 'routes': self.thisRoute},
       popupEdit: false,
       // This goes onto a poup showing route map.
       thisRouteMap: '<p>No route found.</p>',
-      thisEntry: {},
+      thisEntry: {'pickup_point':'NCBS', 'drop_point':'IIsc', 'is_new':false},
       theseEntries: {},
     };
   },
   mounted: function() {
     const self = this;
     self.fetchTransport();
+    if(! self.thisRoute || ! self.thisRoute.hasOwnProperty('pickup_point'))
+      self.thisRoute = { 'pickup_point': 'NCBS', 'drop_point': 'IISc'};
   },
   methods: { 
     isUpcomingTrip: function(t) {
@@ -176,6 +186,7 @@ export default {
     editEntry: function(t) {
       const self = this;
       self.thisEntry = JSON.parse(JSON.stringify(t));
+      self.thisEntry['is_new'] = false;
       self.popupEdit = true;
     },
     routeMap: function(url) {
@@ -185,6 +196,12 @@ export default {
     },
     showRoute: function() {
       console.log( "Show me this route" );
+    },
+    addNewEntry: function() {
+      const self = this;
+      self.thisEntry = {...{ }, ...self.thisRoute};
+      self.thisEntry.is_new = true;
+      self.popupEdit = true;
     },
     selectRoute: function(route) {
       const self = this;
