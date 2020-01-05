@@ -36,7 +36,7 @@
       </f7-card-header>
 
       <!-- Card content -->
-      <f7-card-content v-linkified>
+      <f7-card-content>
         <br />
         <span v-for="(val, key) in acc">
           <span v-if="showKeys.find(k => k===key) && val.length > 0">
@@ -92,7 +92,7 @@
       </f7-card-header>
 
       <!-- Card content -->
-      <f7-card-content v-linkified>
+      <f7-card-content>
         <span v-for="(val, key) in acc">
           <span v-if="showKeys.find(k => k===key) && val.length > 0">
             <span style="font-size:70%">{{formatKey(key)}}</span>

@@ -104,7 +104,6 @@
     "sass": "^1.24.2",
     "vue": "^2.6.11",
     "vue-light-timeline": "^1.0.3",
-    "vue-linkify": "^1.0.1",
     "vue-localstorage": "^0.6.2",
     "vue-persistent-state": "^0.2.1",
     "vue-picture-input": "^2.1.6",

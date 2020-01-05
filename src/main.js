@@ -6,10 +6,6 @@ import Dropzone from "vue2-dropzone";
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 Vue.component('vue-dropzone', Dropzone);
 
-// linkify
-import linkify from 'vue-linkify';
-Vue.directive('linkified', linkify);
-
 // Editor
 import { VueEditor, Quill } from 'vue2-editor';
 Vue.component('vue-editor', VueEditor);
@@ -482,36 +478,11 @@ export default new Vue({
             // console.log("New background FCM message: ", JSON.stringify(payload));
          });
 
-         // Subscribe to Hippo, NCBS, Emergency
-         cordova.plugins.firebase.messaging.subscribe("hippo");
-         cordova.plugins.firebase.messaging.subscribe("ncbs");
+         // Subscribe to Emergency
          cordova.plugins.firebase.messaging.subscribe("emergency");
       
          //// Backbutton.
          document.addEventListener("backbutton", self.onBackButton, false);
-         //document.addEventListener("backbutton", function(e){
-         //   const self = this;
-         //   const app = self.$f7;
-         //   console.log( 'back button');
-         //   //console.log('panels', app.panel);
-         //   //var leftp = app.panel.left && app.panel.left.opened;
-         //   //var rightp = app.panel.right && app.panel.right.opened;
-         //   //if ( leftp || rightp ) 
-         //   //{
-         //   //   app.panel.close();
-         //   //   return false;
-         //   //} 
-         //   //else if (app.views.main.router.url == '/') 
-         //   //{
-         //   //   app.dialog.confirm('Are you sure you want to exit?', 'Exit MyApp'
-         //   //      , function() { navigator.app.exitApp();}
-         //   //      , function() { }
-         //   //   );
-         //   //} 
-         //   //else 
-         //   //   app.views.main.router.back();
-         //}, false);
-
          // Open link in external browser
          window.open = cordova.InAppBrowser.open;
       },

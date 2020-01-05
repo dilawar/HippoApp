@@ -3,9 +3,7 @@
     <f7-navbar>
       <f7-nav-left>
         <!-- LEFT PANEL -->
-        <f7-link v-if="isUserAuthenticated()" 
-                 panel-open="left" 
-                 icon="fa fa-bars fw">
+        <f7-link v-if="isUserAuthenticated()" panel-open="left" icon="fa fa-bars fw">
         </f7-link>
       </f7-nav-left>
 
@@ -68,6 +66,7 @@
         </f7-list-item>
       </f7-list>
     </f7-block>
+
     <f7-block v-if="! isUserAuthenticated()" style="float:right;background:none;">
       <f7-list media-list no-hairlines>
         <f7-list-item style="background:none">
