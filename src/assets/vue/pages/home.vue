@@ -34,37 +34,44 @@
     </f7-navbar>
 
     <f7-block>
-      <f7-list media-list no-hairlines>
-        <f7-list-item link="/transport/" 
-                      title="Transport" 
-                      footer="Timetable of shuttle and buggy"
-                      panel-close>
-          <f7-icon slot="media" icon="fa fa-bus fa-2x"></f7-icon>
-        </f7-list-item>
+      <f7-row>
+        <f7-col width="25" medium="50">
+        </f7-col>
+        <f7-col width="75" medium="50">
+          <f7-list media-list no-hairlines >
+            <f7-list-item link="/transport/" 
+                          title="Transport" 
+                          footer="Timetable of shuttle and buggy"
+                          panel-close>
+              <f7-icon slot="media" icon="fa fa-bus fa-2x"></f7-icon>
+            </f7-list-item>
 
-        <f7-list-item v-if="isUserAuthenticated()"
-                      link="/inventory/" 
-                      title="Inventory" 
-                      footer="Search and borrow"
-                      panel-close>
-          <f7-icon slot="media" icon="fa fa-archive fa-2x"></f7-icon>
-        </f7-list-item>
 
-        <f7-list-item link="/accomodation/" 
-                      title="Accomodations" 
-                      footer="Browse/create TO-LET listing"
-                      panel-close>
-          <f7-icon slot="media" icon="fa fa-home fa-2x"></f7-icon>
+            <f7-list-item link="/accomodation/" 
+                          title="Accomodations" 
+                          footer="Browse/create TO-LET listing"
+                          panel-close>
+              <f7-icon slot="media" icon="fa fa-home fa-2x"></f7-icon>
 
-        </f7-list-item>
+            </f7-list-item>
 
-        <f7-list-item link="/noticeboards/all" 
-                      title="Notice Board" 
-                      footer="Because you hate spamming mailing list"
-                      panel-close>
-          <f7-icon slot="media" icon="fa fa-bullhorn fa-2x"></f7-icon>
-        </f7-list-item>
-      </f7-list>
+            <f7-list-item link="/noticeboards/all" 
+                          title="Notice Board" 
+                          footer="Because you hate spamming mailing list"
+                          panel-close>
+              <f7-icon slot="media" icon="fa fa-bullhorn fa-2x"></f7-icon>
+            </f7-list-item>
+
+            <f7-list-item v-if="isUserAuthenticated()"
+                          link="/inventory/" 
+                          title="Inventory" 
+                          footer="Search and borrow"
+                          panel-close>
+              <f7-icon slot="media" icon="fa fa-archive fa-2x"></f7-icon>
+            </f7-list-item>
+          </f7-list>
+        </f7-col>
+      </f7-row>
     </f7-block>
 
     <f7-block v-if="! isUserAuthenticated()" style="float:right;background:none;">
@@ -137,7 +144,6 @@
             @input="password = $event.target.value">
           </f7-list-input>
         </f7-list>
-
 
         <f7-block>
           <f7-row>
