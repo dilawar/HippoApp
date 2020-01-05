@@ -21,12 +21,15 @@
       </f7-button>
     </f7-col>
   </f7-row>
-
   </f7-block>
 
   <f7-block inset>
-    <f7-list media-list>
-      <f7-list-button @click="addNewEntryPopup()" text="Add New" tab-link>
+    <f7-block-header class="align-items-center">
+    </f7-block-header>
+
+    <f7-list>
+      <f7-list-button @click="addNewEntryPopup()">
+        Add New Trip
       </f7-list-button>
       <f7-list-item v-for="(t, key) in theseEntries" @click="editEntry(t)" :key="key">
         <f7-icon slot="media" :icon="transportIcon(t.vehicle)">
@@ -78,6 +81,13 @@
                          @change="thisEntry.vehicle=$event.target.value">
             <option>Select a vehicle</option>
             <option v-for="(veh, key) in vehicles" :value="veh">{{veh}}</option>
+          </f7-list-input>
+
+          <f7-list-input label="URL/RouteMap"
+                         inline-label
+                         type="url"
+                         :value="thisEntry.url"
+                         @change="thisEntry.url=$event.target.value">
           </f7-list-input>
 
           <f7-list-input label="Comment"
