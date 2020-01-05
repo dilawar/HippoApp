@@ -154,15 +154,16 @@ export default {
         return;
       const app = self.$f7;
       console.log('Right panel open');
-      app.dialog.preloader();
+      app.preloader.show();
       self.postWithPromise('me/roles').then( function(x) {
         const res = JSON.parse(x.data).data.roles;
         self.$store.commit("ROLES", res.split(','));
         app.dialog.close();
         self.fetchedRoles = true;
+        app.preloader.hide();
         return true;
       });
-      setTimeout(() => app.dialog.close(), 1000);
+      setTimeout(() => app.preloader.hide(), 1000);
     },
   },
 }

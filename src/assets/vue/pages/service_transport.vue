@@ -3,15 +3,13 @@
     <f7-navbar title="Transport" back-link="Back"></f7-navbar>
 
   <!-- Select days buttons. -->
-  <f7-block>
-  <f7-row class="margin-top">
-    <f7-col v-for="d in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']" :key="'col'+d">
+  <f7-row style="margin:2px;padding:1px;" noGap>
+    <f7-col noGap v-for="d in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']" :key="'col'+d">
       <f7-button small :key="d" :fill="(d==thisDay)?true:false" @click="changeDay(d)">
         {{d}}
       </f7-button>
     </f7-col>
   </f7-row>
-  <f7-row></f7-row>
   <f7-row>
     <f7-col width="50" medium="33" 
             v-for="(route, key) in routes" :key="key">
@@ -21,27 +19,24 @@
       </f7-button>
     </f7-col>
   </f7-row>
-  </f7-block>
 
-  <f7-block inset>
-    <f7-block-header class="align-items-center">
-    </f7-block-header>
+  <f7-block-header class="align-items-center">
+  </f7-block-header>
 
-    <f7-list>
-      <f7-list-button @click="addNewEntryPopup()">
-        Add New Trip
-      </f7-list-button>
-      <f7-list-item v-for="(t, key) in theseEntries" @click="editEntry(t)" :key="key">
-        <f7-icon slot="media" :icon="transportIcon(t.vehicle)">
-        </f7-icon>
-        <div slot="title">
-          {{str2Moment(t.trip_start_time, 'HH:mm:ss').format('hh:mm A')}}
-        </div>
-        <div slot="footer">{{t.comment}}</div>
-      </f7-list-item>
-      <f7-list-item></f7-list-item>
-    </f7-list>
-  </f7-block>
+  <f7-list>
+    <f7-list-button @click="addNewEntryPopup()">
+      Add New Trip
+    </f7-list-button>
+    <f7-list-item v-for="(t, key) in theseEntries" @click="editEntry(t)" :key="key">
+      <f7-icon slot="media" :icon="transportIcon(t.vehicle)">
+      </f7-icon>
+      <div slot="title">
+        {{str2Moment(t.trip_start_time, 'HH:mm:ss').format('hh:mm A')}}
+      </div>
+      <div slot="footer">{{t.comment}}</div>
+    </f7-list-item>
+    <f7-list-item></f7-list-item>
+  </f7-list>
 
   <!-- POPUP  -->
   <f7-popup :opened="popupEdit" @popup:close="popupEdit = false">
