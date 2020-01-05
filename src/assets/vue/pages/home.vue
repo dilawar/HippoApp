@@ -33,68 +33,63 @@
       </f7-nav-right>
     </f7-navbar>
 
-    <f7-block>
-      <f7-row>
-        <f7-col width="25" medium="50">
-        </f7-col>
-        <f7-col width="75" medium="50">
-          <f7-list media-list no-hairlines >
-            <f7-list-item link="/transport/" 
-                          title="Transport" 
-                          footer="Timetable of shuttle and buggy"
-                          panel-close>
-              <f7-icon slot="media" icon="fa fa-bus fa-2x"></f7-icon>
-            </f7-list-item>
+    <f7-row>
+      <f7-col width="25" medium="50"></f7-col>
+      <f7-col width="75" medium="50">
+        <f7-list media-list no-hairlines >
+          <f7-list-item link="/transport/" 
+                        title="Transport" 
+                        footer="Timetable of shuttle and buggy"
+                        panel-close>
+            <f7-icon slot="media" icon="fa fa-bus fa-2x"></f7-icon>
+          </f7-list-item>
 
 
-            <f7-list-item link="/accomodation/" 
-                          title="Accomodations" 
-                          footer="Browse/create TO-LET listing"
-                          panel-close>
-              <f7-icon slot="media" icon="fa fa-home fa-2x"></f7-icon>
+          <f7-list-item link="/accomodation/" 
+                        title="Accomodations" 
+                        footer="Browse/create TO-LET listing"
+                        panel-close>
+            <f7-icon slot="media" icon="fa fa-home fa-2x"></f7-icon>
 
-            </f7-list-item>
+          </f7-list-item>
 
-            <f7-list-item link="/noticeboards/all" 
-                          title="Notice Board" 
-                          footer="Because you hate spamming mailing list"
-                          panel-close>
-              <f7-icon slot="media" icon="fa fa-bullhorn fa-2x"></f7-icon>
-            </f7-list-item>
+          <f7-list-item link="/noticeboards/all" 
+                        title="Notice Board" 
+                        footer="Because you hate spamming mailing list"
+                        panel-close>
+            <f7-icon slot="media" icon="fa fa-bullhorn fa-2x"></f7-icon>
+          </f7-list-item>
 
-            <f7-list-item v-if="isUserAuthenticated()"
-                          link="/inventory/" 
-                          title="Inventory" 
-                          footer="Search and borrow"
-                          panel-close>
-              <f7-icon slot="media" icon="fa fa-archive fa-2x"></f7-icon>
-            </f7-list-item>
-          </f7-list>
-        </f7-col>
-      </f7-row>
-    </f7-block>
+          <f7-list-item v-if="isUserAuthenticated()"
+                        link="/inventory/" 
+                        title="Inventory" 
+                        footer="Search and borrow"
+                        panel-close>
+            <f7-icon slot="media" icon="fa fa-archive fa-2x"></f7-icon>
+          </f7-list-item>
+        </f7-list>
+      </f7-col>
+    </f7-row>
 
-    <f7-block-footer v-if="! isUserAuthenticated()" class="pull-right">
-      <f7-list no-hairlines>
-        <f7-list-item class="align-content-center">
-          <div slot="after">
-            <font v-if="isHippoAlive" style="font-size:small">
-              <strong>Hippo is alive.</strong>
-            </font>
-            <font v-else>
-              <f7-preloader color="blue"></f7-preloader> Pinging Hippo ...
-            </font>
-          </div>
-        </f7-list-item>
-        <f7-list-item>
-          <f7-button raised outline fill 
-                     :disabled="! isHippoAlive"
-                     login-screen-open=".hippo-login-screen">
-            {{isHippoAlive?'Login':'Pinging Hippo server...'}}
-          </f7-button>
-        </f7-list-item>
-      </f7-list>
-    </f7-block-footer>
+    <f7-row v-if="! isUserAuthenticated()" 
+            style="margin-right:5px"
+            class="pull-right">
+      <f7-col>
+        <div>
+          <font v-if="isHippoAlive" style="font-size:small">
+            Hippo is Alive. You may login.
+          </font>
+          <font v-else>
+            <f7-preloader color="blue"></f7-preloader> Pinging Hippo ...
+          </font>
+        </div>
+        <f7-button raised outline fill
+                   :disabled="! isHippoAlive"
+                   login-screen-open=".hippo-login-screen">
+          {{isHippoAlive?'Login':'Pinging Hippo server...'}}
+        </f7-button>
+      </f7-col>
+    </f7-row>
 
     <!-- FLASH cards -->
     <f7-swiper navigation :params="{loop:true}">
