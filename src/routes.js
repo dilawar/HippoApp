@@ -44,6 +44,9 @@ import AcadAdminAWS from './assets/vue/pages/acad_aws.vue';
 import AcadAdminCourses from './assets/vue/pages/acad_courses.vue';
 import UpdateCoursePage from './assets/vue/pages/updatecourse.vue';
 
+// Service Admin
+import ServiceAdminTransport from './assets/vue/pages/service_transport.vue';
+
 export default [
    {
       path: '/',
@@ -88,6 +91,10 @@ export default [
    {
       path: '/acadadmin/courses/',
       component: AcadAdminCourses
+   },
+   {
+      path: '/serviceadmin/transport/',
+      component: ServiceAdminTransport
    },
    {
       path: '/myprofile/',

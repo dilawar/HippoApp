@@ -48,6 +48,9 @@ export default new Vuex.Store({
       profile: state => {
          return state.profile;
       },
+      myjcs: state => {
+         return state.profile.jcs;
+      },
       roles: state => {
          return state.profile.roles;
       },

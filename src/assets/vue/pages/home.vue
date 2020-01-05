@@ -3,9 +3,7 @@
     <f7-navbar>
       <f7-nav-left>
         <!-- LEFT PANEL -->
-        <f7-link v-if="isUserAuthenticated()" 
-                 panel-open="left" 
-                 icon="fa fa-bars fw">
+        <f7-link v-if="isUserAuthenticated()" panel-open="left" icon="fa fa-bars fw">
         </f7-link>
       </f7-nav-left>
 
@@ -36,38 +34,46 @@
     </f7-navbar>
 
     <f7-block>
-      <f7-list media-list no-hairlines>
-        <f7-list-item link="/transport/" 
-                      title="Transport" 
-                      footer="Timetable of shuttle and buggy"
-                      panel-close>
-          <f7-icon slot="media" icon="fa fa-bus fa-2x"></f7-icon>
-        </f7-list-item>
+      <f7-row>
+        <f7-col width="25" medium="50">
+        </f7-col>
+        <f7-col width="75" medium="50">
+          <f7-list media-list no-hairlines >
+            <f7-list-item link="/transport/" 
+                          title="Transport" 
+                          footer="Timetable of shuttle and buggy"
+                          panel-close>
+              <f7-icon slot="media" icon="fa fa-bus fa-2x"></f7-icon>
+            </f7-list-item>
 
-        <f7-list-item v-if="isUserAuthenticated()"
-                      link="/inventory/" 
-                      title="Inventory" 
-                      footer="Search and borrow"
-                      panel-close>
-          <f7-icon slot="media" icon="fa fa-archive fa-2x"></f7-icon>
-        </f7-list-item>
 
-        <f7-list-item link="/accomodation/" 
-                      title="Accomodations" 
-                      footer="Browse/create TO-LET listing"
-                      panel-close>
-          <f7-icon slot="media" icon="fa fa-home fa-2x"></f7-icon>
+            <f7-list-item link="/accomodation/" 
+                          title="Accomodations" 
+                          footer="Browse/create TO-LET listing"
+                          panel-close>
+              <f7-icon slot="media" icon="fa fa-home fa-2x"></f7-icon>
 
-        </f7-list-item>
+            </f7-list-item>
 
-        <f7-list-item link="/noticeboards/all" 
-                      title="Notice Board" 
-                      footer="Because you hate spamming mailing list"
-                      panel-close>
-          <f7-icon slot="media" icon="fa fa-bullhorn fa-2x"></f7-icon>
-        </f7-list-item>
-      </f7-list>
+            <f7-list-item link="/noticeboards/all" 
+                          title="Notice Board" 
+                          footer="Because you hate spamming mailing list"
+                          panel-close>
+              <f7-icon slot="media" icon="fa fa-bullhorn fa-2x"></f7-icon>
+            </f7-list-item>
+
+            <f7-list-item v-if="isUserAuthenticated()"
+                          link="/inventory/" 
+                          title="Inventory" 
+                          footer="Search and borrow"
+                          panel-close>
+              <f7-icon slot="media" icon="fa fa-archive fa-2x"></f7-icon>
+            </f7-list-item>
+          </f7-list>
+        </f7-col>
+      </f7-row>
     </f7-block>
+
     <f7-block v-if="! isUserAuthenticated()" style="float:right;background:none;">
       <f7-list media-list no-hairlines>
         <f7-list-item style="background:none">
@@ -94,19 +100,17 @@
           </f7-row>
         </f7-list-item>
       </f7-list>
+    </f7-block>
 
-    </f7-block>
-    <f7-block>
-      <!-- FLASH cards -->
-      <f7-swiper pagination navigation scrollbar :params="{loop:true}">
-        <f7-swiper-slide v-for="(card,key) in flashCards" :key="key">
-          <div style="margin:15%; padding:10px;border-radius:20px; background-color:rgba(255,255,255,0.75)">
-            {{humanReadableDateTime(card.date, card.time)}} | {{card.venue}} 
-              | {{card.title}}
-          </div>
-        </f7-swiper-slide>
-      </f7-swiper>
-    </f7-block>
+    <!-- FLASH cards -->
+    <f7-swiper navigation :params="{loop:true}">
+      <f7-swiper-slide v-for="(card,key) in flashCards" :key="key">
+        <div style="margin:8%; padding:5px;border-radius:10px; background-color:rgba(255,255,255,0.75)">
+          {{humanReadableDateTime(card.date, card.time)}} | {{card.venue}} 
+          | {{card.title}}
+        </div>
+      </f7-swiper-slide>
+    </f7-swiper>
 
     <!-- FAB Right Bottom (Blue) -->
     <f7-fab v-if="isUserAuthenticated()" 
@@ -140,7 +144,6 @@
             @input="password = $event.target.value">
           </f7-list-input>
         </f7-list>
-
 
         <f7-block>
           <f7-row>
@@ -194,14 +197,6 @@ export default {
     });
 
     self.fetchFlashCards();
-
-    // Fetch the transport as well.
-    self.promiseWithAuth('transport').then(function(x) {
-        const res = JSON.parse(x.data);
-        if( res.status=='ok')
-          self.$localStorage.set('transport', JSON.stringify(res.data));
-      });
-
     self.fetchRoles();
 
     // Get notification now and display them.
@@ -209,7 +204,7 @@ export default {
     setTimeout(() => {self.displayNotifications();}, 1000);
 
     // Call fetchNotifications in the background. every minutes.
-    // FIXME:  Make it very 10 minutes later.
+    // FIXME:  Make it query 15 minutes later.
     setInterval( function() {
       console.log("Fetching notitication");
       try {
@@ -262,8 +257,6 @@ export default {
               .then(function(x) {
                 self.$store.commit('PROFILE', JSON.parse(x.data).data);
               });
-
-            self.fetchRoles();
             self.$f7router.refreshPage();
           }
           else

@@ -140,6 +140,7 @@ export default {
       calendarPopup: false,
       canteenPopup: false,
       version: moment().format(),
+      fetchedRoles: false,
     }
   },
   mounted: function() {
@@ -149,12 +150,19 @@ export default {
   methods: {
     fetchRoles: function() {
       const self = this;
+      if(self.fetchedRoles)
+        return;
+      const app = self.$f7;
       console.log('Right panel open');
+      app.dialog.preloader();
       self.postWithPromise('me/roles').then( function(x) {
         const res = JSON.parse(x.data).data.roles;
         self.$store.commit("ROLES", res.split(','));
+        app.dialog.close();
+        self.fetchedRoles = true;
         return true;
       });
+      setTimeout(() => app.dialog.close(), 1000);
     },
   },
 }

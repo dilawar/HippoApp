@@ -17,30 +17,23 @@
             <f7-link popup-close>Close</f7-link>
           </f7-nav-right>
         </f7-navbar>
-    
 
-        <f7-block>
-          <f7-block-title>Following dates are available.</f7-block-title>
 
-          <f7-row>
-            You are assigning AWS date for {{thisSpeaker | name}}.
-            <br />
-            (PI/Host: {{thisSpeaker.pi_or_host}})
-          </f7-row>
+        <f7-block-header>
+          You are assigning AWS date for {{thisSpeaker | name}}
+          (PI/Host: {{thisSpeaker.pi_or_host}})
+        </f7-block-header>
 
-          <f7-list no-hairlines media-list>
-            <!-- Following dates are available. -->
-            <f7-list-item :key="key"
-                   v-for="(date, key) in availableAWSDates" 
-                   :title="humanReadableDate(date)">
-              <div slot="header"> In {{toNow(date, '')}} </div>
-              <f7-button slot="after" 
-                         @click="assignAWSSlot(thisSpeaker.login, date)">
-                Assign
-              </f7-button>
-            </f7-list-item>
-          </f7-list>
-        </f7-block>
+        <f7-block-title>Following dates are available.</f7-block-title>
+        <f7-list no-hairlines media-list>
+          <!-- Following dates are available. -->
+          <f7-list-item v-for="(x, key) in availableAWSDates" 
+                        :key="key"
+                        @click="assignAWSSlot(thisSpeaker.login, x[1])"
+                        :header="'In ' + toNow(x[1], '')"
+                        :title="x[1] | date">
+          </f7-list-item>
+        </f7-list>
       </f7-page>
     </f7-popup>
 
@@ -117,12 +110,12 @@
               <f7-row>
                 <f7-col>
                   <f7-button @click="removeFromAwsRoster(speaker.login)"
-                             small raised color=red>
+                             small color=red>
                     Remove From Roster
                   </f7-button>
                 </f7-col>
                 <f7-col v-if="speaker.days_since_last_aws >= 400 && (!  speaker.upcoming_aws)">
-                  <f7-button small raised @click="assignAWS(speaker)">
+                  <f7-button small @click="assignAWS(speaker)">
                     Assign a slot
                   </f7-button>
                 </f7-col>
@@ -215,7 +208,7 @@ export default {
           self.speakers = JSON.parse(x.data).data;
           app.dialog.close();
         });
-      setTimeout(() => app.dialog.close(), 5000);
+      setTimeout(() => app.dialog.close(), 3000);
     },
     addToAWSRoster: function(speaker) 
     {
@@ -266,16 +259,15 @@ export default {
       app.dialog.preloader('Assigning AWS...', thisAWS);
       self.promiseWithAuth('/acadadmin/aws/assign', thisAWS)
         .then( function(x) {
-          app.dialog.close();
           var res = JSON.parse(x.data).data;
           if(! res.success)
             self.notify('Failed', res.msg);
           else
             self.notify('Success', res.msg);
+          app.dialog.close();
+          self.fetchAWSSpeakers();
         });
-
       self.popupAssignAWS = false;
-      self.fetchAWSSpeakers();
     },
     removeFromAwsRoster: function(login)
     {

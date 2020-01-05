@@ -218,48 +218,42 @@
        </f7-button>
     </f7-card>
 
-    <f7-card v-for="(card, key) in filterCards(forumCards)" 
-             :key="key"
-             >
-       <f7-card-header 
-             :style="`background-color:${stringToColour(card.tags[0])}`"
-          >
-          <div>
-             <span v-for="(tag,key) in card.tags" :key="key">
-                <f7-link :href="'/noticeboards/'+tag"> b/{{tag}}</f7-link>&nbsp;
-             </span>
-             <span style="color:gray; font-size:small">
-                /Posted by <tt>{{card.created_by}}</tt>
-                {{datetime2Moment(card.created_on).fromNow()}}
-             </span>
-             <span style="font-size:small;color:gray"
-                   v-if="card.last_modified_on!=card.created_on"
-                   >
+    <f7-card v-for="(card, key) in filterCards(forumCards)" :key="key">
+      <f7-card-header :style="`background-color:${stringToColour(card.tags[0])}`">
+        <div>
+          <span v-for="(tag,key) in card.tags" :key="key">
+            <f7-link :href="'/noticeboards/'+tag"> b/{{tag}}</f7-link>&nbsp;
+          </span>
+          <span style="color:gray; font-size:small">
+            /Posted by <tt>{{card.created_by}}</tt>
+            {{datetime2Moment(card.created_on).fromNow()}}
+          </span>
+          <span style="font-size:small;color:gray"
+                v-if="card.last_modified_on!=card.created_on"
+                >
                 /Modified {{datetime2Moment(card.last_modified_on).fromNow()}}.
-             </span>
-          </div>
-       </f7-card-header>
-       <f7-card-content :padding="false" style="padding-left:5px">
-          <div style="font-size:large"> {{card.title}} </div>
-          <span v-html="card.description"></span>
-
-
-          <f7-row>
-             <f7-col>
-                <f7-button small @click="updateCard(card)"
-                           v-if="getLogin() == card.created_by"
-                     >
-                   Update
-                </f7-button>
-             </f7-col>
-             <f7-col></f7-col>
-             <f7-col>
-                <f7-button small @click="showCommentPopup(card)" float-right>
-                   ({{card.num_comments}}) Comment
-                </f7-button>
-             </f7-col>
-          </f7-row>
-       </f7-card-content>
+          </span>
+        </div>
+      </f7-card-header>
+      <f7-card-content :padding="false" style="padding-left:5px">
+        <div> {{card.title}} </div>
+        <span v-html="card.description"></span>
+        <f7-row>
+          <f7-col>
+            <f7-button small @click="updateCard(card)"
+                       v-if="getLogin() == card.created_by"
+                       >
+                       Update
+            </f7-button>
+          </f7-col>
+          <f7-col></f7-col>
+          <f7-col>
+            <f7-button small @click="showCommentPopup(card)" float-right>
+              ({{card.num_comments}}) Comment
+            </f7-button>
+          </f7-col>
+        </f7-row>
+      </f7-card-content>
     </f7-card>
 
   </f7-page>
@@ -307,129 +301,132 @@ export default {
    },
    methods: { 
       // METHODS:
-      getForumPosts: function() {
-         console.log( "Fetching forum posts." );
-         const self = this;
-         self.promiseWithAuth( "/forum/list/100", []).then(
-            function(x) {
-               var res = JSON.parse(x.data).data;
-               self.forumCards = res;
-               self.saveStore('forum.cards', self.forumCards);
-            }
-         )
-      },
-      getSubscriptions: function() {
-         const self = this;
-         console.log( "Getting user subscriptions..." );
-         self.promiseWithAuth( "/forum/subscriptions", []).then(
-            function(x) {
-               var res = JSON.parse(x.data).data;
-               self.subscriptions = res;
-               self.saveStore('forum.subscriptions', self.subscriptions);
-            }
-         )
-      },
-      filterCards: function() {
-         const self = this;
-         if(self.board == 'all')
-            return self.forumCards;
-         return self.forumCards.filter(x => x.tags.includes(self.board) );
-      },
-      getAllForumTags: function() {
-         console.log( "Getting forum tags." );
-         const self = this;
-         self.promiseWithAuth("/forum/alltags", []).then(
-            function(x) {
-               var res = JSON.parse(x.data).data;
-               self.alltags = res;
-               self.saveStore('forum.alltags', self.alltags);
-            }
-         );
-      },
-      fetchAllTags: function() {
-         const self = this;
-         self.postWithPromise('/forum/alltags').then(
-            function(x) {
-               self.alltags = JSON.parse(x.data).data;
-               self.saveStore('forum.alltags', self.alltags);
-            }
-         );
-      },
-      refreshForum: function(ev, done) {
-         const self = this;
-         setTimeout( () =>  {
-            self.getForumPosts();
-            self.fetchAllTags();
-            self.getSubscriptions();
-            done();
-         }, 1000);
-      },
-      postToForum: function() {
-         const self = this;
-         self.postPopup = true;
-      },
-      postToForumSubmit: function() {
-         const self = this;
-         setTimeout(() => self.sendRequest('/forum/post', self.item), 500);
-         self.commentPopup = false;
-         setTimeout(() => self.getForumPosts(), 1000);
-      },
-      showCommentPopup: function( item ) {
-         const self = this;
-
-         self.thisComment.external_id = "forum." + item.id;
-
-         // Get all previous comments to show as well.
-         setTimeout( () => {
-            self.promiseWithAuth("/comment/get/forum."+item.id).then(
-               function(x) {
-                  let res = JSON.parse(x.data).data;
-                  self.comments = res;
-               }
-            )}, 1000);
-         self.commentPopup = true;
-      },
-      addComment: function() {
-         const self = this;
-         setTimeout( () => {
-            self.promiseWithAuth("/comment/post", self.thisComment)
-         }, 1000);
-      },
-      subcribeToForum: function(boardName) {
-         const self = this;
-         console.log('Subscribing to ' + boardName);
-         self.sendRequest('/forum/subscribe/'+boardName);
-         self.subscriptions.push(boardName);
-      },
-      unsubcribeToForum: function(boardName) {
-         const self = this;
-         const app = self.$f7;
-         if( boardName != 'emergency')
-         {
-            console.log('Unsubscribing from ' + boardName);
-            self.sendRequest('/forum/unsubscribe/'+boardName);
-            self.subscriptions = self.subscriptions.filter(x => x != boardName);
+     getForumPosts: function() {
+       const self = this;
+       const app = self.$f7;
+       app.dialog.preloader();
+       self.promiseWithAuth( "/forum/list/100", []).then(
+         function(x) {
+           var res = JSON.parse(x.data).data;
+           self.forumCards = res;
+           self.saveStore('forum.cards', self.forumCards);
+           app.dialog.close();
          }
-         else
-         {
-            app.dialog.alert("You can't unsubscribe emergency", "OK");
-            return;
-         }
-      },
-      updateCard: function(card) {
-         const self = this;
-         self.item = card;
-         console.log("Updating card ", card);
-         self.updatePopup = true;
-      },
-      deleteCard: function(cid) {
-         const self = this;
-         self.sendRequest('/forum/delete/' + cid );
+       );
+       setTimeout(() => app.dialog.close(), 2000);
+     },
+     getSubscriptions: function() {
+       const self = this;
 
-         // Remove the card from the list.
-         self.forumCards = self.forumCards.filter( c => c.id != cid );
-         self.saveStore('forum.cards', self.forumCards);
-      },
+       self.promiseWithAuth( "/forum/subscriptions", []).then(
+         function(x) {
+           var res = JSON.parse(x.data).data;
+           self.subscriptions = res;
+           self.saveStore('forum.subscriptions', self.subscriptions);
+         }
+       )
+     },
+     filterCards: function() {
+       const self = this;
+       if(self.board == 'all')
+         return self.forumCards;
+       return self.forumCards.filter(x => x.tags.includes(self.board) );
+     },
+     getAllForumTags: function() {
+       console.log( "Getting forum tags." );
+       const self = this;
+       self.promiseWithAuth("/forum/alltags", []).then(
+         function(x) {
+           var res = JSON.parse(x.data).data;
+           self.alltags = res;
+           self.saveStore('forum.alltags', self.alltags);
+         }
+       );
+     },
+     fetchAllTags: function() {
+       const self = this;
+       self.postWithPromise('/forum/alltags').then(
+         function(x) {
+           self.alltags = JSON.parse(x.data).data;
+           self.saveStore('forum.alltags', self.alltags);
+         }
+       );
+     },
+     refreshForum: function(ev, done) {
+       const self = this;
+       setTimeout( () =>  {
+         self.getForumPosts();
+         self.fetchAllTags();
+         self.getSubscriptions();
+         done();
+       }, 1000);
+     },
+     postToForum: function() {
+       const self = this;
+       self.postPopup = true;
+     },
+     postToForumSubmit: function() {
+       const self = this;
+       setTimeout(() => self.sendRequest('/forum/post', self.item), 500);
+       self.commentPopup = false;
+       setTimeout(() => self.getForumPosts(), 1000);
+     },
+     showCommentPopup: function( item ) {
+       const self = this;
+
+       self.thisComment.external_id = "forum." + item.id;
+
+       // Get all previous comments to show as well.
+       setTimeout( () => {
+         self.promiseWithAuth("/comment/get/forum."+item.id).then(
+           function(x) {
+             let res = JSON.parse(x.data).data;
+             self.comments = res;
+           }
+         )}, 1000);
+       self.commentPopup = true;
+     },
+     addComment: function() {
+       const self = this;
+       setTimeout( () => {
+         self.promiseWithAuth("/comment/post", self.thisComment)
+       }, 1000);
+     },
+     subcribeToForum: function(boardName) {
+       const self = this;
+       console.log('Subscribing to ' + boardName);
+       self.sendRequest('/forum/subscribe/'+boardName);
+       self.subscriptions.push(boardName);
+     },
+     unsubcribeToForum: function(boardName) {
+       const self = this;
+       const app = self.$f7;
+       if( boardName != 'emergency')
+       {
+         console.log('Unsubscribing from ' + boardName);
+         self.sendRequest('/forum/unsubscribe/'+boardName);
+         self.subscriptions = self.subscriptions.filter(x => x != boardName);
+       }
+       else
+       {
+         app.dialog.alert("You can't unsubscribe emergency", "OK");
+         return;
+       }
+     },
+     updateCard: function(card) {
+       const self = this;
+       self.item = card;
+       console.log("Updating card ", card);
+       self.updatePopup = true;
+     },
+     deleteCard: function(cid) {
+       const self = this;
+       self.sendRequest('/forum/delete/' + cid );
+
+       // Remove the card from the list.
+       self.forumCards = self.forumCards.filter( c => c.id != cid );
+       self.saveStore('forum.cards', self.forumCards);
+     },
    },
 };
 </script>
