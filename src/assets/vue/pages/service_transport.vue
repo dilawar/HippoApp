@@ -5,28 +5,24 @@
   <!-- Select days buttons. -->
   <f7-row style="margin:2px;padding:1px;" noGap>
     <f7-col v-for="d in alldays" :key="'col'+d">
-      <f7-button small 
-                 :key="d" 
-                 color="gray"
-                 :fill="selectedDays.includes(d)"
-                 @click="changeDay(d)">
+      <f7-button small :key="d" color="gray" 
+                :fill="selectedDays.includes(d)" 
+                @click="changeDay(d)">
         {{d}}
       </f7-button>
     </f7-col>
   </f7-row>
   <f7-row>
     <f7-col width="50" medium="33" v-for="(route, key) in routes" :key="key">
-      <f7-button small 
-                 color="gray"
-                 @click="selectRoute(route)"
+      <f7-button small color="gray" @click="selectRoute(route)"
                  :fill="isSameRoute(thisRoute,route)">
         {{route.pickup_point}}→{{route.drop_point}}
       </f7-button>
     </f7-col>
   </f7-row>
 
-  <!-- <strong>Route: </strong>{{thisRoute.pickup_point}} to {{thisRoute.drop_point}} -->
-  <div style="margin-left:auto; margin-right:auto">
+  <!-- Timetable -->
+  <div style="margin:10px">
     <table v-for="(tt, veh, id) in timetable">
       <thead>
         <tr>
@@ -45,14 +41,16 @@
             </span>
           </td>
           <td>
-            <f7-link icon="fa fa-gear" @click="updateTripsPopup(trips, startTime)"></f7-link>
+            <f7-link icon="fa fa-pencil" 
+                     @click="updateTripsPopup(trips, startTime, veh)">
+            </f7-link>
           </td>
         </tr>
         <tr></tr>
       </tbody>
     </table>
     <f7-block-footer>
-      Click on <f7-icon icon="fa fa-gear"></f7-icon> to do more.
+      Click on <f7-icon icon="fa fa-pencil"></f7-icon> to do more.
     </f7-block-footer>
   </div>
 
@@ -65,120 +63,37 @@
         </f7-nav-right>
       </f7-navbar>
 
-      <f7-block-title medium>
-        {{thisRoute.pickup_point}} to {{thisRoute.drop_point}}.
-        {{theseTrips.vehicle}} - {{theseTrips.trip_start_time}}
+      <f7-block-title>
+        {{thisRoute.pickup_point}} to {{thisRoute.drop_point}}. 
+        Vehicle: {{theseTrips.vehicle}}. 
+        Start Time: {{theseTrips.trip_start_time | clockTime}}
       </f7-block-title>
 
-      <f7-row>
-        <f7-col v-for="(day, key) in alldays">
-          {{day}}
-          <f7-checkbox :checked="theseTrips.days.includes(day)"> 
-          </f7-checkbox>
-          </f7-checkbox>
-        </f7-col>
-      </f7-row>
-
-
-
-    </f7-page>
-  </f7-popup>
-
-  <!-- POPUP Single entry.  -->
-  <f7-popup :opened="popupEdit" @popup:close="popupEdit = false">
-    <f7-page>
-      <f7-navbar :title="thisRoute.is_new?'Edit Entry':'Add new entry'">
-        <f7-nav-right>
-          <f7-link popup-close>Close</f7-link>
-        </f7-nav-right>
-      </f7-navbar>
-
-      <f7-block>
-        <f7-block-title medium>
-          {{thisEntry.pickup_point}} to {{thisEntry.drop_point}}
-        </f7-block-title>
-
-        <f7-list no-hairlines>
-
-          <f7-list-input label="Start time" 
-                         inline-label
-                         type="time"
-                         id="start_time"
-                         :value="thisEntry.trip_start_time"
-                         @change="thisEntry.trip_start_time=$event.target.value">
-          </f7-list-input>
-
-          <f7-list-input label="End time"
-                         inline-label
-                         type="time"
-                         :value="thisEntry.trip_end_time"
-                         @change="thisEntry.trip_end_time=$event.target.value">
-          </f7-list-input>
-
-          <f7-list-input label="Vehicle"
-                         inline-label
-                         type="select"
-                         :value="thisEntry.vehicle"
-                         @change="thisEntry.vehicle=$event.target.value">
-            <option>Select a vehicle</option>
-            <option v-for="(veh, key) in vehicles" :value="veh">{{veh}}</option>
-          </f7-list-input>
-
-          <f7-list-input label="Running On" inline-label :input=false>
-            <f7-row slot="input">
-              <f7-col v-for="(day, key) in alldays">
-                <f7-checkbox :checked="thisEntry.days.includes(day.toLowerCase())"
-                      @change="addRemoveEntry(thisEntry.trip_start_time, day)"> 
-                </f7-checkbox>
-                <font style="font-size:x-small">
-                  {{day}}
-                </font>
+      <f7-block inset>
+        <f7-list media-list no-hairlines>
+          <f7-list-item v-for="(day, key) in alldays" :key="key">
+            <div slot="title">{{day}}</div>
+            <f7-checkbox slot="after" 
+                         :checked="theseTrips.days.includes(day)"
+                         @change="addRemoveTrip(day)"> 
+            </f7-checkbox>
+          </f7-list-item>
+          <f7-list-item>
+            <f7-row>
+              <f7-col>
+              </f7-col>
+              <f7-col>
+                <f7-button raised @click="deleteTheseTrips()">
+                  Delete All
+                </f7-button>
               </f7-col>
             </f7-row>
-          </f7-list-input>
-
-          <f7-list-input label="URL"
-                         inline-label
-                         type="url"
-                         :value="thisEntry.url"
-                         @change="thisEntry.url=$event.target.value">
-          </f7-list-input>
-
-          <f7-list-input label="Comment"
-                         inline-label
-                         type="text"
-                         :value="thisEntry.comment"
-                         @change="thisEntry.comment=$event.target.value">
-          </f7-list-input>
-
+          </f7-list-item>
         </f7-list>
-
-        <f7-row>
-          <f7-col>
-            <f7-button color=red 
-                       fill
-                       raised 
-                       outline 
-                       @click="deleteEntry()">
-              Delete
-            </f7-button>
-          </f7-col>
-          <f7-col>
-            <f7-button raised outline v-if="! thisEntry.is_new" @click="updateEntry()">
-              Update
-            </f7-button>
-            <f7-button raised outline
-                       :dsabled="! thisEntryStatus==='OK'" 
-                       v-else @click="addNewEntry()">
-              <span v-if="thisEntryStatus=='OK'">Add</span>
-              <span v-else>{{thisEntryStatus}}</span>
-            </f7-button>
-          </f7-col>
-        </f7-row>
       </f7-block>
+
     </f7-page>
   </f7-popup>
-
 </f7-page>
 
 </template>
@@ -193,7 +108,6 @@ export default {
       alldays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
       selectedDays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
       thisRoute: self.loadStore('thisRoute'),
-      nowTime: moment(),
       thisDay: 'all',
       timetable: {},
       routes: self.thisRoute,
@@ -203,7 +117,7 @@ export default {
       thisRouteMap: '<p>No route found.</p>',
       thisEntry: {'pickup_point':'NCBS', 'drop_point':'IIsc', 'is_new':false, days:[]},
       thisEntryStatus: "OK",
-      theseTrips: {'days':'', 'trip_start_time':'', 'timetable':{}},
+      theseTrips: {'vehicle': '', 'days':'', 'trip_start_time':'', 'timetable':{}},
       popupTrips: false,
     };
   },
@@ -271,24 +185,6 @@ export default {
       self.selectedDays = self.selectedDays.sort(self.sortDays);
       self.fetchTransport();
     },
-    addRemoveEntry: function(tripStartTime, day) {
-      day = day.toLowerCase();
-      const self = this;
-      if(self.thisEntry.days.includes(day))
-      {
-        self.thisEntry.days = self.thisEntry.days.filter(e => e !== day);
-        // Remove this entry.
-        self.thisEntry = self.timetable[tripStartTime][day];
-        self.deleteEntry(false);
-      }
-      else {
-        // Add new entry.
-        self.thisEntry.days.push(day);
-        self.thisEntry.day = day;
-        self.addNewEntry(false);
-      }
-      self.thisEntry.days = self.thisEntry.days.sort(self.sortDays);
-    },
     fetchTransport: function() 
     {
       const self         = this;
@@ -302,8 +198,25 @@ export default {
       self.postWithPromise('/transportation/timetable/'+endpoint)
         .then( function(x) {
           var res = JSON.parse(x.data);
-          self.timetable = res.data;
+          self.createTimetable(res.data);
         });
+    },
+    createTimetable: function(trips) {
+      const self = this;
+      self.timetable = {};
+      trips.forEach( t => {
+        let k1 = t.vehicle;
+        if(! self.timetable.hasOwnProperty(k1))
+          self.timetable[k1] = {};
+        let k2 = t.trip_start_time;
+        if(! self.timetable[k1].hasOwnProperty(k2))
+          self.timetable[k1][k2] = {};
+        let k3 = t.day;
+        if(! self.timetable[k1][k2].hasOwnProperty(k3))
+          self.timetable[k1][k2][k3] = [];
+        self.timetable[k1][k2][k3].push(t);
+      });
+      return;
     },
     editEntry: function(t) {
       const self = this;
@@ -340,7 +253,7 @@ export default {
       self.thisEntry.is_new = true;
       self.popupEdit = true;
     },
-    addNewEntry: function(popupClose=true) {
+    addNewEntry: function() {
       const self = this;
       const app = self.$f7;
       app.dialog.preloader('Adding new trip...');
@@ -349,8 +262,7 @@ export default {
           let res = JSON.parse(x.data).data;
           if(res.success) {
             self.notify("Success", "Successfully added new entry.");
-            if(popupClose)
-              self.popupEdit = false;
+            self.fetchTransport();
           }
           else
             self.notify("Failed", res.msg, 5000);
@@ -378,19 +290,32 @@ export default {
       self.notify("Update", msg, 5000);
       self.fetchTransport();
     },
-    deleteEntry: function(popupClose = true) {
+    deleteEntry: function(entry, interactive=true) {
       const self = this;
       const app = self.$f7;
-      console.log("Deleting this entry.", self.thisEntry);
-      app.dialog.confirm("Are you sure?",  "Deleting entry"
-        , function(x) {
-          self.postWithPromise('transportation/schedule/delete/'+self.thisEntry.id)
-            .then(function(x) {
-              if(popupClose)
-                self.popupEdit = false;
-              self.fetchTransport();
-            });
-        }, null);
+      if(interactive) {
+        app.dialog.confirm("Are you sure?",  "Deleting entry"
+          , function(x) {
+            self.postWithPromise('transportation/schedule/delete/'+entry.id)
+              .then(function(x) {
+                self.fetchTransport();
+              });
+          }, null);
+      }
+      else {
+        self.postWithPromise('transportation/schedule/delete/'+entry.id)
+          .then(function(x) {
+            self.fetchTransport();
+          });
+      }
+    },
+    deleteEntries: function(ids) {
+      const self = this;
+      const app = self.$f7;
+      self.postWithPromise('transportation/schedule/delete/'+ids)
+        .then(function(x) {
+          self.fetchTransport();
+        });
     },
     inTimetable: function(tripStartTime, day) {
       const self = this;
@@ -401,30 +326,47 @@ export default {
         return false;
       return true;
     },
-    updateTripsPopup: function(trips, startTime) {
+    updateTripsPopup: function(trips, startTime, vehicle) {
       const self = this;
-      self.theseTrips.days = Object.keys(trips);
+      self.theseTrips.vehicle = vehicle;
       self.theseTrips.trip_start_time = startTime;
+      self.theseTrips.trip_end_time =
+        trips[Object.keys(trips)[0]][0].trip_end_time;
       self.theseTrips.timetable = trips;
+      self.theseTrips.days = Object.keys(self.theseTrips.timetable);
       self.popupTrips = true;
     },
-    addRemoveTrip: function(tripStartTime, day) {
-      day = day.toLowerCase();
+    addRemoveTrip: function(day) {
       const self = this;
-      if(self.theseTrips.days.includes(day))
-      {
-        self.theseTrips.days = self.thisEntry.days.filter(e => e !== day);
-        // Remove this entry.
-        self.thisEntry = self.timetable[tripStartTime][day];
-        self.deleteEntry(false);
-      }
-      else {
+      if(self.theseTrips.days.includes(day)) {
+        for(var trip of self.theseTrips.timetable[day]) {
+          self.deleteEntry(trip, false);
+        }
+      } else {
         // Add new entry.
-        self.theseTrips.days.push(day);
-        self.theseTrips.day = day;
-        self.addNewEntry(false);
+        self.thisEntry = {'day': day, 'is_new':true
+          , 'trip_start_time': self.theseTrips.trip_start_time
+          , 'trip_end_time': self.theseTrips.trip_end_time
+          , 'vehicle': self.theseTrips.vehicle, ...self.thisRoute};
+        self.addNewEntry();
       }
-      self.thisEntry.days = self.thisEntry.days.sort(self.sortDays);
+    },
+    deleteTheseTrips: function() {
+      const self = this;
+      const app = self.$f7;
+
+      var entries = [];
+      for(var day in self.theseTrips.timetable) {
+        for(var trip of self.theseTrips.timetable[day])
+          entries.push(trip.id);
+      }
+
+      app.dialog.confirm("Are you sure?",  "Delete all entries."
+        , function(x) { 
+          self.deleteEntries(entries.join(','));
+          self.popupTrips = false;
+        }, null);
+
     },
   },
 };
