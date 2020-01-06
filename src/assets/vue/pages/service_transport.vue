@@ -67,12 +67,14 @@
 
       <f7-block-title medium>
         {{thisRoute.pickup_point}} to {{thisRoute.drop_point}}.
+        {{theseTrips.vehicle}} - {{theseTrips.trip_start_time}}
       </f7-block-title>
 
       <f7-row>
         <f7-col v-for="(day, key) in alldays">
           {{day}}
-          <f7-checkbox :checked="theseTrips">
+          <f7-checkbox :checked="theseTrips.days.includes(day)"> 
+          </f7-checkbox>
           </f7-checkbox>
         </f7-col>
       </f7-row>
@@ -399,12 +401,30 @@ export default {
         return false;
       return true;
     },
-    updateTripsPopup: function(timetable, startTime) {
+    updateTripsPopup: function(trips, startTime) {
       const self = this;
-      self.theseTrips.days = self.thisDay;
+      self.theseTrips.days = Object.keys(trips);
       self.theseTrips.trip_start_time = startTime;
-      self.theseTrips.timetable = timetable;
+      self.theseTrips.timetable = trips;
       self.popupTrips = true;
+    },
+    addRemoveTrip: function(tripStartTime, day) {
+      day = day.toLowerCase();
+      const self = this;
+      if(self.theseTrips.days.includes(day))
+      {
+        self.theseTrips.days = self.thisEntry.days.filter(e => e !== day);
+        // Remove this entry.
+        self.thisEntry = self.timetable[tripStartTime][day];
+        self.deleteEntry(false);
+      }
+      else {
+        // Add new entry.
+        self.theseTrips.days.push(day);
+        self.theseTrips.day = day;
+        self.addNewEntry(false);
+      }
+      self.thisEntry.days = self.thisEntry.days.sort(self.sortDays);
     },
   },
 };
