@@ -119,6 +119,8 @@
 
       <f7-block inset>
         <f7-list media-list no-hairlines>
+
+          <!--
           <f7-list-input label="Trip Start Time" inline-label
                          :value="theseTrips.trip_start_time"
                          @input="theseTrips.trip_start_time=$event.target.value"
@@ -129,8 +131,8 @@
                          @input="theseTrips.trip_end_time=$event.target.value"
                          type="time">
           </f7-list-input>
+          -->
 
-          <!--
           <f7-list-input :input="false" label="Trip Start Time" inline-label>
             <date-picker slot="input" type="time" lang="en"
                          value-type="format" format="HH:mm" :minute-step="5"
@@ -147,7 +149,6 @@
                          v-model="theseTrips.trip_end_time">
             </date-picker>
           </f7-list-input>
-          -->
 
           <f7-list-input label="Select days" :input="false" inline-label>
             <f7-row slot="input">
@@ -205,11 +206,10 @@ export default {
       thisEntry: {day:'', pickup_point:'NCBS', drop_point:'IIsc'
         , 'is_new':false},
       thisEntryStatus: "OK",
-      theseTrips: {vehicle: ''
-        , days:[]
+      theseTrips: {vehicle: '', days:[]
         , trip_start_time:'', trip_end_time:''
-        , timetable:{}, comment:''
-        , is_new:false},
+        , timetable:{}, comment:'', is_new:false
+      },
       popupTrips: false,
       popupAddTrips: false,
     };
@@ -230,6 +230,10 @@ export default {
         return 'OK';
       },
       deep: true
+    },
+    'theseTrips.trip_start_time' : function(val, oldval) {
+      const self = this;
+      self.theseTrips.trip_end_time = self.dbTime(val, 45);
     },
   },
   methods: { 
@@ -316,8 +320,8 @@ export default {
       const app = self.$f7;
       if(notify)
         app.dialog.preloader('Adding new trip...');
-      self.promiseWithAuth('transportation/schedule/add', self.thisEntry)
-        .then(function(x) {
+      var promise = self.promiseWithAuth('transportation/schedule/add'
+        , self.thisEntry).then(function(x) {
           let res = JSON.parse(x.data).data;
           if(res.success) {
             if(notify)
@@ -334,6 +338,7 @@ export default {
         });
       if(notify)
         setTimeout(() => app.dialog.close(), 1000);
+      return promise;
     },
     updateEntry: function(entry) {
       const self = this;
@@ -444,7 +449,7 @@ export default {
       self.theseTrips.days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
       self.popupAddTrips = true;
     },
-    addTheseNewTrips: function() {
+    addTheseNewTrips: async function() {
       const self = this;
       console.log("Adding followiing trips: ", self.theseTrips);
       for(var day of self.theseTrips.days) {
@@ -455,7 +460,7 @@ export default {
           , comment: self.theseTrips.comment
           , vehicle: self.theseTrips.vehicle
           , ...self.thisRoute};
-        self.addNewEntry(true, true);
+        await self.addNewEntry(true, false);
       }
       self.popupAddTrips = false;
     },

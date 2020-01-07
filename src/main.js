@@ -106,14 +106,14 @@ Vue.mixin({
          return b.toNow(a, true);
       },
       dbTime: function(date, addminutes=0) {
-         return moment(date, "HH:MM").add(addminutes, 'm').format("HH:mm");
+         return moment(date, "HH:mm").add(addminutes, 'm').format("HH:mm");
       },
       humanReadableTime: function( time ) {
-         return moment(time, "HH:MM:ss").format("HH:mm");
+         return moment(time, "HH:mm:ss").format("HH:mm");
       },
       humanReadableDateTime: function(date, time) {
          var d = moment(date, "YYYY-MM-DD").format("(ddd) MMM DD");
-         var t = moment(time, "hh:mm:ss").format("hh:mm A");
+         var t = moment(time, "HH:mm:ss").format("hh:mm A");
          return d+', '+t;
       },
       today : function() {
