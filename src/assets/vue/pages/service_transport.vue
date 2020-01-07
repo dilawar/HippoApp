@@ -142,12 +142,10 @@
             </date-picker>
           </f7-list-input>
 
-          <f7-list-input :input="false" label="Trip End Time" inline-label>
-            <date-picker slot="input" type="time" lang="en"
-                         value-type="format" format="HH:mm" :minute-step="5"
-                         placeholder="hh:mm a"
-                         v-model="theseTrips.trip_end_time">
-            </date-picker>
+          <f7-list-input label="Duration" inline-label
+                         :value="theseTrips.duration"
+                         @change="theseTrips.duration=$event.target.input"
+                         type="number">
           </f7-list-input>
 
           <f7-list-input label="Select days" :input="false" inline-label>
@@ -203,11 +201,10 @@ export default {
       popupEdit: false,
       // This goes onto a poup showing route map.
       thisRouteMap: '<p>No route found.</p>',
-      thisEntry: {day:'', pickup_point:'NCBS', drop_point:'IIsc'
-        , 'is_new':false},
+      thisEntry: {day:'', pickup_point:'NCBS', drop_point:'IIsc', 'is_new':false},
       thisEntryStatus: "OK",
       theseTrips: {vehicle: '', days:[]
-        , trip_start_time:'', trip_end_time:''
+        , trip_start_time:'', trip_end_time:'', duration: 30
         , timetable:{}, comment:'', is_new:false
       },
       popupTrips: false,
@@ -221,20 +218,6 @@ export default {
     self.fetchRoutes();
     self.fetchVehicles();
     self.fetchTransport();
-  },
-  watch: {
-    'thisEntry': {
-      handler: function(val, oldval)
-      {
-        const self = this;
-        return 'OK';
-      },
-      deep: true
-    },
-    'theseTrips.trip_start_time' : function(val, oldval) {
-      const self = this;
-      self.theseTrips.trip_end_time = self.dbTime(val, 45);
-    },
   },
   methods: { 
     fetchRoutes: function() {
@@ -315,13 +298,13 @@ export default {
         return true;
       return false;
     },
-    addNewEntry: function(refresh=true, notify=true) {
+    addNewEntry: function(entry, refresh=true, notify=true) {
       const self = this;
       const app = self.$f7;
       if(notify)
         app.dialog.preloader('Adding new trip...');
-      var promise = self.promiseWithAuth('transportation/schedule/add'
-        , self.thisEntry).then(function(x) {
+      var promise = self.promiseWithAuth('transportation/schedule/add', entry)
+        .then(function(x) {
           let res = JSON.parse(x.data).data;
           if(res.success) {
             if(notify)
@@ -339,24 +322,6 @@ export default {
       if(notify)
         setTimeout(() => app.dialog.close(), 1000);
       return promise;
-    },
-    updateEntry: function(entry) {
-      const self = this;
-      const app = self.$f7;
-      var msg = "";
-      for(var day of self.thisEntry.days) {
-        self.thisEntry.day = day;
-        self.promiseWithAuth('transportation/schedule/update', self.thisEntry)
-          .then(function(x) {
-            let res = JSON.parse(x.data).data;
-            if(res.success)
-              msg += day + ", ";
-            else
-              msg += res.msg;
-          });
-      }
-      self.notify("Update", msg, 5000);
-      self.fetchTransport();
     },
     deleteEntry: function(entry, interactive=true) {
       const self = this;
@@ -398,11 +363,14 @@ export default {
     addRemoveDays: function(day) {
       const self = this;
       if(self.theseTrips.days.includes(day)) {
-        delete self.theseTrips.days[day];
+        console.log('delete');
+        self.theseTrips.days = self.theseTrips.days.filter(d => d !== day);
       }
       else {
+        console.log('add');
         self.theseTrips.days.push(day)
       }
+      console.log('Days ', self.theseTrips.days);
     },
     addRemoveTrip: function(day) {
       const self = this;
@@ -413,11 +381,11 @@ export default {
       else 
       {
         // Add new entry.
-        self.thisEntry = {'day': day, 'is_new':true
+        var entry = {'day': day, 'is_new':true
           , 'trip_start_time': self.theseTrips.trip_start_time
-          , 'trip_end_time': self.theseTrips.trip_end_time
+          , 'duration': self.theseTrips.duration
           , 'vehicle': self.theseTrips.vehicle, ...self.thisRoute};
-        self.addNewEntry();
+        self.addNewEntry(entry);
       }
     },
     deleteTheseTrips: function() {
@@ -445,6 +413,7 @@ export default {
       self.theseTrips.timetable = {};
       self.theseTrips.trip_start_time = '';
       self.theseTrips.trip_end_time = '';
+      self.theseTrips.duration = 30;
       self.theseTrips.timetable = {};
       self.theseTrips.days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
       self.popupAddTrips = true;
@@ -454,13 +423,13 @@ export default {
       console.log("Adding followiing trips: ", self.theseTrips);
       for(var day of self.theseTrips.days) {
         console.log("Adding on day : ", day);
-        self.thisEntry = {day: day, is_new:true
+        var entry = {day: day, is_new:true
           , trip_start_time: self.theseTrips.trip_start_time
-          , trip_end_time: self.theseTrips.trip_end_time
+          , duration: self.theseTrips.duration
           , comment: self.theseTrips.comment
           , vehicle: self.theseTrips.vehicle
           , ...self.thisRoute};
-        await self.addNewEntry(true, false);
+        await self.addNewEntry(entry, true, false);
       }
       self.popupAddTrips = false;
     },
