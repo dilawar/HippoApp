@@ -272,7 +272,7 @@ export default {
           self.upcomingAWS = JSON.parse(x.data).data;
           app.preloader.hide();
         });
-      setTimeout(() => app.preloader.hide(), 3000);
+      setTimeout(() => app.preloader.hide(), 10000);
     },
     fetchSchedule: function()
     {
@@ -318,8 +318,9 @@ export default {
     editThisAWS: function()
     {
       const self = this;
-      self.sendRequest('acadadmin/aws/update', self.thisAWS);
-      setTimeout(()=>self.fetchUpcomingAws(), 500);
+      self.sendRequest('acadadmin/aws/update', self.thisAWS).then( function(x){
+        self.fetchUpcomingAws();
+      });
     },
     assignThisAWS: function()
     {
@@ -336,8 +337,8 @@ export default {
             self.notify('Failed', res.msg);
           else
             self.notify('Success', res.msg);
+          self.fetchUpcomingAws();
         });
-      setTimeout(() => self.fetchUpcomingAws(), 1000);
     },
     computeSchedule: function()
     {
@@ -350,7 +351,7 @@ export default {
           self.fetchSchedule();
           app.preloader.hide();
         });
-      setTimeout(() => app.preloader.hide(), 3000);
+      setTimeout(() => app.preloader.hide(), 10000);
     },
     cancelAWS: function(aws) 
     {

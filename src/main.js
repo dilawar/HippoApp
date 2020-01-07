@@ -236,16 +236,14 @@ Vue.mixin({
       sendRequest: function(endpoint, post) {
          const self = this;
          const app = self.$f7;
-         app.dialog.preloader();
          let data = { ...self.apiPostData(), ...post};
-         app.request.promise.post(self.$store.state.api+'/'+endpoint, data)
+         return app.request.promise.post(self.$store.state.api+'/'+endpoint, data)
             .then( function(x) {
                const res = JSON.parse(x.data);
                app.dialog.close();
                return;
             }
          );
-         setTimeout( () => app.dialog.close(), 1000);
       },
       sendCoordinates: function(endpoint, coords) {
          const self = this;
