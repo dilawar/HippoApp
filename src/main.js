@@ -340,6 +340,12 @@ Vue.mixin({
          }
          return arr; 
       },  
+      sortDays: function(a, b) {
+         const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+         a = days.indexOf(a);
+         b = days.indexOf(b);
+         return a < b ? 0 : 1;
+      },
       notify: function(header, msg, timeout=3000) 
       {
          const app = this.$f7;
