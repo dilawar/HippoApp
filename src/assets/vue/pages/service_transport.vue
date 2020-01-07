@@ -119,18 +119,37 @@
 
       <f7-block inset>
         <f7-list media-list no-hairlines>
-          <f7-list-input label="Trip Start Time" 
-                         inline-label
+
+          <!--
+          <f7-list-input label="Trip Start Time" inline-label
                          :value="theseTrips.trip_start_time"
                          @input="theseTrips.trip_start_time=$event.target.value"
                          type="time">
           </f7-list-input>
-          <f7-list-input label="Trip End Time" 
-                         inline-label
+          <f7-list-input label="Trip End Time" inline-label
                          :value="theseTrips.trip_end_time"
                          @input="theseTrips.trip_end_time=$event.target.value"
                          type="time">
           </f7-list-input>
+          -->
+
+          <f7-list-input :input="false" label="Trip Start Time" inline-label>
+            <date-picker slot="input" type="time" lang="en"
+                         value-type="format" format="HH:mm" :minute-step="5"
+                         placeholder="Select time"
+                         :time-picker-options="{start:'6:00',step:'00:15', end:'5:00'}"
+                         v-model="theseTrips.trip_start_time">
+            </date-picker>
+          </f7-list-input>
+
+          <f7-list-input :input="false" label="Trip End Time" inline-label>
+            <date-picker slot="input" type="time" lang="en"
+                         value-type="format" format="HH:mm" :minute-step="5"
+                         placeholder="hh:mm a"
+                         v-model="theseTrips.trip_end_time">
+            </date-picker>
+          </f7-list-input>
+
           <f7-list-input label="Select days" :input="false" inline-label>
             <f7-row slot="input">
               <f7-col v-for="(day, key) in alldays" :key="key">
@@ -153,7 +172,7 @@
               <f7-col>
                 <f7-button raised :disabled="! theseTrips.trip_start_time"
                            @click="addTheseNewTrips()">
-                  Add All
+                  Add These Trips
                 </f7-button>
               </f7-col>
             </f7-row>
@@ -187,8 +206,10 @@ export default {
       thisEntry: {day:'', pickup_point:'NCBS', drop_point:'IIsc'
         , 'is_new':false},
       thisEntryStatus: "OK",
-      theseTrips: {vehicle: '', days:[], trip_start_time:''
-        , timetable:{}, is_new:false},
+      theseTrips: {vehicle: '', days:[]
+        , trip_start_time:'', trip_end_time:''
+        , timetable:{}, comment:'', is_new:false
+      },
       popupTrips: false,
       popupAddTrips: false,
     };
@@ -209,6 +230,10 @@ export default {
         return 'OK';
       },
       deep: true
+    },
+    'theseTrips.trip_start_time' : function(val, oldval) {
+      const self = this;
+      self.theseTrips.trip_end_time = self.dbTime(val, 45);
     },
   },
   methods: { 
@@ -283,7 +308,6 @@ export default {
     selectRoute: function(route) {
       const self = this;
       self.thisRoute = route;
-      console.log('selected route: ', route);
       self.fetchTransport();
     },
     isSameRoute: function(a, b) {
@@ -296,8 +320,8 @@ export default {
       const app = self.$f7;
       if(notify)
         app.dialog.preloader('Adding new trip...');
-      self.promiseWithAuth('transportation/schedule/add', self.thisEntry)
-        .then(function(x) {
+      var promise = self.promiseWithAuth('transportation/schedule/add'
+        , self.thisEntry).then(function(x) {
           let res = JSON.parse(x.data).data;
           if(res.success) {
             if(notify)
@@ -314,14 +338,13 @@ export default {
         });
       if(notify)
         setTimeout(() => app.dialog.close(), 1000);
+      return promise;
     },
     updateEntry: function(entry) {
       const self = this;
       const app = self.$f7;
-      console.log("Updating entry.", self.thisEntry);
       var msg = "";
       for(var day of self.thisEntry.days) {
-        console.log("Day is ", day);
         self.thisEntry.day = day;
         self.promiseWithAuth('transportation/schedule/update', self.thisEntry)
           .then(function(x) {
@@ -366,7 +389,7 @@ export default {
       const self = this;
       self.theseTrips.vehicle = vehicle;
       self.theseTrips.trip_start_time = startTime;
-      self.theseTrips.trip_end_time =
+      self.theseTrips.trip_end_time =  
         trips[Object.keys(trips)[0]][0].trip_end_time;
       self.theseTrips.timetable = trips;
       self.theseTrips.days = Object.keys(self.theseTrips.timetable);
@@ -375,21 +398,20 @@ export default {
     addRemoveDays: function(day) {
       const self = this;
       if(self.theseTrips.days.includes(day)) {
-        console.log("Removing  ", day);
         delete self.theseTrips.days[day];
       }
       else {
-        console.log("Adding  ", day);
         self.theseTrips.days.push(day)
       }
     },
     addRemoveTrip: function(day) {
       const self = this;
       if(self.theseTrips.days.includes(day)) {
-        for(var trip of self.theseTrips.timetable[day]) {
+        for(var trip of self.theseTrips.timetable[day]) 
           self.deleteEntry(trip, false);
-        }
-      } else {
+      } 
+      else 
+      {
         // Add new entry.
         self.thisEntry = {'day': day, 'is_new':true
           , 'trip_start_time': self.theseTrips.trip_start_time
@@ -427,19 +449,19 @@ export default {
       self.theseTrips.days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
       self.popupAddTrips = true;
     },
-    addTheseNewTrips: function() {
+    addTheseNewTrips: async function() {
       const self = this;
       console.log("Adding followiing trips: ", self.theseTrips);
-      for(var day in self.theseTrips.days) {
+      for(var day of self.theseTrips.days) {
         console.log("Adding on day : ", day);
         self.thisEntry = {day: day, is_new:true
           , trip_start_time: self.theseTrips.trip_start_time
           , trip_end_time: self.theseTrips.trip_end_time
           , comment: self.theseTrips.comment
-          , vehicle: self.theseTrips.vehicle, ...self.thisRoute};
-        self.addNewEntry(false, false);
+          , vehicle: self.theseTrips.vehicle
+          , ...self.thisRoute};
+        await self.addNewEntry(true, false);
       }
-      setTimeout(() => self.fetchTransport(), 2000);
       self.popupAddTrips = false;
     },
   },

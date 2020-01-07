@@ -10,10 +10,6 @@ Vue.component('vue-dropzone', Dropzone);
 import { VueEditor, Quill } from 'vue2-editor';
 Vue.component('vue-editor', VueEditor);
 
-// light timelight 
-import LightTimeline from 'vue-light-timeline';
-Vue.use(LightTimeline);
-
 // Autocomplete
 import Autocomplete from 'vuejs-auto-complete';
 Vue.component('v-autocomplete', Autocomplete);
@@ -69,6 +65,7 @@ import FontAwesome from 'font-awesome/css/font-awesome.css'
 import AppStyles from './assets/sass/main.scss'
 
 import DatePicker from 'vue2-datepicker'
+Vue.use(DatePicker)
 
 // Import App Component
 import app from './main.vue'
@@ -82,8 +79,6 @@ import VueLocalStorage from 'vue-localstorage';
 // Different F7-Vue plugin initialization with f7 v3.0
 Framework7.use(Framework7Vue)
 
-// External components.
-Vue.use(DatePicker)
 Vue.use(VueLocalStorage)
 
 // Global function.
@@ -111,14 +106,14 @@ Vue.mixin({
          return b.toNow(a, true);
       },
       dbTime: function(date, addminutes=0) {
-         return moment(date, "HH:MM").add(addminutes, 'm').format("HH:mm");
+         return moment(date, "HH:mm").add(addminutes, 'm').format("HH:mm");
       },
       humanReadableTime: function( time ) {
-         return moment(time, "HH:MM:ss").format("HH:mm");
+         return moment(time, "HH:mm:ss").format("HH:mm");
       },
       humanReadableDateTime: function(date, time) {
          var d = moment(date, "YYYY-MM-DD").format("(ddd) MMM DD");
-         var t = moment(time, "hh:mm:ss").format("hh:mm A");
+         var t = moment(time, "HH:mm:ss").format("hh:mm A");
          return d+', '+t;
       },
       today : function() {
