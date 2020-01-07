@@ -222,6 +222,11 @@ export default {
           if( res.status == 'ok')
             self.fetchCoursesPromise().then(function(x) {
               app.preloader.hide();
+              // Subscribe to notification.
+              if(regType==='DROP')
+                self.subscribeFCM(course.id);
+              else
+                self.unsubscribeFCM(course.id);
             });
           else
             navigator.notification.alert("Failed to update course", null , "Course", "OK");

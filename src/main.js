@@ -97,6 +97,22 @@ Vue.mixin({
       dbDate: function( date ) {
          return moment(date).format("YYYY-MM-DD");
       },
+      subscribeFCM: function(topic) {
+         try {
+            cordova.plugins.firebase.messaging.subscribe(topic);
+         } catch (e) {
+            /* handle error */
+            console.log("Failed to subscribe:", e);
+         }
+      },
+      unsubscribeFCM: function(topic) {
+         try {
+            cordova.plugins.firebase.messaging.unsubscribe(topic);
+         } catch (e) {
+            /* handle error */
+            console.log("Failed to unsubscribe:", e);
+         }
+      },
       humanReadableDate: function( date ) {
          return moment(date, "YYYY-MM-DD").format("MMM DD, YYYY");
       },
