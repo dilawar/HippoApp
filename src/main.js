@@ -426,9 +426,22 @@ export default new Vue({
    mounted() {
       const self = this;
       document.addEventListener("deviceready", self.onDeviceReady, false);
+      document.addEventListener("offline", self.onOffline, false);
+      document.addEventListener("online", self.onOnline, false);
    },
    methods: 
    { 
+      onOnline: function(e) {
+
+      },
+      onOffline: function(e) {
+         const self = this;
+         const app = self.$f7;
+         app.dialog.confirm('I am useless without network.', 'Bad network connection!'
+            , function() { navigator.app.exitApp();}
+            , function() { }
+         );
+      },
       onBackButton: function(e) {
          const self = this;
          const app = self.$f7;
