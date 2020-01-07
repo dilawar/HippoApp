@@ -103,11 +103,8 @@ export default {
   },
   mounted: function() {
     const self = this;
-    // Only fetch when nothing is available in the store.
-    self.events = self.loadStore('events');
     self.initVenuesAndClasses();
     self.fetchEvents();
-
     // Fetch calendar link.
     self.promiseWithAuth('config/calendar_url')
       .then( function(x) {
@@ -117,10 +114,13 @@ export default {
   methods: { 
     initVenuesAndClasses: function( ) {
       const self = this;
+      const app = self.$f7;
+      app.preloader.show();
       self.eventTypes = [... new Set( self.events.map(x=>x.class))];
       self.eventTypes.push('ALL');
       self.venues = [... new Set(self.events.map(x=>x.venue))];
       self.venues.push('ALL');
+      app.preloader.hide();
     },
     fetchEvents: function( ) {
       const self = this;
@@ -134,7 +134,7 @@ export default {
           self.saveStore('events', self.events);
           app.preloader.hide();
         });
-      setTimeout(() => app.preloader.hide(), 2000);
+      setTimeout(() => app.preloader.hide(), 10000);
     },
     refreshFetchEvents: function(event, done) 
     {
@@ -170,6 +170,8 @@ export default {
     eventsToTimeLine: function(events) 
     {
       const self = this;
+      const app = self.$f7;
+      app.preloader.show();
       self.items = [];
       for(var key in events)
       {
@@ -178,7 +180,7 @@ export default {
           continue;
         self.items.push(self.eventToTimelinePoint(key, ev));
       }
-      console.log('Total events ', self.items.length);
+      app.preloader.hide();
     },
     loadMore: function() 
     {
