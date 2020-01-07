@@ -314,16 +314,18 @@
       Running Courses in {{thisYear}}/{{thisSemester}}.
     </f7-block-title>
 
-    <f7-card v-for="(course,key) in runningCourses" :key="key"
-             :padding="false">
+    <f7-card v-for="(course,key) in runningCourses" :key="key">
+      <f7-card-header>
+        {{course.name}}
+        <span class="pull-right">
+          <tt> <small> {{course.course_id}} </small> </tt>
+        </span>
+      </f7-card-header>
       <f7-card-content>
-        <div>({{course.course_id}}) {{course.name}}
-          <span class="pull-right">
-            <strong>{{course.venue}}</strong>
-            slot {{course.slot}}, {{course.ignore_tiles}}
-          </span>
-        </div>
-
+        <span class="pull-right">
+          <strong>{{course.venue}}</strong>
+          slot {{course.slot}}, {{course.ignore_tiles}}
+        </span>
         <div class="text-small">
           {{course.start_date | date}} to {{course.end_date | date}}
         </div>
@@ -344,12 +346,14 @@
 
         <f7-row class="text-align-center" style="padding:0;padding-top:0px">
           <f7-col>
-            <f7-link :href="'/updatecourse/'+course.id+'/'">
+            <f7-link :href="'/updatecourse/'+course.id+'/'"
+                     icon="fa fa-group fa-fw">
               Manage Registrations
             </f7-link>
           </f7-col>
           <f7-col>
-            <f7-link @click="showCurrentCourse(course)">
+            <f7-link @click="showCurrentCourse(course)"
+                     icon="fa fa-pencil fa-fw">
               Edit
             </f7-link>
           </f7-col>
