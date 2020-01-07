@@ -34,8 +34,8 @@
     </f7-navbar>
 
     <f7-row>
-      <f7-col width="40" medium="60"></f7-col>
-      <f7-col width="60" medium="40">
+      <f7-col width="30" medium="60"></f7-col>
+      <f7-col width="70" medium="40">
         <f7-list no-hairlines >
           <f7-list-item link="/transport/" 
                         title="Transport" 

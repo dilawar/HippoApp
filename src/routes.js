@@ -43,6 +43,7 @@ import AcadAdminAWSRoster from './assets/vue/pages/acad_aws_roster.vue';
 import AcadAdminAWS from './assets/vue/pages/acad_aws.vue';
 import AcadAdminCourses from './assets/vue/pages/acad_courses.vue';
 import UpdateCoursePage from './assets/vue/pages/updatecourse.vue';
+import AdminManageTalks from './assets/vue/pages/admin_manages_talks.vue';
 
 // Service Admin
 import ServiceAdminTransport from './assets/vue/pages/service_transport.vue';
@@ -91,6 +92,10 @@ export default [
    {
       path: '/acadadmin/courses/',
       component: AcadAdminCourses
+   },
+   {
+      path: '/admin/talks/',
+      component: AdminManageTalks 
    },
    {
       path: '/serviceadmin/transport/',
