@@ -408,7 +408,7 @@ Vue.mixin({
          );
       },
       'clockTime' : function(time) {
-         return moment(time, 'HH:mm:ss').format('HH:mm A');
+         return moment(time, 'HH:mm:ss').format('hh:mm A');
       },
       'date' : function(time) {
          return moment(time, 'YYYY-MM-DD').format('(ddd) MMM DD');

@@ -10,14 +10,20 @@
                         target="_blank"
                         view=".view-main"
                         title="Pending Requests" 
-                        panel-close
-                        >
+                        panel-close>
           </f7-list-item>
 
           <f7-list-item link="/bmvadmin/events/" 
                         target="_blank"
                         view=".view-main"
                         title="Confirmed Events" 
+                        panel-close>
+          </f7-list-item>
+
+          <f7-list-item link="/admin/talks/" 
+                        target="_blank"
+                        view=".view-main"
+                        title="Manage Talks/Seminar" 
                         panel-close
                         >
           </f7-list-item>
@@ -48,6 +54,14 @@
                         target="_blank"
                         view=".view-main"
                         title="Courses" 
+                        panel-close
+                        >
+          </f7-list-item>
+
+          <f7-list-item link="/admin/talks/" 
+                        target="_blank"
+                        view=".view-main"
+                        title="Manage Talks/Seminar" 
                         panel-close
                         >
           </f7-list-item>
