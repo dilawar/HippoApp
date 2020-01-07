@@ -1,26 +1,25 @@
 <template>
-   <f7-page page-content @page:afterout="clearAll" >
-      <f7-navbar :title="title" back-link="Back"></f7-navbar>
+  <f7-page page-content @page:afterout="clearAll" >
+    <f7-navbar :title="title" back-link="Back"></f7-navbar>
 
-      <l-map ref="osm" 
-             :zoom="zoom" 
-             :center="center"
-             :style="mapStyle"
-             @update:center="centerUpdated"
-             @update:zoom="zoomUpdated"
-             @update:bounds="boundsUpdated"
-             >
-             <l-control-layers position="topright"></l-control-layers>
+    <l-map ref="osm" 
+           :zoom="zoom" 
+           :center="center"
+           :style="mapStyle"
+           @update:center="centerUpdated"
+           @update:zoom="zoomUpdated"
+           @update:bounds="boundsUpdated">
+           <l-control-layers position="topright"></l-control-layers>
 
-             <l-tile-layer v-for="tileProvider in $store.state.OSM.tileProviders"
-                           :key="tileProvider.name"
-                           :name="tileProvider.name"
-                           :visible="tileProvider.visible"
-                           :url="tileProvider.url"
-                           :attribution="tileProvider.attribution"
-                           layer-type="base"
-                           >
-             </l-tile-layer>
+           <l-tile-layer v-for="tileProvider in $store.state.OSM.tileProviders"
+                         :key="tileProvider.name"
+                         :name="tileProvider.name"
+                         :visible="tileProvider.visible"
+                         :url="tileProvider.url"
+                         :attribution="tileProvider.attribution"
+                         layer-type="base"
+                         >
+           </l-tile-layer>
 
              <!-- Show hotlines -->
              <l-polyline v-for="(arr, key) in hotlines" 
@@ -32,35 +31,35 @@
                          >
              </l-polyline>
 
-             <l-marker :lat-lng="myPos"></l-marker>
+               <l-marker :lat-lng="myPos"></l-marker>
 
-             <!-- Latest position -->
-             <l-marker v-for="(p, key) in latestPos" 
-                        :key="p.id" 
-                        :lat-lng="p.xy"
-                        :icon="p.options.icon"
-                        > 
-               <l-tooltip :options="{permanent: false}"
-                   style="white-space:normal;width:50px">
-                   <div v-html="p.html"></div>
-               </l-tooltip>
-             </l-marker>
+               <!-- Latest position -->
+               <l-marker v-for="(p, key) in latestPos" 
+                         :key="p.id" 
+                         :lat-lng="p.xy"
+                         :icon="p.options.icon"
+                         > 
+                         <l-tooltip :options="{permanent: false}"
+                         style="white-space:normal;width:50px">
+                           <div v-html="p.html"></div>
+                         </l-tooltip>
+               </l-marker>
 
-             <l-marker :ref="v.id" 
-                        v-for="v in markers" 
-                        :key="v.id" 
-                        :lat-lng="v.xy"
-                        :options="v.options"
-                        > 
-                <l-tooltip 
-                        :options="$store.state.OSM.toolTipOpts"
-                        style="white-space:normal;width:100px"
-                        >
-                   <div v-html="v.html"></div>
-                </l-tooltip>
-             </l-marker>
-      </l-map>
-   </f7-page>
+               <l-marker :ref="v.id" 
+                                v-for="v in markers" 
+                                :key="v.id" 
+                                :lat-lng="v.xy"
+                                :options="v.options"
+                                > 
+                                <l-tooltip 
+                                :options="$store.state.OSM.toolTipOpts"
+                                style="white-space:normal;width:100px"
+                                >
+                                <div v-html="v.html"></div>
+                                </l-tooltip>
+               </l-marker>
+    </l-map>
+  </f7-page>
 </template>
 
 <script>

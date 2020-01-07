@@ -4,7 +4,7 @@
       <f7-subnavbar :inner="false">
         <f7-searchbar
           search-container=".event-list"
-          search-in=".item-header,.item-title,.item-subtitle,.item-text,.item-footer">
+          search-in=".item-header, .item-title, .item-subtitle, .item-text, .item-footer">
         </f7-searchbar>
       </f7-subnavbar>
     </f7-navbar>
@@ -15,8 +15,9 @@
                       accordion-item
                       :style="event.is_public_event==='YES'?'background-color:yellow':''"
                       @click="openEventPopup(event)">
-          <div slot="header"> {{event.class}} 
-            <span style="float:right"> {{event.venue}}</span>
+          <div slot="header">
+            {{event.class}} 
+            <span style="float:right">{{event.venue}}</span>
           </div>
           <div slot="title"> {{event.title}} </div>
           <div slot="text"> 
