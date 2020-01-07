@@ -5,7 +5,7 @@
 
      <f7-block-title>Running Courses</f7-block-title>
 
-     <f7-list accordion-list no-hairlines>
+     <f7-list media-list accordion-list no-hairlines>
         <f7-list-item accordion-item 
                       v-for="(course, key) in runningCourses" 
                       :key="key"
@@ -17,7 +17,7 @@
            <div slot="media" v-if="alreadyRegistered(course.id)" >
                 <f7-icon icon="fa fa-bookmark fa-2x"></f7-icon>
            </div>
-           <div slot="footer"> Timeline: {{course.start_date}}  to {{course.end_date}} </div>
+           <div slot="text"> Timeline: {{course.start_date}}  to {{course.end_date}} </div>
            <div slot="title"> {{metadata[course.course_id].name}} </div>
            <div slot="footer"> {{course.note}} </div>
 
