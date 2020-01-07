@@ -43,12 +43,12 @@
 
         <f7-link icon-only  v-if="isUserAuthenticated()"
                  href="/whatwherewhen/"
-                 text="Calendar"
+                 text="Bookings"
                  icon="fa fa-calendar fa-2x">
         </f7-link>
         <f7-link icon-only v-else
                  href="/events/"
-                 text="Calendar"
+                 text="Events"
                  icon="fa fa-calendar-o fa-2x">
         </f7-link>
 

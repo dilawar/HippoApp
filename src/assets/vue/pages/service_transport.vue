@@ -13,7 +13,7 @@
     </f7-col>
   </f7-row>
   <f7-row>
-    <f7-col width="50" medium="33" v-for="(route, key) in routes" :key="key">
+    <f7-col width="50" v-for="(route, key) in routes" :key="key">
       <f7-button small color="gray" @click="selectRoute(route)"
                  :fill="isSameRoute(thisRoute,route)">
         {{route.pickup_point}}→{{route.drop_point}}
@@ -22,41 +22,45 @@
   </f7-row>
 
   <!-- Timetable -->
-  <div style="margin:10px; margin-top:20px">
-    <table v-for="(tt, veh, id) in timetable" style="margin:0px auto">
-      <thead>
-        <tr>
-          <th></th>
-          <th v-for="(d, key) in selectedDays">{{d}}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(trips, startTime, index) in tt" :key="'row'+startTime">
-          <td>
-            <f7-link icon="fa fa-pencil-square-o fa-1x" 
-                     @click="updateTripsPopup(trips, startTime, veh)">
-              <small> {{startTime | clockTime}}</small>
-            </f7-link>
-          </td>
-          <td v-for="(day, k2) in selectedDays" :key="'td'+k2" 
-              style="background-color:lightyellow;border:1px dotted">
-            <span v-for="(trip,k3) in tt[startTime][day]">
-              <f7-icon :icon="transportIcon(trip.vehicle)"></f7-icon>
-            </span>
-          </td>
-        </tr>
-        <tr></tr>
-      </tbody>
-      <caption align="bottom">
-        <f7-button small raised @click="addNewVehicleTripPopup(veh)">
-          Add {{veh}} trip
-        </f7-button>
-      </caption>
-    </table>
-    <f7-block-footer>
-      Click on <f7-icon icon="fa fa-pencil"></f7-icon> to do more.
-    </f7-block-footer>
-  </div>
+  <f7-block strong>
+  <f7-row>
+    <f7-col v-for="(tt, veh, id) in timetable" :key="'col'+id" width="90" medium="50">
+      <table style="margin:0px auto">
+        <thead>
+          <tr>
+            <th></th>
+            <th v-for="(d, key) in selectedDays">{{d}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(trips, startTime, index) in tt" :key="'row'+startTime">
+            <td>
+              <f7-link icon="fa fa-pencil-square-o fa-1x" 
+                       @click="updateTripsPopup(trips, startTime, veh)">
+                <small> {{startTime | clockTime}}</small>
+              </f7-link>
+            </td>
+            <td v-for="(day, k2) in selectedDays" :key="'td'+k2" 
+                style="background-color:lightyellow;border:1px dotted">
+              <span v-for="(trip,k3) in tt[startTime][day]">
+                <f7-icon :icon="transportIcon(trip.vehicle)"></f7-icon>
+              </span>
+            </td>
+          </tr>
+          <tr></tr>
+        </tbody>
+        <caption>
+          <f7-button small raised @click="addNewVehicleTripPopup(veh)">
+            Add {{veh}} trip
+          </f7-button>
+        </caption>
+      </table>
+    </f7-col>
+  </f7-row>
+  <f7-block-footer>
+    Click on <f7-icon icon="fa fa-pencil"></f7-icon> to do more.
+  </f7-block-footer>
+  </f7-block>
 
   <!-- POPUP Modify trips  -->
   <f7-popup :opened="popupTrips" @popup:close="popupTrips = false">
