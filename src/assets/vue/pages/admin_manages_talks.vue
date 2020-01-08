@@ -57,14 +57,26 @@
           </f7-block-header>
 
           <f7-list no-hairlines>
+
             <f7-list-input label="Title"
                  :value="thisTalk.title" type="text"
                  @change="thisTalk.title=$event.target.value">
             </f7-list-input>
+
+            <f7-list-input label="Description (optional)" resizable
+                           :textEditorParams="{mode: 'keyboard-toolbar'}"
+                           :value="thisTalk.description"
+                           @texteditor:change="(v)=>thisTalk.description=v"
+                           type="texteditor">
+            </f7-list-input>
+            <!--
             <f7-list-input :input="false" label="Description">
               <vue-editor id="talk-desc" slot="input" v-model="thisTalk.description">
               </vue-editor>
             </f7-list-input>
+            -->
+
+
           </f7-list>
           <f7-row>
             <f7-col>
