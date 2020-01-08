@@ -14,6 +14,9 @@
         <div slot="title">{{talk.class}} by {{talk.speaker}}</div>
         <div slot="subtitle">{{talk.title}} </div>
         <div slot="footer"> Created: {{talk.created_on}}, by {{talk.created_by}}</div>
+        <div slot="header"> Created {{toNow(talk.created_on)}} ago.</div>
+        <div slot="after" v-if="talk.hasOwnProperty('event')">Approved</div>
+        <div slot="after" v-if="talk.hasOwnProperty('request')">Pending</div>
         <f7-icon slot="media" :icon="talkIcon(talk)">
         </f7-icon>
       </f7-list-item>
@@ -36,10 +39,10 @@
               <f7-card-header>
                 <strong>CONFIRMED</strong> booking. 
                 <f7-button raised color=red small 
-                           @click="deleteEventOfThisTalk(thisTalk.event)"
-                           class="float-right">
+                           @click="deleteEventOfThisTalk(thisTalk.event)">
                   Delete Booking
                 </f7-button>
+                <f7-button raised small @click="sendTalkEmail(thisTalk)">Send Email</f7-button>
               </f7-card-header>
               <f7-card-content>
                 <strong>{{thisTalk.event.venue}}</strong>,
@@ -84,14 +87,6 @@
                            @texteditor:change="(v)=>thisTalk.description=v"
                            type="texteditor">
             </f7-list-input>
-
-            <!--
-            <f7-list-input :input="false" label="Description">
-              <vue-editor id="talk-desc" slot="input" v-model="thisTalk.description">
-              </vue-editor>
-            </f7-list-input>
-            -->
-
 
           </f7-list>
           <f7-row>
@@ -204,6 +199,16 @@ export default {
             self.fetchTalks();
           });
       });
+    },
+    sendTalkEmail: function(talk) {
+      const self = this;
+      const app = self.$f7;
+      // Create a popover and show email.
+      self.promiseWithAuth('admin/talk/email/'+talk.id)
+        .then(function(x) {
+          var email = JSON.parse(x.data).data;
+          console.log('EMAIL: ', email.email_body);
+        });
     },
   },
 }
