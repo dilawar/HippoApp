@@ -16,14 +16,6 @@
         <div slot="footer"> Created: {{talk.created_on}}, by {{talk.created_by}}</div>
         <f7-icon slot="media" :icon="talkIcon(talk)">
         </f7-icon>
-        <!--
-          <f7-accordion-content>
-          <f7-block strong inset style="background-color:wheat">
-          <f7-block-title small>{{talk.title}}</f7-block-title>
-          <div v-html="talk.description"></div>
-          </f7-block>
-          </f7-accordion-content>
-        -->
       </f7-list-item>
     </f7-list>
 
@@ -43,7 +35,9 @@
             <f7-card :padding="false" v-if="thisTalk.hasOwnProperty('event')">
               <f7-card-header>
                 <strong>CONFIRMED</strong> booking. 
-                <f7-button raised color=red small class="float-right">
+                <f7-button raised color=red small 
+                           @click="deleteEventOfThisTalk(thisTalk.event)"
+                           class="float-right">
                   Delete Booking
                 </f7-button>
               </f7-card-header>
@@ -54,12 +48,27 @@
               </f7-card-content>
             </f7-card>
 
-            <div v-if="thisTalk.hasOwnProperty('request')">
-              <strong>{{thisTalk.request.venue}}</strong>,
-              <strong>{{thisTalk.request.date | date}}</strong>,
-              <strong>{{thisTalk.request.start_time | clockTime}} </strong>
-              (PENDING APPROVAL)
-            </div>
+            <f7-card :padding="false" v-if="thisTalk.hasOwnProperty('request')">
+              <f7-card-header>
+                <strong>PENDING</strong> booking. 
+                <f7-button raised color=red small 
+                           @click="deleteRequestOfThisTalk(thisTalk.request)"
+                           class="float-right">
+                  Delete Request
+                </f7-button>
+                <f7-button raised small 
+                           @click="approveRequest(thisTalk.request)"
+                           class="float-right">
+                  Approve Request
+                </f7-button>
+              </f7-card-header>
+              <f7-card-content>
+                <strong>{{thisTalk.request.venue}}</strong>,
+                <strong>{{thisTalk.request.date | date}}</strong>,
+                <strong>{{thisTalk.request.start_time | clockTime}}</strong>
+              </f7-card-content>
+            </f7-card>
+
           </f7-block-header>
 
           <f7-list no-hairlines>
@@ -75,6 +84,7 @@
                            @texteditor:change="(v)=>thisTalk.description=v"
                            type="texteditor">
             </f7-list-input>
+
             <!--
             <f7-list-input :input="false" label="Description">
               <vue-editor id="talk-desc" slot="input" v-model="thisTalk.description">
@@ -126,7 +136,7 @@ export default {
       else if(talk.hasOwnProperty('request'))
         icon = 'fa-clock-o';
       else
-        icon = 'fa fa-question-circle-o';
+        icon = ' ';
       return 'fa ' + icon + ' fa-2x';
     },
     fetchTalks: function() {
@@ -153,6 +163,47 @@ export default {
           self.fetchTalks();
           self.popupTalkEdit = false;
         });
+    },
+    deleteEventOfThisTalk: function(ev) {
+      const self = this;
+      const app = self.$f7;
+      app.dialog.confirm("Deleting confirmed event associated with a talk."
+        , "Are you sure?"
+        , function(x) {
+          ev['status'] = 'CANCELLED';
+          self.promiseWithAuth('admin/event/delete', ev).then(function(x) {
+            self.promiseWithAuth('admin/talk/get/'+self.thisTalk.id)
+              .then(function(x) {
+                self.thisTalk = JSON.parse(x.data).data;
+              });
+          });
+        }, null);
+    },
+    deleteRequestOfThisTalk: function(req) {
+      const self = this;
+      const app = self.$f7;
+      app.dialog.confirm("Deleting pending request associated with a talk."
+        , "Are you sure?"
+        , function(x) {
+          req['status'] = 'CANCELLED';
+          self.promiseWithAuth('admin/request/delete', req).then(function(x) {
+            self.promiseWithAuth('admin/talk/get/'+self.thisTalk.id)
+              .then(function(x) {
+                self.thisTalk = JSON.parse(x.data).data;
+              });
+          });
+        }, null);
+    },
+    approveRequest: function(req) {
+      const self = this;
+      const app = self.$f7;
+      self.promiseWithAuth('admin/request/approve', req).then(function(x) {
+        self.promiseWithAuth('admin/talk/get/'+self.thisTalk.id)
+          .then(function(x) {
+            self.thisTalk = JSON.parse(x.data).data;
+            self.fetchTalks();
+          });
+      });
     },
   },
 }
