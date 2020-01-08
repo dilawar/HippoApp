@@ -141,12 +141,22 @@
                      :value="thisBooking.title">
         </f7-list-input>
 
-        <f7-list-input :input="false" label="Description (optional)">
+        <f7-list-input label="Description (optional)"
+                       :value="thisBooking.description"
+                       :textEditorParams="{mode: 'keyboard-toolbar'}"
+                       @texteditor:change="(v)=>thisBooking.description=v"
+                       type="texteditor">
+        </f7-list-input>
+
+        <!--
+          <f7-list-input :input="false" label="Description (optional)">
           <vue-editor ref="description" 
-                      slot="input"
-                      v-model="thisBooking.description">
+          slot="input"
+          :editor-toolbar="smallToolbar"
+          v-model="thisBooking.description">
           </vue-editor>
         </f7-list-input>
+        -->
 
       </f7-list-group>
 
