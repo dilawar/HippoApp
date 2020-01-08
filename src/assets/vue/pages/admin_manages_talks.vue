@@ -10,21 +10,19 @@
     </f7-navbar>
 
     <f7-list media-list class="event-list">
-      <f7-list-item v-for="(talk, key) in talks" 
-                    @click="updateTalkPopup(talk)"
-                    :key="key">
+      <f7-list-item v-for="(talk, key) in talks" @click="updateTalkPopup(talk)" :key="key">
         <div slot="title">{{talk.class}} by {{talk.speaker}}</div>
         <div slot="subtitle">{{talk.title}} </div>
         <div slot="footer"> Created: {{talk.created_on}}, by {{talk.created_by}}</div>
         <f7-icon slot="media" :icon="talkIcon(talk)">
         </f7-icon>
         <!--
-        <f7-accordion-content>
+          <f7-accordion-content>
           <f7-block strong inset style="background-color:wheat">
-            <f7-block-title small>{{talk.title}}</f7-block-title>
-            <div v-html="talk.description"></div>
+          <f7-block-title small>{{talk.title}}</f7-block-title>
+          <div v-html="talk.description"></div>
           </f7-block>
-        </f7-accordion-content>
+          </f7-accordion-content>
         -->
       </f7-list-item>
     </f7-list>
@@ -39,15 +37,23 @@
         </f7-navbar>
 
         <f7-block>
-
           <f7-block-header>
             <div> {{thisTalk.speaker}} </div>
-            <div v-if="thisTalk.hasOwnProperty('event')">
-              <strong>{{thisTalk.event.venue}}</strong>,
-              <strong>{{thisTalk.event.date | date}}</strong>,
-              <strong>{{thisTalk.event.start_time | clockTime}} </strong>
-              (CONFIRMED)
-            </div>
+
+            <f7-card :padding="false" v-if="thisTalk.hasOwnProperty('event')">
+              <f7-card-header>
+                <strong>CONFIRMED</strong> booking. 
+                <f7-button raised color=red small class="float-right">
+                  Delete Booking
+                </f7-button>
+              </f7-card-header>
+              <f7-card-content>
+                <strong>{{thisTalk.event.venue}}</strong>,
+                <strong>{{thisTalk.event.date | date}}</strong>,
+                <strong>{{thisTalk.event.start_time | clockTime}}</strong>
+              </f7-card-content>
+            </f7-card>
+
             <div v-if="thisTalk.hasOwnProperty('request')">
               <strong>{{thisTalk.request.venue}}</strong>,
               <strong>{{thisTalk.request.date | date}}</strong>,
@@ -64,7 +70,7 @@
             </f7-list-input>
 
             <f7-list-input label="Description (optional)" resizable
-                           :textEditorParams="{mode: 'keyboard-toolbar'}"
+                           :textEditorParams="{mode: 'toolbar'}"
                            :value="thisTalk.description"
                            @texteditor:change="(v)=>thisTalk.description=v"
                            type="texteditor">
@@ -88,10 +94,9 @@
           <f7-block-footer>
           </f7-block-footer>
         </f7-block>
-
-
       </f7-page>
     </f7-popup>
+
   </f7-page>
 </template>
 
