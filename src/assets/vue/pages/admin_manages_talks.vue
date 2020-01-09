@@ -42,7 +42,7 @@
                            @click="deleteEventOfThisTalk(thisTalk.event)">
                   Delete Booking
                 </f7-button>
-                <f7-button raised small @click="sendTalkEmail(thisTalk)">Send Email</f7-button>
+                <f7-link  popup-close :href="'/email/talk/'+thisTalk.id">Send Email</f7-link>
               </f7-card-header>
               <f7-card-content>
                 <strong>{{thisTalk.event.venue}}</strong>,
@@ -199,16 +199,6 @@ export default {
             self.fetchTalks();
           });
       });
-    },
-    sendTalkEmail: function(talk) {
-      const self = this;
-      const app = self.$f7;
-      // Create a popover and show email.
-      self.promiseWithAuth('admin/talk/email/'+talk.id)
-        .then(function(x) {
-          var email = JSON.parse(x.data).data;
-          console.log('EMAIL: ', email.email_body);
-        });
     },
   },
 }

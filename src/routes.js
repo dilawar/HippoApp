@@ -31,8 +31,7 @@ import SearchPage from './assets/vue/pages/search.vue';
 import Vuex from './assets/vue/pages/vuex.vue';
 import InventoryPage from './assets/vue/pages/inventory.vue';
 import NoticeBoards from './assets/vue/pages/noticeboards.vue';
-
-
+import Email from './assets/vue/pages/email.vue';
 
 // BMV ADMIN
 import BmvBookingRequests from './assets/vue/pages/bmv_booking_requests.vue';
@@ -76,6 +75,10 @@ export default [
    {
       path: '/updatetalk/:talkid/',
       component: UpdateTalkPage
+   },
+   {
+      path: '/email/:table/:id',
+      component: Email
    },
    {
       path: '/updatecourse/:courseid/',
