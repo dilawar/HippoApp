@@ -23,8 +23,9 @@
     </f7-list>
 
     <!-- POPUP  -->
-    <f7-popup :opened="popupTalkEdit" class="popup-tablet-fullscreen"
-                                      @popup:close="popupTalkEdit = false">
+    <f7-popup :opened="popupTalkEdit" 
+                 class="popup-tablet-fullscreen"
+                 @popup:close="popupTalkEdit = false">
       <f7-page>
         <f7-navbar title="Update Talk">
           <f7-nav-right>
@@ -36,6 +37,7 @@
           <f7-block-header>
             <div> {{thisTalk.speaker}} </div>
 
+            <!-- Conformed event -->
             <f7-card :padding="false" v-if="thisTalk.hasOwnProperty('event')">
               <f7-card-header>
                 <strong>CONFIRMED</strong> booking. 
@@ -52,6 +54,7 @@
               </f7-card-content>
             </f7-card>
 
+            <!-- Request -->
             <f7-card :padding="false" v-if="thisTalk.hasOwnProperty('request')">
               <f7-card-header>
                 <strong>PENDING</strong> booking. 
@@ -70,6 +73,21 @@
                 <strong>{{thisTalk.request.venue}}</strong>,
                 <strong>{{thisTalk.request.date | date}}</strong>,
                 <strong>{{thisTalk.request.start_time | clockTime}}</strong>
+              </f7-card-content>
+            </f7-card>
+
+            <!-- Book it -->
+            <f7-card v-if="! (thisTalk.hasOwnProperty('request') || thisTalk.hasOwnProperty('event'))">
+              <f7-card-content>
+                <f7-row>
+                  <f7-col> No booking found.  </f7-col>
+                  <f7-col>
+                    <f7-link popup-close 
+                             :href="'/bookevent/talks.'+thisTalk.id+'/'+thisTalk.class">
+                      Create Booking
+                    </f7-link>
+                  </f7-col>
+                </f7-row>
               </f7-card-content>
             </f7-card>
 
