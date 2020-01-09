@@ -1,12 +1,13 @@
 <template>
    <f7-page ptr @ptr:refresh="refreshForum">
-    <f7-navbar title="Notice Board" back-link="Back">
+
+     <f7-navbar title="Notice Board" back-link="Back">
        <f7-nav-right>
-          <f7-link class="searchbar-enable" 
-                   data-searchbar=".searchbar-notice" 
-                   icon-ios="f7:search" icon-aurora="f7:search" icon-md="material:search"
-                  >
-          </f7-link>
+         <f7-link class="searchbar-enable" 
+                  data-searchbar=".searchbar-notice" 
+                  icon-ios="f7:search" icon-aurora="f7:search" icon-md="material:search"
+                                                               >
+         </f7-link>
        </f7-nav-right>
 
        <f7-searchbar expandable
@@ -14,18 +15,17 @@
                      paceholder="Search in items" 
                      search-item="div.card"
                      search-container=".card-list"
-                     search-in=".card-header, .card-content"
-                     >
+                     search-in=".card-header, .card-content">
        </f7-searchbar>
-    </f7-navbar>
+     </f7-navbar>
 
-    <f7-fab position="right-bottom" 
-            slot="fixed" 
-            color="blue"
-            @click="postToForum">
-            <f7-icon ios="f7:add" aurora="f7:add" md="material:add"></f7-icon>
-            <f7-icon ios="f7:close" aurora="f7:close" md="material:close"></f7-icon>
-    </f7-fab>
+     <f7-fab position="right-bottom" 
+             slot="fixed" 
+             color="blue"
+             @click="postToForum">
+       <f7-icon ios="f7:add" aurora="f7:add" md="material:add"></f7-icon>
+       <f7-icon ios="f7:close" aurora="f7:close" md="material:close"></f7-icon>
+     </f7-fab>
 
     <!-- Popup for updating. . -->
     <f7-popup :opened="updatePopup" 
@@ -59,9 +59,7 @@
                               placeholder="Informative title"
                               :value="item.title"
                               @input="item.title = $event.target.value"
-                              required 
-                              validate
-                     >
+                              required validate>
                </f7-list-input>
 
 
@@ -203,47 +201,46 @@
 
 
     <!-- Show current cards -->
-    <f7-card v-if="board!='all'" no-border no-shadow :padding="false"> 
+    <f7-card v-if="board!='all'">
        <f7-button small raised 
                   slot="content"
                   v-if="! subscriptions.includes(board)"
-                  @click="subcribeToForum(board)"
-                  >Subscribe
+                  @click="subcribeToForum(board)">
+         Subscribe
        </f7-button>
        <f7-button small raised 
                   slot="content"
                   v-else
-                  @click="unsubcribeToForum(board)"
-                  >Unsubscribe
+                  @click="unsubcribeToForum(board)">
+         Unsubscribe
        </f7-button>
     </f7-card>
 
     <f7-card v-for="(card, key) in filterCards(forumCards)" :key="key">
-      <f7-card-header :style="`background-color:${stringToColour(card.tags[0])}`">
+      <!-- <f7-card-header :style="`background-color:${stringToColour(card.tags[0])}`"> -->
+      <f7-card-header>
         <div>
           <span v-for="(tag,key) in card.tags" :key="key">
             <f7-link :href="'/noticeboards/'+tag"> b/{{tag}}</f7-link>&nbsp;
           </span>
-          <span style="color:gray; font-size:small">
+          <span style="color:gray; font-size:small;">
             /Posted by <tt>{{card.created_by}}</tt>
             {{datetime2Moment(card.created_on).fromNow()}}
           </span>
           <span style="font-size:small;color:gray"
-                v-if="card.last_modified_on!=card.created_on"
-                >
+                v-if="card.last_modified_on!=card.created_on">
                 /Modified {{datetime2Moment(card.last_modified_on).fromNow()}}.
           </span>
         </div>
       </f7-card-header>
-      <f7-card-content :padding="false" style="padding-left:5px">
+      <f7-card-content :padding="false" style="padding-left:10px">
         <div> {{card.title}} </div>
         <span v-html="card.description"></span>
         <f7-row>
           <f7-col>
             <f7-button small @click="updateCard(card)"
-                       v-if="getLogin() == card.created_by"
-                       >
-                       Update
+                       v-if="getLogin() == card.created_by">
+              Update
             </f7-button>
           </f7-col>
           <f7-col></f7-col>

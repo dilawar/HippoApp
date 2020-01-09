@@ -58,10 +58,13 @@
                         >
           </f7-list-item>
 
+          <!-- Only when not bmvadmin because this option is available there as
+          well. -->
           <f7-list-item link="/admin/talks/" 
                         target="_blank"
                         view=".view-main"
                         title="Manage Talks/Seminar" 
+                        v-if="! $store.getters.roles.includes('BOOKMYVENUE_ADMIN')"
                         panel-close
                         >
           </f7-list-item>

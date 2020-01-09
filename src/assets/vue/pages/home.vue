@@ -37,13 +37,14 @@
       <f7-col width="30" medium="60"></f7-col>
       <f7-col width="70" medium="40">
         <f7-list no-hairlines >
-          <f7-list-item link="/transport/" 
-                        title="Transport" 
-                        footer="Timetable of shuttle and buggy"
-                        panel-close>
-            <f7-icon slot="after" icon="fa fa-bus fa-2x"></f7-icon>
-          </f7-list-item>
 
+          <f7-list-item v-if="isUserAuthenticated()"
+                        link="/inventory/" 
+                        title="Inventory" 
+                        footer="Search and borrow"
+                        panel-close>
+            <f7-icon slot="after" icon="fa fa-archive fa-2x"></f7-icon>
+          </f7-list-item>
 
           <f7-list-item link="/accomodation/" 
                         title="Accomodations" 
@@ -60,13 +61,13 @@
             <f7-icon slot="after" icon="fa fa-bullhorn fa-2x"></f7-icon>
           </f7-list-item>
 
-          <f7-list-item v-if="isUserAuthenticated()"
-                        link="/inventory/" 
-                        title="Inventory" 
-                        footer="Search and borrow"
+          <f7-list-item link="/transport/" 
+                        title="Transport" 
+                        footer="Timetable of shuttle and buggy"
                         panel-close>
-            <f7-icon slot="after" icon="fa fa-archive fa-2x"></f7-icon>
+            <f7-icon slot="after" icon="fa fa-bus fa-2x"></f7-icon>
           </f7-list-item>
+
         </f7-list>
       </f7-col>
     </f7-row>

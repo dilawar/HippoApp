@@ -152,11 +152,12 @@
       </f7-list-item>
       <f7-list-input v-if="parseInt(thisEvent.speaker_id) > 0"
                      @input="thisEvent.title = $event.target.value"
-                     floating-label label="Title" outline
+                     label="Title"
                      type="textarea" resizable required 
                      :value="thisEvent.title">
       </f7-list-input>
 
+      <!--
       <f7-list-input :input="false">
         <vue-editor ref="description" 
                     slot="input"
@@ -164,6 +165,14 @@
                     v-model="thisEvent.description">
         </vue-editor>
       </f7-list-input>
+      -->
+      <f7-list-input type="texteditor"
+                     label="Description"
+                     :value="thisEvent.description"
+                     :textEditorParams="{mode:'keyboard-toolbar'}"
+                     @texteditor:change="(v)=>thisEvent.description=v">
+      </f7-list-input>
+
 
       <f7-list-input :input="false" required>
         <v-autocomplete  slot="input"
