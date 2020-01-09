@@ -3,8 +3,8 @@
     <f7-navbar title="Talks/Seminars" back-link="Back">
       <f7-subnavbar :inner="false">
         <f7-searchbar
-          search-container=".event-list"
-          search-in=".item-header, .item-title, .item-subtitle, .item-text, .item-footer">
+          search-container=".event-list" search-in=".item-header, .item-title,
+          .item-subtitle, .item-text, .item-footer">
         </f7-searchbar>
       </f7-subnavbar>
     </f7-navbar>
@@ -23,7 +23,8 @@
     </f7-list>
 
     <!-- POPUP  -->
-    <f7-popup :opened="popupTalkEdit" @popup:close="popupTalkEdit = false">
+    <f7-popup :opened="popupTalkEdit" class="popup-tablet-fullscreen"
+                                      @popup:close="popupTalkEdit = false">
       <f7-page>
         <f7-navbar title="Update Talk">
           <f7-nav-right>
@@ -90,6 +91,9 @@
 
           </f7-list>
           <f7-row>
+            <f7-col>
+              <f7-button popup-close raised color=red>Back</f7-button>
+            </f7-col>
             <f7-col>
               <f7-button raised fill @click="updateThisTalk()">
                 Update This Talk
