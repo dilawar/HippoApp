@@ -34,6 +34,7 @@ export default {
     const self = this;
     return {
       profile: {},
+      photo: '',
       editables: ["alternative_email", "honorific"
         , "middle_name", "pi_or_host"]
 
@@ -42,14 +43,34 @@ export default {
   mounted()
   {
     const self = this;
-
-    self.postWithPromise('me/profile')
-      .then(function(x) {
-        self.profile = JSON.parse(x.data).data;
-        self.profile['jcs'] = Object.keys(self.profile.jcs).join(',');
-      });
+    self.fetchProfile();
+    self.fetchImage();
   },
   methods: {
+    fetchProfile: function() {
+      const self = this;
+      const app = self.$f7;
+      app.preloader.show();
+      self.postWithPromise('me/profile')
+        .then(function(x) {
+          self.profile = JSON.parse(x.data).data;
+          self.profile['jcs'] = Object.keys(self.profile.jcs).join(',');
+          app.preloader.hide();
+        });
+      setTimeout(()=> app.preloader.hide(), 2000);
+    },
+    fetchImage: function() {
+      const self = this;
+      const app = self.$f7;
+
+      app.preloader.show();
+      self.postWithPromise('me/photo')
+        .then(function(x) {
+          self.photo = JSON.parse(x.data).data;
+          app.preloader.hide();
+        });
+      setTimeout(()=> app.preloader.hide(), 2000);
+    },
   },
 }
 </script>
