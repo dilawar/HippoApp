@@ -11,16 +11,20 @@
       </f7-fab>
     -->
 
+
     <f7-block>
-      <f7-block-title small>Currently profile is readonly.</f7-block-title>
+      <f7-block-title medium>Profile is readonly.</f7-block-title>
 
-      <f7-list no-hairlines media-list>
-        <f7-list-item v-for="(val, key) in profile" :key="key" :title="formatKey(key)" :after="val">
-        </f7-list-item>
-        <f7-list-item></f7-list-item>
-      </f7-list>
+      <f7-row>
+        <f7-col width="50" medium="25" v-for="(val, key) in profile" :key="key">
+          <div>
+            <tt class="text-color-gray">{{formatKey(key)}}</tt> 
+            <strong>{{val}}</strong>
+          </div>
+        </f7-col>
+      </f7-row>
+
     </f7-block>
-
   </f7-page>
 
 </template>
@@ -31,6 +35,9 @@ export default {
     const self = this;
     return {
       profile: {},
+      editables: ["alternative_email", "honorific"
+        , "middle_name", "pi_or_host"]
+
     };
   },
   mounted()
