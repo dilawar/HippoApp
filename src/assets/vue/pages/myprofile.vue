@@ -19,11 +19,25 @@
           </div>
         </f7-col>
       </f7-row>
+      <f7-row>
+        <f7-col>
+          <img :src="'data:image/jpeg;base64, '+photo" width="120" height="auto" />
+        </f7-col>
+        <f7-col>
+          <vue-dropzone id="dropzone1" 
+                        ref="inventoryDZ" 
+                        v-on:vdropzone-sending="onImageSending"
+                        :options="dropzoneOptions">
+          </vue-dropzone>
+        </f7-col>
+      </f7-row>
     </f7-block>
+
     <f7-block-footer>
       If you are not <tt>ELIGIBLE FOR AWS</tt>, please write to Academic office
       to include your name.
     </f7-block-footer>
+
   </f7-page>
 
 </template>
@@ -35,9 +49,17 @@ export default {
     return {
       profile: {},
       photo: '',
-      editables: ["alternative_email", "honorific"
-        , "middle_name", "pi_or_host"]
-
+      dropzoneOptions: {
+        url: self.$store.state.api + '/upload/images',
+        thumbnailWidth: 150,
+        maxFilesize: 5,
+        resizeWidth: 500,
+        acceptedFiles: "image/*",
+        addRemoveLinks: true,
+        maxFiles: 1,
+        autoProcessQueue: false, // do not upload automatically.
+        headers: self.apiPostData(),
+      },
     };
   },
   mounted()
@@ -66,10 +88,17 @@ export default {
       app.preloader.show();
       self.postWithPromise('me/photo')
         .then(function(x) {
-          self.photo = JSON.parse(x.data).data;
+          var res = JSON.parse(x.data).data;
+          self.photo = res.base64;
           app.preloader.hide();
         });
       setTimeout(()=> app.preloader.hide(), 2000);
+    },
+    onImageSending: function(img, xhr, formData) {
+      const self = this;
+      // Add external id to formData.
+      console.log(formData);
+      formData.append("inventory_id", self.inventory.id);
     },
   },
 }
