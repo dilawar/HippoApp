@@ -24,8 +24,7 @@
           <img :src="'data:image/jpeg;base64, '+photo" width="120" height="auto" />
         </f7-col>
         <f7-col>
-          <vue-dropzone id="dropzone1" 
-                        ref="inventoryDZ" 
+          <vue-dropzone id="dropzone1" ref="profile" 
                         v-on:vdropzone-sending="onImageSending"
                         :options="dropzoneOptions">
           </vue-dropzone>
