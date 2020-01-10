@@ -2,21 +2,22 @@
   <f7-page>
     <f7-navbar title="Talks/Seminars" back-link="Back">
       <f7-subnavbar :inner="false">
-        <f7-searchbar
-          search-container=".event-list" search-in=".item-header, .item-title,
-          .item-subtitle, .item-text, .item-footer">
+        <f7-searchbar search-container=".event-list"
+                      search-in=".item-header, .item-title, .item-subtitle, .item-text, .item-footer">
         </f7-searchbar>
       </f7-subnavbar>
     </f7-navbar>
 
     <f7-list media-list class="event-list">
       <f7-list-item v-for="(talk, key) in talks" @click="updateTalkPopup(talk)" :key="key">
-        <div slot="title">{{talk.class}} by {{talk.speaker}}</div>
-        <div slot="subtitle">{{talk.title}} </div>
+        <div slot="title" style="font-size:small">
+          {{talk.class}} by {{talk.speaker}}
+        </div>
+        <div slot="text">{{talk.title}} </div>
         <div slot="footer"> Created: {{talk.created_on}}, by {{talk.created_by}}</div>
         <div slot="header"> Created {{toNow(talk.created_on)}} ago.</div>
-        <div slot="after" v-if="talk.hasOwnProperty('event')">Approved</div>
-        <div slot="after" v-if="talk.hasOwnProperty('request')">Pending</div>
+        <!-- <div slot="after" v-if="talk.hasOwnProperty('event')">Approved</div> -->
+        <!-- <div slot="after" v-if="talk.hasOwnProperty('request')">Pending</div> -->
         <f7-icon slot="media" :icon="talkIcon(talk)">
         </f7-icon>
       </f7-list-item>
@@ -40,7 +41,7 @@
             <!-- Conformed event -->
             <f7-card :padding="false" v-if="thisTalk.hasOwnProperty('event')">
               <f7-card-header>
-                <strong>CONFIRMED</strong> booking. 
+                <strong>CONFIRMED</strong> 
                 <f7-button raised color=red small 
                            @click="deleteEventOfThisTalk(thisTalk.event)">
                   Delete Booking
@@ -57,7 +58,7 @@
             <!-- Request -->
             <f7-card :padding="false" v-if="thisTalk.hasOwnProperty('request')">
               <f7-card-header>
-                <strong>PENDING</strong> booking. 
+                <strong>PENDING</strong>
                 <f7-button raised color=red small 
                            @click="deleteRequestOfThisTalk(thisTalk.request)"
                            class="float-right">
