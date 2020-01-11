@@ -4,12 +4,12 @@
   </f7-navbar>
 
   <f7-block v-if="Object.keys(requestGroups).length>0">
-    <f7-block-title>
-      <f7-icon icon="fa fa-bell-o fa-2x"></f7-icon>
-      Pending booking requests...
+    <f7-block-title medium>
+      <f7-icon icon="fa fa-bell-o fa-fw"></f7-icon>
+      Pending Requests.
     </f7-block-title>
 
-    <f7-list media-list>
+    <f7-list media-list no-hairlines>
       <f7-list-item accordion-item
                     v-for="(requests, gid, index) in requestGroups" 
                     :title="requests[0].title"
@@ -29,7 +29,7 @@
               </span>
             </div>
 
-            <f7-list media-list>
+            <f7-list media-list no-hairlines>
               <f7-list-item>
                 <f7-row>
                   <f7-col>
@@ -73,11 +73,11 @@
 
   <!-- THESE ARE CONFIRMED EVENTS -->
   <f7-block v-if="Object.keys(eventGroups).length > 0">
-    <f7-block-title>
-      <f7-icon icon="fa fa-thumbs-up-o fa-2x"></f7-icon>
+    <f7-block-title medium>
+      <f7-icon icon="fa fa-calendar-check-o fa-fw"></f7-icon>
       Confirmed bookings...
     </f7-block-title>
-    <f7-list media-list>
+    <f7-list media-list no-hairlines>
       <f7-list-item accordion-item 
                     v-for="(events, gid, index) in eventGroups" 
                     :title="events[0].title"
@@ -86,7 +86,7 @@
         <div slot="header">{{events.length}} confirmed</div>
         <f7-accordion-content>
           <f7-block>
-            <f7-list media-list>
+            <f7-list media-list no-hairlines>
               <!-- DELETE THE WHOLE GROUP -->
               <f7-list-item v-if="events.length > 1">
                 <f7-button raised> Delete whole group </f7-button>
@@ -127,10 +127,10 @@
 
   <!-- MY TAKS -->
   <f7-block v-if="Object.keys(myTalks).length>0">
-    <f7-block-title>
-      <f7-icon icon="fa fa-chalkboard-teacher fa-2x"></f7-icon>
+    <f7-block-title medium>
+      <f7-icon icon="fa fa-user-o fa-fw"></f7-icon>
       My talks (total {{myTalks.length}})</f7-block-title>
-    <f7-list media-list>
+    <f7-list media-list no-hairlines>
       <f7-list-item v-for="(talk, key) in myTalks"
                     :key="key"
                     @click="$f7router.navigate('/updatetalk/'+talk.id+'/')">
@@ -162,7 +162,7 @@
   
       <f7-block>
 
-        <f7-list media-list>
+        <f7-list media-list no-hairlines>
 
           <f7-list-input label="Class" 
                          :value="thisBooking.class"
