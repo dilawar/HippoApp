@@ -348,7 +348,7 @@
           <f7-col>
             <f7-link :href="'/updatecourse/'+course.id+'/'"
                      icon="fa fa-group fa-fw">
-              Manage Registrations
+              Registrations
             </f7-link>
           </f7-col>
           <f7-col>
@@ -453,7 +453,7 @@ export default {
       handler : function(val, oldval) {
         const self = this;
         const app = self.$f7;
-        var keys = ['slot', 'venue', 'start_date', 'end_date'];
+        var keys = ['venue', 'start_date', 'end_date'];
         for(const key of keys) {
           if(! val[key]) {
             console.log(key, val[key]);
