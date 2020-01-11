@@ -16,12 +16,6 @@
                  back>
         </f7-link>
 
-        <f7-link text="Home"
-                 icon="fa fa-home fa-2x"
-                 @click="$f7.views.main.router.navigate('/home/')" 
-                 >
-        </f7-link>
-
         <f7-link v-if="isUserAuthenticated()" 
                  text="People"
                  href="/search/" 
