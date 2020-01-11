@@ -5,102 +5,101 @@
       <f7-fab position="right-bottom" 
               slot="fixed" 
               color="blue"
-              @click="addItemToInventory"
-              >
-              <f7-icon ios="f7:add" aurora="f7:add" md="material:add"></f7-icon>
-              <f7-icon ios="f7:close" aurora="f7:close" md="material:close"></f7-icon>
+              @click="addItemToInventory">
+        <f7-icon ios="f7:add" aurora="f7:add" md="material:add"></f7-icon>
+        <f7-icon ios="f7:close" aurora="f7:close" md="material:close"></f7-icon>
       </f7-fab>
 
       <f7-block>
-         <f7-card v-for="(item, index) in inventories.list" :key="index">
 
-            <f7-card-header>
-               <span style="color:red; font-size:small">{{item.item_condition}}</span>
-               <span style="float:right">{{item.scientific_name}}</span>
-            </f7-card-header>
-
-
-           <f7-card-content>
-              <f7-list media-list>
-                 <f7-list-item>
-                    <div slot="footer">
-                       Person in charge: 
-                       <f7-link external :href="'mailto:'+item.person_in_charge">
-                          {{item.person_in_charge}}
-                       </f7-link> 
-                       <br />
-                       <span v-if="item.location" style="float:right">
-                          <f7-icon icon="fa fa-map-marker fa-fw"></f7-icon>
-                          <font style="font-size:small">{{item.location}}</font>
-                       </span>
-                       <div v-if="item.borrowing.length > 0"
-                          style="color:red; font-size:x-small">
-                          Borrowed by {{item.borrowing[0].borrower}} on
-                          {{item.borrowing[0].borrowed_on}}
-                       </div>
-              <br />
-                    </div>
+        <f7-card v-for="(item, index) in inventories.list" :key="index">
+          <f7-card-header>
+            <span style="color:red; font-size:small">{{item.item_condition}}</span>
+            <span style="float:right">{{item.scientific_name}}</span>
+          </f7-card-header>
 
 
-                    <div slot="title" style="font-size:small">
-                        {{item.name}} - {{item.quantity_with_unit}}  
-                    </div>
-                    <div slot="text">
-                       {{ item.description }}
-                    </div>
+          <f7-card-content>
+            <f7-list media-list>
+              <f7-list-item>
+                <div slot="footer">
+                  Person in charge: 
+                  <f7-link external :href="'mailto:'+item.person_in_charge">
+                    {{item.person_in_charge}}
+                  </f7-link> 
+                  <br />
+                  <span v-if="item.location" style="float:right">
+                    <f7-icon icon="fa fa-map-marker fa-fw"></f7-icon>
+                    <font style="font-size:small">{{item.location}}</font>
+                  </span>
+                  <div v-if="item.borrowing.length > 0"
+                       style="color:red; font-size:x-small">
+                    Borrowed by {{item.borrowing[0].borrower}} on
+                    {{item.borrowing[0].borrowed_on}}
+                  </div>
+                  <br />
+                </div>
 
-                    <div slot="media" v-if="item.thumbnails.length > 0">
-                       <img :src="item.thumbnails[0].base64"></img>
-                    </div>
 
-                 </f7-list-item>
-              </f7-list>
-           </f7-card-content>
+                <div slot="title" style="font-size:small">
+                  {{item.name}} - {{item.quantity_with_unit}}  
+                </div>
+                <div slot="text">
+                  {{ item.description }}
+                </div>
 
-           <f7-card-footer>
-              <f7-button small @click="lendInventory(item)">Lend</f7-button>
-              <f7-button small style="float:right" @click="editInventory(item)">Edit</f7-button>
-           </f7-card-footer>
+                <div slot="media" v-if="item.thumbnails.length > 0">
+                  <img :src="item.thumbnails[0].base64"></img>
+                </div>
 
-         </f7-card>
+              </f7-list-item>
+            </f7-list>
+          </f7-card-content>
+
+          <f7-card-footer>
+            <f7-button small @click="lendInventory(item)">Lend</f7-button>
+            <f7-button small style="float:right" @click="editInventory(item)">Edit</f7-button>
+          </f7-card-footer>
+
+        </f7-card>
 
       </f7-block>
 
       <f7-popup :opened="lendPopup" @popup:closed="lendPopup = false">
-         <f7-page>
-            <f7-navbar title="Lend Inventory">
-               <f7-nav-right>
-                  <f7-link popup-close>Cancel</f7-link>
-               </f7-nav-right>
-            </f7-navbar>
+        <f7-page>
+          <f7-navbar title="Lend Inventory">
+            <f7-nav-right>
+              <f7-link popup-close>Cancel</f7-link>
+            </f7-nav-right>
+          </f7-navbar>
 
-            <f7-block>
-               <!-- Lending list -->
-               <f7-list media-list no-hairlines>
-                  <div>You are lending '{{inventory.name}}' (id:{{inventory.id}}) </div>
+          <f7-block>
+            <!-- Lending list -->
+            <f7-list media-list no-hairlines>
+              <div>You are lending '{{inventory.name}}' (id:{{inventory.id}}) </div>
 
-                  <f7-list-input label="Borrower (email)"
-                                 :value="inventory.borrowing[0].borrower"
-                                 @input="inventory.borrowing[0].borrower = $event.target.value"
-                                 type="email" 
-                                 required
-                                 validate
-                                 >
-                  </f7-list-input>
+              <f7-list-input label="Borrower (email)"
+                             :value="inventory.borrowing[0].borrower"
+                             @input="inventory.borrowing[0].borrower = $event.target.value"
+                             type="email" 
+                             required
+                             validate
+                             >
+              </f7-list-input>
 
-                  <f7-list-item>
-                     <f7-button slot="after" raised fill
-                                popup-close
-                                @click="submitLendInventory(inventory)"
-                                > Lend </f7-button>
-                     <f7-button slot="title" raised fill
-                                popup-close
-                                @click="submitClearLending(inventory)"
-                                >Clear Borrowing</f7-button>
-                  </f7-list-item>
-               </f7-list>
-            </f7-block>
-         </f7-page>
+                <f7-list-item>
+                  <f7-button slot="after" raised fill
+                             popup-close
+                             @click="submitLendInventory(inventory)"
+                             > Lend </f7-button>
+                  <f7-button slot="title" raised fill
+                             popup-close
+                             @click="submitClearLending(inventory)"
+                             >Clear Borrowing</f7-button>
+                </f7-list-item>
+            </f7-list>
+          </f7-block>
+        </f7-page>
       </f7-popup>
 
       <!-- Another popup for editing the current inventory item -->

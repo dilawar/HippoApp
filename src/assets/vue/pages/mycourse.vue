@@ -96,7 +96,6 @@
                      </f7-col>
                   </f7-row>
                   </template>
-
                </f7-card-content>
                </f7-card>
             </div>

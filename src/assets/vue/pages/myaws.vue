@@ -8,7 +8,7 @@
       </f7-list>
     </f7-block>
 
-    <f7-block v-if="upcoming">
+    <f7-block v-if="Object.keys(upcoming).length>0">
       <f7-block-title>Upcoming Annual Work Seminar</f7-block-title>
 
       <f7-card accordion-item :key="key"
