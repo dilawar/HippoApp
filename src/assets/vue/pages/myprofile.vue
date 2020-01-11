@@ -2,9 +2,14 @@
   <f7-page page-content ptr @ptr:refresh="fetchProfile">
     <f7-navbar title="Profile" back-link="Back"></f7-navbar>
 
-    <f7-block-title medium>Profile is readonly.</f7-block-title>
-
     <f7-block inset>
+      <div v-if="profile.eligible_for_aws==='NO'"
+           style="background-color:lightyellow;padding:4px">
+        You are not <tt>ELIGIBLE FOR AWS</tt>. If this is a mistake, please write 
+        to Academic office to include your name.
+      </div>
+
+      <f7-block-title small>Profile</f7-block-title>
       <f7-row>
         <f7-col width="100" 
                 medium="50" 
@@ -20,23 +25,14 @@
         </f7-col>
       </f7-row>
       <f7-row>
-        <f7-col>
-          <img :src="'data:image/jpeg;base64, '+photo" width="120" height="auto" />
-        </f7-col>
-        <f7-col>
-          <vue-dropzone id="dropzone1" ref="profile" 
-                        v-on:vdropzone-sending="onImageSending"
-                        :options="dropzoneOptions">
-          </vue-dropzone>
-        </f7-col>
+        <vue-dropzone ref="profilePic"  id="profile-pic-id"
+                      @vdropzone-success="(file,res)=>fetchImage()"
+                      @vdropzone-files-added="(file)=>uploadFiles()"
+                      :options="dropzoneOptions">
+        </vue-dropzone>
       </f7-row>
+
     </f7-block>
-
-    <f7-block-footer>
-      If you are not <tt>ELIGIBLE FOR AWS</tt>, please write to Academic office
-      to include your name.
-    </f7-block-footer>
-
   </f7-page>
 
 </template>
@@ -47,16 +43,13 @@ export default {
     const self = this;
     return {
       profile: {},
-      photo: '',
       dropzoneOptions: {
-        url: self.$store.state.api + '/upload/images',
-        thumbnailWidth: 150,
+        url: self.$store.state.api + '/upload/image/profile',
         maxFilesize: 5,
-        resizeWidth: 500,
         acceptedFiles: "image/*",
         addRemoveLinks: true,
         maxFiles: 1,
-        autoProcessQueue: false, // do not upload automatically.
+        autoProcessQueue: false, // don't upload automatically.
         headers: self.apiPostData(),
       },
     };
@@ -83,21 +76,28 @@ export default {
     fetchImage: function() {
       const self = this;
       const app = self.$f7;
-
+      self.$refs.profilePic.removeAllFiles();
       app.preloader.show();
       self.postWithPromise('me/photo')
         .then(function(x) {
           var res = JSON.parse(x.data).data;
-          self.photo = res.base64;
+          var byteString = atob(res.base64);
+          var content = new Array();
+          for (var i = 0; i < byteString.length; i++) {
+            content[i] = byteString.charCodeAt(i)
+          }
+          var img = new Blob([new Uint8Array(content)], {type: 'image/jpeg'});
+          // Remove all files.
+          self.$refs.profilePic.addFile(img);
           app.preloader.hide();
         });
       setTimeout(()=> app.preloader.hide(), 2000);
     },
-    onImageSending: function(img, xhr, formData) {
+    uploadFiles: function() 
+    {
       const self = this;
-      // Add external id to formData.
-      console.log(formData);
-      formData.append("inventory_id", self.inventory.id);
+      const app = self.$f7;
+      self.$refs.profilePic.processQueue();
     },
   },
 }
