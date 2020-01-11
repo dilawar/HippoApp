@@ -14,7 +14,7 @@ export default new Vuex.Store({
       apikey : localStorage.getItem('HIPPO-API-KEY'),
       apiKeyGMap: '',
       tobook: null,
-      profile: {roles:'USER'},
+      profile: {roles:['USER']},
       OSM: {
          tileProviders: [ 
             {

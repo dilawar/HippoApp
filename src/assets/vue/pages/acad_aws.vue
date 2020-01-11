@@ -7,6 +7,7 @@
     <!-- POPUP ASSIGN -->
     <f7-popup :opened="openAssignPopup" @popup:close="openAssignPopup=false">
       <f7-page>
+
         <f7-navbar title="Assign AWS">
           <f7-nav-right>
             <f7-link popup-close>Close</f7-link>
@@ -158,12 +159,12 @@
     </f7-block>
 
     <!-- Upcoming schedule -->
-    <f7-block-title>
-      Computed Temporary Schedule
+    <f7-block-title small>
+      Click on login to assign AWS.
       <f7-button small color="yellow" fill 
                        style="float:right"
                        @click="computeSchedule()">
-        Compute Schedule
+        Recompute Schedule
       </f7-button>
     </f7-block-title>
 
@@ -172,11 +173,14 @@
            style="border-top:1px solid lightgray"
            :key="'xyz'+date">
         <f7-row>
-          <f7-col width="25"> {{humanReadableDate(awses[0].date)}} <br />
-            <f7-button raised small @click="acceptSchedule(awses)">Accept All</f7-button>
+          <f7-col width="25"> 
+            {{humanReadableDate(awses[0].date)}}
+            <f7-button small raised @click="acceptSchedule(awses)">Accept All</f7-button>
           </f7-col>
           <f7-col width="25" v-for="(aws, key) in awses" :key="'yy'+key" no-gap>
-            {{aws.speaker}}<sup>{{aws.num_aws}}</sup>
+            <f7-link @click="acceptSchedule([aws])">
+              {{aws.speaker}} <sup>{{aws.num_aws}}</sup>
+            </f7-link>
             <br />
             <span style="font-size:xx-small">{{aws.specialization}}
               <br />
@@ -282,18 +286,22 @@ export default {
           self.schedule = JSON.parse(x.data).data;
         });
     },
-    acceptSchedule: function(awses)
+    acceptSchedule: async function(awses)
     {
       const self = this;
+      const app = self.$f7;
+
+      app.dialog.preloader('Assigning AWSes: ' + Object.keys(awses).join(', '));
       for(let key in awses)
       {
+        //console.log(key, self.thisAWS);
         self.thisAWS = awses[key];
-        console.log(key, self.thisAWS);
-        self.assignThisAWS();
+        await self.assignThisAWS();
       }
       self.computeSchedule();
+      app.dialog.close();
     },
-    addAWSSchedule: function(date, aws) 
+    addAWSSchedule: async function(date, aws) 
     {
       const self = this;
       self.thisDate = date;
@@ -322,23 +330,26 @@ export default {
         self.fetchUpcomingAws();
       });
     },
-    assignThisAWS: function()
+    assignThisAWS: async function()
     {
       const self = this;
       const app = self.$f7;
       console.log('thisAWS', self.thisAWS);
       self.thisAWS.date = self.dbDate(self.thisAWS.date);
-      app.dialog.preloader('Assigning AWS...');
-      self.promiseWithAuth('/acadadmin/aws/assign', self.thisAWS)
+      self.thisAWS.status = 'VALID'
+      //app.dialog.preloader('Assigning AWS of ' + self.thisAWS.speaker);
+      app.preloader.show();
+      return self.promiseWithAuth('/acadadmin/aws/assign', self.thisAWS)
         .then( function(x) {
-          app.dialog.close();
           var res = JSON.parse(x.data).data;
           if(! res.success)
             self.notify('Failed', res.msg);
           else
             self.notify('Success', res.msg);
           self.fetchUpcomingAws();
+          app.preloader.hide();
         });
+      setTimeout(() => app.preloader.hide(), 2000);
     },
     computeSchedule: function()
     {
