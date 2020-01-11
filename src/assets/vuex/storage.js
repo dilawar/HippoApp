@@ -52,7 +52,9 @@ export default new Vuex.Store({
          return state.profile.jcs;
       },
       roles: state => {
-         return state.profile.roles;
+         if(state.profile.hasOwnProperty('roles'))
+            return state.profile.roles;
+         return ['USER'];
       },
       login: state => {
          return state.user;
