@@ -39,7 +39,7 @@
           <span style="text-transform:capitalize">
             {{thisTalk.class.toLowerCase()}} by 
           </span>
-          <f7-link popup-close :href="'/admin/speaker/edit/'+thisTalk.speaker_id"> 
+          <f7-link popup-close :href="'/admin/speaker/update/'+thisTalk.speaker_id"> 
             {{thisTalk.speaker}} 
           </f7-link>
         </f7-block-header>
