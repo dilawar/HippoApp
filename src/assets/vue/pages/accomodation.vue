@@ -5,130 +5,119 @@
         <f7-link class="searchbar-enable" 
                  data-searchbar=".searchbar-acc" 
                  icon-ios="f7:search" icon-aurora="f7:search" icon-md="material:search"
-                                                              >
         </f7-link>
       </f7-nav-right>
       <f7-searchbar class="searchbar-acc"
                     expandable
-                    search-container=".search-list-acc"
                     search-in=".item-title,.item-subtitle,.item-footer,.acc-content,.accordian-item-content"
-                    >
+                    search-container=".search-list-acc">
       </f7-searchbar>
     </f7-navbar>
 
    <!-- List of accomodations -->
     <f7-photo-browser ref="standalone"></f7-photo-browser>
 
-    <f7-block-title medium>Available Accomodations</f7-block-title>
-    <f7-card v-for="(acc, key) in accomodations.list" 
-             :key="key"
-             v-if="acc.status=='AVAILABLE'"
-             >
+    <f7-block-title medium>Available Accomodations.</f7-block-title>
 
-             <!-- header -->
-      <f7-card-header
-        :style="`font-size:90%;background-color:${stringToColour(acc.status)}`" 
-        >
-        <div>
+    <f7-row noGap>
+      <f7-card v-for="(acc, key) in accomodations.list" 
+               class="col-100 medium-45" :key="key"
+               v-if="acc.status=='AVAILABLE'">
+        <!-- header -->
+        <f7-card-header
+          :style="`background-color:${stringToColour(acc.status)}`">
           {{acc.type}}, Available from {{humanReadableDate(acc.available_from)}}
-        </div>
-        <div> {{acc.address}} </div>
-      </f7-card-header>
+          <div  style="font-size:x-small;">
+            <f7-icon icon="fa fa-bell fa-fw"></f7-icon>
+            Posted by: {{acc.created_by}}, {{str2Moment(acc.created_on).fromNow()}}
+            <span v-if="acc.last_modified_on">
+              (modified {{str2Moment(acc.last_modified_on, 'YYYY-MM-DD HH:mm:ss').fromNow()}})
+            </span>
+          </div>
+        </f7-card-header>
 
-      <!-- Card content -->
-      <f7-card-content>
-        <br />
-        <span v-for="(val, key) in acc">
-          <span v-if="showKeys.find(k => k===key) && val.length > 0">
-            <span style="font-size:70%">{{formatKey(key)}}</span>
-            <!-- filter does not work with v-html. moutache doesn't
-              render html. Hence this hack: see
-              https://github.com/vuejs/vue/issues/4352
-            -->
-            <span style="margin-right:2ex;"
-                  v-html="$options.filters.phone(val)"></span>
-            <br />
+        <!-- Card content -->
+        <f7-card-content>
+          <div> {{acc.address}} </div>
+          <div v-for="(val, key) in acc">
+            <span v-if="showKeys.find(k => k===key) && val.length > 0">
+              <span style="font-size:70%">{{formatKey(key)}}</span>
+              <span style="margin-right:2ex;" v-html="$options.filters.phone(val)"></span>
+              <br />
+            </span>
+          </div>
+        </f7-card-content>
+
+        <!-- Card footer -->
+        <f7-card-footer style="font-size:small;padding:0px">
+          <f7-button small @click="updateAction(acc)" >Update </f7-button>
+          <f7-button small :href="'/osm/accomodation/'+acc.id+'/'">Locate</f7-button>
+          <f7-button small 
+                     v-if="isUserAuthenticated()" 
+                     @click="addComment(acc)"
+                     >Comment ({{acc.num_comments}})
+          </f7-button>
+
+        </f7-card-footer>
+      </f7-card>
+    </f7-row>
+
+    <f7-block-title medium>
+      Unavailable Accomodations.
+    </f7-block-title>
+    <f7-row noGap>
+      <f7-card v-for="(acc, key) in accomodations.list" 
+               class="col-100 medium-45"
+               :key="key" v-if="acc.status!='AVAILABLE'">
+
+        <!-- header -->
+        <f7-card-header :style="`background-color:${stringToColour(acc.status)}`">
+          <div>
+            {{acc.type}}, Available from {{humanReadableDate(acc.available_from)}}
+          </div>
+          <br />
+          <div  style="font-size:x-small;">
+            <f7-icon icon="fa fa-bell fa-fw"></f7-icon>
+            Posted by: {{acc.created_by}}, {{str2Moment(acc.created_on).fromNow()}}
+            <span v-if="acc.last_modified_on">
+              (modified {{str2Moment(acc.last_modified_on
+              , 'YYYY-MM-DD HH:mm:ss').fromNow()}})
+            </span>
+          </div>
+        </f7-card-header>
+
+        <!-- Card content -->
+        <f7-card-content>
+          <div> {{acc.address}} </div>
+          <span v-for="(val, key) in acc">
+            <span v-if="showKeys.find(k => k===key) && val.length > 0">
+              <span style="font-size:70%">{{formatKey(key)}}</span>
+              <!-- filter does not work with v-html. moutache doesn't
+                render html. Hence this hack: see
+                https://github.com/vuejs/vue/issues/4352
+              -->
+              <span style="margin-right:2ex;"
+                    v-html="$options.filters.phone(val)"></span>
+              <br />
+            </span>
           </span>
-        </span>
 
-        <div  style="font-size:x-small;">
-          <f7-icon icon="fa fa-bell fa-fw"></f7-icon>
-          Posted by: {{acc.created_by}}, {{str2Moment(acc.created_on).fromNow()}}
-          <span v-if="acc.last_modified_on">
-            (modified {{str2Moment(acc.last_modified_on
-            , 'YYYY-MM-DD HH:mm:ss').fromNow()}})
-          </span>
-        </div>
-      </f7-card-content>
+          <div class="watermark">{{acc.status}}</div>
 
-      <!-- Card footer -->
-      <f7-card-footer style="font-size:small;padding:0px">
-        <f7-button small @click="updateAction(acc)" >Update </f7-button>
-        <f7-button small :href="'/osm/accomodation/'+acc.id+'/'">Locate</f7-button>
-        <f7-button small 
-                   v-if="isUserAuthenticated()" 
-                   @click="addComment(acc)"
-                   >Comment ({{acc.num_comments}})
-        </f7-button>
+        </f7-card-content>
+        <!-- Card footer -->
+        <f7-card-footer style="font-size:small;padding:0px">
+          <f7-button small @click="updateAction(acc)" >Update </f7-button>
+          <f7-button small :href="'/osm/accomodation/'+acc.id+'/'">Locate</f7-button>
+          <f7-button small 
+                     v-if="isUserAuthenticated()" 
+                     @click="addComment(acc)"
+                     >Comment ({{acc.num_comments}})
+          </f7-button>
 
-      </f7-card-footer>
-    </f7-card>
-
-    <f7-block-title>Unavailable Accomodations</f7-block-title>
-    <f7-card v-for="(acc, key) in accomodations.list" 
-             :key="key"
-             v-if="acc.status!='AVAILABLE'"
-             >
-
-             <!-- header -->
-      <f7-card-header
-        :style="`font-size:90%;background-color:${stringToColour(acc.status)}`" 
-        >
-        <div>
-          {{acc.type}}, Available from {{humanReadableDate(acc.available_from)}}
-        </div>
-
-        <div> {{acc.address}} </div>
-      </f7-card-header>
-
-      <!-- Card content -->
-      <f7-card-content>
-        <span v-for="(val, key) in acc">
-          <span v-if="showKeys.find(k => k===key) && val.length > 0">
-            <span style="font-size:70%">{{formatKey(key)}}</span>
-            <!-- filter does not work with v-html. moutache doesn't
-              render html. Hence this hack: see
-              https://github.com/vuejs/vue/issues/4352
-            -->
-            <span style="margin-right:2ex;"
-                  v-html="$options.filters.phone(val)"></span>
-            <br />
-          </span>
-        </span>
-
-        <div class="watermark">{{acc.status}}</div>
-
-        <div  style="font-size:x-small;">
-          <f7-icon icon="fa fa-bell fa-fw"></f7-icon>
-          Posted by: {{acc.created_by}}, {{str2Moment(acc.created_on).fromNow()}}
-          <span v-if="acc.last_modified_on">
-            (modified {{str2Moment(acc.last_modified_on
-            , 'YYYY-MM-DD HH:mm:ss').fromNow()}})
-          </span>
-        </div>
-      </f7-card-content>
-      <!-- Card footer -->
-      <f7-card-footer style="font-size:small;padding:0px">
-        <f7-button small @click="updateAction(acc)" >Update </f7-button>
-        <f7-button small :href="'/osm/accomodation/'+acc.id+'/'">Locate</f7-button>
-        <f7-button small 
-                   v-if="isUserAuthenticated()" 
-                   @click="addComment(acc)"
-                   >Comment ({{acc.num_comments}})
-        </f7-button>
-
-      </f7-card-footer>
-    </f7-card>
+        </f7-card-footer>
+      </f7-card>
+    </f7-row>
 
   <!-- FAB to create accomodation -->
   <f7-fab v-if="isUserAuthenticated()"
@@ -237,7 +226,7 @@
 
               <f7-list-input label="Open Vacancies"
                              @input="accomodation.open_vacancies=$event.target.value"
-                             type="int"
+                             type="number"
                              :defaultValue="1"
                              required
                              >
@@ -273,16 +262,15 @@
                              :value="accomodation.owner_contact"
                              @input="accomodation.owner_contact = $event.target.value"
                              :resizable="true"
-                             required
                              type="textarea" 
                              >
               </f7-list-input>
-              <f7-list-input label="Rent"
+              <f7-list-input label="Rent (Number only)"
                              :value="accomodation.rent"
                              @input="accomodation.rent = $event.target.value"
                              required
                              validate
-                             pattern="[0-9]{3,7}"
+                             pattern="[0-9]{2,7}"
                              >
               </f7-list-input>
 
@@ -293,12 +281,12 @@
                                >
               </f7-list-input>
 
-              <f7-list-input label="Advance"
+              <f7-list-input label="Advance (Number)"
                              :value="accomodation.advance"
                              @input="accomodation.advance = $event.target.value"
                              type="text" 
                              validate
-                             pattern="[0-9]{3,7}"
+                             pattern="[0-9]{2,7}"
                              >
               </f7-list-input>
 
@@ -317,7 +305,7 @@
                  <f7-button v-if="popupAction=='New'"
                             slot="after" raised fill
                             popup-close
-                            @click="submitAccomodation"
+                            @click="submitAccomodation()"
                             >Submit</f7-button>
                  <f7-button v-if="popupAction=='Update'"
                             slot="after" raised fill
@@ -428,125 +416,129 @@ export default {
       },
     });
   },
-   methods: { 
-      fetchAccomodations: function() {
-         const self = this;
-         const app = self.$f7;
-         app.dialog.preloader();
-         self.postWithPromise( '/accomodation/list/50' ).then( 
-            function(x) 
-            {
-               let res = JSON.parse(x.data);
-               if(res.status == "ok")
-               {
-                  self.accomodations = res.data;
-                  self.saveStore('accomodations', self.accomodations);
-               }
-               else
-                  self.accomodations = self.loadStore('accomodations');
-               app.dialog.close();
-            });
-         setTimeout( () => app.dialog.close(), 1000);
-         app.ptr.done();
-      },
-      locateAddress: function(event) {
-         const self = this;
-         let addr = event.target.value;
-         event.preventDefault();
-         //self.mapProvider.search({query: addr}).then( (results) => {
-         //   console.log(results);
-         //});
-      },
-      submitAccomodation: function() {
-         const self = this;
-         console.log( "submitting accomodation");
-         // Save it before it goes away.
-         self.$localStorage.set('me.accomodation', self.accomodation);
-         self.accomodation.available_from = moment(self.accomodation.available_from).format('YYYY-MM-DD')
-         let res = self.sendRequest('/accomodation/create', self.accomodation);
-         if( res == 'ok')
-            self.$localStorage.delete('me.accomodation');
-      },
-      updateAction: function(acc) {
-         const self = this;
-         self.accomodation = acc;
-         self.popupAction = 'Update';
-         self.popupOpened = true;
-      },
-      updateAccomodation: function(id) 
-      {
-         const self = this;
-         self.popupAction = 'New';
-         console.log( 'Updating id: ', id);
-         self.accomodation.available_from = self.dbDate(self.accomodation.available_from);
-         self.sendRequest('/accomodation/update/id', self.accomodation);
-         return;
-      },
-      readMore: function(obj) {
-         const self = this;
-         console.log( obj );
-      },
-      getNumVotes: function(externalID) {
-         return 0;
-      },
-      showPics: function(acc) {
-         const self = this;
-         self.$refs.standalone.photos = [ acc.url ];
-         self.$refs.standalone.open();
-      },
-      // COMMENT SECTION.
-      addComment: function(acc) {
-         const self = this;
-         const app = self.$f7;
-         self.thisAccomodation = acc;
+  methods: { 
+    fetchAccomodations: function() {
+      const self = this;
+      const app = self.$f7;
+      app.dialog.preloader();
+      self.postWithPromise( '/accomodation/list/50' ).then( 
+        function(x) 
+        {
+          let res = JSON.parse(x.data);
+          if(res.status == "ok")
+          {
+            self.accomodations = res.data;
+            self.saveStore('accomodations', self.accomodations);
+          }
+          else
+            self.accomodations = self.loadStore('accomodations');
+          app.dialog.close();
+        });
+      setTimeout( () => app.dialog.close(), 1000);
+      app.ptr.done();
+    },
+    locateAddress: function(event) {
+      const self = this;
+      let addr = event.target.value;
+      event.preventDefault();
+      //self.mapProvider.search({query: addr}).then( (results) => {
+      //   console.log(results);
+      //});
+    },
+    submitAccomodation: function() {
+       const self = this;
+       // Save it before it goes away.
+       self.$localStorage.set('me.accomodation', self.accomodation);
+       self.accomodation.available_from = moment(self.accomodation.available_from).format('YYYY-MM-DD')
+       self.promiseWithAuth('/accomodation/create', self.accomodation)
+         .then(function(x) {
+           var res = JSON.parse(x.data).data;
+           if(res.succcess)
+             self.$localStorage.delete('me.accomodation');
+           else
+             self.notify("Failed", "Failed to create accomodation.");
+         });
+     },
+     updateAction: function(acc) {
+       const self = this;
+       self.accomodation = acc;
+       self.popupAction = 'Update';
+       self.popupOpened = true;
+     },
+     updateAccomodation: function(id) 
+     {
+       const self = this;
+       self.popupAction = 'New';
+       console.log( 'Updating id: ', id);
+       self.accomodation.available_from = self.dbDate(self.accomodation.available_from);
+       self.sendRequest('/accomodation/update/id', self.accomodation);
+       return;
+     },
+     readMore: function(obj) {
+       const self = this;
+       console.log( obj );
+     },
+     getNumVotes: function(externalID) {
+       return 0;
+     },
+     showPics: function(acc) {
+       const self = this;
+       self.$refs.standalone.photos = [ acc.url ];
+       self.$refs.standalone.open();
+     },
+     // COMMENT SECTION.
+     addComment: function(acc) {
+       const self = this;
+       const app = self.$f7;
+       self.thisAccomodation = acc;
 
-         self.postWithPromise('/accomodation/comment/list/'+acc.id).then(
-            function(x) {
-               let res = JSON.parse(x.data);
-               if(res.status == 'ok')
-                  self.comments = res.data.comments;
-            });
+       self.postWithPromise('/accomodation/comment/list/'+acc.id).then(
+         function(x) {
+           let res = JSON.parse(x.data);
+           if(res.status == 'ok')
+             self.comments = res.data.comments;
+         });
 
-         self.commentPopupOpened = true;
-      },
-      submitComment: function(id) {
-         const self = this;
-         let data =  {id:id, comment:self.thisComment};
-         console.log('Sending data: ', data);
-         self.sendRequest('/accomodation/comment/post', data);
-         self.commentPopupOpened = false;
-      },
-      addToFavoriteAcc: function(id) {
-         const self = this;
-         self.favouriteAccomodations = self.loadStore('me.favourite.accomodations');
-         if( ! self.favouriteAccomodations )
-            self.favouriteAccomodations = [];
+       self.commentPopupOpened = true;
+     },
+     submitComment: function(id) {
+       const self = this;
+       let data =  {id:id, comment:self.thisComment};
+       console.log('Sending data: ', data);
+       self.sendRequest('/accomodation/comment/post', data);
+       self.commentPopupOpened = false;
+     },
+     addToFavoriteAcc: function(id) {
+       const self = this;
+       self.favouriteAccomodations = self.loadStore('me.favourite.accomodations');
+       if( ! self.favouriteAccomodations )
+         self.favouriteAccomodations = [];
 
-         if(! self.favouriteAccomodations.includes(id))
-            self.favouriteAccomodations.push(id);
-         self.saveStore('me.favourite.accomodations', self.favouriteAccomodations);
-         console.log( 'Added ' + id + ' to favourite accomodations.');
-      },
-      removeFromFavoriteAcc: function(id) {
-            const self = this;
-            self.favouriteAccomodations = self.loadStore('me.favourite.accomodations');
-            if(self.favouriteAccomodations.includes(id))
-               self.removeFromArray(self.favouriteAccomodations, id);
-            self.saveStore('me.favourite.accomodations', self.favouriteAccomodations);
-      },
-      refreshMap: function() {
-         //const map = this.$refs.accmap.mapObject;
-         //this.venues.map( x => x );
-      },
-      zoomUpdated (zoom) {
-         const self = this;
-      },
-      centerUpdated (center) {
-         this.locationMap.center = center;
-      },
-      boundsUpdated (bounds) {
-         this.locationMap.bounds = bounds;
-      },
+       if(! self.favouriteAccomodations.includes(id))
+         self.favouriteAccomodations.push(id);
+       self.saveStore('me.favourite.accomodations', self.favouriteAccomodations);
+       console.log( 'Added ' + id + ' to favourite accomodations.');
+     },
+     removeFromFavoriteAcc: function(id) {
+       const self = this;
+       self.favouriteAccomodations = self.loadStore('me.favourite.accomodations');
+       if(self.favouriteAccomodations.includes(id))
+         self.removeFromArray(self.favouriteAccomodations, id);
+       self.saveStore('me.favourite.accomodations', self.favouriteAccomodations);
+     },
+     refreshMap: function() {
+       //const map = this.$refs.accmap.mapObject;
+       //this.venues.map( x => x );
+     },
+     zoomUpdated (zoom) {
+       const self = this;
+     },
+     centerUpdated (center) {
+       this.locationMap.center = center;
+     },
+     boundsUpdated (bounds) {
+       this.locationMap.bounds = bounds;
+     },
    },
 };
 </script>
