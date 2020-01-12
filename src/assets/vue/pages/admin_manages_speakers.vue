@@ -31,9 +31,6 @@
                         :options="dropzoneOptions">
           </vue-dropzone>
         </f7-row>
-        <f7-row v-else>
-          You can upload photo after creating a new speaker.
-        </f7-row>
       </f7-list-item>
       <f7-list-input v-for="(value,key) in thisSpeaker" 
                      :disabled="hideKeys.includes(key)"
