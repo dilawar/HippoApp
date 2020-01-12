@@ -22,6 +22,7 @@
 
     <f7-block>
       <f7-block-title medium>Followings are editable.</f7-block-title>
+
       <f7-row>
         <f7-col width="70" medium="30">
           <vue-dropzone ref="profilePic"  
@@ -39,7 +40,7 @@
         to Academic office to include your name.
       </div>
 
-      <f7-list media-list no-hairlines>
+      <f7-list media-list no-hairlines inline-labels>
         <f7-list-input v-for="(val, key, index) in editables" 
                        :label="formatKey(key)"
                        :type="val[0]"
