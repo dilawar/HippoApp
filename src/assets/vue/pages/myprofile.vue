@@ -3,10 +3,16 @@
     <f7-navbar title="Profile" back-link="Back"></f7-navbar>
 
     <f7-block inset>
+      <f7-block-header>
+        <div v-if="profile.eligible_for_aws==='NO'">
+          You are not <tt>ELIGIBLE FOR AWS</tt>. If this is a mistake, please
+          write to Academic office to include your name.
+        </div>
+      </f7-block-header>
       <f7-row>
         <f7-col width="100" 
                 medium="50" 
-                style="border-top:1px solid lightgray"
+                style="border-top:1px dotted lightgray"
                 v-for="(val, key) in profile"
                 :key="key">
           <div>
@@ -34,11 +40,6 @@
         </f7-col>
       </f7-row>
 
-      <div v-if="profile.eligible_for_aws==='NO'"
-           style="background-color:lightyellow;padding:4px">
-        You are not <tt>ELIGIBLE FOR AWS</tt>. If this is a mistake, please write 
-        to Academic office to include your name.
-      </div>
 
       <f7-list media-list no-hairlines>
         <f7-row>
@@ -143,12 +144,13 @@ export default {
       self.promiseWithAuth('/me/profile/update', self.profile)
         .then(function(x) {
           var x = JSON.parse(x.data).data;
-          if(x.success)
+          if(x.success) {
             self.notify("Success", "Updated profile.");
+            self.fetchProfile();
+          }
           else
             self.notify("Failed", "Could not update profile.");
         });
-      self.fetchProfile();
     },
   },
 }
