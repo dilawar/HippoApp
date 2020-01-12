@@ -126,7 +126,6 @@ export default {
             content[i] = byteString.charCodeAt(i)
           }
           var img = new Blob([new Uint8Array(content)], {type: 'image/jpeg'});
-          // Remove all files.
           self.$refs.profilePic.addFile(img);
           app.preloader.hide();
         });
