@@ -45,6 +45,7 @@
           <f7-list-input v-for="(val, key, index) in editables" 
                          class="col-100 medium-50"
                          :wrap="false"
+                         :key="key"
                          :label="formatKey(key)"
                          :type="val[0]"
                          @change="profile[key]=$event.target.value"
