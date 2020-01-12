@@ -24,7 +24,7 @@
     
     <f7-list no-hairlines inline-labels>
       <f7-list-item>
-        <f7-row v-if="parseInt(thisSpeaker.id) > 0">
+        <f7-row>
           <vue-dropzone ref="speakerPic"  
                         id="speaker-pic-id"
                         @vdropzone-files-added="(file)=>uploadFiles()"
@@ -183,9 +183,8 @@ export default {
     },
     onSpeakerSelected: function(res) {
       const self = this;
-      self.thisSpeaker = res.selectedObject;
+      self.fetchSpeaker(res.value);
       self.createNewSpeaker=false;
-      console.log("Speaker selected: ", res);
     },
     updateSpeaker: function() 
     {
