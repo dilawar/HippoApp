@@ -2,7 +2,7 @@
   <f7-page page-content ptr @ptr:refresh="fetchProfile">
     <f7-navbar title="Profile" back-link="Back"></f7-navbar>
 
-    <f7-block inset strong>
+    <f7-block inset>
       <f7-row>
         <f7-col width="100" 
                 medium="50" 
@@ -40,26 +40,25 @@
         to Academic office to include your name.
       </div>
 
-      <f7-list media-list no-hairlines inline-labels>
-        <f7-list-input v-for="(val, key, index) in editables" 
-                       :label="formatKey(key)"
-                       :type="val[0]"
-                       @change="profile[key]=$event.target.value"
-                       :value="profile[key]">
-          <option v-for="(v,k) in val[0]==='select'?val[1]:[]" 
-                  :key="k" :value="v">
-          {{v}}
-          </option>
-        </f7-list-input>
+      <f7-list media-list no-hairlines>
+        <f7-row>
+          <f7-list-input v-for="(val, key, index) in editables" 
+                         class="col-100 medium-50"
+                         :wrap="false"
+                         :label="formatKey(key)"
+                         :type="val[0]"
+                         @change="profile[key]=$event.target.value"
+                         :value="profile[key]">
+            <option v-for="(v,k) in val[0]==='select'?val[1]:[]" 
+                    :key="k" :value="v">
+            {{v}}
+            </option>
+          </f7-list-input>
+        </f7-row>
         <f7-list-item>
-          <f7-row>
-            <f7-col></f7-col>
-            <f7-col>
-              <f7-button small raised fill @click="updateProfile()">
-                Update
-              </f7-button>
-            </f7-col>
-          </f7-row>
+          <f7-button raised outline @click="updateProfile()">
+            Update
+          </f7-button>
         </f7-list-item>
         <f7-list-item></f7-list-item>
       </f7-list>
