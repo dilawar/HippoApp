@@ -24,26 +24,27 @@
         <f7-list-input v-for="(val, key, index) in editables" 
                        :label="formatKey(key)"
                        :type="val[0]"
+                       @change="profile[key]=$event.target.value"
                        :value="profile[key]">
           <option v-for="(v,k) in val[0]==='select'?val[1]:[]" 
                   :key="k" :value="v">
           {{v}}
           </option>
         </f7-list-input>
+        <f7-list-item>
+          <f7-row>
+            <f7-col></f7-col>
+            <f7-col>
+              <f7-button small raised fill @click="updateProfile()">
+                Update
+              </f7-button>
+            </f7-col>
+          </f7-row>
+        </f7-list-item>
+        <f7-list-item></f7-list-item>
       </f7-list>
-
-      <f7-row>
-        <f7-col></f7-col>
-        <f7-col>
-          <f7-button small raised>
-            Update
-          </f7-button>
-        </f7-col>
-      </f7-row>
-
-      <f7-block-footer>
-      </f7-block-footer>
     </f7-block>
+
   </f7-page>
 
 </template>
@@ -115,6 +116,19 @@ export default {
       const self = this;
       const app = self.$f7;
       self.$refs.profilePic.processQueue();
+    },
+    updateProfile: function() {
+      const self = this;
+      const app = self.$f7;
+      self.promiseWithAuth('/me/profile/update', self.profile)
+        .then(function(x) {
+          var x = JSON.parse(x.data).data;
+          if(x.success)
+            self.notify("Success", "Updated profile.");
+          else
+            self.notify("Failed", "Could not update profile.");
+        });
+      self.fetchProfile();
     },
   },
 }
