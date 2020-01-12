@@ -1,34 +1,64 @@
 <template>
-  <f7-page>
+  <f7-page @page:beforein="initData">
     <f7-navbar title="Manage Speaker" back-link="Back">
     </f7-navbar>
+
+    <f7-block no-hairlines inset class="align-content-center">
+      <f7-list>
+        <f7-list-input :input="false">
+          <v-autocomplete  slot="input"
+                           ref="refEventSpeaker"
+                           input-class="item-input"
+                           placeholder="Speaker"
+                           results-property="id"
+                           results-display="name"
+                           :request-headers="apiPostData()"
+                           method="post"
+                           @selected="onSpeakerSelected"
+                           @noResults="createNewSpeaker=true"
+                           :source="(q)=>searchPeopleURI(q, 'speaker')">
+          </v-autocomplete>
+        </f7-list-input>
+      </f7-list>
+    </f7-block>
     
     <f7-list no-hairlines inline-labels>
       <f7-list-item>
-        <f7-row>
+        <f7-row v-if="parseInt(thisSpeaker.id) > 0">
           <vue-dropzone ref="speakerPic"  
                         id="speaker-pic-id"
                         @vdropzone-files-added="(file)=>uploadFiles()"
                         :options="dropzoneOptions">
           </vue-dropzone>
         </f7-row>
+        <f7-row v-else>
+          You can upload photo after creating a new speaker.
+        </f7-row>
       </f7-list-item>
       <f7-list-input v-for="(value,key) in thisSpeaker" 
                      :disabled="hideKeys.includes(key)"
-                     :type="finfo.hasOwnProperty(key)?'select':'text'"
+                     :type="_get(finfo,key,['text'])[0]"
                      :label="formatKey(key)"
                      :value="thisSpeaker[key]"
                      @change="thisSpeaker[key]=$event.target.value"
                      :key="key">
-        <option v-for="(v,k) in finfo.hasOwnProperty(key)?finfo[key]:[]" 
+        <option v-for="(v,k) in _get(finfo, key, ['text'])[0]==='select'?finfo[key][1]:[]" 
                 :value="v"
                 :key="k">
         {{v}}
         </option>
       </f7-list-input>
       <f7-list-item>
+        <f7-col></f7-col>
         <f7-col>
-          <f7-button>{{thisTask}} Speaker</f7-button>
+          <f7-button small raised 
+                     v-if="! createNewSpeaker"
+                     @click="updateSpeaker()">
+            Update Speaker
+          </f7-button>
+          <f7-button small raised  v-else>
+            Add new Speaker
+          </f7-button>
         </f7-col>
       </f7-list-item>
       <f7-list-item>
@@ -47,9 +77,13 @@ export default {
     return {
       hideKeys: ['id', 'photo'],
       speaker: {},
+      createNewSpeaker: false,
       thisTask: params.action,
-      thisSpeaker: {id: params.speakerid, photo:''},
-      finfo : [],
+      thisSpeaker: {id: params.speakerid, honorific:''
+        , email:'', first_name:'', middle_name:'', last_name:''
+        , designation:'', department:'', institute:''
+        , homepage:'', photo:''},
+      finfo: { },
       dropzoneOptions: {
         url: self.getUploadUrl,
         thumbnailMethod: 'contain',
@@ -62,24 +96,54 @@ export default {
       },
     };
   },
-  mounted()
+  mounted: function()
   {
     const self = this;
-    self.postWithPromise('admin/table/fieldinfo/speakers')
-      .then(function(x) {
-        self.finfo = JSON.parse(x.data).data;
-      });
+    const app = self.$f7;
+    self.initData();
 
-    self.postWithPromise('admin/speaker/fetch/'+self.thisSpeaker.id)
-      .then(function(x) {
-        var res = JSON.parse(x.data);
-        if(res.status === 'ok') {
-          self.thisSpeaker = res.data;
-          self.updateImage();
-        }
-      });
+    // Autocomplete.
+    app.autocomplete.create({
+      inputEl : '#speaker-autocomplete',
+      openIn: 'dropdown',
+      valueProperty: 'id',
+      textProperty: 'name',
+      source: function(q, render)
+      {
+        let results = [];
+        self.promiseWithAuth('search/speaker/'+q)
+          .then( function(x) {
+            results = JSON.parse(x.data).data;
+            if(results.length > 0)
+              render(results);
+          });
+      },
+      on: {
+        change: function(val) {
+          console.log('speaker: ', val);
+          self.thisSpeaker = val[0];
+        },
+      },
+    });
   },
   methods : {
+    initData: async function() 
+    {
+      // This should be called before page loads else form won't bind properly.
+      const self = this;
+      self.postWithPromise('admin/table/fieldinfo/speakers')
+        .then(function(x) {
+          self.finfo = JSON.parse(x.data).data;
+
+          // if speaker id is valid, fetch speaker info else fetch the table
+          // schema and create a dummy speaker.
+          if( parseInt(self.thisSpeaker.id) > 0)
+            self.fetchSpeaker(self.thisSpeaker.id);
+          else
+            for(var key in self.finfo)
+              self.thisSpeaker[key] = '';
+        });
+    },
     updateImage: function() {
       const self = this;
       const app = self.$f7;
@@ -104,6 +168,39 @@ export default {
     {
       const self = this;
       return self.$store.state.api+'/upload/image/speaker/' + self.thisSpeaker.id;
+    },
+    fetchSpeaker: function(speakerID) 
+    {
+      const self = this;
+      self.postWithPromise('admin/speaker/fetch/'+speakerID)
+        .then(function(x) {
+          var res = JSON.parse(x.data);
+          if(res.status === 'ok') {
+            self.thisSpeaker = res.data;
+            self.updateImage();
+          }
+        });
+    },
+    onSpeakerSelected: function(res) {
+      const self = this;
+      self.thisSpeaker = res.selectedObject;
+      self.createNewSpeaker=false;
+      console.log("Speaker selected: ", res);
+    },
+    updateSpeaker: function() 
+    {
+      const self = this;
+      self.promiseWithAuth('admin/speaker/update', self.thisSpeaker)
+        .then( function(x) {
+          var res = JSON.parse(x.data).data;
+          if(! res.success)
+            self.notify("Failed to update speaker.", res.msg);
+          else
+          {
+            self.notify("Successfully updated speaker.", res.msg);
+            self.fetchSpeaker(thisSpeaker.id);
+          }
+        });
     },
   },
 }

@@ -398,7 +398,7 @@ Vue.mixin({
             return o;
          else if(obj.length == 0)
             return o;
-         return obj.includes(key)?obj[key]:o;
+         return obj.hasOwnProperty(key)?obj[key]:o;
       },
    },
    // Vue filter for parsing phone numbers.
