@@ -3,37 +3,39 @@
     <f7-navbar title="Manage Speaker" back-link="Back">
     </f7-navbar>
 
-    <f7-block no-hairlines inset class="align-content-center">
-      <f7-list>
-        <f7-list-input :input="false">
-          <v-autocomplete  slot="input"
-                           ref="refEventSpeaker"
-                           input-class="item-input"
-                           placeholder="Speaker"
-                           results-property="id"
-                           results-display="name"
-                           :request-headers="apiPostData()"
-                           method="post"
-                           @selected="onSpeakerSelected"
-                           @noResults="createNewSpeaker=true"
-                           :source="(q)=>searchPeopleURI(q, 'speaker')">
-          </v-autocomplete>
-        </f7-list-input>
-      </f7-list>
-    </f7-block>
-    
-    <f7-list no-hairlines inline-labels>
+    <f7-list no-hairlines style="margin:10px">
+      <f7-list-input :input="false">
+        <v-autocomplete  slot="input"
+                         ref="refEventSpeaker"
+                         input-class="item-input"
+                         placeholder="Type Email or ID to search speaker..."
+                         results-property="id"
+                         results-display="name"
+                         :request-headers="apiPostData()"
+                         method="post"
+                         @selected="onSpeakerSelected"
+                         @noResults="createNewSpeaker=true"
+                         :source="(q)=>searchPeopleURI(q, 'speaker')">
+        </v-autocomplete>
+      </f7-list-input>
       <f7-list-item>
-        <f7-row>
+        <f7-col>
           <vue-dropzone ref="speakerPic"  
                         id="speaker-pic-id"
                         @vdropzone-files-added="(file)=>uploadFiles()"
                         :options="dropzoneOptions">
           </vue-dropzone>
-        </f7-row>
+        </f7-col>
+        <f7-col>
+          <div v-html="thisSpeaker.html" style="font-size:small">
+          </div>
+        </f7-col>
       </f7-list-item>
+    </f7-list>
+
+    <f7-list inline-labels no-hairlines>
       <f7-list-input v-for="(value,key) in thisSpeaker" 
-                     :disabled="hideKeys.includes(key)"
+                     v-if="! hideKeys.includes(key)"
                      :type="_get(finfo,key,['text'])[0]"
                      :label="formatKey(key)"
                      :value="thisSpeaker[key]"
@@ -46,14 +48,20 @@
         </option>
       </f7-list-input>
       <f7-list-item>
-        <f7-col></f7-col>
+        <f7-col>
+          <f7-button small raised color=red fill
+                     :disabled="parseInt(thisSpeaker.id) < 0"
+                     @click="deleteThisSpeaker(thisSpeaker.id)">
+            Delete Speaker
+          </f7-button>
+        </f7-col>
         <f7-col>
           <f7-button small raised 
                      v-if="! createNewSpeaker"
                      @click="updateSpeaker()">
             Update Speaker
           </f7-button>
-          <f7-button small raised  v-else>
+          <f7-button small raised @click="addNewSpeaker" v-else>
             Add new Speaker
           </f7-button>
         </f7-col>
@@ -72,9 +80,9 @@ export default {
     const params = self.$f7route.params;
     console.log("Params ", params);
     return {
-      hideKeys: ['id', 'photo'],
+      hideKeys: ['id', 'photo', 'html'],
       speaker: {},
-      createNewSpeaker: false,
+      createNewSpeaker: true,
       thisTask: params.action,
       thisSpeaker: {id: params.speakerid, honorific:''
         , email:'', first_name:'', middle_name:'', last_name:''
@@ -180,7 +188,8 @@ export default {
     },
     onSpeakerSelected: function(res) {
       const self = this;
-      self.fetchSpeaker(res.value);
+      self.thisSpeaker = res.selectedObject;
+      //self.fetchSpeaker(res.value);
       self.createNewSpeaker=false;
     },
     updateSpeaker: function() 
@@ -190,13 +199,48 @@ export default {
         .then( function(x) {
           var res = JSON.parse(x.data).data;
           if(! res.success)
-            self.notify("Failed to update speaker.", res.msg);
+            self.notify("Failed.", res.msg);
           else
           {
-            self.notify("Successfully updated speaker.", res.msg);
-            self.fetchSpeaker(thisSpeaker.id);
+            self.notify("Success.", res.msg);
+            self.fetchSpeaker(self.thisSpeaker.id);
           }
         });
+    },
+    addNewSpeaker: function() 
+    {
+      const self = this;
+      self.promiseWithAuth('admin/speaker/new', self.thisSpeaker)
+        .then( function(x) {
+          var res = JSON.parse(x.data).data;
+          if(! res.success)
+            self.notify("Failed.", res.msg);
+          else
+          {
+            self.notify("Success.", res.msg);
+            self.fetchSpeaker(self.thisSpeaker.id);
+          }
+        });
+    },
+    deleteThisSpeaker: function(sid) 
+    {
+      const self = this;
+      const app = self.$f7;
+      app.dialog.confirm( "You can only delete a speaker without any talk."
+        , "Note"
+        , function() {
+          self.promiseWithAuth('admin/speaker/delete/' + sid)
+            .then( function(x) {
+              var res = JSON.parse(x.data).data;
+              if(! res.success)
+                self.notify("Failed to delete", res.msg);
+              else
+              {
+                self.notify("Successfully delete.", res.msg);
+                self.createNewSpeaker = true;
+              }
+            });
+        }, null);
     },
   },
 }
