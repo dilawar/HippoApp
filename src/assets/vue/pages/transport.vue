@@ -18,16 +18,13 @@
 
   <!-- Select days buttons. -->
   <f7-block>
-    <f7-row>
-      <f7-col v-for="d in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']" :key="'col'+d">
-        <f7-button  small
-                    :key="d" 
-                    :fill="(d==selectedDay)?true:false" 
-                    @click="changeDay(d)"> 
-          {{d}}
-        </f7-button>
-      </f7-col>
-    </f7-row>
+  <f7-row no-gap>
+    <f7-col no-gap v-for="d in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']" :key="'col'+d">
+      <f7-button small :key="d" :fill="(d==selectedDay)?true:false" @click="changeDay(d)"> 
+        {{d}}
+      </f7-button>
+    </f7-col>
+  </f7-row>
   </f7-block>
 
   <!-- List of transport. -->
