@@ -68,9 +68,11 @@
            v-for="(item, key) in items"
            :key="key">
            <div slot="header" v-html="genWhereline(item.data)"></div>
-           <div slot="title" v-html="item.data.title"></div>
+           <div slot="text" class="text-color-black">
+             <strong>{{item.data.title}}</strong>
+             <small>by {{item.created_by}}</small>
+           </div>
            <div slot="footer" v-html="genTimeline(item.data)"></div>
-           <div slot="after" v-html="item.created_by"></div>
            <f7-accordion-content style="background-color:Ivory"
                                  v-html="item.data.title+'<br/>'+item.data.description">
            </f7-accordion-content>
@@ -126,7 +128,7 @@ export default {
       const self = this;
       const app = self.$f7;
       app.preloader.show();
-      self.postWithPromise('/events/latest/100').then(
+      self.postWithPromise('/events/latest/200').then(
         function(x) {
           self.events = JSON.parse(x.data).data;
           self.initVenuesAndClasses();
@@ -246,7 +248,8 @@ export default {
       const self = this;
       let whereWhere = '';
       whereWhere += moment(ev.date, 'YYYY-MM-DD').format('ddd, MMM DD') +
-        ', ' + moment(ev.start_time, 'HH:mm:ss').format('h:mm A')
+        ', ' + moment(ev.start_time, 'HH:mm:ss').format('h:mm A') +
+        ' to ' + moment(ev.end_time, 'HH:mm:ss').format('h:mm A')
       return whereWhere;
     },
     genWhereline: function(ev) 

@@ -9,7 +9,7 @@
     </f7-panel>
 
     <f7-view main url="/" tab tab-active> 
-      <f7-toolbar bottom-md tabber labels style="font-size:xx-small">
+      <f7-toolbar bottom tabber labels :inner="true" style="font-size:xx-small">
 
         <f7-link text="Back"
                  icon="fa fa-step-backward fa-2x"
@@ -45,7 +45,6 @@
                  text="Events"
                  icon="fa fa-calendar-o fa-2x">
         </f7-link>
-
       </f7-toolbar>
 
       <!-- INFO POPUP -->

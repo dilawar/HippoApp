@@ -28,64 +28,60 @@
      </f7-fab>
 
     <!-- Popup for updating. . -->
-    <f7-popup :opened="updatePopup" 
-              ref="update_popup" 
-              @popup:closed="updatePopup = false">
+    <f7-popup :opened="updatePopup" ref="update_popup" @popup:closed="updatePopup=false">
       <f7-page>
-         <f7-navbar title="Post to forum">
-            <f7-nav-right>
-               <f7-link popup-close>Cancel</f7-link>
-            </f7-nav-right>
-         </f7-navbar>
+        <f7-navbar title="Post to forum">
+          <f7-nav-right>
+            <f7-link popup-close>Cancel</f7-link>
+          </f7-nav-right>
+        </f7-navbar>
 
-         <f7-block>
-            <f7-list id="forum_post" form-store-data no-hairlines-md>
-               <f7-list-item smart-select
-                             :value="item.tags"
-                             :smart-select-params="{ 
-                                 openIn: 'popover'
-                                 , pageTitle: 'Tags for your post'
-                                 , routableModals: false
-                             }" 
-                     >
-                    <select name="tags" v-model="item.tags" multiple>
-                       <option v-for="tag in alltags" :value="tag">{{tag}}</option>
-                    </select>
-                  <div slot="title" style="font-size:x-small"
-                     >Select at least one tag</div>
-               </f7-list-item>
+        <f7-list id="forum_post" form-store-data no-hairlines-md>
+           <f7-list-item smart-select
+                         :value="item.tags"
+                         :smart-select-params="{ 
+                             openIn: 'popover'
+                             , pageTitle: 'Tags for your post'
+                             , routableModals: false
+                         }" 
+                 >
+                <select name="tags" v-model="item.tags" multiple>
+                   <option v-for="tag in alltags" :value="tag">{{tag}}</option>
+                </select>
+              <div slot="title" style="font-size:x-small"
+                 >Select at least one tag</div>
+           </f7-list-item>
 
-               <f7-list-input title="Informative title"
-                              placeholder="Informative title"
-                              :value="item.title"
-                              @input="item.title = $event.target.value"
-                              required validate>
-               </f7-list-input>
+           <f7-list-input title="Informative title"
+                          placeholder="Informative title"
+                          :value="item.title"
+                          @input="item.title = $event.target.value"
+                          required validate>
+           </f7-list-input>
 
 
-               <f7-list-input title="Description"
-                              :value="item.description"
-                              placeholder="Optional description"
-                              @input="item.description = $event.target.value"
-                              :resizable="true"
-                              type="textarea" 
-                              >
-               </f7-list-input>
+           <f7-list-input title="Description"
+                          :value="item.description"
+                          placeholder="Optional description"
+                          @input="item.description = $event.target.value"
+                          :resizable="true"
+                          type="textarea" 
+                          >
+           </f7-list-input>
 
-               <f7-list-item>
-                  <f7-button raised fill
-                             popup-close
-                             @click="deleteCard(item.id)"
-                             >Delete
-                  </f7-button>
-                  <f7-button raised fill
-                             popup-close
-                             @click="postToForumSubmit()"
-                             >Submit
-                  </f7-button>
-               </f7-list-item>
-            </f7-list>
-         </f7-block>
+           <f7-list-item>
+              <f7-button raised fill
+                         popup-close
+                         @click="deleteCard(item.id)"
+                         >Delete
+              </f7-button>
+              <f7-button raised fill
+                         popup-close
+                         @click="postToForumSubmit()"
+                         >Submit
+              </f7-button>
+           </f7-list-item>
+        </f7-list>
       </f7-page>
     </f7-popup>
 
@@ -199,7 +195,6 @@
      </f7-page>
   </f7-popup>
 
-
     <!-- Show current cards -->
     <f7-card v-if="board!='all'">
        <f7-button small raised 
@@ -216,42 +211,44 @@
        </f7-button>
     </f7-card>
 
-    <f7-card v-for="(card, key) in filterCards(forumCards)" :key="key">
-      <!-- <f7-card-header :style="`background-color:${stringToColour(card.tags[0])}`"> -->
-      <f7-card-header>
-        <div>
-          <span v-for="(tag,key) in card.tags" :key="key">
-            <f7-link :href="'/noticeboards/'+tag"> b/{{tag}}</f7-link>&nbsp;
-          </span>
-          <span style="color:gray; font-size:small;">
-            /Posted by <tt>{{card.created_by}}</tt>
-            {{datetime2Moment(card.created_on).fromNow()}}
-          </span>
-          <span style="font-size:small;color:gray"
-                v-if="card.last_modified_on!=card.created_on">
-                /Modified {{datetime2Moment(card.last_modified_on).fromNow()}}.
-          </span>
-        </div>
-      </f7-card-header>
-      <f7-card-content :padding="false" style="padding-left:10px">
-        <div> {{card.title}} </div>
-        <span v-html="card.description"></span>
-        <f7-row>
-          <f7-col>
-            <f7-button small @click="updateCard(card)"
-                       v-if="getLogin() == card.created_by">
-              Update
-            </f7-button>
-          </f7-col>
-          <f7-col></f7-col>
-          <f7-col>
-            <f7-button small @click="showCommentPopup(card)" float-right>
-              ({{card.num_comments}}) Comment
-            </f7-button>
-          </f7-col>
-        </f7-row>
-      </f7-card-content>
-    </f7-card>
+    <f7-row noGap>
+      <f7-card v-for="(card, key) in filterCards(forumCards)" 
+               :key="key" class="col-100 medium-45">
+
+        <f7-card-header>
+          <div>
+            <span v-for="(tag,key) in card.tags" :key="key">
+              <f7-link :href="'/noticeboards/'+tag"> b/{{tag}}</f7-link>&nbsp;
+            </span>
+            <span style="color:gray; font-size:small;">
+              /Posted by <tt>{{card.created_by}}</tt>
+              {{datetime2Moment(card.created_on).fromNow()}}
+            </span>
+            <span style="font-size:small;color:gray"
+                  v-if="card.last_modified_on!=card.created_on">
+              /Modified {{datetime2Moment(card.last_modified_on).fromNow()}}.
+            </span>
+          </div>
+        </f7-card-header>
+        <f7-card-content>
+          <div> {{card.title}} </div>
+          <span v-html="card.description"></span>
+          <f7-row class="align-content-center">
+            <f7-col>
+              <f7-button small @click="updateCard(card)"
+                         v-if="getLogin() == card.created_by">
+                Update
+              </f7-button>
+            </f7-col>
+            <f7-col>
+              <f7-button small @click="showCommentPopup(card)">
+                ({{card.num_comments}}) Comment
+              </f7-button>
+            </f7-col>
+          </f7-row>
+        </f7-card-content>
+      </f7-card>
+    </f7-row>
 
   </f7-page>
 </template>

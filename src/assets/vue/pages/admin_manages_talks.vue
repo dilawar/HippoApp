@@ -34,94 +34,99 @@
           </f7-nav-right>
         </f7-navbar>
 
-        <f7-block>
-          <f7-block-header>
-            <div> {{thisTalk.speaker}} </div>
 
-            <!-- Conformed event -->
-            <f7-card :padding="false" v-if="thisTalk.hasOwnProperty('event')">
-              <f7-card-header>
-                <strong>CONFIRMED</strong> 
-                <f7-button raised color=red small 
-                           @click="deleteEventOfThisTalk(thisTalk.event)">
-                  Delete Booking
-                </f7-button>
-                <f7-link  popup-close :href="'/email/talk/'+thisTalk.id">Send Email</f7-link>
-              </f7-card-header>
-              <f7-card-content>
-                <strong>{{thisTalk.event.venue}}</strong>,
-                <strong>{{thisTalk.event.date | date}}</strong>,
-                <strong>{{thisTalk.event.start_time | clockTime}}</strong>
-              </f7-card-content>
-            </f7-card>
+        <f7-block-header> 
+          <span style="text-transform:capitalize">
+            {{thisTalk.class.toLowerCase()}} by 
+          </span>
+          <f7-link popup-close :href="'/admin/speaker/update/'+thisTalk.speaker_id"> 
+            {{thisTalk.speaker}} 
+          </f7-link>
+        </f7-block-header>
 
-            <!-- Request -->
-            <f7-card :padding="false" v-if="thisTalk.hasOwnProperty('request')">
-              <f7-card-header>
-                <strong>PENDING</strong>
-                <f7-button raised color=red small 
-                           @click="deleteRequestOfThisTalk(thisTalk.request)"
-                           class="float-right">
-                  Delete Request
-                </f7-button>
-                <f7-button raised small 
-                           @click="approveRequest(thisTalk.request)"
-                           class="float-right">
-                  Approve Request
-                </f7-button>
-              </f7-card-header>
-              <f7-card-content>
-                <strong>{{thisTalk.request.venue}}</strong>,
-                <strong>{{thisTalk.request.date | date}}</strong>,
-                <strong>{{thisTalk.request.start_time | clockTime}}</strong>
-              </f7-card-content>
-            </f7-card>
+        <!-- Card showing event/request. -->
+        <!-- Conformed event -->
+        <f7-card :padding="false" v-if="thisTalk.hasOwnProperty('event')">
+          <f7-card-header>
+            <strong>CONFIRMED</strong> 
+            <f7-button raised color=red small 
+                       @click="deleteEventOfThisTalk(thisTalk.event)">
+              Delete Booking
+            </f7-button>
+            <f7-link  popup-close :href="'/email/talk/'+thisTalk.id">Send Email</f7-link>
+          </f7-card-header>
+          <f7-card-content>
+            {{thisTalk.event.venue}},
+            {{thisTalk.event.date | date}},
+            {{thisTalk.event.start_time | clockTime}}
+          </f7-card-content>
+        </f7-card>
 
-            <!-- Book it -->
-            <f7-card v-if="! (thisTalk.hasOwnProperty('request') || thisTalk.hasOwnProperty('event'))">
-              <f7-card-content>
-                <f7-row>
-                  <f7-col> No booking found.  </f7-col>
-                  <f7-col>
-                    <f7-link popup-close 
-                             :href="'/bookevent/talks.'+thisTalk.id+'/'+thisTalk.class">
-                      Create Booking
-                    </f7-link>
-                  </f7-col>
-                </f7-row>
-              </f7-card-content>
-            </f7-card>
+        <f7-card :padding="false" v-if="thisTalk.hasOwnProperty('request')">
+          <f7-card-header>
+            <strong>PENDING</strong>
+            <f7-button raised color=red small 
+                       @click="deleteRequestOfThisTalk(thisTalk.request)"
+                       class="float-right">
+              Delete Request
+            </f7-button>
+            <f7-button raised small 
+                       @click="approveRequest(thisTalk.request)"
+                       class="float-right">
+              Approve Request
+            </f7-button>
+          </f7-card-header>
+          <f7-card-content>
+            <strong>{{thisTalk.request.venue}}</strong>,
+            <strong>{{thisTalk.request.date | date}}</strong>,
+            <strong>{{thisTalk.request.start_time | clockTime}}</strong>
+          </f7-card-content>
+        </f7-card>
 
-          </f7-block-header>
+        <!-- Book it -->
+        <f7-card v-if="! (thisTalk.hasOwnProperty('request') || thisTalk.hasOwnProperty('event'))">
+          <f7-card-content>
+            <f7-row>
+              <f7-col> No booking found.  </f7-col>
+              <f7-col>
+                <f7-link popup-close 
+                         :href="'/bookevent/talks.'+thisTalk.id+'/'+thisTalk.class">
+                  Create Booking
+                </f7-link>
+              </f7-col>
+            </f7-row>
+          </f7-card-content>
+        </f7-card>
 
-          <f7-list no-hairlines>
+        <f7-list no-hairlines>
 
-            <f7-list-input label="Title"
-                 :value="thisTalk.title" type="text"
-                 @change="thisTalk.title=$event.target.value">
-            </f7-list-input>
+          <f7-list-input label="Title"
+                         type="textarea"
+                         resizable
+                         :value="thisTalk.title" 
+                         @change="thisTalk.title=$event.target.value">
+          </f7-list-input>
 
-            <f7-list-input label="Description (optional)" resizable
-                           :textEditorParams="{mode: 'toolbar'}"
-                           :value="thisTalk.description"
-                           @texteditor:change="(v)=>thisTalk.description=v"
-                           type="texteditor">
-            </f7-list-input>
+          <f7-list-input label="Description (optional)" resizable
+                         :textEditorParams="{mode: 'toolbar'}"
+                         :value="thisTalk.description"
+                         @texteditor:change="(v)=>thisTalk.description=v"
+                         type="texteditor">
+          </f7-list-input>
 
-          </f7-list>
-          <f7-row>
-            <f7-col>
-              <f7-button popup-close raised color=red>Back</f7-button>
-            </f7-col>
-            <f7-col>
-              <f7-button raised fill @click="updateThisTalk()">
-                Update This Talk
-              </f7-button>
-            </f7-col>
-          </f7-row>
-          <f7-block-footer>
-          </f7-block-footer>
-        </f7-block>
+        </f7-list>
+        <f7-row>
+          <f7-col>
+            <f7-button popup-close raised color=red>Back</f7-button>
+          </f7-col>
+          <f7-col>
+            <f7-button raised fill @click="updateThisTalk()">
+              Update This Talk
+            </f7-button>
+          </f7-col>
+        </f7-row>
+        <f7-block-footer>
+        </f7-block-footer>
       </f7-page>
     </f7-popup>
 
@@ -135,7 +140,7 @@ export default {
     return {
       events: {},
       talks: {},
-      thisTalk: {},
+      thisTalk: {class:'UNKNOWN'},
       thisEvent: {},
       popupTalkEdit: false,
     };

@@ -358,10 +358,11 @@ Vue.mixin({
       notify: function(header, msg, timeout=3000) 
       {
          const app = this.$f7;
+         var t = timeout + msg.split(" ").length / 3 * 1000; // 3 words per sec.
          app.notification.create({
             title: header,
             subtitle: msg,
-            closeTimeout: timeout,
+            closeTimeout: t,
             closeOnClick: true,
             swipeToClose: true,
          }).open();
@@ -397,7 +398,7 @@ Vue.mixin({
             return o;
          else if(obj.length == 0)
             return o;
-         return obj.includes(key)?obj[key]:o;
+         return obj.hasOwnProperty(key)?obj[key]:o;
       },
    },
    // Vue filter for parsing phone numbers.

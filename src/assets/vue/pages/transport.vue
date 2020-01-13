@@ -5,80 +5,73 @@
             page-content>
   <f7-navbar title="Transport" back-link="Back"></f7-navbar>
 
-  <f7-fab position="right-bottom" 
-          slot="fixed" 
-          color="green"
-          href="/osm/liveroute/60"
-     >
+  <f7-fab position="right-bottom" slot="fixed" color="green" href="/osm/liveroute/60">
      <f7-icon icon="fa fa-map fa-2x"></f7-icon>
   </f7-fab>
 
   <f7-link external 
            target="_system"
            style="float:right"
-           href="https://www.ncbs.res.in/shuttle_trips"
-           ><small>Official Schedule</small>
+           href="https://www.ncbs.res.in/shuttle_trips">
+    <small>Official Schedule</small>
   </f7-link> 
 
   <!-- Select days buttons. -->
   <f7-block>
-    <f7-row noGap>
-      <f7-col noGap v-for="d in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']" :key="'col'+d">
+    <f7-row>
+      <f7-col v-for="d in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']" :key="'col'+d">
         <f7-button  small
                     :key="d" 
                     :fill="(d==selectedDay)?true:false" 
-                    @click="changeDay(d)"
-                    > {{d}}
+                    @click="changeDay(d)"> 
+          {{d}}
         </f7-button>
       </f7-col>
     </f7-row>
   </f7-block>
 
-  <f7-block accordion-list>
-     <f7-list accordion-list no-hairlines>
+  <!-- List of transport. -->
+  <f7-block inset>
+  <f7-list media-list accordion-list no-hairlines class="display-block">
+    <f7-row style="list-style-type:none">
        <f7-list-item accordion-item 
                      v-for="(route, key) in transport.routes" 
+                     class="col-100 medium-50" 
                      :key="key">
-         <div slot="title" style="font-size:large;margin-bottom:10px">
+         <div slot="title">
            <f7-icon icon="fa fa-map-marker fa-fw"></f7-icon>
            {{route.pickup_point}} to {{ route.drop_point }}
          </div>
          <span slot="footer"> {{ nextTrip(route) }}</span>
 
          <f7-accordion-content>
-           <f7-list media-list inner
-                    style="padding:0px;margin:0px"
-                    >
-                    <f7-list-item v-for="(t, key) in thisRouteTimetable(route)"
-                                  :key="key"
-                                  v-if="isUpcomingTrip(t)"
-                                  style="padding:0px;margin:0px"
-                                  swipeout
-                                  >
-                                  <f7-swipeout-actions right>
-                                    <f7-swipeout-button @click="showRoute(t)">Show This Route
-                                    </f7-swipeout-button>
-                                  </f7-swipeout-actions>
-
-             <div slot="title">
-               {{str2Moment(t.trip_start_time, 'HH:mm:ss').format('hh:mm A')}}
-             </div>
-             <f7-icon slot="media"
-                      :icon="transportIcon(t.vehicle,t.trip_start_time,t.day)">
-             </f7-icon>
-
-             <span slot='after' v-if="isUpcomingTrip(t)">
-               {{ str2Moment(t.trip_start_time, 'HH:mm:ss').fromNow() }}
-             </span>
-
-                    </f7-list-item>
+           <f7-list>
+             <f7-list-item v-for="(t, key) in thisRouteTimetable(route)"
+                           :key="key"
+                           v-if="isUpcomingTrip(t)">
+               <!--
+               <f7-swipeout-actions right>
+                 <f7-swipeout-button @click="showRoute(t)">Show This Route
+                 </f7-swipeout-button>
+               </f7-swipeout-actions>
+               -->
+               <div slot="title">
+                 {{str2Moment(t.trip_start_time, 'HH:mm:ss').format('hh:mm A')}}
+               </div>
+               <f7-icon slot="media"
+                        :icon="transportIcon(t.vehicle,t.trip_start_time,t.day)">
+               </f7-icon>
+               <span slot='after' v-if="isUpcomingTrip(t)">
+                 {{ str2Moment(t.trip_start_time, 'HH:mm:ss').fromNow() }}
+               </span>
+             </f7-list-item>
            </f7-list>
-
          </f7-accordion-content>
-
      </f7-list-item>
-     </f7-list>
+    </f7-row>
+  </f7-list>
   </f7-block>
+
   <f7-block v-if="! tracking === 'Stop'" style="align:bottom">
   <div>If you are inside a vehicle, click on <tt>TRACK</tt> button to anonymously
      share you location. We use it to display live location and create routes.

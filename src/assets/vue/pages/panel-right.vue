@@ -12,22 +12,24 @@
                         title="Pending Requests" 
                         panel-close>
           </f7-list-item>
-
           <f7-list-item link="/bmvadmin/events/" 
                         target="_blank"
                         view=".view-main"
                         title="Confirmed Events" 
                         panel-close>
           </f7-list-item>
-
           <f7-list-item link="/admin/talks/" 
                         target="_blank"
                         view=".view-main"
                         title="Manage Talks/Seminar" 
-                        panel-close
-                        >
+                        panel-close>
           </f7-list-item>
-
+          <f7-list-item link="/admin/speaker/manage/-1" 
+                        target="_blank"
+                        view=".view-main"
+                        title="Manage Speakers" 
+                        panel-close>
+          </f7-list-item>
         </f7-list>
       </f7-block>
 
@@ -38,26 +40,20 @@
                         target="_blank"
                         view=".view-main"
                         title="Annual Work Seminar (AWS)" 
-                        panel-close
-                        >
+                        panel-close>
           </f7-list-item>
-
           <f7-list-item link="/acadadmin/awsroster/" 
                         target="_blank"
                         view=".view-main"
                         title="AWS Roster" 
-                        panel-close
-                        >
+                        panel-close>
           </f7-list-item>
-
           <f7-list-item link="/acadadmin/courses/" 
                         target="_blank"
                         view=".view-main"
                         title="Courses" 
-                        panel-close
-                        >
+                        panel-close>
           </f7-list-item>
-
           <!-- Only when not bmvadmin because this option is available there as
           well. -->
           <f7-list-item link="/admin/talks/" 
@@ -65,10 +61,8 @@
                         view=".view-main"
                         title="Manage Talks/Seminar" 
                         v-if="! $store.getters.roles.includes('BOOKMYVENUE_ADMIN')"
-                        panel-close
-                        >
+                        panel-close>
           </f7-list-item>
-
         </f7-list>
 
       </f7-block>
