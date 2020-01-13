@@ -63,8 +63,7 @@
     </f7-link>
   </f7-block-header>
 
-  <f7-list accordion-list media-list no-hairlines 
-           class="search-list skeleton-text">
+  <f7-list accordion-list media-list no-hairlines class="search-list">
     <f7-list-item :accordion-item="item.data.description.length>80"
            v-for="(item, key) in items"
            :key="key">
