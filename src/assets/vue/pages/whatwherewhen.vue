@@ -63,7 +63,8 @@
     </f7-link>
   </f7-block-header>
 
-  <f7-list accordion-list media-list no-hairlines class="search-list">
+  <f7-list accordion-list media-list no-hairlines 
+           class="search-list skeleton-text">
     <f7-list-item :accordion-item="item.data.description.length>80"
            v-for="(item, key) in items"
            :key="key">
@@ -106,12 +107,12 @@ export default {
   mounted: function() {
     const self = this;
     self.initVenuesAndClasses();
-    self.fetchEvents();
     // Fetch calendar link.
     self.promiseWithAuth('config/calendar_url')
       .then( function(x) {
         self.calendarLink = JSON.parse(x.data).data.value;
       });
+    self.fetchEvents();
   },
   methods: { 
     initVenuesAndClasses: function( ) {
@@ -169,7 +170,7 @@ export default {
 
       };
     },
-    eventsToTimeLine: function(events) 
+    eventsToTimeLine: async function(events) 
     {
       const self = this;
       const app = self.$f7;
@@ -222,10 +223,11 @@ export default {
       self.venues.push('ALL');
       return;
     },
-    filterTimeline: function(venue, cls) 
+    filterTimeline: async function(venue, cls) 
     {
       const self = this;
       const app = self.$f7;
+      app.preloader.show();
 
       // Preserve the previous venue, cls because they will be reset on
       // ptr, refresh or infinite events.
@@ -241,11 +243,13 @@ export default {
           return true;
       }
       );
-      self.eventsToTimeLine(filteredEvents);
+      await self.eventsToTimeLine(filteredEvents);
+      app.preloader.hide();
     },
     genTimeline: function( ev ) 
     {
       const self = this;
+      const app = self.$f7;
       let whereWhere = '';
       whereWhere += moment(ev.date, 'YYYY-MM-DD').format('ddd, MMM DD') +
         ', ' + moment(ev.start_time, 'HH:mm:ss').format('h:mm A') +
