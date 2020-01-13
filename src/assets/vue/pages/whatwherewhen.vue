@@ -68,10 +68,9 @@
            v-for="(item, key) in items"
            :key="key">
            <div slot="header" v-html="genWhereline(item.data)"></div>
-           <div slot="text">
-             <strong>{{item.data.title}}
-               <small>by {{item.created_by}}</small>
-               </small>
+           <div slot="text" class="text-color-black">
+             <strong>{{item.data.title}}</strong>
+             <small>by {{item.created_by}}</small>
            </div>
            <div slot="footer" v-html="genTimeline(item.data)"></div>
            <f7-accordion-content style="background-color:Ivory"
