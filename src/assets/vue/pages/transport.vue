@@ -36,22 +36,13 @@
                      class="col-100 medium-50" 
                      :key="key">
          <div slot="title">
-           <f7-icon icon="fa fa-map-marker fa-fw"></f7-icon>
            {{route.pickup_point}} to {{ route.drop_point }}
          </div>
          <span slot="footer"> {{ nextTrip(route) }}</span>
-
          <f7-accordion-content>
-           <f7-list>
+           <f7-list media-list>
              <f7-list-item v-for="(t, key) in thisRouteTimetable(route)"
-                           :key="key"
-                           v-if="isUpcomingTrip(t)">
-               <!--
-               <f7-swipeout-actions right>
-                 <f7-swipeout-button @click="showRoute(t)">Show This Route
-                 </f7-swipeout-button>
-               </f7-swipeout-actions>
-               -->
+                           :key="key" v-if="isUpcomingTrip(t)">
                <div slot="title">
                  {{str2Moment(t.trip_start_time, 'HH:mm:ss').format('hh:mm A')}}
                </div>
@@ -59,7 +50,7 @@
                         :icon="transportIcon(t.vehicle,t.trip_start_time,t.day)">
                </f7-icon>
                <span slot='after' v-if="isUpcomingTrip(t)">
-                 {{ str2Moment(t.trip_start_time, 'HH:mm:ss').fromNow() }}
+                 {{str2Moment(t.trip_start_time, 'HH:mm:ss').fromNow()}}
                </span>
              </f7-list-item>
            </f7-list>
