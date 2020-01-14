@@ -64,21 +64,22 @@
   </f7-block-header>
 
   <f7-list accordion-list media-list no-hairlines class="search-list">
-    <f7-list-item :accordion-item="item.data.description.length>80"
+    <f7-list-item :accordion-item="item.description.length>80"
            v-for="(item, key) in items"
            :key="key">
-           <div slot="header" v-html="genWhereline(item.data)"></div>
+           <div slot="header" v-html="genWhereline(item)"></div>
            <div slot="text" class="text-color-black">
-             <strong>{{item.data.title}}</strong>
+             <strong>{{item.title}}</strong>
              <small>by {{item.created_by}}</small>
            </div>
-           <div slot="footer" v-html="genTimeline(item.data)"></div>
-           <f7-accordion-content style="background-color:Ivory"
-                                 v-html="item.data.title+'<br/>'+item.data.description">
+           <div slot="footer" v-html="genTimeline(item)"></div>
+           <f7-accordion-content style="background-color:Ivory">
+             <f7-block>
+               <div v-html="item.title+'<br />'+item.description"></div>
+             </f7-block>
            </f7-accordion-content>
     </f7-list-item>
   </f7-list>
-
   </f7-page>
 </template>
 
@@ -132,7 +133,7 @@ export default {
         function(x) {
           self.events = JSON.parse(x.data).data;
           self.initVenuesAndClasses();
-          self.eventsToTimeLine(self.events);
+          self.assignEvents(self.events);
           self.saveStore('events', self.events);
           app.preloader.hide();
         });
@@ -169,20 +170,10 @@ export default {
 
       };
     },
-    eventsToTimeLine: async function(events) 
+    assignEvents: async function(events) 
     {
       const self = this;
-      const app = self.$f7;
-      app.preloader.show();
-      self.items = [];
-      for(var key in events)
-      {
-        let ev = events[key];
-        if(moment(ev.date + " " + ev.end_time, "YYYY-MM-DD HH:mm:ss") <= moment())
-          continue;
-        self.items.push(self.eventToTimelinePoint(key, ev));
-      }
-      app.preloader.hide();
+      self.items = events;
     },
     loadMore: function() 
     {
@@ -240,9 +231,8 @@ export default {
           return (cls=='ALL' || x.class==self.selectedClass)
         else
           return true;
-      }
-      );
-      await self.eventsToTimeLine(filteredEvents);
+      });
+      await self.assignEvents(filteredEvents);
       app.preloader.hide();
     },
     genTimeline: function( ev ) 
