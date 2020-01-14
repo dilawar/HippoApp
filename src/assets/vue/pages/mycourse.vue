@@ -8,8 +8,7 @@
      <f7-list media-list accordion-list no-hairlines>
         <f7-list-item accordion-item 
                       v-for="(course, key) in runningCourses" 
-                      :key="key"
-                      >
+                      :key="key">
            <div slot="header">
               Credits {{metadata[course.course_id].credits}},
               Slot {{course.slot}} @{{course.venue}}, <tt>{{course.course_id}}</tt>
@@ -136,9 +135,7 @@
             </f7-list-item>
          </f7-list>
       </f7-block>
-
    </f7-page>
-
 </template>
 
 <script>
@@ -217,20 +214,26 @@ export default {
       app.preloader.show();
       self.postWithPromise("/courses/register/"+btoa(course.id)+"/"+regType)
         .then(function(x) {
-          let res = JSON.parse(x.data);
-          if( res.status == 'ok')
+          let res = JSON.parse(x.data).data;
+          if(res.success) 
+          {
             self.fetchCoursesPromise().then(function(x) {
-              app.preloader.hide();
               // Subscribe to notification.
               if(regType==='DROP')
                 self.subscribeFCM(course.id);
               else
                 self.unsubscribeFCM(course.id);
             });
+            app.preloader.hide();
+            self.notify("Success", res.msg);
+          }
           else
-            navigator.notification.alert("Failed to update course", null , "Course", "OK");
+          {
+            app.preloader.hide();
+            self.notify("Failed", "Failed to update course" + res.msg);
+          }
         });
-      setTimeout( () => app.preloader.hide(), 5000);
+      setTimeout(() => app.preloader.hide(), 5000);
     },
     alreadyRegistered: function(cid) {
       const self = this;
