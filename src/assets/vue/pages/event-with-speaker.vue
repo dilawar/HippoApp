@@ -1,6 +1,5 @@
 <template>
   <f7-page> 
-
     <f7-navbar :title="'Booking a ' + thisEvent.type" back-link="Back">
     </f7-navbar>
 
