@@ -1,7 +1,11 @@
 <template>
-  <f7-page> <f7-navbar title="Booking Events" back-link="Back"></f7-navbar>
+  <f7-page> 
+
+    <f7-navbar title="Booking Events" back-link="Back">
+    </f7-navbar>
 
     <f7-list media-list no-hairlines>
+
       <!-- Ask user for what purpose they are booking -->
       <f7-list-input label="Select the TYPE of event..."
                      inline-label
@@ -60,14 +64,11 @@
       </f7-list>
     </div>
   </f7-block>
-
-
   </f7-page>
 </template>
 
 <script>
 import moment from 'moment';
-
 export default {
   data() {
     return {

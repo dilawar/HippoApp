@@ -107,21 +107,20 @@
           </f7-list-input>
 
           <f7-list-item>
-            <f7-button slot="after" popup-close>Done</f7-button>
+            <f7-button raised slot="after" popup-close>Done</f7-button>
           </f7-list-item>
         </f7-list>
       </f7-block>
 
       <f7-block inset>
-        <f7-block-title small>
-          Picked dates.
-        </f7-block-title> 
-        <f7-list no-hairlines v-if="thisBooking.dates">
-          <f7-list-item>
-          </f7-list-item>
-          <f7-list-item v-for="(day, key) in thisBooking.dates" :key="key">
-            <div slot="header">{{day | date}}</div>
-          </f7-list-item> 
+        <f7-block-title small>Picked dates. </f7-block-title> 
+        <f7-list v-if="thisBooking.dates">
+          <f7-row>
+            <f7-list-item v-for="(day, key) in thisBooking.dates" 
+                          class="col-30 medium-15" :wrap="false" :key="key">
+              <div slot="header">{{day | date2}}</div>
+            </f7-list-item> 
+          </f7-row>
         </f7-list>
       </f7-block>
 
@@ -149,11 +148,10 @@
         </f7-list-input>
 
         <!--
-          <f7-list-input :input="false" label="Description (optional)">
+        <f7-list-input :input="false" label="Description (optional)">
           <vue-editor ref="description" 
-          slot="input"
-          :editor-toolbar="smallToolbar"
-          v-model="thisBooking.description">
+                      slot="input"
+                      v-model="thisBooking.description">
           </vue-editor>
         </f7-list-input>
         -->
@@ -310,8 +308,7 @@ export default {
         .then( function(x) {
           // Got the event with given external id
           self.thisEvent = JSON.parse(x.data).data;
-          if(self.thisEvent)
-          {
+          if(self.thisEvent) {
             self.thisEvent.type = self.thisEvent['class'];
             self.thisEvent.readonly = true;
 
