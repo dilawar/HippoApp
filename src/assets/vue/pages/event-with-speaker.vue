@@ -1,6 +1,5 @@
 <template>
   <f7-page> 
-
     <f7-navbar :title="'Booking a ' + thisEvent.type" back-link="Back">
     </f7-navbar>
 
@@ -19,24 +18,23 @@
           to {{dbTime(thisBooking.endTime)}}
         </f7-block-title>
 
-        <f7-block>
-          <!-- Fetch venues and show the status. -->
-          <f7-list media-list>
-            <f7-list-item v-for="(venue, key) in venues" 
-                          :key="key"
-                          @click="onVenueSelected(venue.id)">
-              <div slot="header" bg-color="blue">{{venue.note_to_user}}</div>
-              <div slot="title">{{venue.name}}</div>
-              <div slot="after" v-if="isAvailable(venue)">Available</div>
-              <div slot="footer" v-if="venue.BOOKING_STATUS!=='AVAILABLE'">
-                {{venue.BOOKING}}
-              </div>
-              <div slot="header">
-                Capacity {{venue.strength}}, Projector {{venue.has_projector}}
-              </div>
-            </f7-list-item>
-          </f7-list>
-        </f7-block>
+        <!-- Fetch venues and show the status. -->
+        <f7-list media-list>
+          <f7-list-item v-for="(venue, key) in venues" 
+                        :key="key"
+                        @click="onVenueSelected(venue.id)">
+            <div slot="header" bg-color="blue">{{venue.note_to_user}}</div>
+            <div slot="title">{{venue.name}}</div>
+            <div slot="after" v-if="isAvailable(venue)">Available</div>
+            <div slot="footer" v-if="venue.BOOKING_STATUS!=='AVAILABLE'">
+              {{venue.BOOKING}}
+            </div>
+            <div slot="header">
+              Capacity {{venue.strength}}, Projector {{venue.has_projector}}
+            </div>
+          </f7-list-item>
+        </f7-list>
+
       </f7-page>
     </f7-popup>
 
@@ -44,15 +42,17 @@
   <!-- POPUP  -->
   <f7-popup :opened="openSpeakerPopup" @popup:close="openSpeakerPopup = false">
     <f7-page>
-      <f7-navbar title="Add new speaker">
+      <f7-navbar :title="createNewSpeaker?'Add new speaker':'Update speaker'">
         <f7-nav-right>
           <f7-link popup-close>Close</f7-link>
         </f7-nav-right>
       </f7-navbar>
 
     <!-- Once the CLASS is known, expand the speaker card. -->
-    <f7-block-title small>Your search was futile.  Add a new speaker...
+    <f7-block-title small v-if="createNewSpeaker">
+      Your search was futile.  Add a new speaker...
     </f7-block-title>
+
     <f7-block>
 
     <f7-list no-hairlines>
@@ -65,8 +65,8 @@
       </f7-list-input>
 
       <f7-list-input :value="thisSpeaker.name" 
-              required
               @change="thisSpeaker.name = $event.target.value"
+              required
               label="Name">
       </f7-list-input>
 
@@ -91,8 +91,15 @@
     <f7-row>
       <f7-col></f7-col>
       <f7-col>
-        <f7-button panel-close raised @click="submitSpeaker(thisSpeaker)">
+        <f7-button panel-close raised 
+                   v-if="createNewSpeaker"
+                   @click="submitNewSpeaker(thisSpeaker)">
           Add Speaker
+        </f7-button>
+        <f7-button panel-close raised 
+                   v-else
+                   @click="submitUpdateSpeaker(thisSpeaker)">
+          Update Speaker
         </f7-button>
       </f7-col>
     </f7-row>
@@ -102,22 +109,13 @@
 
   <f7-block>
     <!-- SPEAKER -->
-    <f7-list no-hairlines>
+    <f7-list no-hairlines media-list>
     <f7-list-group>
-      <f7-list-item >
-        <div slot="header">
-          <tt>{{thisEvent.type}}</tt> must have a speaker. 
-        </div>
-        <div slot="footer">
-          If no one is found in my database, I will ask you
-          to fill-in speaker's details.
-        </div>
-      </f7-list-item>
-      <f7-list-input :input="false">
+      <f7-list-input :input="false" label="Speaker (required)">
         <v-autocomplete  slot="input"
                          ref="refEventSpeaker"
                          input-class="item-input"
-                         placeholder="Speaker"
+                         placeholder="Search or add a new speaker..."
                          results-property="email"
                          results-display="name"
                          :request-headers="apiPostData()"
@@ -129,27 +127,24 @@
         </v-autocomplete>
       </f7-list-input>
       <f7-list-item v-if="parseInt(thisSpeaker.id) > 0"
-                    style="background-color:lightyellow"
-                    >
+                    style="background-color:lightyellow">
+        <img slot="media" width="70px" :src="'data:image/jpeg;base64, '+thisSpeaker.photo">
+        </img>
         <div slot="header" v-html="thisSpeaker.html"></div>
-        <f7-link slot="footer" @click="openSpeakerPopup=true" >Update</f7-link>
+        <f7-button slot="footer" :href="'/admin/speaker/edit/'+thisSpeaker.id">
+          Update
+        </f7-button>
       </f7-list-item>
       <f7-list-item v-if="createNewSpeaker">
         <div slot="header">No one is found..</div>
-        <f7-button small raised
-                   @click="openSpeakerPopup=true"
-          > Add new Speaker </f7-button>
+        <f7-button small raised href="/admin/speaker/add/-1">
+          Add new Speaker
+        </f7-button>
       </f7-list-item>
     </f7-list-group>
 
     <!-- WHEN SPEAKER IS SET, SHOW THE TALK SECTION -->
     <f7-list-group v-if="parseInt(thisEvent.speaker_id)>0">
-      <f7-list-item>
-        <div slot="header">
-          Cool! Now a valid speaker has been assigned, fill-in 
-          the details of your <tt>{{thisEvent.type}}</tt>.
-        </div>
-      </f7-list-item>
       <f7-list-input v-if="parseInt(thisEvent.speaker_id) > 0"
                      @input="thisEvent.title = $event.target.value"
                      label="Title"
@@ -157,23 +152,21 @@
                      :value="thisEvent.title">
       </f7-list-input>
 
-      <!--
-      <f7-list-input :input="false">
+      <f7-list-input :input="false" label="Description">
         <vue-editor ref="description" 
                     slot="input"
                     placeholder="Description of this talk"
                     v-model="thisEvent.description">
         </vue-editor>
       </f7-list-input>
-      -->
+      <!--
       <f7-list-input type="texteditor"
                      label="Description"
                      :value="thisEvent.description"
                      :textEditorParams="{mode:'keyboard-toolbar'}"
                      @texteditor:change="(v)=>thisEvent.description=v">
       </f7-list-input>
-
-
+      -->
       <f7-list-input :input="false" required>
         <v-autocomplete  slot="input"
                          input-class="item-input"
@@ -324,32 +317,45 @@ export default {
     onSpeakerSelected: function(val) 
     {
       const self = this;
-      self.thisSpeaker = val.selectedObject;
-      self.thisEvent.speaker_id = self.thisSpeaker.id;
+      self.promiseWithAuth('people/speaker/fetch/'+val.value)
+        .then(function(x) {
+          self.thisSpeaker = JSON.parse(x.data).data;
+          self.thisEvent.speaker_id = self.thisSpeaker.id;
+        });
     },
-    foundSpeakersOnSearch: function(res)
-    {
+    foundSpeakersOnSearch: function(res) {
       const self = this;
       self.potentialSpeakers = res.results;
       self.createNewSpeaker = false;
     },
-    submitSpeaker: function(speaker) 
-    {
+    submitNewSpeaker: function(speaker) {
       const self = this;
       const app = self.$f7;
-      console.log('Adding ', speaker);
-      app.dialog.preloader();
+      app.preloader.show();
       self.promiseWithAuth('people/speaker/add', speaker)
         .then( function(x) {
           var data = JSON.parse(x.data).data;
           self.thisSpeaker = data.data;
-          app.dialog.close();
-          console.log( 'Added ', self.thisSpeaker);
+          app.preloader.hide();
         });
-      setTimeout(() => app.dialog.close(), 500);
+      setTimeout(() => app.preloader.hide(), 1000);
     },
-    registerTalk : function()
-    {
+    submitUpdateSpeaker: function(speaker) {
+      const self = this;
+      const app = self.$f7;
+      app.preloader.show();
+      self.promiseWithAuth('people/speaker/update', speaker)
+        .then(function(x) {
+          app.preloader.hide();
+        });
+      setTimeout(() => app.preloader.hide(), 1000);
+    },
+    updateSpeaker: function() {
+      const self = this;
+      self.createNewSpeaker = false;
+      self.openSpeakerPopup = true;
+    },
+    registerTalk: function() {
       const self = this;
       const app = self.$f7;
 
