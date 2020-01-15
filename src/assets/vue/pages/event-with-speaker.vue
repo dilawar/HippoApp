@@ -109,22 +109,13 @@
 
   <f7-block>
     <!-- SPEAKER -->
-    <f7-list no-hairlines>
+    <f7-list no-hairlines media-list>
     <f7-list-group>
-      <f7-list-item >
-        <div slot="header">
-          <tt>{{thisEvent.type}}</tt> must have a speaker. 
-        </div>
-        <div slot="footer">
-          If no one is found in my database, I will ask you
-          to fill-in speaker's details.
-        </div>
-      </f7-list-item>
-      <f7-list-input :input="false">
+      <f7-list-input :input="false" label="Speaker (required)">
         <v-autocomplete  slot="input"
                          ref="refEventSpeaker"
                          input-class="item-input"
-                         placeholder="Speaker"
+                         placeholder="Search or add a new speaker..."
                          results-property="email"
                          results-display="name"
                          :request-headers="apiPostData()"
@@ -154,12 +145,6 @@
 
     <!-- WHEN SPEAKER IS SET, SHOW THE TALK SECTION -->
     <f7-list-group v-if="parseInt(thisEvent.speaker_id)>0">
-      <f7-list-item>
-        <div slot="header">
-          Cool! Now a valid speaker has been assigned, fill-in 
-          the details of your <tt>{{thisEvent.type}}</tt>.
-        </div>
-      </f7-list-item>
       <f7-list-input v-if="parseInt(thisEvent.speaker_id) > 0"
                      @input="thisEvent.title = $event.target.value"
                      label="Title"
@@ -167,7 +152,7 @@
                      :value="thisEvent.title">
       </f7-list-input>
 
-      <f7-list-input :input="false">
+      <f7-list-input :input="false" label="Description">
         <vue-editor ref="description" 
                     slot="input"
                     placeholder="Description of this talk"
