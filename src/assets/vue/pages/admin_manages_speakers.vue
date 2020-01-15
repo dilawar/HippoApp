@@ -19,7 +19,7 @@
         </v-autocomplete>
       </f7-list-input>
       <f7-list-item>
-        <f7-col>
+        <f7-col width="50" medium="30">
           <vue-dropzone ref="speakerPic"  
                         id="speaker-pic-id"
                         @vdropzone-files-added="(file)=>uploadFiles()"
@@ -61,7 +61,7 @@
                      @click="updateSpeaker()">
             Update Speaker
           </f7-button>
-          <f7-button small raised @click="addNewSpeaker" v-else>
+          <f7-button small raised @click="addNewSpeaker()" v-else>
             Add new Speaker
           </f7-button>
         </f7-col>
@@ -82,7 +82,7 @@ export default {
     return {
       hideKeys: ['id', 'photo', 'html'],
       speaker: {},
-      createNewSpeaker: true,
+      createNewSpeaker: params.action==='edit'?false:true,
       thisTask: params.action,
       thisSpeaker: {id: params.speakerid, honorific:''
         , email:'', first_name:'', middle_name:'', last_name:''

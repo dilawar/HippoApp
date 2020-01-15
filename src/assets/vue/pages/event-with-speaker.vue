@@ -136,16 +136,19 @@
         </v-autocomplete>
       </f7-list-input>
       <f7-list-item v-if="parseInt(thisSpeaker.id) > 0"
-                    style="background-color:lightyellow"
-                    >
+                    style="background-color:lightyellow">
+        <img slot="media" width="70px" :src="'data:image/jpeg;base64, '+thisSpeaker.photo">
+        </img>
         <div slot="header" v-html="thisSpeaker.html"></div>
-        <f7-link slot="footer" @click="updateSpeaker()" >Update</f7-link>
+        <f7-button slot="footer" :href="'/admin/speaker/edit/'+thisSpeaker.id">
+          Update
+        </f7-button>
       </f7-list-item>
       <f7-list-item v-if="createNewSpeaker">
         <div slot="header">No one is found..</div>
-        <f7-button small raised
-                   @click="openSpeakerPopup=true"
-          > Add new Speaker </f7-button>
+        <f7-button small raised href="/admin/speaker/add/-1">
+          Add new Speaker
+        </f7-button>
       </f7-list-item>
     </f7-list-group>
 
@@ -329,8 +332,11 @@ export default {
     onSpeakerSelected: function(val) 
     {
       const self = this;
-      self.thisSpeaker = val.selectedObject;
-      self.thisEvent.speaker_id = self.thisSpeaker.id;
+      self.promiseWithAuth('people/speaker/fetch/'+val.value)
+        .then(function(x) {
+          self.thisSpeaker = JSON.parse(x.data).data;
+          self.thisEvent.speaker_id = self.thisSpeaker.id;
+        });
     },
     foundSpeakersOnSearch: function(res) {
       const self = this;

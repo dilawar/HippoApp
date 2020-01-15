@@ -4,40 +4,41 @@
     <f7-navbar title="Booking Events" back-link="Back">
     </f7-navbar>
 
-    <f7-list media-list no-hairlines>
+    <f7-block>
+      <f7-list media-list no-hairlines>
+        <!-- Ask user for what purpose they are booking -->
+        <f7-list-input label="Select the TYPE of event..."
+                       inline-label
+                       type="select" 
+                       @change="eventType=$event.target.value"
+                       :value="eventType">
+          <option v-for="(cls, key) in eventTypes.all" :key="key" :value="cls">
+          {{cls}}
+          </option>
+        </f7-list-input>
+        <f7-list-item checkbox 
+                      :checked="sendEmailToAcademic"
+                      @change="changeSendEmailToAcademic"
+                      title="Send email(s) to Academic community"
+                      footer="Hippo will send email to academic community on the 
+                              day of event. I'll also add this to NCBS public 
+                              calendar. Usually ticked for talks and seminars.">
+        </f7-list-item>
+      </f7-list>
 
-      <!-- Ask user for what purpose they are booking -->
-      <f7-list-input label="Select the TYPE of event..."
-                     inline-label
-                     type="select" 
-                     @change="eventType=$event.target.value"
-                     :value="eventType">
-        <option v-for="(cls, key) in eventTypes.all" :key="key" :value="cls">
-        {{cls}}
-        </option>
-      </f7-list-input>
-      <f7-list-item checkbox 
-                    :checked="sendEmailToAcademic"
-                    @change="changeSendEmailToAcademic"
-                    title="Send email(s) to Academic community"
-                    footer="Hippo will send email to academic community on the 
-                             day of event. I'll also add this to NCBS public 
-                             calendar. Usually ticked for talks and seminars.">
-      </f7-list-item>
-    </f7-list>
-
-    <f7-button v-if="sendEmailToAcademic"
-               :disabled="! isValidSelection()" 
-               raised filled
-               :href="'/register-event-with-speaker/'+eventType">
-      Continue
-    </f7-button>
-    <f7-button v-else 
-               raised filled
-               :disabled="! isValidSelection()"
-               :href="'/bookevent/0/'+eventType">
-      Continue
-    </f7-button>
+      <f7-button v-if="sendEmailToAcademic"
+                 :disabled="! isValidSelection()" 
+                 raised filled
+                 :href="'/register-event-with-speaker/'+eventType">
+        Continue
+      </f7-button>
+      <f7-button v-else 
+                 raised filled
+                 :disabled="! isValidSelection()"
+                 :href="'/bookevent/0/'+eventType">
+        Continue
+      </f7-button>
+    </f7-block>
 
   <f7-block inset>
     <!-- If there is any unscheduled talks, show them here for booking. -->
