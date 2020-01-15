@@ -96,12 +96,13 @@
               <f7-list-item>
                 <f7-row v-if="thisCourseMetadata.id && !  thisCourseMetadata.is_new">
                   <f7-col>
-                    <f7-button icon="fa fa-danger" small 
+                    <f7-button icon="fa fa-danger" small raised fill
                                @click="deleteThisCourseMetadata()"
                                color=red>
                       Delete This course
                     </f7-button>
                   </f7-col>
+                  <f7-col></f7-col>
                 </f7-row>
               </f7-list-item>
             </f7-list-group>
