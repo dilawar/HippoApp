@@ -3,7 +3,11 @@
       <f7-navbar title="Courses" back-link="Back">
       </f7-navbar>
 
-     <f7-block-title>Running Courses</f7-block-title>
+     <f7-block-title medium>Running Courses.</f7-block-title>
+     <f7-block-header>
+       Click on the list item to <tt>AUDIT</tt>, <tt>CREDIT</tt> or to
+       <tt>DROP</tt> a course.
+     </f7-block-header>
 
      <f7-list media-list accordion-list no-hairlines>
         <f7-list-item accordion-item 
@@ -13,11 +17,13 @@
               Credits {{metadata[course.course_id].credits}},
               Slot {{course.slot}} @{{course.venue}}, <tt>{{course.course_id}}</tt>
            </div>
-           <div slot="media" v-if="alreadyRegistered(course.id)" >
+           <div slot="media" v-if="alreadyRegistered(course.id)">
                 <f7-icon icon="fa fa-bookmark fa-2x"></f7-icon>
            </div>
-           <div slot="text"> Timeline: {{course.start_date}}  to {{course.end_date}} </div>
            <div slot="title"> {{metadata[course.course_id].name}} </div>
+           <div slot="subtitle">
+             {{course.start_date | date}} to {{course.end_date | date}} 
+           </div>
            <div slot="footer"> {{course.note}} </div>
 
            <f7-accordion-content>
@@ -39,8 +45,10 @@
                  <f7-col>
                     <f7-button small raised fill 
                        @click="registerCourse(course, 'AUDIT')"
-                       v-if="(course.is_audit_allowed=='YES') && (alreadyRegistered(course.id)!='AUDIT')"
-                       >Audit</f7-button>
+                       v-if="(course.is_audit_allowed=='YES') && 
+                             (alreadyRegistered(course.id)!='AUDIT')">
+                      Audit
+                    </f7-button>
                  </f7-col>
                  <f7-col> 
                     <f7-button small raised fill
@@ -108,12 +116,11 @@
       </f7-popup>
 
       <f7-block>
-         <f7-block-title>My courses</f7-block-title>
+         <f7-block-title medium>My courses</f7-block-title>
          <f7-list media-list no-hairlines>
             <f7-list-item v-for="(course, key) in courses" :key="key"
                           :title="course.name"
-                          @click="showFeedback(course)"
-                          >
+                          @click="showFeedback(course)">
                <div slot="header">
                   {{course.year}}, {{course.semester}},
                   <span v-if="course.grade" style="color:blue;font-weight:500">
@@ -230,7 +237,7 @@ export default {
           else
           {
             app.preloader.hide();
-            self.notify("Failed", "Failed to update course" + res.msg);
+            self.notify("Failed", "Failed to update course. " + res.msg);
           }
         });
       setTimeout(() => app.preloader.hide(), 5000);
