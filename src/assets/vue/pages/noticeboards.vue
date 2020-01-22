@@ -284,30 +284,25 @@ export default {
    },
    mounted() {
       const self = this;
-      if(self.forumCards.length == 0)
-         setTimeout(() => self.getAllForumTags(), 500);
-
-      if(self.alltags.length == 0)
-         setTimeout(() => self.getForumPosts(), 1000);
-
-      if(self.subscriptions.length == 0)
-         setTimeout(() => self.getSubscriptions(), 500);
+     self.getAllForumTags();
+     self.getForumPosts();
+     self.getSubscriptions();
    },
    methods: { 
       // METHODS:
      getForumPosts: function() {
        const self = this;
        const app = self.$f7;
-       app.dialog.preloader();
+       app.preloader.show();
        self.promiseWithAuth( "/forum/list/100", []).then(
          function(x) {
            var res = JSON.parse(x.data).data;
            self.forumCards = res;
            self.saveStore('forum.cards', self.forumCards);
-           app.dialog.close();
+           app.preloader.hide();
          }
        );
-       setTimeout(() => app.dialog.close(), 2000);
+       setTimeout(() => app.preloader.hide(), 2000);
      },
      getSubscriptions: function() {
        const self = this;

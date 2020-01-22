@@ -12,30 +12,32 @@
       <f7-button @click="searchIntranet" small raised>Search</f7-button>
     </f7-list>
 
-    <f7-list media-list>
-      <f7-list-item v-for="(e,key) in ldapInfo" :key="key">
-        <div slot="media"></div>
-        <div slot="title">{{e.name}}</div>
-        <div slot="header">
-          <f7-link external
-                   icon="fa fa-envelope-o fa-fw"
-                   :href="`mailto:${e.email}`"
-                   target="_blank">
-            {{e.email}} 
-          </f7-link>
-          <f7-link external
-                   icon="fa fa-phone fa-fw"
-                   :href="`tel:${e.phone}`"
-                   target="_blank">
-            {{e.phone}}
-          </f7-link>
-        </div>
-        <div slot="footer" class="text-color-gray">
-          Group: {{e.group}}
-        </div>
-      </f7-list-item>
-      <f7-list-item></f7-list-item>
-    </f7-list>
+    <f7-block inset>
+      <f7-list media-list no-hairlines>
+        <f7-list-item v-for="(e,key) in ldapInfo" :key="key">
+          <div slot="title">{{e.name}}</div>
+          <div slot="header">
+            <f7-link external
+                     icon="fa fa-envelope-o fa-fw"
+                     :href="`mailto:${e.email}`"
+                     target="_blank">
+              {{e.email}} 
+            </f7-link>
+            <f7-link external
+                     class="pull-right"
+                     icon="fa fa-phone fa-fw"
+                     :href="`tel:${e.phone}`"
+                     target="_system">
+              {{e.phone}}
+            </f7-link>
+          </div>
+          <div slot="footer" class="text-color-gray">
+            Group: {{e.group}}
+          </div>
+        </f7-list-item>
+        <f7-list-item></f7-list-item>
+      </f7-list>
+    </f7-block>
 
   </f7-page>
 </template>

@@ -129,7 +129,7 @@ export default {
       const self = this;
       const app = self.$f7;
       app.preloader.show();
-      self.postWithPromise('/events/latest/200').then(
+      self.postWithPromise('/events/latest/50').then(
         function(x) {
           self.events = JSON.parse(x.data).data;
           self.initVenuesAndClasses();
