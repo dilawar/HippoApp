@@ -34,21 +34,20 @@
     </f7-navbar>
 
     <f7-row>
-      <f7-col width="30" medium="60"></f7-col>
-      <f7-col width="70" medium="40">
+      <f7-col width="20" medium="50"></f7-col>
+      <f7-col width="80" medium="50">
         <f7-list no-hairlines media-list>
-
           <f7-list-item v-if="isUserAuthenticated()"
                         link="/inventory/" 
                         title="Inventory" 
-                        footer="Search and borrow"
+                        tooltip="Search and borrow"
                         panel-close>
             <f7-icon slot="after" icon="fa fa-archive fa-2x"></f7-icon>
           </f7-list-item>
 
           <f7-list-item link="/accomodation/" 
                         title="Accomodations" 
-                        footer="Browse/create TO-LET listing"
+                        tooltip="Browse/create TO-LET listing"
                         panel-close>
             <f7-icon slot="after" icon="fa fa-home fa-2x"></f7-icon>
 
@@ -56,7 +55,7 @@
 
           <f7-list-item link="/noticeboards/all" 
                         title="Notice Board" 
-                        footer="Because you hate spamming mailing list"
+                        tooltip="Because you hate spamming mailing list"
                         panel-close>
             <f7-icon slot="after" icon="fa fa-bullhorn fa-2x"></f7-icon>
           </f7-list-item>
@@ -190,12 +189,15 @@ export default {
     self.promiseWithAuth('transport/upcoming').then(function(x) {
       let data = JSON.parse(x.data).data;
       if(data) {
-        self.upcomingTrips = '';
+        self.upcomingTrips = '<div style="color:black;">'
+        self.upcomingTrips += '<marquee direction="left" scrollamount="3">';
         data.forEach( (val, key) => {
-          self.upcomingTrips += val.vehicle + ': ' + val.pickup_point + ' to ' +
-            val.drop_point + ', ' + self.humanReadableTime(val.trip_start_time) 
-            + ' <br /> ';
+          self.upcomingTrips += ' 🚐  🙭  '
+            + val.vehicle + ': ' + val.pickup_point + ' to '
+            + val.drop_point + ', ' + self.humanReadableTime(val.trip_start_time) 
+            + '. . . . ';
         });
+        self.upcomingTrips += '</marquee></div>';
       }
     });
 
