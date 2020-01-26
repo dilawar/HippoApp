@@ -9,63 +9,47 @@
       Pending Requests.
     </f7-block-title>
 
-    <f7-list media-list no-hairlines>
-      <f7-list-item accordion-item
-                    v-for="(requests, gid, index) in requestGroups" 
-                    :title="requests[0].title"
-                    :key="gid"
-                    :header="requests[0].venue">
+    <f7-card v-for="(requests, gid, index) in requestGroups" :key="gid">
 
-        <font slot="header" color="blue" style="float:right">
-          {{requests.length}} Pending
-        </font>
+      <f7-card-header>
+        {{requests[0].title}} ({{requests.length}})
+      </f7-card-header>
 
-        <f7-accordion-content>
-          <f7-block inset style="background-color:lightyellow">
+      <f7-card-content>
+        <f7-block-header>
+          Public Event: {{requests[0].is_public_event}}
+        </f7-block-header>
+        <f7-block inset>
+          <f7-list media-list no-hairlines>
+            <f7-list-item v-for="(val, index) in requests" 
+                          :key="val.gid+'.'+val.rid" 
+                          :title="humanReadableDateTime(val.date,val.start_time)+' ('+val.venue+')'">
 
-            <div>{{requests[0].title}}
-              <span style="font-size:x-small">
-                <tt>IS PUBLIC EVENT={{requests[0].is_public_event}}</tt>
-              </span>
-            </div>
+              <f7-button small raised 
+                         color="red"
+                         tooltip="Delete this booking only"
+                         icon="fa fa-trash fa-fw"
+                         slot="after"
+                         @click="deleteThisRequest(val.gid, val.rid)"> 
+              </f7-button>
+            </f7-list-item>
+          </f7-list>
+        </f7-block>
+      </f7-card-content>
+      <f7-card-footer>
+          <f7-button v-if="requests.length>1"
+                     color="red" raised small 
+                     @click="deleteThisRequest(requests[0].gid)">
+            Delete All
+          </f7-button>
+          <f7-button raised small 
+                     icon="fa fa-pencil fa-1x"
+                     @click="popupEditGroupRequest(requests[0])">
+            Edit All
+          </f7-button>
+      </f7-card-footer>
+    </f7-card>
 
-            <f7-list media-list no-hairlines>
-              <f7-list-item>
-                <f7-row>
-                  <f7-col>
-                    <f7-button v-if="requests.length > 1"
-                               color="red"
-                               fill small 
-                               @click="deleteThisRequest(requests[0].gid)">
-                      Delete all
-                    </f7-button>
-                  </f7-col>
-                  <f7-col>
-                    <f7-button fill small 
-                               @click="popupEditGroupRequest(requests[0])">
-                      Edit all
-                    </f7-button>
-                  </f7-col>
-                </f7-row>
-              </f7-list-item>
-
-              <f7-list-item v-for="(val, index) in requests" 
-                            :key="val.gid+'.'+val.rid" 
-                            :title="humanReadableDateTime(val.date,val.start_time)+' ('+val.venue+')'">
-
-                <f7-button small raised 
-                           color="red"
-                           tooltip="Delete this booking only"
-                           icon="fa fa-trash fa-fw"
-                           slot="after"
-                           @click="deleteThisRequest(val.gid, val.rid)"> 
-                </f7-button>
-              </f7-list-item>
-            </f7-list>
-          </f7-block>
-        </f7-accordion-content>
-      </f7-list-item>
-    </f7-list>
   </f7-block>
   <f7-block v-else>
     <f7-block-title small> No pending request found.  </f7-block-title>

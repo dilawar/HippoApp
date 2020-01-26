@@ -36,7 +36,7 @@
     <f7-row>
       <f7-col width="30" medium="60"></f7-col>
       <f7-col width="70" medium="40">
-        <f7-list no-hairlines >
+        <f7-list no-hairlines media-list>
 
           <f7-list-item v-if="isUserAuthenticated()"
                         link="/inventory/" 
@@ -61,11 +61,9 @@
             <f7-icon slot="after" icon="fa fa-bullhorn fa-2x"></f7-icon>
           </f7-list-item>
 
-          <f7-list-item link="/transport/" 
-                        title="Transport" 
-                        footer="Timetable of shuttle and buggy"
-                        panel-close>
+          <f7-list-item link="/transport/" title="Transport" panel-close>
             <f7-icon slot="after" icon="fa fa-bus fa-2x"></f7-icon>
+            <div slot="text" v-html="upcomingTrips"></div>
           </f7-list-item>
 
         </f7-list>
@@ -170,6 +168,7 @@ export default {
       password: '',
       flashCards: {},
       profile: { },
+      upcomingTrips: 'No trip in next 2 hours.',
       rolesCSV: 'USER',
     };
   },
@@ -178,7 +177,6 @@ export default {
     const self = this;
     const app = self.$f7;
 
-
     // Check if hippo is alive
     self.promiseWithAuth('status').then(function(x) {
       var res = JSON.parse(x.data);
@@ -186,6 +184,18 @@ export default {
       {
         console.log('Hippo is alive.');
         self.isHippoAlive = true;
+      }
+    });
+
+    self.promiseWithAuth('transport/upcoming').then(function(x) {
+      let data = JSON.parse(x.data).data;
+      if(data) {
+        self.upcomingTrips = '';
+        data.forEach( (val, key) => {
+          self.upcomingTrips += val.vehicle + ': ' + val.pickup_point + ' to ' +
+            val.drop_point + ', ' + self.humanReadableTime(val.trip_start_time) 
+            + ' <br /> ';
+        });
       }
     });
 

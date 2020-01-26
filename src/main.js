@@ -125,7 +125,7 @@ Vue.mixin({
          return moment(date, "HH:mm").add(addminutes, 'm').format("HH:mm");
       },
       humanReadableTime: function( time ) {
-         return moment(time, "HH:mm:ss").format("HH:mm");
+         return moment(time, "HH:mm:ss").format("hh:mm A");
       },
       humanReadableDateTime: function(date, time) {
          var d = moment(date, "YYYY-MM-DD").format("(ddd) MMM DD");
