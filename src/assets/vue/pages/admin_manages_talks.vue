@@ -8,6 +8,16 @@
       </f7-subnavbar>
     </f7-navbar>
 
+    <v-autocomplete  ref="refEventSpeaker"
+                     input-class="item-input"
+                     placeholder="Search old talk..."
+                     results-property="email"
+                     results-display="name"
+                     :request-headers="apiPostData()"
+                     method="post"
+                     :source="(q)=>searchTalks(q, 'speaker')">
+    </v-autocomplete>
+
     <f7-list media-list class="event-list">
       <f7-row style="list-style-type:none">
         <f7-list-item v-for="(talk, key) in talks" 
