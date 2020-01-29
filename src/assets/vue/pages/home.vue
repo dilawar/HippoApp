@@ -167,7 +167,7 @@ export default {
       password: '',
       flashCards: {},
       profile: { },
-      upcomingTrips: 'No trip in next 2 hours.',
+      upcomingTrips: '',
       rolesCSV: 'USER',
     };
   },
@@ -192,7 +192,7 @@ export default {
         self.upcomingTrips = '<div style="color:black;">'
         self.upcomingTrips += '<marquee direction="left" scrollamount="3">';
         data.forEach( (val, key) => {
-          self.upcomingTrips += ' 🚐  🙭  '
+          self.upcomingTrips += '🚐  '
             + val.vehicle + ': ' + val.pickup_point + ' to '
             + val.drop_point + ', ' + self.humanReadableTime(val.trip_start_time) 
             + '. . . . ';
@@ -241,7 +241,8 @@ export default {
             var res = JSON.parse(x.data);
           } catch (e) {
             /* handle error */
-              app.notification.create({title:'Invalid response from server'
+              app.notification.create({
+                title:'Invalid response from server'
                 , subtitle: 'Is your username/password correct?'
                 , closeTimeout: 5000
                 , closeOnClick: true, closeButton: true
