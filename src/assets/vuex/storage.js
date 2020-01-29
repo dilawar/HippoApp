@@ -18,19 +18,26 @@ export default new Vuex.Store({
       OSM: {
          tileProviders: [ 
             {
-               name: 'OpenStreetMap',
+               name: 'Satellite',
+               visible: false,
+               attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+               url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+
+            },
+            {
+               name: 'Streets',
                visible: true,
                attribution: osmAttr,
                url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
             },
             {
-               name: 'OpenCycle',
+               name: 'Cycling/Walking',
                visible: false,
                url: 'http://tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=635faabc9da4464585a4b72ddb4c0917',
                attribution: '&copy; OpenCycleMap, ' + 'Map data ' + osmAttr
             },
             {
-               name: 'OpenTopoMap',
+               name: 'Topography',
                visible: false,
                url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
                attribution: 'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'

@@ -24,9 +24,11 @@
                class="col-100 medium-45" :key="key"
                v-if="acc.status=='AVAILABLE'">
         <!-- header -->
-        <f7-card-header
+        <f7-card-header 
           :style="`background-color:${stringToColour(acc.status)}`">
-          {{acc.type}}, Available from {{humanReadableDate(acc.available_from)}}
+          <div class="small">
+            {{acc.type}}, Available from {{humanReadableDate(acc.available_from)}}
+          </div>
           <div  style="font-size:x-small;">
             <f7-icon icon="fa fa-bell fa-fw"></f7-icon>
             Posted by: {{acc.created_by}}, {{str2Moment(acc.created_on).fromNow()}}
@@ -38,9 +40,8 @@
 
         <!-- Card content -->
         <f7-card-content>
-          <div> {{acc.address}} </div>
           <div v-for="(val, key) in acc">
-            <span v-if="showKeys.find(k => k===key) && val.length > 0">
+            <span v-if="showKeys.includes(key)">
               <span style="font-size:70%">{{formatKey(key)}}</span>
               <span style="margin-right:2ex;" v-html="$options.filters.phone(val)"></span>
               <br />
@@ -72,7 +73,7 @@
 
         <!-- header -->
         <f7-card-header :style="`background-color:${stringToColour(acc.status)}`">
-          <div>
+          <div style="x-small">
             {{acc.type}}, Available from {{humanReadableDate(acc.available_from)}}
           </div>
           <br />
@@ -90,7 +91,7 @@
         <f7-card-content>
           <div> {{acc.address}} </div>
           <span v-for="(val, key) in acc">
-            <span v-if="showKeys.find(k => k===key) && val.length > 0">
+            <span v-if="showKeys.includes(key)">
               <span style="font-size:70%">{{formatKey(key)}}</span>
               <!-- filter does not work with v-html. moutache doesn't
                 render html. Hence this hack: see
@@ -334,7 +335,7 @@ export default {
          accomodations: [],
          favouriteAccomodations: self.loadStore('me.favourite.accomodations'),
          popupOpened: false,
-         showKeys: "description,rent,advance,extra,owner_contact".split(','),
+         showKeys: ["description","address","rent","advance","extra","owner_contact"],
          popupAction: 'New',
          photos: [],
          locationMap : {
@@ -428,6 +429,7 @@ export default {
           if(res.status == "ok")
           {
             self.accomodations = res.data;
+            // Save them to store because map uses them.
             self.saveStore('accomodations', self.accomodations);
           }
           else

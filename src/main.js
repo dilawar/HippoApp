@@ -91,6 +91,12 @@ Vue.mixin({
                client: 'HippoAndroidApp',
             },
          }),
+         locationIQ: {
+            "async": true,
+            "crossDomain": true,
+            "method": "GET",
+            "url": "https://us1.locationiq.com/v1/search.php?key=0d166e7f031bfd"
+         },
       };
    },
    methods : {
@@ -403,8 +409,11 @@ Vue.mixin({
    },
    // Vue filter for parsing phone numbers.
    'filters' : {
-      'phone' : function (phone) {
-         return phone.replace(/([+]91|0)?(\d{3})(\d{3})(\d{4})/
+      'phone' : function (ph) {
+         ph = ph.toString();
+         if(ph.length < 10)
+            return ph;
+         return ph.replace(/([+]91|0)?\s?(\d{3})\s?(\d{3})\s?(\d{4})/
             , '<a href="tel:$1$2$3$4"><i class="fa fa-phone"></i>$1$2$3$4</a>'
          );
       },

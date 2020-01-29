@@ -84,6 +84,7 @@ export default {
   },
   mounted: function() {
     const self = this;
+    const app = self.$f7;
     self.map = self.$refs.osm.mapObject;
     navigator.geolocation.getCurrentPosition( function(loc) {
       self.myPos = [ loc.coords.latitude, loc.coords.longitude];
@@ -105,10 +106,11 @@ export default {
 
     // Check what we got from router.
     let action = self.$f7route.params.arg1;
-    let id = self.$f7route.params.arg2;
     if(action === 'accomodation')
     {
-      let acc = self.loadStore('accomodations').list.find(x=> x.id === id);
+      let id = self.$f7route.params.arg2;
+      let accs = self.loadStore('accomodations');
+      let acc = accs.list.find(x=> x.id.toString() === id.toString());
       if(acc)
       {
         let addr = acc.address;
@@ -123,20 +125,35 @@ export default {
         }
         else 
         {
-          self.googleMapProvider.search({query: addr}).then( (results) => {
-            console.log( "Found many results ", results);
+          let uri = self.locationIQ.url +
+            "&q="+encodeURI(addr)+"&format=json&country=IN";
+          app.request.promise({url: uri}).then( function(x) {
+            let results = JSON.parse(x.data);
             results.map((place, index) => {
               self.markers.push({
-                id: index, xy: L.latLng(place.y, place.x)
+                id: index, xy: L.latLng(place.lat, place.lon)
                 , html: `<font style='color:red'> This position is found by
-                                 Google Map as per given address. Use it at your
+                                 a map service for given address. Use it at your
                                  own risk! <br /> </font>`
-                + place.label
+                + place.display_name
               });
             });
-            console.log( 'Total markers ' + self.markers.length);
-            // Add the address on the 
           });
+
+          //self.googleMapProvider.search({query: addr}).then( (results) => {
+          //  console.log( "Found many results ", results);
+          //  results.map((place, index) => {
+          //    self.markers.push({
+          //      id: index, xy: L.latLng(place.y, place.x)
+          //      , html: `<font style='color:red'> This position is found by
+          //                       Google Map as per given address. Use it at your
+          //                       own risk! <br /> </font>`
+          //      + place.label
+          //    });
+          //  });
+          //  console.log( 'Total markers ' + self.markers.length);
+          //  // Add the address on the 
+          //});
         }
       }
     }
