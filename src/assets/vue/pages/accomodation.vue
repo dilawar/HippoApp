@@ -4,7 +4,9 @@
       <f7-nav-right>
         <f7-link class="searchbar-enable" 
                  data-searchbar=".searchbar-acc" 
-                 icon-ios="f7:search" icon-aurora="f7:search" icon-md="material:search"
+                 icon-ios="f7:search" 
+                 icon-aurora="f7:search" 
+                 icon-md="material:search"
         </f7-link>
       </f7-nav-right>
       <f7-searchbar class="searchbar-acc"
@@ -15,25 +17,23 @@
     </f7-navbar>
 
    <!-- List of accomodations -->
+   <f7-block>
     <f7-photo-browser ref="standalone"></f7-photo-browser>
-
-    <f7-block-title medium>Available Accomodations.</f7-block-title>
-
     <f7-row noGap>
       <f7-card v-for="(acc, key) in accomodations.list" 
                class="col-100 medium-45" :key="key"
                v-if="acc.status=='AVAILABLE'">
         <!-- header -->
-        <f7-card-header 
-          :style="`background-color:${stringToColour(acc.status)}`">
-          <div class="small">
-            {{acc.type}}, Available from {{humanReadableDate(acc.available_from)}}
-          </div>
-          <div  style="font-size:x-small;">
-            <f7-icon icon="fa fa-bell fa-fw"></f7-icon>
-            Posted by: {{acc.created_by}}, {{str2Moment(acc.created_on).fromNow()}}
-            <span v-if="acc.last_modified_on">
-              (modified {{str2Moment(acc.last_modified_on, 'YYYY-MM-DD HH:mm:ss').fromNow()}})
+        <f7-card-header :style="`background-color:${stringToColour(acc.status)}`">
+          <div>
+            <tt>{{acc.type}}</tt> Available from {{humanReadableDate(acc.available_from)}}
+            <br />
+            <span style="font-size:x-small;">
+              <f7-icon icon="fa fa-bell-o fa-fw"></f7-icon>
+              Posted by: {{acc.created_by}}, {{str2Moment(acc.created_on).fromNow()}}
+              <span v-if="acc.last_modified_on">
+                (modified {{str2Moment(acc.last_modified_on, 'YYYY-MM-DD HH:mm:ss').fromNow()}})
+              </span>
             </span>
           </div>
         </f7-card-header>
@@ -63,9 +63,6 @@
       </f7-card>
     </f7-row>
 
-    <f7-block-title medium>
-      Unavailable Accomodations.
-    </f7-block-title>
     <f7-row noGap>
       <f7-card v-for="(acc, key) in accomodations.list" 
                class="col-100 medium-45"
@@ -119,6 +116,7 @@
         </f7-card-footer>
       </f7-card>
     </f7-row>
+   </f7-block>
 
   <!-- FAB to create accomodation -->
   <f7-fab v-if="isUserAuthenticated()"
@@ -198,7 +196,6 @@
         </f7-navbar>
 
         <f7-block>
-
            <f7-list no-hairlines-md inset>
               <f7-list-input label="Type"
                              :value="accomodation.type"
@@ -331,44 +328,45 @@ import { OpenStreetMapProvider, GoogleProvider } from 'leaflet-geosearch';
 export default {
    data() {
       const self = this;
-      return {
-         accomodations: [],
-         favouriteAccomodations: self.loadStore('me.favourite.accomodations'),
-         popupOpened: false,
-         showKeys: ["description","address","rent","advance","extra","owner_contact"],
-         popupAction: 'New',
-         photos: [],
-         locationMap : {
-            center: L.latLng(13.071081, 77.58025),
-            bounds: null,
-            zoom: 16,
+     return {
+       accomodations: {list: []},
+       favouriteAccomodations: self.loadStore('me.favourite.accomodations'),
+       popupOpened: false,
+       showKeys: ["description","address","rent","advance","extra","owner_contact"],
+       popupAction: 'New',
+       photos: [],
+       autocompleteBlock: false,
+       locationMap : {
+         center: L.latLng(13.071081, 77.58025),
+         bounds: null,
+         zoom: 16,
+       },
+       accomodation: {
+         type: '',
+         status: 'AVAILABLE',
+         available_from: '',
+         available_for: '',
+         open_vacancies: 1,
+         address: '',
+         description: '',
+         owner_contact: '',
+         rent: 0,
+         extra: '',
+         advance: 0,
+         url: '',
+       },
+       // Comments.
+       thisComment: '',
+       comments: [],
+       thisAccomodation: '',
+       commentPopupOpened: false,
+       mapProvider: new GoogleProvider({
+         params: {
+           key: self.loadStoreStr('GOOGLE-MAP-API-KEY'), 
+           client: 'HippoAndroidApp',
          },
-         accomodation: {
-            type: '',
-            status: 'AVAILABLE',
-            available_from: '',
-            available_for: '',
-            open_vacancies: 1,
-            address: '',
-            description: '',
-            owner_contact: '',
-            rent: 0,
-            extra: '',
-            advance: 0,
-            url: '',
-         },
-         // Comments.
-         thisComment: '',
-         comments: [],
-         thisAccomodation: '',
-         commentPopupOpened: false,
-         mapProvider: new GoogleProvider({
-            params: {
-               key: self.loadStoreStr('GOOGLE-MAP-API-KEY'), 
-               client: 'HippoAndroidApp',
-            },
-         }),
-      };
+       }),
+     };
    },
   mounted() {
     const self = this;
@@ -388,26 +386,30 @@ export default {
     app.autocomplete.create({
       inputEl : '#autocomplete-dropdown-expand',
       openIn: 'dropdown',
-      valueProperty: 'address',
+      valueProperty: 'display_name',
+      textProperty: 'display_name',
       limit: 5,
 
       source: function(q, render) {
         var autocomplete = this;
-        if(q.length === 0)
+        var res = [];
+        if(q.length <= 5 || self.autocompleteBlock)
         {
-          render(results);
+          render(res);
           return;
         }
-        autocomplete.preloaderShow();
-        var res = [];
-        self.accomodation.address = q;
-        self.mapProvider.search({query: q}).then( (results) => {
-          console.log(results);
-          //render(results);
-          res = results.map(x => x.label);
-          autocomplete.preloaderHide();
-          render(res);
-        });
+
+        // self.accomodation.address = q;
+        // Use Location IQ.
+        if(q.length > 5) {
+          self.autocompleteBlock = true;
+          app.request.promise({url: self.locationIQSearchURL+'&q='+encodeURI(q)})
+            .then( function(x) {
+              res = JSON.parse(x.data);
+              render(res);
+              setTimeout(() => self.autocompleteBlock = false, 500);
+            });
+        }
       },
       on: {
         change: function(val) {
@@ -443,7 +445,7 @@ export default {
       const self = this;
       let addr = event.target.value;
       event.preventDefault();
-      //self.mapProvider.search({query: addr}).then( (results) => {
+      //self.msultsapProvider.search({query: addr}).then( (results) => {
       //   console.log(results);
       //});
     },
@@ -471,10 +473,11 @@ export default {
      {
        const self = this;
        self.popupAction = 'New';
-       console.log( 'Updating id: ', id);
        self.accomodation.available_from = self.dbDate(self.accomodation.available_from);
-       self.sendRequest('/accomodation/update/id', self.accomodation);
-       return;
+       self.promiseWithAuth('/accomodation/update/id', self.accomodation)
+         .then( function(x) {
+           self.fetchAccomodations();
+         });
      },
      readMore: function(obj) {
        const self = this;

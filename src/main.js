@@ -95,8 +95,11 @@ Vue.mixin({
             "async": true,
             "crossDomain": true,
             "method": "GET",
-            "url": "https://us1.locationiq.com/v1/search.php?key=0d166e7f031bfd"
+            "url": "https://us1.locationiq.com/v1/search.php?key=0d166e7f031bfd" 
+               + "&countrycodes=in&matchlevel=city&format=json",
          },
+         locationIQSearchURL: "https://us1.locationiq.com/v1/autocomplete.php?key=0d166e7f031bfd" 
+               + "&countrycodes=in&matchlevel=city&format=json",
       };
    },
    methods : {
