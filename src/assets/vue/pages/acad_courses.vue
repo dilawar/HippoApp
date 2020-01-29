@@ -3,7 +3,6 @@
     <f7-navbar title="Courses" back-link="Back">
     </f7-navbar>
 
-
     <!-- POPUP: Handle course information.  -->
     <f7-popup :opened="popupMetadata" @popup:close="popupMetadata = false">
       <f7-page>
@@ -16,7 +15,7 @@
         <f7-block>
 
           <f7-list media-list no-hairlines>
-
+            <f7-row>
             <f7-list-input label="ID" 
                            inline-label
                            :value="thisCourseMetadata.id"
@@ -52,20 +51,20 @@
             <f7-list-group>
               <f7-list-item title="Instructors" group-title >
               </f7-list-item>
-              <f7-list-item v-for="i in 6" :key="'inst'+i"
-                            v-if="thisCourseMetadata['instructor_'+i]"
-                            media-item>
-                <div slot="title">
-                  {{thisCourseMetadata['instructor_'+i]}}
-                </div>
-                <div slot="after">
-                  <f7-link raised small @click="removeInstructor(i)"> REMOVE </f7-link> 
-                </div>
-              </f7-list-item>
+                <f7-list-item v-for="i in 6" :key="'inst'+i"
+                              v-if="thisCourseMetadata['instructor_'+i]"
+                              media-item>
+                  <div slot="title">
+                    {{thisCourseMetadata['instructor_'+i]}}
+                  </div>
+                  <div slot="after">
+                    <f7-link raised small @click="removeInstructor(i)"> REMOVE </f7-link> 
+                  </div>
+                </f7-list-item>
 
-              <f7-list-input :input="false" label="Add an instructor" inline-label>
-                <input id="autocomplete-instructor" placeholder="autocomplete" slot="input" />
-              </f7-list-input>
+                <f7-list-input :input="false" label="Add an instructor" inline-label>
+                  <input id="autocomplete-instructor" placeholder="autocomplete" slot="input" />
+                </f7-list-input>
             </f7-list-group>
 
             <f7-list-group>
@@ -106,6 +105,7 @@
                 </f7-row>
               </f7-list-item>
             </f7-list-group>
+            </f7-row>
           </f7-list>
 
         </f7-block>
@@ -315,53 +315,55 @@
       Running Courses in {{thisYear}}/{{thisSemester}}.
     </f7-block-title>
 
-    <f7-card v-for="(course,key) in runningCourses" :key="key">
-      <f7-card-header>
-        {{course.name}}
-        <span class="pull-right">
-          <tt> <small> {{course.course_id}} </small> </tt>
-        </span>
-      </f7-card-header>
-      <f7-card-content>
-        <span class="pull-right">
-          <strong>{{course.venue}}</strong>
-          slot {{course.slot}}, {{course.ignore_tiles}}
-        </span>
-        <div class="text-small">
-          {{course.start_date | date}} to {{course.end_date | date}}
-        </div>
+    <f7-row>
+      <f7-card v-for="(course,key) in runningCourses" :key="key"
+               class="col-100 medium-45">
+        <f7-card-header>
+          {{course.name}}
+          <span class="pull-right">
+            <tt> <small> {{course.course_id}} </small> </tt>
+          </span>
+        </f7-card-header>
+        <f7-card-content>
+          <span class="pull-right">
+            <strong>{{course.venue}}</strong>
+            slot {{course.slot}}, {{course.ignore_tiles}}
+          </span>
+          <div class="text-small">
+            {{course.start_date | date}} to {{course.end_date | date}}
+          </div>
 
-        <div style="font-size:small;margin:5px;padding:10px;">
-          <f7-row>
-            <f7-col>Max Registrations: {{course.max_registration}}</f7-col>
-            <f7-col>Is Audit Allowed?: {{course.is_audit_allowed}}</f7-col>
+          <div style="font-size:small;margin:5px;padding:10px;">
+            <f7-row>
+              <f7-col>Max Registrations: {{course.max_registration}}</f7-col>
+              <f7-col>Is Audit Allowed?: {{course.is_audit_allowed}}</f7-col>
+            </f7-row>
+            <f7-row>
+              <f7-col>URL: {{course.url}}</f7-col>
+            </f7-row>
+          </div>
+
+          <div class="bg-color-yellow">
+            <small>{{course.note}}</small>
+          </div>
+
+          <f7-row class="text-align-center" style="padding:0;padding-top:0px">
+            <f7-col>
+              <f7-link :href="'/updatecourse/'+course.id+'/'"
+                                            icon="fa fa-group fa-fw">
+                Registrations
+              </f7-link>
+            </f7-col>
+            <f7-col>
+              <f7-link @click="showCurrentCourse(course)"
+                                            icon="fa fa-pencil fa-fw">
+                Edit
+              </f7-link>
+            </f7-col>
           </f7-row>
-          <f7-row>
-            <f7-col>URL: {{course.url}}</f7-col>
-          </f7-row>
-        </div>
-
-        <div class="bg-color-yellow">
-          <small>{{course.note}}</small>
-        </div>
-
-        <f7-row class="text-align-center" style="padding:0;padding-top:0px">
-          <f7-col>
-            <f7-link :href="'/updatecourse/'+course.id+'/'"
-                     icon="fa fa-group fa-fw">
-              Registrations
-            </f7-link>
-          </f7-col>
-          <f7-col>
-            <f7-link @click="showCurrentCourse(course)"
-                     icon="fa fa-pencil fa-fw">
-              Edit
-            </f7-link>
-          </f7-col>
-        </f7-row>
-      </f7-card-content>
-
-    </f7-card>
+        </f7-card-content>
+      </f7-card>
+    </f7-row>
 
 
     <!-- All courses -->
@@ -381,27 +383,28 @@
     </f7-block-header>
 
     <f7-list class="course-list" media-list>
-      <f7-list-item v-for="(course,key) in metadata" 
-                    :style="(course.status==='DEACTIVATED')?'background-color:red':''"
-                    :text="course.name"
-                    :key="key">
+      <f7-row style="list-style-type:none">
+        <f7-list-item v-for="(course,key) in metadata" 
+                      class="col-100 medium-50"
+                      :style="(course.status==='DEACTIVATED')?'background-color:red':''"
+                      :text="course.name"
+                      :key="key">
 
-        <div slot="header">
-          <f7-link @click="showCourseMetaData(course)" 
-             color="blue"
-             icon="fa fa-pencil fa-fw">
-          </f7-link>
-          {{course.id}}, Credit: {{course.credits}}
-          <f7-button small 
-                     raised
-                     :disabled="isARunningCourse(course.id)"
-                     @click="scheduleCourse(course)" 
-                     class="pull-right">
-            Schedule
-          </f7-button>
-        </div>
-      </f7-list-item>
-      <f7-list-item></f7-list-item>
+          <div slot="header">
+            <f7-link @click="showCourseMetaData(course)" 
+               color="blue" icon="fa fa-pencil fa-fw">
+            </f7-link>
+            {{course.id}}, Credit: {{course.credits}}
+            <f7-button small raised
+                       :disabled="isARunningCourse(course.id)"
+                       @click="scheduleCourse(course)" 
+                       class="pull-right">
+              Schedule
+            </f7-button>
+          </div>
+        </f7-list-item>
+        <f7-list-item></f7-list-item>
+      </f7-row>
     </f7-list>
     </f7-block>
 
