@@ -9,18 +9,25 @@
     </f7-navbar>
 
     <f7-list media-list class="event-list">
-      <f7-list-item v-for="(talk, key) in talks" @click="updateTalkPopup(talk)" :key="key">
-        <div slot="title" style="font-size:small">
-          {{talk.class}} by {{talk.speaker}}
-        </div>
-        <div slot="text">{{talk.title}} </div>
-        <div slot="footer"> Created: {{talk.created_on}}, by {{talk.created_by}}</div>
-        <div slot="header"> Created {{toNow(talk.created_on)}} ago.</div>
-        <!-- <div slot="after" v-if="talk.hasOwnProperty('event')">Approved</div> -->
-        <!-- <div slot="after" v-if="talk.hasOwnProperty('request')">Pending</div> -->
-        <f7-icon slot="media" :icon="talkIcon(talk)">
-        </f7-icon>
-      </f7-list-item>
+      <f7-row style="list-style-type:none">
+        <f7-list-item v-for="(talk, key) in talks" 
+                      class="col-100 medium-50"
+                      @click="updateTalkPopup(talk)" 
+                      :key="key">
+          <div slot="title" style="font-size:small">
+            <f7-icon :icon="talkIcon(talk)"></f7-icon>
+            {{talk.class}} by {{talk.speaker}}
+          </div>
+          <div slot="subtitle"> {{talk.title}} </div>
+          <div slot="footer"> Created: {{talk.created_on}}, by {{talk.created_by}}
+             ({{toNow(talk.created_on)}} ago)
+          </div>
+          <!-- <div slot="after" v-if="talk.hasOwnProperty('event')">Approved</div> -->
+          <!-- <div slot="after" v-if="talk.hasOwnProperty('request')">Pending</div> -->
+          <!-- <f7-icon slot="media" :icon="talkIcon(talk)"> -->
+          </f7-icon>
+        </f7-list-item>
+      </f7-row>
     </f7-list>
 
     <!-- POPUP  -->
@@ -160,7 +167,7 @@ export default {
         icon = 'fa-clock-o';
       else
         icon = ' ';
-      return 'fa ' + icon + ' fa-2x';
+      return 'fa ' + icon + ' fa-fw';
     },
     fetchTalks: function() {
       const self = this;
