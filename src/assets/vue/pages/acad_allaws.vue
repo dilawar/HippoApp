@@ -59,9 +59,9 @@
         <f7-col>
           <v-autocomplete ref="refAWS"
                            input-class="item-input"
-                           placeholder="Search for an aws (speaker or date)..."
+                           placeholder="Search AWS speaker, title or date (2019-01-12 etc.)"
                            results-value="id"
-                           results-display="html"
+                           results-display="summary"
                            :request-headers="apiPostData()"
                            method="post"
                            @selected="onAWSSelected"
@@ -83,7 +83,7 @@ export default {
   data() {
     const self = this;
     return {
-      thisAWS: {date:'', speaker:'', venue:'', title:'', abstract:''},
+      thisAWS: {id:'', date:'', speaker:'', title:'', html:''},
       allaws: {},
       popupTitle: 'Review request',
       openAssignPopup: false,
@@ -103,7 +103,11 @@ export default {
     },
     foundAWSOnSearch: function() {
     },
-    onAWSSelected: function() {
+    onAWSSelected: function(result) {
+      const self = this;
+      const app = self.$f7;
+      self.thisAWS = result.selectedObject;
+      console.log("Selected. ", result);
     },
     refreshPage: function()
     {
