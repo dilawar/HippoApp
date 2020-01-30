@@ -39,13 +39,19 @@
           <f7-list-item link="/acadadmin/aws/" 
                         target="_blank"
                         view=".view-main"
-                        title="Annual Work Seminar (AWS)" 
+                        title="Upcoming AWS" 
                         panel-close>
           </f7-list-item>
           <f7-list-item link="/acadadmin/awsroster/" 
                         target="_blank"
                         view=".view-main"
                         title="AWS Roster" 
+                        panel-close>
+          </f7-list-item>
+          <f7-list-item link="/acadadmin/allaws/" 
+                        target="_blank"
+                        view=".view-main"
+                        title="Annual Work Seminars" 
                         panel-close>
           </f7-list-item>
           <f7-list-item link="/acadadmin/courses/" 

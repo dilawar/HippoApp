@@ -14,8 +14,7 @@
                      results-property="email"
                      results-display="name"
                      :request-headers="apiPostData()"
-                     method="post"
-                     :source="(q)=>searchTalks(q, 'speaker')">
+                     method="post">
     </v-autocomplete>
 
     <f7-list media-list class="event-list">

@@ -40,6 +40,7 @@ import BmvEvents from './assets/vue/pages/bmv_events.vue';
 // ACAD ADMIN 
 import AcadAdminAWSRoster from './assets/vue/pages/acad_aws_roster.vue';
 import AcadAdminAWS from './assets/vue/pages/acad_aws.vue';
+import AcadAdminAllAWS from './assets/vue/pages/acad_allaws.vue';
 import AcadAdminCourses from './assets/vue/pages/acad_courses.vue';
 import UpdateCoursePage from './assets/vue/pages/updatecourse.vue';
 import AdminManageTalks from './assets/vue/pages/admin_manages_talks.vue';
@@ -88,6 +89,10 @@ export default [
    {
       path: '/acadadmin/aws/',
       component: AcadAdminAWS
+   },
+   {
+      path: '/acadadmin/allaws/',
+      component: AcadAdminAllAWS
    },
    {
       path: '/acadadmin/awsroster/',
