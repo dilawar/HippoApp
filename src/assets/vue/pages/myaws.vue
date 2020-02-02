@@ -86,7 +86,7 @@ export default {
       const self = this;
       self.postWithPromise('/me/acknowledge_aws/'+awsid).then( function(x) {
         let res = JSON.parse(x.data);
-        console.log("Res: ", res);
+        self.fetchAws();
       });
     },
   },

@@ -271,7 +271,7 @@ export default {
       const self = this;
       const app = self.$f7;
       app.preloader.show();
-      self.promiseWithAuth('/acadadmin/aws/upcoming')
+      self.promiseWithAuth('/acadadmin/upcomingaws/upcoming')
         .then( function(x) {
           self.upcomingAWS = JSON.parse(x.data).data;
           app.preloader.hide();
@@ -326,7 +326,7 @@ export default {
     editThisAWS: function()
     {
       const self = this;
-      self.sendRequest('acadadmin/aws/update', self.thisAWS).then( function(x){
+      self.sendRequest('acadadmin/upcomingaws/update', self.thisAWS).then( function(x){
         self.fetchUpcomingAws();
       });
     },
@@ -339,7 +339,7 @@ export default {
       self.thisAWS.status = 'VALID'
       //app.dialog.preloader('Assigning AWS of ' + self.thisAWS.speaker);
       app.preloader.show();
-      return self.promiseWithAuth('/acadadmin/aws/assign', self.thisAWS)
+      return self.promiseWithAuth('/acadadmin/upcomingaws/assign', self.thisAWS)
         .then( function(x) {
           var res = JSON.parse(x.data).data;
           if(! res.success)
@@ -379,7 +379,7 @@ export default {
           }
           aws['reason'] = value;
           console.log('aws', aws);
-          self.promiseWithAuth('acadadmin/aws/cancel', aws)
+          self.promiseWithAuth('acadadmin/upcomingaws/cancel', aws)
             .then( function(x) {
               self.fetchUpcomingAws();
             });
