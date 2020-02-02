@@ -1,7 +1,7 @@
 <template>
   <f7-page ptr ptr:refresh="refreshPage">
 
-    <f7-navbar title="Annual Work Seminars" back-link="Back">
+    <f7-navbar title="Upcoming AWS" back-link="Back">
     </f7-navbar>
 
     <!-- POPUP ASSIGN -->
@@ -125,37 +125,40 @@
         </f7-list-item>
 
         <f7-list-item v-for="(aws, key) in AWSes" :key="key" accordion-item>
-                      <div slot="title" v-html="aws.by"></div>
-                      <div slot="text" v-html="aws.title"></div>
-                      <div slot="footer">{{aws.supervisor_1}}</div>
-                      <div slot="footer">{{aws.supervisor_2}}</div>
-                      <f7-accordion-content>
-                        <f7-block>
-                          <div v-html="aws.abstract"></div>
-                          <f7-row>
-                            <f7-col>
-                              <f7-button small 
-                                         fill 
-                                         @click="cancelAWS(aws)"
-                                         color="red">
-                                Cancel
-                              </f7-button>
-                            </f7-col>
-                            <f7-col></f7-col>
-                            <f7-col>
-                              <f7-button small fill @click="editAWSClick(aws)">Edit</f7-button>
-                            </f7-col>
-                          </f7-row>
-                        </f7-block>
-                      </f7-accordion-content>
-                      <div slot="media" v-if="aws.acknowledged==='NO'">
-                        <f7-icon icon="fa fa-question fa-2x"></f7-icon>
-                      </div>
-                      <div slot="media" v-else>
-                        <f7-icon icon="fa fa-check fa-fw"></f7-icon>
-                      </div>
+          <div slot="title" v-html="aws.by"></div>
+          <div slot="text" v-html="aws.title"></div>
+          <div slot="footer">{{aws.supervisor_1}}</div>
+          <div slot="footer">{{aws.supervisor_2}}</div>
+          <f7-accordion-content>
+            <f7-block>
+              <div v-html="aws.abstract"></div>
+              <f7-row>
+                <f7-col>
+                  <f7-button small fill @click="cancelAWS(aws)" color="red">
+                    Cancel
+                  </f7-button>
+                </f7-col>
+                <f7-col></f7-col>
+                <f7-col>
+                  <f7-button small fill @click="editAWSClick(aws)">
+                    Edit
+                  </f7-button>
+                </f7-col>
+              </f7-row>
+            </f7-block>
+          </f7-accordion-content>
+          <div slot="media" v-if="aws.acknowledged==='NO'">
+            <f7-icon icon="fa fa-question fa-2x"></f7-icon>
+          </div>
+          <div slot="media" v-else>
+            <f7-icon icon="fa fa-check fa-fw"></f7-icon>
+          </div>
         </f7-list-item>
+
+        
+
       </f7-list>
+
     </f7-block>
 
     <!-- Upcoming schedule -->

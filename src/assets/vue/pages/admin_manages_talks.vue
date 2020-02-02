@@ -13,6 +13,7 @@
                      placeholder="Search old talk..."
                      results-property="email"
                      results-display="name"
+                     source=""
                      :request-headers="apiPostData()"
                      method="post">
     </v-autocomplete>

@@ -103,7 +103,7 @@
             </f7-button>
           </f7-col>
           <f7-col col-50 medium-50>
-            <f7-button raised @click="openUpdatePopup(thisAWS.id)">Update</f7-button>
+            <f7-button :href="'/awsedit/'+thisAWS.id">Update</f7-button>
           </f7-col>
         </f7-row>
       </div>
@@ -119,7 +119,7 @@ export default {
   data() {
     const self = this;
     return {
-      thisAWS: {id:'', date:'', speaker:'', title:'', html:''},
+      thisAWS: {id:'', date:'', speaker:'', abstract:'', title:'', html:''},
       allaws: {},
       popupTitle: 'Review request',
       openAssignPopup: false,
@@ -170,6 +170,7 @@ export default {
       self.postWithPromise('acadadmin/aws/get/'+awsid)
         .then( function(x) {
           self.thisAWS = JSON.parse(x.data).data;
+          self.thisAWS.abstract = '';
           self.openEditPopup = true;
         });
     },
@@ -179,7 +180,6 @@ export default {
       // Do not delete the AWS, mark its status DELETED
       app.dialog.confirm("Are you sure?", "Deleting a permanent record"
         , function() {
-          console.log("deleted.");
           self.postWithPromise('acadadmin/aws/delete/'+awsid).then(
             function(x) {
               const res = JSON.parse(x.data).data;
