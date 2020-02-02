@@ -56,19 +56,25 @@
     <!-- Main page -->
     <f7-block strong inset>
       <f7-row>
-        <f7-col>
-          <v-autocomplete ref="refAWS"
-                           input-class="item-input"
-                           placeholder="Search AWS speaker, title or date (2019-01-12 etc.)"
-                           results-value="id"
-                           results-display="summary"
-                           :request-headers="apiPostData()"
-                           method="post"
-                           @selected="onAWSSelected"
-                           @results="foundAWSOnSearch"
-                           @noResults="createNewSpeaker=true"
-                           :source="(q)=> getAPIUrl()+'/acadadmin/aws/search/'+q">
-          </v-autocomplete>
+        <v-autocomplete ref="refAWS"
+                        input-class="item-input"
+                        placeholder="Search AWS speaker, title or date (2019-01-12 etc.)"
+                        results-value="id"
+                        results-display="summary"
+                        :request-headers="apiPostData()"
+                        method="post"
+                        @selected="onAWSSelected"
+                        @results="foundAWSOnSearch"
+                        @noResults="createNewSpeaker=true"
+                        :source="(q)=> getAPIUrl()+'/acadadmin/aws/search/'+q">
+        </v-autocomplete>
+      </f7-row>
+      <f7-row v-if="parseInt(thisAWS.id) > 0">
+        <f7-col col-50 medium-50>
+          <f7-button>Edit</f7-button>
+        </f7-col>
+        <f7-col col-50 medium-50>
+          <f7-button>Update</f7-button>
         </f7-col>
       </f7-row>
     </f7-block>
