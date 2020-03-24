@@ -371,7 +371,7 @@ export default {
     {
       const self = this;
       const app = self.$f7;
-      app.dialog.prompt("Please give some reason..."
+      app.dialog.prompt("Please submit reason..."
         , "Cancelling AWS ..."
         , function(value) {
           if( value.length <= 8)
@@ -381,10 +381,10 @@ export default {
             return;
           }
           aws['reason'] = value;
-          console.log('aws', aws);
           self.promiseWithAuth('acadadmin/upcomingaws/cancel', aws)
             .then( function(x) {
               self.fetchUpcomingAws();
+              self.notify("Success", "AWS is cancelled.");
             });
         }, function(ev) {
           console.log( 'NAH');
