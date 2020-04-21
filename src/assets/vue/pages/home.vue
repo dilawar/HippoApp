@@ -65,9 +65,11 @@
             <div slot="text" v-html="upcomingTrips"></div>
           </f7-list-item>
 
+        <!--
           <f7-list-item link="/covid/" title="COVID" panel-close>
             <f7-icon slot="after" icon="fa fa-bug fa-2x"></f7-icon>
           </f7-list-item>
+        -->
 
         </f7-list>
       </f7-col>

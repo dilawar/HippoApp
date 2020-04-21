@@ -101,25 +101,28 @@
 
     <f7-block-title small>
       Upcoming Annual Work Seminars
-      <f7-button small 
-                 raised fill color="yellow"
-                             @click="openAssignPopup=true"
-                             style="float:right">
+      <f7-button small fill raised 
+                            tooltip="Select a day and assign AWS"
+                            @click="openAssignPopup=true" 
+                            style="float:right">
         Assign AWS
       </f7-button>
     </f7-block-title>
+
     <f7-block>
-      <f7-list media-list accordion-list
-               no-hairlines
+      <f7-list media-list accordion-list no-hairlines
                v-for="(AWSes, date) in upcomingAWS" :key="date">
 
-               <f7-block-title style="color:black">
-                 {{date | date }}, {{venueInfo(AWSes[0].venue)}} 
-               </f7-block-title>
+        <f7-block-title> 
+          {{date | date }} 
+          <f7-button small class="float-right" @click="changeVenue(AWSes[0])"> 
+            {{venueInfo(AWSes[0].venue)}}
+            </f7-button>
+        </f7-block-title>
+
         <f7-list-item v-if="AWSes.length < 3">
           <div slot="title" text-color="gray">Some slots are empty ...</div>
-          <f7-button slot="after" small outline raised
-                     @click="addAWSSchedule(date, AWSes[0])">
+          <f7-button slot="after" small outline raised @click="addAWSSchedule(date, AWSes[0])">
             Add AWS
           </f7-button>
         </f7-list-item>
@@ -154,19 +157,14 @@
             <f7-icon icon="fa fa-check fa-fw"></f7-icon>
           </div>
         </f7-list-item>
-
-        
-
       </f7-list>
-
     </f7-block>
 
     <!-- Upcoming schedule -->
     <f7-block-title small>
       Click on login to assign AWS.
-      <f7-button small color="yellow" fill 
-                       style="float:right"
-                       @click="computeSchedule()">
+      <f7-button small color="gray" fill style="float:right"
+                     @click="computeSchedule()">
         Recompute Schedule
       </f7-button>
     </f7-block-title>
@@ -366,6 +364,11 @@ export default {
           app.preloader.hide();
         });
       setTimeout(() => app.preloader.hide(), 10000);
+    },
+    changeVenue: function(aws) 
+    {
+      // Open a popup to change the venue.
+      console.log("Changing AWS", aws);
     },
     cancelAWS: function(aws) 
     {
