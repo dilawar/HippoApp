@@ -63,56 +63,55 @@
      </f7-list>
 
       <!-- POPUP for giving feedback -->
-      <f7-popup :opened="feedbackPopup" @popup:closed="feedbackPopup=false">
-         <f7-page>
+      <f7-popup tablet-fullscreen :opened="feedbackPopup" @popup:closed="feedbackPopup=false">
+        <f7-page>
 
-            <f7-navbar title="Feedback">
-               <f7-nav-right>
-                  <f7-link popup-close>Close</f7-link>
-               </f7-nav-right>
-            </f7-navbar>
+          <f7-navbar title="Feedback">
+            <f7-nav-right>
+              <f7-link popup-close>Close</f7-link>
+            </f7-nav-right>
+          </f7-navbar>
 
-            <template v-for="(catQues, key) in questions">
+          <template v-for="(catQues, key) in questions">
             <div v-for="(que,index) in catQues">
-               <f7-card>
-               <f7-card-content>
-                  <div style="font-size:x-small;float:right">{{catQues[0].category}}</div>
+              <f7-card>
+                <f7-card-content>
+                  <div style="font-size:small">{{catQues[0].category}}</div>
                   <div v-html="que.question"></div>
 
-                  <!-- Course spesific question has one answer. -->
-                  <template v-for="i in (thisCourse.instructors.length)">
-                  <f7-row v-if="que.choices">
-                     <f7-col v-for="(choice,chid) in que.choices.split(',')"
-                             :key="chid">
-                        <f7-radio :name="que.id" 
-                             :value="choice" 
-                             :checked="choice===oldResponse(que.id, false)"
-                             @change="(e) => {if (e.target.checked) feedback[que.id].response = choice}"
-                             ></f7-radio>
+                  <!-- instructor spesific questions has multiple answers. -->
+                  <template v-for="inst, key in thisCourse.instructors">
+                    <f7-row v-if="que.choices" noGap>
+                      <f7-col>
+                        <font style="font-size:xx-small">{{inst[1]}}</font>
+                      </f7-col>
+                      <f7-col v-for="(choice,chid) in que.choices.split(',')" :key="chid">
+                        <f7-radio :name="que.id" :value="choice" 
+                          :checked="choice===oldResponse(que.id, false)"
+                          @change="(e) => {if (e.target.checked) feedback[que.id].response = choice}">
                         <span style="font-size:xx-small">{{choice}}</span>
-                     </f7-col>
-                  </f7-row>
-                  <f7-row v-else>
-                     <f7-col :no-gap="true">
-                        <f7-list-input type="text"
-                                       :value="oldResponse(que.id, '')"
-                                       placeholder="Type here"
-                                       @input="feedback[que.id].response=$event.target.value"
-                                       >
+                        </f7-radio>
+                      </f7-col>
+                    </f7-row>
+                    <f7-row v-else>
+                      <f7-col :no-gap="true">
+                        <f7-list-input type="text" :value="oldResponse(que.id, '')"
+                          placeholder="Type here"
+                          @input="feedback[que.id].response=$event.target.value">
                         </f7-list-input>
-                     </f7-col>
-                  </f7-row>
+                      </f7-col>
+                    </f7-row>
                   </template>
-               </f7-card-content>
-               </f7-card>
+                </f7-card-content>
+              </f7-card>
             </div>
-            </template>
+          </template>
 
-            <div style="padding:10px">
-               <f7-button raised fill @click="submitFeedback">Submit</f7-button>
-            </div>
+          <div style="padding:10px">
+            <f7-button raised fill @click="submitFeedback">Submit</f7-button>
+          </div>
 
-         </f7-page>
+        </f7-page>
       </f7-popup>
 
       <f7-block>
@@ -263,7 +262,6 @@ export default {
       const app = self.$f7;
       self.thisCourse = course;
 
-      console.log( "Giving feedback for ", course);
       app.preloader.show();
       self.postWithPromise('/courses/feedback/questions')
         .then( function(x) {
