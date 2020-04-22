@@ -6,9 +6,12 @@ create:
 	cordova create . com.dilawar.hippo Hippo \
 	    --template cordova-template-framework7-vue-webpack
 
+init_android:
+	cordova platform add android  || echo "Failed to add android platform"
+	make init
+
 init:
 	mkdir -p www
-	cordova platform add android  || echo "Failed to add android platform"
 	cordova platform add browser || echo "Failed to add browser"
 	cordova plugin add cordova-plugin-inappbrowser || echo "A"
 	cordova plugin add cordova-plugin-browsersync || echo "B"
@@ -24,6 +27,9 @@ init:
 	cordova plugin add cordova-android-play-services-gradle-release || echo "F"
 	cordova plugin add cordova-android-firebase-gradle-release || echo "F"
 	npm install
+
+browser:
+	cordova build browser
 
 build : 
 	@cordova run android 
