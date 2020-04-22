@@ -65,29 +65,30 @@
       <!-- POPUP for giving feedback -->
       <f7-popup tablet-fullscreen :opened="feedbackPopup" @popup:closed="feedbackPopup=false">
         <f7-page>
-
           <f7-navbar title="Feedback">
             <f7-nav-right>
               <f7-link popup-close>Close</f7-link>
             </f7-nav-right>
           </f7-navbar>
 
-          <template v-for="(catQues, key) in questions">
-            <div v-for="(que, index) in catQues">
+          <template v-for="(catQues, qcat) in questions" >
+            <div v-for="(que, qid) in catQues" :key="'que'+qcat+qid">
               <f7-card>
                 <f7-card-content>
                   <div style="font-size:small">{{catQues[0].category}}</div>
                   <div v-html="que.question"></div>
 
                   <!-- instructor spesific questions has multiple answers. -->
-                  <f7-list v-for="inst, key in thisCourse.instructors" style="list-style-type:none">
-                    <f7-list-item :title="inst[1]" v-if="que.choices"
-                      smart-select :smart-select-params="{routableModals:false}">
+                  <f7-list v-for="(inst, key) in thisCourse.instructors"
+                    :key="'que'+qid+':'+key" style="list-style-type:none">
+                    <f7-list-item :title="inst[1]" v-if="que.choices" 
+                        smart-select 
+                        :smart-select-params="{openIn:'popover',closeOnSelect:true, routableModals:false}">
                       <select name="feedback">
-                        <option v-for="(choice,chid) in que.choices.split(',')"
-                          :key="chid" :value="choice">
-                          {{choice}}
-                        </option>
+                        <option v-for="(choice,index) in que.choices.split(',')"
+                          :selected="choice===oldResponse(que.id, false)"
+                          :key="inst[0]+qid+choice" 
+                          :value="choice">{{choice}}</option>
                       </select>
                     </f7-list-item>
                     <f7-list-item v-else>
@@ -109,7 +110,7 @@
       <f7-block>
          <f7-block-title medium>My courses</f7-block-title>
          <f7-list media-list no-hairlines>
-            <f7-list-item v-for="(course, key) in courses" :key="key"
+            <f7-list-item v-for="(course, key) in courses" :key="'course'+key"
                           :title="course.name"
                           @click="handleFeedback(course)">
                <div slot="header">
@@ -249,7 +250,6 @@ export default {
     },
     handleFeedback: function(course)
     {
-      // NOTE: Disabling feedback from the app.
       const self = this;
       const app = self.$f7;
       self.thisCourse = course;
@@ -272,8 +272,7 @@ export default {
         });
       let cid = course.course_id + '-' + course.semester + '-' + course.year;
       self.postWithPromise('/courses/feedback/get/'+btoa(cid))
-        .then( function(x) {
-          console.log("Getting old feedback for ",cid);
+        .then(function(x) {
           let data = JSON.parse(x.data).data;
           self.feedback = data;
           app.preloader.hide();

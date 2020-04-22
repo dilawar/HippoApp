@@ -6,7 +6,7 @@ import CanteenPage from './assets/vue/pages/canteen.vue';
 import AWSPage from './assets/vue/pages/myaws.vue';
 import AWSEditPage from './assets/vue/pages/aws_edit.vue';
 import JCPage from './assets/vue/pages/myjc.vue';
-import CoursePage from './assets/vue/pages/mycourse.vue';
+import MyCoursePage from './assets/vue/pages/mycourse.vue';
 import PanelLeftPage from './assets/vue/pages/panel-left.vue';
 import PanelRightPage from './assets/vue/pages/panel-right.vue';
 import WhatWhereWhenPage from './assets/vue/pages/whatwherewhen.vue';
@@ -137,7 +137,7 @@ export default [
    },
    {
       path: '/mycourse/',
-      component: CoursePage
+      component: MyCoursePage
    },
    {
       path: '/accomodation/',
