@@ -64,13 +64,14 @@
   </f7-block-header>
 
   <f7-list accordion-list media-list no-hairlines class="search-list">
-    <f7-list-item :accordion-item="item.description.length>80"
-           v-for="(item, key) in items"
-           :key="key">
+    <f7-list-item :accordion-item="item.description.length>80" v-for="(item, key) in items" :key="key">
            <div slot="header" v-html="genWhereline(item)"></div>
            <div slot="text" class="text-color-black">
              <strong>{{item.title}}</strong>
              <small>by {{item.created_by}}</small>
+           </div>
+           <div slot="title">
+             {{item.vc_url}}
            </div>
            <div slot="footer" v-html="genTimeline(item)"></div>
            <f7-accordion-content style="background-color:Ivory">

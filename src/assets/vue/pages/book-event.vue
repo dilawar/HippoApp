@@ -12,10 +12,8 @@
         </f7-nav-right>
       </f7-navbar>
 
-      <f7-block-title small>
-        Available venues:
-        {{dbDateTime(thisBooking.startDateTime)}} 
-        to {{dbTime(thisBooking.endTime)}}
+      <f7-block-title>
+        Venues: {{thisBooking.startDateTime | dateTime}} to {{thisBooking.endTime | dateTime}}
       </f7-block-title>
 
       <!-- Fetch venues and show the status. -->
@@ -24,14 +22,21 @@
           <f7-list-item v-for="(venue, key) in venues" 
                         :key="key"
                         @click="onVenueSelected(venue)">
-            <div slot="header" bg-color="blue">{{venue.note_to_user}}</div>
+            <div slot="header" text-color="blue">
+              {{venue.note_to_user}}
+            </div>
             <div slot="title">{{venue.name}}</div>
             <div slot="after" v-if="isAvailable(venue)">Available</div>
             <div slot="footer" v-if="venue.BOOKING_STATUS !== 'AVAILABLE'">
               {{venue.BOOKING}}
             </div>
-            <div slot="header">
-              Capacity {{venue.strength}}, Projector {{venue.has_projector}}
+            <div slot="text">
+              Capacity:{{venue.strength}}, Projector {{venue.has_projector}}
+            </div>
+            <!-- <div slot="media"> -->
+              <!-- <f7-icon v-if="venue.has_projector === 'YES'"  -->
+                       <!-- icon="fa fa-video"> -->
+              <!-- </f7-icon> -->
             </div>
           </f7-list-item>
         </f7-list>
@@ -133,7 +138,8 @@
     <f7-list media-list>
       <!-- NOT READONLY -->
       <f7-list-group v-if="! thisEvent.readonly" media-list>
-        <f7-list-input @input="thisBooking.title = $event.target.value"
+        <f7-list-input
+                     @input="thisBooking.title = $event.target.value"
                      label="Title" 
                      placeholder="At least 6 chars"
                      type="textarea" resizable required 
@@ -175,7 +181,7 @@
         </f7-list-input>
       </f7-list-group>
 
-      <f7-list-group media-list>
+      <f7-list-group media-list no-hairlines>
         <!-- VENUE AND TIME -->
         <f7-list-input label="Start Date/Time" :input="false">
           <date-picker slot="input" 
@@ -201,10 +207,19 @@
 
         <!-- FIND A VENUE -->
         <f7-list-item v-if="thisBooking.venue"
-                      title="Selected venue" 
-                      :after="thisBooking.venue"
+                      header="Selected venue" 
+                      :title="thisBooking.venue"
                       @click="popupVenueSelect=true">
         </f7-list-item>
+
+        <f7-list-input v-if="thisBooking.venue === 'Remote VC'"
+                       label="Remote VC URL"
+                       type="url"
+                       validate
+                       @input="thisBooking.vc_url = $event.target.value"
+                       :value="thisBooking.vc_url">
+          </f7-list-input>
+
         <f7-list-item v-else>
           <f7-button small raised fill
                      slot="after" 
@@ -283,6 +298,7 @@ export default {
         , dates: []
         , is_public_event: "NO"
         , repeatPat: { days:[], weeks:['All'], months:0}
+        , vc_url: ''
       },
     };
   },
@@ -371,6 +387,8 @@ export default {
         return {status: false, msg: 'Start time is in the past!'};
       if(! self.thisBooking.venue)
         return {status: false, msg: 'No venue selected.'};
+      if(self.thisBooking.venue === 'Remove VC' && (! self.thisBooking.vc_url))
+        return {status: false, msg: 'No valid VC URL'};
       return {status: true, msg: 'BOOK'};
     },
   },
@@ -474,7 +492,7 @@ export default {
       let startTime = self.dbTime(self.thisBooking.startDateTime);
       let endTime = self.dbTime(self.thisBooking.endTime);
 
-      app.dialog.preloader('Fetching available venues...');
+      app.dialog.preloader('Fetching venues...');
       self.promiseWithAuth('info/venues/availability/all'
         , {'date':date, 'start_time': startTime, 'end_time': endTime}
       ).then(function(x) {

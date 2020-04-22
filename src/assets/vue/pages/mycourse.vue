@@ -120,7 +120,7 @@
          <f7-list media-list no-hairlines>
             <f7-list-item v-for="(course, key) in courses" :key="key"
                           :title="course.name"
-                          @click="showFeedback(course)">
+                          @click="handleFeedback(course)">
                <div slot="header">
                   {{course.year}}, {{course.semester}},
                   <span v-if="course.grade" style="color:blue;font-weight:500">
@@ -246,6 +246,8 @@ export default {
     },
     alreadyRegistered: function(cid) {
       const self = this;
+      if(! self.courses)
+        return;
       let res = self.courses.filter(x => 
         cid == (x.course_id+"-"+x.semester+"-"+x.year)
       );
@@ -254,15 +256,14 @@ export default {
         return res[0].type;
       return "";
     },
-    showFeedback: function(course)
+    handleFeedback: function(course)
     {
       // NOTE: Disabling feedback from the app.
       const self = this;
-      return;
-
       const app = self.$f7;
-      console.log( "Giving feedback for ", course);
       self.thisCourse = course;
+
+      console.log( "Giving feedback for ", course);
       app.preloader.show();
       self.postWithPromise('/courses/feedback/questions')
         .then( function(x) {
