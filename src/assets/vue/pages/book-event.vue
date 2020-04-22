@@ -406,7 +406,7 @@ export default {
       self.potentialSpeakers = res.results;
       self.createNewSpeaker = false;
     },
-    bookThisEvent: function( )
+    bookThisEvent: function()
     {
       const self = this;
       const app = self.$f7;
