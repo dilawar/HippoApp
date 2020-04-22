@@ -73,35 +73,27 @@
           </f7-navbar>
 
           <template v-for="(catQues, key) in questions">
-            <div v-for="(que,index) in catQues">
+            <div v-for="(que, index) in catQues">
               <f7-card>
                 <f7-card-content>
                   <div style="font-size:small">{{catQues[0].category}}</div>
                   <div v-html="que.question"></div>
 
                   <!-- instructor spesific questions has multiple answers. -->
-                  <template v-for="inst, key in thisCourse.instructors">
-                    <f7-row v-if="que.choices" noGap>
-                      <f7-col>
-                        <font style="font-size:xx-small">{{inst[1]}}</font>
-                      </f7-col>
-                      <f7-col v-for="(choice,chid) in que.choices.split(',')" :key="chid">
-                        <f7-radio :name="que.id" :value="choice" 
-                          :checked="choice===oldResponse(que.id, false)"
-                          @change="(e) => {if (e.target.checked) feedback[que.id].response = choice}">
-                        <span style="font-size:xx-small">{{choice}}</span>
-                        </f7-radio>
-                      </f7-col>
-                    </f7-row>
-                    <f7-row v-else>
-                      <f7-col :no-gap="true">
-                        <f7-list-input type="text" :value="oldResponse(que.id, '')"
-                          placeholder="Type here"
-                          @input="feedback[que.id].response=$event.target.value">
-                        </f7-list-input>
-                      </f7-col>
-                    </f7-row>
-                  </template>
+                  <f7-list v-for="inst, key in thisCourse.instructors" style="list-style-type:none">
+                    <f7-list-item :title="inst[1]" v-if="que.choices"
+                      smart-select :smart-select-params="{routableModals:false}">
+                      <select name="feedback">
+                        <option v-for="(choice,chid) in que.choices.split(',')"
+                          :key="chid" :value="choice">
+                          {{choice}}
+                        </option>
+                      </select>
+                    </f7-list-item>
+                    <f7-list-item v-else>
+                      No choices.
+                    </f7-list-item>
+                  </f7-list>
                 </f7-card-content>
               </f7-card>
             </div>
