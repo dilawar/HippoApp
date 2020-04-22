@@ -10,7 +10,7 @@
       <f7-nav-title>NCBS Hippo</f7-nav-title>
       <f7-nav-right>
         <f7-link v-if="isUserAuthenticated()"
-                 icon="fa fa-sign-out" @click="signOut" 
+                 icon="fas fa-sign-out-alt" @click="signOut" 
                  panel-close
                  header="Logout"
                  slot="media">
@@ -75,21 +75,17 @@
       </f7-col>
     </f7-row>
 
-    <f7-row v-if="! isUserAuthenticated()" 
-            style="margin-right:5px"
-            class="pull-right">
+    <f7-row v-if="! isUserAuthenticated()" style="margin-right:5px" class="pull-right">
+      <f7-col>
+      </f7-col>
       <f7-col>
         <div>
-          <font v-if="isHippoAlive" style="font-size:small">
-            Hippo is Alive. You may login.
-          </font>
+          <font v-if="isHippoAlive">Hippo is Alive. You may login.</font>
           <font v-else>
             <f7-preloader color="blue"></f7-preloader> Pinging Hippo ...
           </font>
         </div>
-        <f7-button raised outline fill
-                   :disabled="! isHippoAlive"
-                   login-screen-open=".hippo-login-screen">
+        <f7-button fill :disabled="! isHippoAlive" login-screen-open=".hippo-login-screen">
           {{isHippoAlive?'Login':'Pinging Hippo server...'}}
         </f7-button>
       </f7-col>

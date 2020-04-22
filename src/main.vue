@@ -43,7 +43,7 @@
         <f7-link icon-only v-else
                  href="/events/"
                  text="Events"
-                 icon="fa fa-calendar-o fa-2x">
+                 icon="far fa-calendar fa-2x">
         </f7-link>
       </f7-toolbar>
 

@@ -16,30 +16,24 @@
          </f7-block>
 
 
-          <!-- Filter by venue should be a floating button. -->
-          <f7-fab position="right-top" 
-                  slot="fixed"
-                  color="green"
-                  @click="actionGridOpened = true"
-                  text=""
-                  >
-               <f7-icon icon="fa fa-filter"></f7-icon>
-          </f7-fab>
+         <!-- Filter by venue should be a floating button. -->
+         <f7-fab position="right-top" slot="fixed" color="green" @click="actionGridOpened = true" text=""> 
+           <f7-icon icon="fa fa-filter"></f7-icon>
+         </f7-fab>
 
-          <f7-actions :grid="true" :opened="actionGridOpened" @actions:closed="actionGridOpened = false">
-             <f7-actions-group>
-                <f7-actions-button v-for="v in eventTypes" :key="v" @click="filterTimeline(v)">
-                   <span>{{v}}</span>
-                </f7-actions-button>
-             </f7-actions-group>
-          </f7-actions>
-          
+         <f7-actions :grid="true" :opened="actionGridOpened" @actions:closed="actionGridOpened = false">
+           <f7-actions-group>
+             <f7-actions-button v-for="v in eventTypes" :key="v" @click="filterTimeline(v)">
+               <span>{{v}}</span>
+             </f7-actions-button>
+           </f7-actions-group>
+         </f7-actions>
 
-          <light-timeline :items='items'>
-             <template slot='tag' slot-scope='{ item }'>
-                <span v-html="item.tag" ></span>
-             </template>
-          </light-timeline>
+         <light-timeline :items='items'>
+           <template slot='tag' slot-scope='{ item }'>
+             <span v-html="item.tag" ></span>
+           </template>
+         </light-timeline>
 
    </f7-page>
 </template>
@@ -47,6 +41,10 @@
 <script>
 import moment from 'moment';
 moment.defaultFormat = 'YYYY-MM-DD HH:mm:ss';
+
+import Vue from "vue";
+import LightTimeline from 'vue-light-timeline';
+Vue.use(LightTimeline);
 
 export default {
    data() {
