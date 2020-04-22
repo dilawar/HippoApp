@@ -137,8 +137,8 @@
               <div v-html="aws.abstract"></div>
               <f7-row>
                 <f7-col>
-                  <f7-button small fill @click="cancelAWS(aws)" color="red">
-                    Cancel
+                  <f7-button small fill @click="removeAWS(aws)" color="red">
+                    Remove
                   </f7-button>
                 </f7-col>
                 <f7-col></f7-col>
@@ -370,12 +370,12 @@ export default {
       // Open a popup to change the venue.
       console.log("Changing AWS", aws);
     },
-    cancelAWS: function(aws) 
+    removeAWS: function(aws) 
     {
       const self = this;
       const app = self.$f7;
-      app.dialog.prompt("Please submit reason..."
-        , "Cancelling AWS ..."
+      app.dialog.prompt("Please give a reason..."
+        , "Removing scheduled AWS ..."
         , function(value) {
           if( value.length <= 8)
           {
@@ -387,7 +387,7 @@ export default {
           self.promiseWithAuth('acadadmin/upcomingaws/cancel', aws)
             .then( function(x) {
               self.fetchUpcomingAws();
-              self.notify("Success", "AWS is cancelled.");
+              self.notify("Success", "AWS is removed.");
             });
         }, function(ev) {
           console.log( 'NAH');
