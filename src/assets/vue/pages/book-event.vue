@@ -22,7 +22,7 @@
           <f7-list-item v-for="(venue, key) in venues" 
                         :key="key"
                         @click="onVenueSelected(venue)">
-            <div slot="header" text-color="blue">
+            <div slot="header" class="text-color-red">
               {{venue.note_to_user}}
             </div>
             <div slot="title">{{venue.name}}</div>
@@ -412,6 +412,8 @@ export default {
     {
       if(venue.BOOKING_STATUS !== 'AVAILABLE')
         return;
+      if(venue.allow_booking_on_hippo !== 'YES')
+        return;
       const venueid = venue.id;
       const self = this;
       self.thisBooking.venue = venueid;
@@ -477,7 +479,7 @@ export default {
     },
     isAvailable: function(venue)
     {
-      if(venue.allowd_booking_on_hippo === 'NO')
+      if(venue.allow_booking_on_hippo === 'NO')
         return false;
       if(venue.BOOKING_STATUS !== 'AVAILABLE')
         return false;

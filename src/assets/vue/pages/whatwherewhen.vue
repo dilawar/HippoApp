@@ -70,8 +70,10 @@
              <strong>{{item.title}}</strong>
              <small>by {{item.created_by}}</small>
            </div>
-           <div slot="title">
-             {{item.vc_url}}
+           <div slot="title" v-if="item.vc_url">
+             <f7-link external target="_system" :href="item.vc_url">
+               {{item.vc_url}}
+             </f7-link>
            </div>
            <div slot="footer" v-html="genTimeline(item)"></div>
            <f7-accordion-content style="background-color:Ivory">
