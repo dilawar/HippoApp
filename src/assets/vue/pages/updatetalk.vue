@@ -1,6 +1,6 @@
 <template>
   <f7-page>
-    <f7-navbar title="Manage talk" back-link="Back">
+    <f7-navbar title="Update talk" back-link="Back">
     </f7-navbar>
 
     <f7-block>

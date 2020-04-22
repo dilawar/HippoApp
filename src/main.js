@@ -59,7 +59,8 @@ import Framework7Icons from 'framework7-icons/css/framework7-icons.css'
 import MaterialIcons from 'material-design-icons/iconfont/material-icons.css'
 
 // Import Fontawesome Theme Styles
-import FontAwesome from 'font-awesome/css/font-awesome.css'
+// import FontAwesome from 'font-awesome/css/font-awesome.css'
+import FontAwesome from '@fortawesome/fontawesome-free/css/all.min.css'
 
 // Import App Custom Styles
 import AppStyles from './assets/sass/main.scss'
@@ -95,8 +96,11 @@ Vue.mixin({
             "async": true,
             "crossDomain": true,
             "method": "GET",
-            "url": "https://us1.locationiq.com/v1/search.php?key=0d166e7f031bfd"
+            "url": "https://us1.locationiq.com/v1/search.php?key=0d166e7f031bfd" 
+               + "&countrycodes=in&matchlevel=city&format=json",
          },
+         locationIQSearchURL: "https://us1.locationiq.com/v1/autocomplete.php?key=0d166e7f031bfd" 
+               + "&countrycodes=in&matchlevel=city&format=json",
       };
    },
    methods : {
@@ -422,6 +426,9 @@ Vue.mixin({
       },
       'date' : function(time) {
          return moment(time, 'YYYY-MM-DD').format('(ddd) MMM DD');
+      },
+      'dateTime' : function(date) {
+         return moment(date).format('(ddd) MMM DD, hh:mm A');
       },
       'date2' : function(time) {
          return moment(time, 'YYYY-MM-DD').format('(ddd) MMM DD, YYYY');

@@ -114,8 +114,8 @@
       <f7-list-input :input="false" label="Speaker (required)">
         <v-autocomplete  slot="input"
                          ref="refEventSpeaker"
-                         input-class="item-input"
-                         placeholder="Search or add a new speaker..."
+                         input-class="form-control"
+                         placeholder="Email (you can add a new speaker if none found)"
                          results-property="email"
                          results-display="name"
                          :request-headers="apiPostData()"
@@ -159,6 +159,7 @@
                     v-model="thisEvent.description">
         </vue-editor>
       </f7-list-input>
+      <!-- Following does not support inserting image from the computer -->
       <!--
       <f7-list-input type="texteditor"
                      label="Description"
@@ -169,7 +170,7 @@
       -->
       <f7-list-input :input="false" required>
         <v-autocomplete  slot="input"
-                         input-class="item-input"
+                         input-class="item-input form-control"
                          results-property="email"
                          results-display="name"
                          results-value="email"
@@ -183,7 +184,7 @@
 
       <f7-list-input :input="false">
         <v-autocomplete slot="input"
-            input-class="item-input"
+            input-class="item-input form-control"
             results-property="email"
             results-display="name"
             results-value="email"

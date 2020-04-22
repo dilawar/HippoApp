@@ -1,7 +1,7 @@
 <template>
   <f7-page ptr ptr:refresh="refreshPage">
 
-    <f7-navbar title="Annual Work Seminars" back-link="Back">
+    <f7-navbar title="Upcoming AWS" back-link="Back">
     </f7-navbar>
 
     <!-- POPUP ASSIGN -->
@@ -101,59 +101,61 @@
 
     <f7-block-title small>
       Upcoming Annual Work Seminars
-      <f7-button small 
-                 raised fill color="yellow"
-                             @click="openAssignPopup=true"
-                             style="float:right">
+      <f7-button small fill raised 
+                            tooltip="Select a day and assign AWS"
+                            @click="openAssignPopup=true" 
+                            style="float:right">
         Assign AWS
       </f7-button>
     </f7-block-title>
+
     <f7-block>
-      <f7-list media-list accordion-list
-               no-hairlines
+      <f7-list media-list accordion-list no-hairlines
                v-for="(AWSes, date) in upcomingAWS" :key="date">
 
-               <f7-block-title style="color:black">
-                 {{date | date }}, {{venueInfo(AWSes[0].venue)}} 
-               </f7-block-title>
+        <f7-block-title> 
+          {{date | date }} 
+          <f7-button small class="float-right" @click="changeVenue(AWSes[0])"> 
+            {{venueInfo(AWSes[0].venue)}}
+            </f7-button>
+        </f7-block-title>
+
         <f7-list-item v-if="AWSes.length < 3">
           <div slot="title" text-color="gray">Some slots are empty ...</div>
-          <f7-button slot="after" small outline raised
-                     @click="addAWSSchedule(date, AWSes[0])">
+          <f7-button slot="after" small outline raised @click="addAWSSchedule(date, AWSes[0])">
             Add AWS
           </f7-button>
         </f7-list-item>
 
         <f7-list-item v-for="(aws, key) in AWSes" :key="key" accordion-item>
-                      <div slot="title" v-html="aws.by"></div>
-                      <div slot="text" v-html="aws.title"></div>
-                      <div slot="footer">{{aws.supervisor_1}}</div>
-                      <div slot="footer">{{aws.supervisor_2}}</div>
-                      <f7-accordion-content>
-                        <f7-block>
-                          <div v-html="aws.abstract"></div>
-                          <f7-row>
-                            <f7-col>
-                              <f7-button small 
-                                         fill 
-                                         @click="cancelAWS(aws)"
-                                         color="red">
-                                Cancel
-                              </f7-button>
-                            </f7-col>
-                            <f7-col></f7-col>
-                            <f7-col>
-                              <f7-button small fill @click="editAWSClick(aws)">Edit</f7-button>
-                            </f7-col>
-                          </f7-row>
-                        </f7-block>
-                      </f7-accordion-content>
-                      <div slot="media" v-if="aws.acknowledged==='NO'">
-                        <f7-icon icon="fa fa-question fa-2x"></f7-icon>
-                      </div>
-                      <div slot="media" v-else>
-                        <f7-icon icon="fa fa-check fa-fw"></f7-icon>
-                      </div>
+          <div slot="title" v-html="aws.by"></div>
+          <div slot="text" v-html="aws.title"></div>
+          <div slot="footer">{{aws.supervisor_1}}</div>
+          <div slot="footer">{{aws.supervisor_2}}</div>
+          <f7-accordion-content>
+            <f7-block>
+              <div v-html="aws.abstract"></div>
+              <f7-row>
+                <f7-col>
+                  <f7-button small fill @click="cancelAWS(aws)" color="red">
+                    Cancel
+                  </f7-button>
+                </f7-col>
+                <f7-col></f7-col>
+                <f7-col>
+                  <f7-button small fill @click="editAWSClick(aws)">
+                    Edit
+                  </f7-button>
+                </f7-col>
+              </f7-row>
+            </f7-block>
+          </f7-accordion-content>
+          <div slot="media" v-if="aws.acknowledged==='NO'">
+            <f7-icon icon="fa fa-question fa-2x"></f7-icon>
+          </div>
+          <div slot="media" v-else>
+            <f7-icon icon="fa fa-check fa-fw"></f7-icon>
+          </div>
         </f7-list-item>
       </f7-list>
     </f7-block>
@@ -161,9 +163,8 @@
     <!-- Upcoming schedule -->
     <f7-block-title small>
       Click on login to assign AWS.
-      <f7-button small color="yellow" fill 
-                       style="float:right"
-                       @click="computeSchedule()">
+      <f7-button small color="gray" fill style="float:right"
+                     @click="computeSchedule()">
         Recompute Schedule
       </f7-button>
     </f7-block-title>
@@ -271,7 +272,7 @@ export default {
       const self = this;
       const app = self.$f7;
       app.preloader.show();
-      self.promiseWithAuth('/acadadmin/aws/upcoming')
+      self.promiseWithAuth('/acadadmin/upcomingaws/upcoming')
         .then( function(x) {
           self.upcomingAWS = JSON.parse(x.data).data;
           app.preloader.hide();
@@ -326,7 +327,7 @@ export default {
     editThisAWS: function()
     {
       const self = this;
-      self.sendRequest('acadadmin/aws/update', self.thisAWS).then( function(x){
+      self.sendRequest('acadadmin/upcomingaws/update', self.thisAWS).then( function(x){
         self.fetchUpcomingAws();
       });
     },
@@ -339,7 +340,7 @@ export default {
       self.thisAWS.status = 'VALID'
       //app.dialog.preloader('Assigning AWS of ' + self.thisAWS.speaker);
       app.preloader.show();
-      return self.promiseWithAuth('/acadadmin/aws/assign', self.thisAWS)
+      return self.promiseWithAuth('/acadadmin/upcomingaws/assign', self.thisAWS)
         .then( function(x) {
           var res = JSON.parse(x.data).data;
           if(! res.success)
@@ -364,11 +365,16 @@ export default {
         });
       setTimeout(() => app.preloader.hide(), 10000);
     },
+    changeVenue: function(aws) 
+    {
+      // Open a popup to change the venue.
+      console.log("Changing AWS", aws);
+    },
     cancelAWS: function(aws) 
     {
       const self = this;
       const app = self.$f7;
-      app.dialog.prompt("Please give some reason..."
+      app.dialog.prompt("Please submit reason..."
         , "Cancelling AWS ..."
         , function(value) {
           if( value.length <= 8)
@@ -378,10 +384,10 @@ export default {
             return;
           }
           aws['reason'] = value;
-          console.log('aws', aws);
-          self.promiseWithAuth('acadadmin/aws/cancel', aws)
+          self.promiseWithAuth('acadadmin/upcomingaws/cancel', aws)
             .then( function(x) {
               self.fetchUpcomingAws();
+              self.notify("Success", "AWS is cancelled.");
             });
         }, function(ev) {
           console.log( 'NAH');

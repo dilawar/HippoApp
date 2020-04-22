@@ -4,6 +4,7 @@ import NotificationPage from './assets/vue/pages/notifications.vue';
 import AccomodationPage from './assets/vue/pages/accomodation.vue';
 import CanteenPage from './assets/vue/pages/canteen.vue';
 import AWSPage from './assets/vue/pages/myaws.vue';
+import AWSEditPage from './assets/vue/pages/aws_edit.vue';
 import JCPage from './assets/vue/pages/myjc.vue';
 import CoursePage from './assets/vue/pages/mycourse.vue';
 import PanelLeftPage from './assets/vue/pages/panel-left.vue';
@@ -40,6 +41,7 @@ import BmvEvents from './assets/vue/pages/bmv_events.vue';
 // ACAD ADMIN 
 import AcadAdminAWSRoster from './assets/vue/pages/acad_aws_roster.vue';
 import AcadAdminAWS from './assets/vue/pages/acad_aws.vue';
+import AcadAdminAllAWS from './assets/vue/pages/acad_allaws.vue';
 import AcadAdminCourses from './assets/vue/pages/acad_courses.vue';
 import UpdateCoursePage from './assets/vue/pages/updatecourse.vue';
 import AdminManageTalks from './assets/vue/pages/admin_manages_talks.vue';
@@ -90,6 +92,10 @@ export default [
       component: AcadAdminAWS
    },
    {
+      path: '/acadadmin/allaws/',
+      component: AcadAdminAllAWS
+   },
+   {
       path: '/acadadmin/awsroster/',
       component: AcadAdminAWSRoster
    },
@@ -120,6 +126,10 @@ export default [
    {
       path: '/myaws/',
       component: AWSPage
+   },
+   {
+      path: '/awsedit/:awsid',
+      component: AWSEditPage
    },
    {
       path: '/myjc/',

@@ -44,7 +44,7 @@
           </f7-button>
           <f7-button raised small 
                      icon="fa fa-pencil fa-1x"
-                     @click="popupEditGroupRequest(requests[0])">
+                     @click="popupEditRequest(requests[0], true)">
             Edit All
           </f7-button>
       </f7-card-footer>
@@ -73,29 +73,38 @@
             <f7-list media-list no-hairlines>
               <!-- DELETE THE WHOLE GROUP -->
               <f7-list-item v-if="events.length > 1">
-                <f7-button raised> Delete whole group </f7-button>
-                <f7-link @click="popupEditGroupEvent(events[0])">Edit Group</f7-link>
+                <f7-row>
+                  <f7-col>
+                    <f7-button raised fill color=red @click="deleteThisEvent(events[0].gid)"> 
+                      Delete this group
+                    </f7-button>
+                  </f7-col>
+                  <f7-col>
+                    <f7-button raised
+                      @click="popupEditEvent(events[0], true)">Edit Group</f7-button>
+                  </f7-col>
+                </f7-row>
               </f7-list-item>
 
               <!-- DELETE EACH ELEMENT -->
               <f7-list-item swipeout 
                             v-for="(val, index) in events" 
-                            @swipeout:deleted="deleteEvent(val.gid, val.eid)"
+                            @swipeout:deleted="deleteThisEvent(val.gid, val.eid)"
                             :key="val.gid+'.'+val.eid" 
                             :title="humanReadableDateTime(val.date, val.start_time)">
                 <f7-row slot="after">
                   <f7-col>
-                    <f7-button @click="deleteEvent(val.gid,val.eid)" 
+                    <f7-button @click="deleteThisEvent(val.gid,val.eid)" 
                                small raised
-                               icon="fa fa-trash fa-fw"
+                               icon="fas fa-trash"
+                               tooltip="Delete this booking"
                                color="red">
                     </f7-button>
                   </f7-col>
                   <f7-col>
-                    <f7-button @click="updateEvent(val)" 
-                               small raised
-                               icon="fa fa-pencil fa-fw"
-                               color="blue">
+                    <f7-button @click="popupEditEvent(val)" small raised
+                               icon="far fa-edit"
+                               tooltip="Edit this booking">
                     </f7-button>
                   </f7-col>
                 </f7-row>
@@ -167,6 +176,13 @@
                  @input="thisBooking.description=$event.target.value">
           </f7-list-input>
 
+          <f7-list-input label="VC URL" 
+                         type="url"
+                         validate
+                         :value="thisBooking.vc_url"
+                         @input="thisBooking.vc_url=$event.target.value">
+          </f7-list-input>
+
           <f7-list-input label="Add to NCBS Calendar" 
                          :value="thisBooking.is_public_event"
                          type="select"
@@ -177,11 +193,7 @@
           </f7-list-input>
 
           <f7-list-item>
-            <f7-button slot="after" 
-                       popup-close 
-                       raised 
-                       fill
-                       @click="updateBooking()">
+            <f7-button slot="after" popup-close raised fill @click="updateBooking()"> 
               Update
             </f7-button>
           </f7-list-item>
@@ -205,11 +217,12 @@ export default {
       startDate: moment(),
 
       // events.
-      thisBooking: {confirmed:false, title:'', description:''},
+      thisBooking: {confirmed:false, title:'', description:'', 'vc_url':''},
       popupEditBooking: false,
 
       // Classes of events.
       classes: [],
+      updateGroup: false,
     };
   },
   mounted: function() {
@@ -270,39 +283,47 @@ export default {
         done();
       }, 3000);
     },
-    deleteEvent: function(gid, eid) 
+    /**
+     * Delete this event. When eid is empty, delete the whole group.
+     */
+    deleteThisEvent: function(gid, eid="") 
     {
       const self = this;
       const app = self.$f7;
 
-      app.dialog.preloader();
-
-      var link = 'mybooking/delete/event/'+gid+'.'+eid;
-      self.promiseWithAuth(link)
-        .then(function(x) {
-          var res = JSON.parse(x.data);
-          if( res.status == 'ok')
-          {
-            app.notification.create( {
-              title: "Deleted",
-              subtitle: res.data[0],
-              closeButton: true,
-              closeOnClick: true,
-              closeTimeout: 3000,
-            }).open();
-            self.fetchMyBooking();
-            app.dialog.close();
-          }
-        });
-      setTimeout(()=> app.dialog.close(), 2000);
+      app.dialog.confirm("Really?", "Deleting", 
+        function(val) {
+          app.dialog.preloader();
+          var link = 'mybooking/delete/event/'+gid+'.'+eid;
+          self.promiseWithAuth(link)
+            .then(function(x) {
+              var res = JSON.parse(x.data);
+              if( res.status == 'ok')
+              {
+                app.notification.create( {
+                  title: "Deleted",
+                  subtitle: res.data[0],
+                  closeButton: true,
+                  closeOnClick: true,
+                  closeTimeout: 3000,
+                }).open();
+                self.fetchMyBooking();
+                app.dialog.close();
+              }
+            });
+        }, null);
+      setTimeout(()=> app.dialog.close(), 5000);
     },
+    /**
+     * Delete this request. When rid is not set, delete the whole group.
+     */
     deleteThisRequest: function(gid, rid='')
     {
       const self = this;
       const app = this.$f7;
+
       // When rid is empty, delete whole group.
-      console.log( "Deleting ", gid, rid );
-      app.dialog.confirm( "Really?", "Deleting", 
+      app.dialog.confirm("Really?", "Deleting", 
         function(val) {
           var link = 'mybooking/delete/request/'+gid+'.'+rid;
           self.promiseWithAuth(link).then( 
@@ -340,21 +361,27 @@ export default {
         closeButton: true,
       }).open();
     },
-    popupEditGroupEvent: function(event) {
+    popupEditEvent: function(ev, updateGroup) {
       const self = this;
-      self.thisBooking = event;
+      self.updateGroup = updateGroup;
+      self.thisBooking = ev;
       self.thisBooking.confirmed = true;
       self.popupEditBooking = true;
     },
-    popupEditGroupRequest: function(request) {
+    popupEditRequest: function(request, updateGroup) {
       const self = this;
       self.thisBooking = request;
       self.thisBooking.confirmed = false;
+      self.updateGroup = updateGroup;
       self.popupEditBooking = true;
     },
     updateBooking: function()
     {
       const self = this;
+
+      if(self.updateGroup)
+        self.thisBooking.eid = '';
+
       let endpoint = '';
       if(self.thisBooking.confirmed)
         endpoint = '/me/event/update/' + self.thisBooking.gid + '.' 
@@ -366,12 +393,12 @@ export default {
         function(x) {
           let res = JSON.parse(x.data).data;
           if(res.success)
-            self.notify('Success', 'Updated bookings.');
+            self.notify('Success', 'Updated successfully.');
           else
-            self.notify('Failed', 'Could not update bookings.');
+            self.notify('Failed', 'Could not update.');
         });
       self.fetchMyBooking();
-    }
+    },
   },
 };
 </script>

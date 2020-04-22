@@ -108,6 +108,7 @@ export default {
     let action = self.$f7route.params.arg1;
     if(action === 'accomodation')
     {
+      self.title = "Use it at your own risk...";
       let id = self.$f7route.params.arg2;
       let accs = self.loadStore('accomodations');
       let acc = accs.list.find(x=> x.id.toString() === id.toString());

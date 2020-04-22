@@ -10,11 +10,10 @@
                           target="_blank"
                           view=".view-main"
                           title="Notifications"
-                          panel-close
-                          >
+                          panel-close>
                <span slot="media" class="fa-stack" v-if="notifications.length>=0">
-                  <i class="fa fa-bell-o fa-stack-2x"></i>
-                  <i class="fa fa-stack circle-red">{{notifications.length}}</i>
+                  <i class="fas fa-bell fa-stack-2x"></i>
+                  <i class="fas fa-stack circle-red">{{notifications.length}}</i>
                </span>
             </f7-list-item>
 
