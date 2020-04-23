@@ -76,72 +76,59 @@
               <f7-list-item :title="qcat" group-title></f7-list-item>
               <f7-list-item v-for="(que, qid, index) in catQues" :key="qcat+qid">
                 <div v-html="que.question"></div>
-                <!-- 
-                If there are choices, render them else give use an input form 
-                -->
+
+                <!-- Instructor specific -->
                 <template v-if="que.type === 'INSTRUCTOR SPECIFIC'">
-                  <template v-if="que.choices">
                     <f7-list-input v-for="(inst, key) in thisCourse.instructors" 
                       :key="'que'+qid+':'+key" 
-                      type="select" 
+                      :type="que.choices?'select':'textarea'" 
+                      resizable
                       @change="submitThisFeedback(que.id, $event.target.value, inst[0])"
-                      :default="oldResponse(que.id, inst[0], 'NA').response">
+                      :value="oldResponse(que.id, inst[0]).response">
                       <div slot="label">{{inst[1]}}
                         <span class="float-right">
-                          {{oldResponse(que.id, inst[0], false).last_modified_on}}
+                          {{oldResponse(que.id, inst[0]).last_modified_on}}
                         </span>
                       </div>
-                      <option value="NA">Select one</option>
-                      <option v-for="(choice,index) in que.choices.split(',')" 
-                        :selected="choice===oldResponse(que.id, inst[0], false).response" 
-                        :key="inst[0]+qid+choice" :value="choice">
-                        {{choice}}
-                      </option>
-                    </f7-list-input>
-                  </template>
-                  <template v-else>
-                    <f7-list-input :value="oldResponse(que.id, '', 'NA').response" 
-                      @input="feedback[que.id]['response']=$event.target.value"
-                      type="textarea" resizable>
-                    </f7-list-input>
-                  </template>
-                </template>
-                <!-- Course specific -->
-                <template v-else>
-                    <template v-if="que.choices">
-                      <f7-list-input type="select" 
-                        @change="submitThisFeedback(que.id, $event.target.value, '')"
-                        :default="oldResponse(que.id, '', 'NA').response">
-                        <div slot="label">
-                          <span class="float-right">
-                            {{oldResponse(que.id, inst[0], false).last_modified_on}}
-                          </span>
-                        </div>
+                      <!-- There are choices -->
+                      <template v-if="que.choices">
                         <option value="NA">Select one</option>
                         <option v-for="(choice,index) in que.choices.split(',')" 
-                          :selected="choice===oldResponse(que.id, '', false).response" 
+                          :selected="choice===oldResponse(que.id, inst[0]).response" 
                           :key="inst[0]+qid+choice" :value="choice">
                           {{choice}}
                         </option>
-                      </f7-list-input>
+                      </template>
+                    </f7-list-input>
+                </template>
+                <!-- Course specific -->
+                <template v-else>
+                  <f7-list-input :type="que.choices?'select':'textarea'" 
+                    @change="submitThisFeedback(que.id, $event.target.value, '')"
+                    resizable 
+                    :value="oldResponse(que.id, '').response">
+                    <div slot="label">
+                      <span class="float-right">
+                        {{oldResponse(que.id, '').last_modified_on}}
+                      </span>
+                    </div>
+                    <!-- There are choices -->
+                    <template v-if="que.choices">
+                      <option value="NA">Select one</option>
+                      <option v-for="(choice,index) in que.choices.split(',')" 
+                        :selected="choice===oldResponse(que.id, '').response" 
+                        :key="qid+choice" :value="choice">
+                        {{choice}}
+                      </option>
                     </template>
-                    <template v-else>
-                      <f7-list-input :value="oldResponse(que.id, '', 'NA').response" 
-                        @input="feedback[que.id]['response']=$event.target.value"
-                        type="textarea" resizable>
-                      </f7-list-input>
-                    </template>
-                  </template>
+                  </f7-list-input>
                 </template>
               </f7-list-item>
             </f7-list-group>
+            <f7-list-item>
+              <f7-button small raised @click="feedbackPopup=false">Go Back</f7-button>
+            </f7-list-item>
           </f7-list>
-          
-          <!--
-          <div style="padding:10px">
-            <f7-button raised fill @click="submitFeedback">Submit</f7-button>
-          </div>
-          -->
         </f7-page>
       </f7-popup>
 
@@ -161,9 +148,7 @@
                <span style="float:right"><strong>{{course.type}}</strong></span>
              </div>
              <div slot="footer">
-               <span>
-                 Registered on {{course.registered_on}}
-               </span>
+               <span>Registered on {{course.registered_on}}</span>
                <br />
                <span v-if="course.grade">
                  Grade assigned on: {{course.grade_is_given_on}}
@@ -176,6 +161,8 @@
    </template>
 
 <script>
+import moment from 'moment';
+
 export default {
   data() {
     const self = this;
@@ -186,7 +173,7 @@ export default {
       thisCourse: {},
       feedbackPopup: false,
       questions: {},
-      feedback: {},
+      feedback: {responses:{}, unanswered:0},
     };
   },
   mounted()
@@ -296,6 +283,7 @@ export default {
         .then(function(x) {
           let data = JSON.parse(x.data).data;
           self.feedback = data;
+          self.feedbackPopup = true;
           app.preloader.hide();
         });
       setTimeout(() => app.preloader.hide(), 3000);
@@ -311,17 +299,17 @@ export default {
         .then( function(x) {
           self.questions = JSON.parse(x.data).data;
           self.fetchFeedback(course);
-          self.feedbackPopup = true;
         });
       setTimeout(() => app.preloader.hide(), 3000);
     },
-    oldResponse: function(qid, instructor, _default=null){
+    oldResponse: function(qid, instructor){
+      // If instructor is empty, its course feedback.
       const self = this;
-      if(qid in self.feedback) { 
-        if(instructor in self.feedback[qid])
-          return self.feedback[qid][instructor];
-      }
-      return {response:_default, last_modfied_on:''};
+      if(! (qid in self.feedback.responses))
+        return {response:'', last_modified_on:''};
+      if(! (instructor in self.feedback.responses[qid]))
+        return {response:'', last_modified_on:''};
+      return self.feedback.responses[qid][instructor];
     },
     getThisFeedback: function(qid, email) {
       const self = this;
@@ -330,14 +318,16 @@ export default {
         ...seld.thisCourse};
       self.promiseWithAuth('/courses/feedback/getthis', data)
         .then(function(x) {
-          self.feedback[qid][email] = JSON.parse(x.data).data;
+          self.feedback.responses[qid][email] = JSON.parse(x.data).data;
         });
     },
-    submitThisFeedback: function(qid, feedback, email) {
+    submitThisFeedback: function(qid, feedback, email='') {
       const self = this;
       const app = self.$f7;
       console.log("Submitting feedback", qid, feedback, email);
       let data = {question_id: qid, instructor_email: email, response: feedback, ...self.thisCourse};
+      self.feedback.responses[qid][email] = {'response': feedback
+        , 'last_modified_on': self.dbDateTime(self.today())};
       app.preloader.show();
       self.promiseWithAuth('/courses/feedback/submit', data)
         .then(function(x) {
