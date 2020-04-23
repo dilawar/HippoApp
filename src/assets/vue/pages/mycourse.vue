@@ -79,30 +79,59 @@
                 <!-- 
                 If there are choices, render them else give use an input form 
                 -->
-                <template v-if="que.choices">
-                  <f7-list-input v-for="(inst, key) in thisCourse.instructors" 
-                      :key="'que'+qid+':'+key" type="select" 
+                <template v-if="que.type === 'INSTRUCTOR SPECIFIC'">
+                  <template v-if="que.choices">
+                    <f7-list-input v-for="(inst, key) in thisCourse.instructors" 
+                      :key="'que'+qid+':'+key" 
+                      type="select" 
                       @change="submitThisFeedback(que.id, $event.target.value, inst[0])"
                       :default="oldResponse(que.id, inst[0], 'NA').response">
                       <div slot="label">{{inst[1]}}
-                      <span class="float-right">
-                        {{oldResponse(que.id, inst[0], false).last_modified_on}}
-                      </span>
-                    </div>
-                    <option value="NA">Select one</option>
-                    <option v-for="(choice,index) in que.choices.split(',')" 
-                      :selected="choice===oldResponse(que.id, inst[0], false).response" 
-                      :key="inst[0]+qid+choice" :value="choice">
-                      {{choice}}
-                    </option>
-                  </f7-list-input>
+                        <span class="float-right">
+                          {{oldResponse(que.id, inst[0], false).last_modified_on}}
+                        </span>
+                      </div>
+                      <option value="NA">Select one</option>
+                      <option v-for="(choice,index) in que.choices.split(',')" 
+                        :selected="choice===oldResponse(que.id, inst[0], false).response" 
+                        :key="inst[0]+qid+choice" :value="choice">
+                        {{choice}}
+                      </option>
+                    </f7-list-input>
+                  </template>
+                  <template v-else>
+                    <f7-list-input :value="oldResponse(que.id, '', 'NA').response" 
+                      @input="feedback[que.id]['response']=$event.target.value"
+                      type="textarea" resizable>
+                    </f7-list-input>
+                  </template>
                 </template>
-                <!-- No choice here. -->
+                <!-- Course specific -->
                 <template v-else>
-                  <f7-list-input :value="oldResponse(que.id, '', 'NA').response" 
-                    @input="feedback[que.id]['response']=$event.target.value"
-                    type="textarea" resizable>
-                  </f7-list-input>
+                    <template v-if="que.choices">
+                      <f7-list-input type="select" 
+                        @change="submitThisFeedback(que.id, $event.target.value, '')"
+                        :default="oldResponse(que.id, '', 'NA').response">
+                        <div slot="label">
+                          <span class="float-right">
+                            {{oldResponse(que.id, inst[0], false).last_modified_on}}
+                          </span>
+                        </div>
+                        <option value="NA">Select one</option>
+                        <option v-for="(choice,index) in que.choices.split(',')" 
+                          :selected="choice===oldResponse(que.id, '', false).response" 
+                          :key="inst[0]+qid+choice" :value="choice">
+                          {{choice}}
+                        </option>
+                      </f7-list-input>
+                    </template>
+                    <template v-else>
+                      <f7-list-input :value="oldResponse(que.id, '', 'NA').response" 
+                        @input="feedback[que.id]['response']=$event.target.value"
+                        type="textarea" resizable>
+                      </f7-list-input>
+                    </template>
+                  </template>
                 </template>
               </f7-list-item>
             </f7-list-group>
