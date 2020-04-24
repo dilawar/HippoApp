@@ -18,7 +18,7 @@
     <allow-intent href="mailto:*"/>
     <allow-intent href="geo:*"/>
     <icon src="res/icon/android/icon.png"/>
-    <splash src="res/screen/android/splash-port-mdpi.png"/>
+    <splash src="res/screen/splash.png"/>
     <platform name="android">
       <allow-intent href="market:*"/>
           <preference name="SplashShowOnlyFirstTime" value="true"/>
