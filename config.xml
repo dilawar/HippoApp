@@ -18,12 +18,10 @@
     <allow-intent href="mailto:*"/>
     <allow-intent href="geo:*"/>
     <icon src="res/icon/android/icon.png"/>
+    <splash src="res/screen/android/splash-port-mdpi.png"/>
     <platform name="android">
       <allow-intent href="market:*"/>
-        <!--
-          <splash density="port-hdpi" src="res/screen/android/splash-port-mdpi.png"/>
           <preference name="SplashShowOnlyFirstTime" value="true"/>
-        -->
           <resource-file src="google-services.json" target="app/google-services.json"/>
         </platform>
     <platform name="ios">

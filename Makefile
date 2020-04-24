@@ -26,6 +26,7 @@ init:
 	cordova plugin add cordova-plugin-androidx-adapter || echo "F"
 	cordova plugin add cordova-android-play-services-gradle-release || echo "F"
 	cordova plugin add cordova-android-firebase-gradle-release || echo "F"
+	cordova plugin add cordova-plugin-splashscreen || echo "SplashScreen failed"
 	npm install
 
 browser:
