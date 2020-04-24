@@ -9,7 +9,7 @@
     </f7-panel>
 
     <f7-view main url="/" tab tab-active> 
-      <f7-toolbar bottom tabber labels :inner="true" style="font-size:xx-small">
+      <f7-toolbar bottom tabber labels style="font-size:x-small">
 
         <f7-link text="Back"
                  icon="fa fa-step-backward fa-2x"
@@ -127,6 +127,8 @@ export default {
         isBottom: true,
         toolbar: {
           hideOnPageScroll: true,
+          // Don't show tabber at the end, it hides some entries otherwise.
+          showOnPageScrollEnd: false,
         },
       },
       infoPopup: false,
