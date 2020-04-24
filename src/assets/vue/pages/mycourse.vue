@@ -3,6 +3,105 @@
       <f7-navbar title="Courses" back-link="Back">
       </f7-navbar>
 
+      <!-- POPUP for giving feedback -->
+      <f7-popup tablet-fullscreen :opened="feedbackPopup" @popup:closed="feedbackPopup=false">
+        <f7-page>
+          <f7-navbar :title="'Feedback: ' + thisCourse.name">
+            <f7-nav-right>
+              <f7-link popup-close>Close</f7-link>
+            </f7-nav-right>
+          </f7-navbar>
+
+          <f7-block-header bg-color=yellow>
+            <div v-if="feedback.unanswered==0">
+              <f7-icon icon="fa fa-info-circle"></f7-icon>
+              <strong>You have already completed the submission.</strong>
+            </div>
+            <div v-if="! feedback.editable[0]">
+              <f7-icon icon="fa fa-info-circle"></f7-icon>
+              Feedback submission is not allowed: 
+              <strong>{{feedback.editable[1]}}</strong>
+            </div>
+          </f7-block-header>
+
+          <f7-list media-list no-hairlines>
+            <f7-list-group  v-for="(catQues, qcat, index) in questions" :key="qcat">
+
+              <!-- Category of the question. Group title-->
+              <f7-list-item :title="qcat" group-title>
+              </f7-list-item>
+
+              <!-- Questions start -->
+              <f7-list-item v-for="(que, qid, index) in catQues" :key="qcat+qid">
+
+                <!-- 
+                Show question at the top and options at the bottom (stacked).
+                Tried many other layout but this one works best both on mobile
+                and browser and when there are many instrcutor.  NOTE TO FUTURE
+                SELF: Don't play with it please, you will end up spending whole
+                day and then revert back to this again.
+                -->
+                <div v-html="que.question"></div>
+
+                <!-- Instructor specific -->
+                <template v-if="que.type === 'INSTRUCTOR SPECIFIC'">
+                    <f7-list-input v-for="(inst, key) in thisCourse.instructors" 
+                      :key="'que'+qid+':'+key" 
+                      :type="que.choices?'select':'textarea'" 
+                      :disabled="! feedback.editable[0]"
+                      resizable
+                      @change="submitThisFeedback(que.id, $event.target.value, inst[0])"
+                      :value="oldResponse(que.id, inst[0]).response">
+                      <div slot="label">{{inst[1]}}
+                        <span class="float-right">
+                          {{oldResponse(que.id, inst[0]).last_modified_on}}
+                        </span>
+                      </div>
+                      <!-- There are choices -->
+                      <template v-if="que.choices">
+                        <option v-for="(choice,index) in que.choices.split(',')" 
+                          :selected="choice===oldResponse(que.id, inst[0]).response" 
+                          :key="inst[0]+qid+choice" :value="choice">
+                          {{choice}}
+                        </option>
+                      </template>
+                    </f7-list-input>
+                </template>
+                <!-- Course specific -->
+                <template v-else>
+                  <f7-list-input 
+                    :type="que.choices?'select':'textarea'" 
+                    @change="submitThisFeedback(que.id, $event.target.value, '')"
+                    :disabled="! feedback.editable[0]"
+                    resizable 
+                    :value="oldResponse(que.id, '').response">
+                    <div slot="label">
+                      <span class="float-right">
+                        {{oldResponse(que.id, '').last_modified_on}}
+                      </span>
+                    </div>
+                    <!-- There are choices -->
+                    <template v-if="que.choices">
+                      <option value="NA">Select one</option>
+                      <option v-for="(choice,index) in que.choices.split(',')" 
+                        :selected="choice===oldResponse(que.id, '').response" 
+                        :key="qid+choice" :value="choice">
+                        {{choice}}
+                      </option>
+                    </template>
+                  </f7-list-input>
+                </template>
+              </f7-list-item>
+            </f7-list-group>
+            <f7-list-item>
+              <f7-button small raised @click="feedbackPopup=false">Go Back</f7-button>
+            </f7-list-item>
+          </f7-list>
+        </f7-page>
+      </f7-popup>
+
+
+     <!-- Running courses -->
      <f7-block-title medium>Running Courses.</f7-block-title>
      <f7-block-header>
        Click on the list item to <tt>AUDIT</tt>, <tt>CREDIT</tt> or to
@@ -62,103 +161,35 @@
         </f7-list-item>
      </f7-list>
 
-      <!-- POPUP for giving feedback -->
-      <f7-popup tablet-fullscreen :opened="feedbackPopup" @popup:closed="feedbackPopup=false">
-        <f7-page>
-          <f7-navbar title="Feedback">
-            <f7-nav-right>
-              <f7-link popup-close>Close</f7-link>
-            </f7-nav-right>
-          </f7-navbar>
-
-          <f7-list media-list no-hairlines>
-            <f7-list-group media-list v-for="(catQues, qcat, index) in questions" :key="qcat">
-              <f7-list-item :title="qcat" group-title></f7-list-item>
-              <f7-list-item v-for="(que, qid, index) in catQues" :key="qcat+qid">
-                <div v-html="que.question"></div>
-
-                <!-- Instructor specific -->
-                <template v-if="que.type === 'INSTRUCTOR SPECIFIC'">
-                    <f7-list-input v-for="(inst, key) in thisCourse.instructors" 
-                      :key="'que'+qid+':'+key" 
-                      :type="que.choices?'select':'textarea'" 
-                      resizable
-                      @change="submitThisFeedback(que.id, $event.target.value, inst[0])"
-                      :value="oldResponse(que.id, inst[0]).response">
-                      <div slot="label">{{inst[1]}}
-                        <span class="float-right">
-                          {{oldResponse(que.id, inst[0]).last_modified_on}}
-                        </span>
-                      </div>
-                      <!-- There are choices -->
-                      <template v-if="que.choices">
-                        <option value="NA">Select one</option>
-                        <option v-for="(choice,index) in que.choices.split(',')" 
-                          :selected="choice===oldResponse(que.id, inst[0]).response" 
-                          :key="inst[0]+qid+choice" :value="choice">
-                          {{choice}}
-                        </option>
-                      </template>
-                    </f7-list-input>
-                </template>
-                <!-- Course specific -->
-                <template v-else>
-                  <f7-list-input :type="que.choices?'select':'textarea'" 
-                    @change="submitThisFeedback(que.id, $event.target.value, '')"
-                    resizable 
-                    :value="oldResponse(que.id, '').response">
-                    <div slot="label">
-                      <span class="float-right">
-                        {{oldResponse(que.id, '').last_modified_on}}
-                      </span>
-                    </div>
-                    <!-- There are choices -->
-                    <template v-if="que.choices">
-                      <option value="NA">Select one</option>
-                      <option v-for="(choice,index) in que.choices.split(',')" 
-                        :selected="choice===oldResponse(que.id, '').response" 
-                        :key="qid+choice" :value="choice">
-                        {{choice}}
-                      </option>
-                    </template>
-                  </f7-list-input>
-                </template>
-              </f7-list-item>
-            </f7-list-group>
-            <f7-list-item>
-              <f7-button small raised @click="feedbackPopup=false">Go Back</f7-button>
-            </f7-list-item>
-          </f7-list>
-        </f7-page>
-      </f7-popup>
-
+      <f7-block-title medium>My courses</f7-block-title>
+      <f7-block-header>Click on the course for feedback.</f7-block-header>
       <f7-block>
-         <f7-block-title medium>My courses</f7-block-title>
-         <f7-list media-list no-hairlines>
-           <f7-list-item v-for="(course, key) in courses" :key="'course'+key"
-             :title="course.name"
-             @click="handleFeedback(course)">
-             <div slot="header">
-               {{course.year}}, {{course.semester}},
-               <span v-if="course.grade" style="color:blue;font-weight:500">
-                 ({{course.grade}})
-               </span>
-             </div>
-             <div slot="after">
-               <span style="float:right"><strong>{{course.type}}</strong></span>
-             </div>
-             <div slot="footer">
-               <span>Registered on {{course.registered_on}}</span>
-               <br />
-               <span v-if="course.grade">
-                 Grade assigned on: {{course.grade_is_given_on}}
-               </span>
-             </div>
-           </f7-list-item>
-         </f7-list>
-       </f7-block>
-     </f7-page>
-   </template>
+        <f7-list media-list no-hairlines>
+          <f7-list-item v-for="(course, key) in courses" :key="'course'+key"
+            :title="course.name"
+            @click="handleFeedback(course)">
+            <div slot="header">
+              {{course.year}}, {{course.semester}},
+              <span v-if="course.grade" style="color:blue;font-weight:500">
+                ({{course.grade}})
+              </span>
+            </div>
+            <div slot="after">
+              <span style="float:right"><strong>{{course.type}}</strong></span>
+            </div>
+            <div slot="footer">
+              <span>Registered on {{course.registered_on}}</span>
+              <br />
+              <span v-if="course.grade">
+                Grade assigned on: {{course.grade_is_given_on}}
+              </span>
+            </div>
+          </f7-list-item>
+        </f7-list>
+      </f7-block>
+
+  </f7-page>
+</template>
 
 <script>
 import moment from 'moment';
@@ -173,7 +204,7 @@ export default {
       thisCourse: {},
       feedbackPopup: false,
       questions: {},
-      feedback: {responses:{}, unanswered:0},
+      feedback: {responses:{}, unanswered:0, editable:[true, ""]},
     };
   },
   mounted()
