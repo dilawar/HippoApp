@@ -1,13 +1,16 @@
 <template>
   <f7-page class="with_photography_club">
     <f7-navbar>
+
+      <!-- LEFT PANEL -->
       <f7-nav-left>
-        <!-- LEFT PANEL -->
         <f7-link v-if="isUserAuthenticated()" panel-open="left" icon="fa fa-bars fw">
         </f7-link>
       </f7-nav-left>
 
       <f7-nav-title>NCBS Hippo</f7-nav-title>
+
+      <!-- RIGHT PANEL -->
       <f7-nav-right>
         <f7-link v-if="isUserAuthenticated()"
                  icon="fas fa-sign-out-alt" @click="signOut" 
@@ -24,7 +27,6 @@
                  slot="media">
         </f7-link>
 
-        <!-- RIGHT PANEL -->
         <f7-link v-if="rolesCSV.includes('ADMIN')" 
                  panel-open="right" 
                  icon="fa fa-bars fa-fw"
@@ -33,10 +35,21 @@
       </f7-nav-right>
     </f7-navbar>
 
+
     <f7-row>
-      <f7-col width="20" medium="50"></f7-col>
-      <f7-col width="80" medium="50">
+      <f7-col width="20" medium="40">
+      </f7-col>
+      <f7-col width="80" medium="40">
         <f7-list no-hairlines media-list>
+
+          <f7-list-item v-if="isUserAuthenticated()"
+                        link="/smartbook/" 
+                        title="Booking" 
+                        tooltip="Create a new booking"
+                        panel-close>
+            <f7-icon slot="after" icon="fa fa-hand-pointer fa-2x"></f7-icon>
+          </f7-list-item>
+
           <f7-list-item v-if="isUserAuthenticated()"
                         link="/inventory/" 
                         title="Inventory" 
@@ -137,7 +150,6 @@
           </f7-list-input>
         </f7-list>
 
-        <f7-block>
           <f7-row>
             <f7-col width="45">
               <f7-button login-screen-close raised login-screen-close>Cancel</f7-button>
@@ -152,12 +164,10 @@
             that you can login to <a _target="blank" href="https://ncbs.res.in/hippo">
               Hippo Website</a>.
           </f7-block-footer>
-        </f7-block>
+
       </f7-page>
     </f7-login-screen>
-
   </f7-page>
-
 </template>
 
 <script>
