@@ -6,6 +6,10 @@ import Dropzone from "vue2-dropzone";
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 Vue.component('vue-dropzone', Dropzone);
 
+// hightcharts
+import VueHighcharts from 'vue2-highcharts'
+Vue.component('vue-highcharts', VueHighcharts)
+
 // Editor
 import { VueEditor, Quill } from 'vue2-editor';
 Vue.component('vue-editor', VueEditor);

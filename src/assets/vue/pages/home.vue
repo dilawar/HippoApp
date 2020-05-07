@@ -1,5 +1,5 @@
 <template>
-  <f7-page class="with_photography_club">
+  <f7-page class="with_photography_club page-content infinite-scroll-content">
     <f7-navbar>
 
       <!-- LEFT PANEL -->
@@ -117,6 +117,7 @@
       </f7-swiper-slide>
     </f7-swiper>
 
+
     <!-- FAB Right Bottom (Blue) -->
     <f7-fab v-if="isUserAuthenticated()" 
             text="Book"
@@ -124,9 +125,8 @@
             slot="fixed" 
             color="blue"
             href="/smartbook/" 
-            fab-close
-            >
-            <f7-icon icon="fa fa-plus"></f7-icon>
+            fab-close>
+          <f7-icon icon="fa fa-plus"></f7-icon>
     </f7-fab>
 
     <!-- LOGIN SCREEN  -->
@@ -167,6 +167,11 @@
 
       </f7-page>
     </f7-login-screen>
+
+    <!-- cards -->
+    <vue-highcharts :options="options">
+    </vue-highcharts>
+
   </f7-page>
 </template>
 
@@ -181,6 +186,8 @@ export default {
       profile: { },
       upcomingTrips: '',
       rolesCSV: 'USER',
+      options: {
+      },
     };
   },
   mounted()
