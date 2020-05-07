@@ -3,7 +3,7 @@
 }
 
 body {
-    max-width: 900px;
+    max-width: 800px;
     align-self: auto;
     margin: 0px auto;
 }
@@ -293,10 +293,8 @@ div.watermark {
 }
 
 .vue-highcharts {
-    text-align: center;
-    padding-top: 200px;
-    width: 90%;
-    max-width: 500px;
+    max-width: 600px;
+    width: 80%;
     margin: auto;
-    height: 200px;
+    height: 300px;
 }

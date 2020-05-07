@@ -168,9 +168,15 @@
       </f7-page>
     </f7-login-screen>
 
-    <!-- cards -->
-    <vue-highcharts :options="options">
-    </vue-highcharts>
+    <!-- Charts -->
+    <div style="padding-bottom:80px"></div>
+
+    <f7-swiper navigation pagination scrollbar>
+      <f7-swiper-slide v-for="chart, key in charts" :key="key">
+        <vue-highcharts :options="chart">
+        </vue-highcharts>
+      </f7-swiper-slide>
+    </f7-swiper>
 
   </f7-page>
 </template>
@@ -186,8 +192,8 @@ export default {
       profile: { },
       upcomingTrips: '',
       rolesCSV: 'USER',
-      options: {
-      },
+      charts: {},
+      options: {},
     };
   },
   mounted()
@@ -222,6 +228,7 @@ export default {
 
     self.fetchFlashCards();
     self.fetchRoles();
+    self.fetchCharts();
 
     // Get notification now and display them.
     setTimeout(() => {self.fetchNotifications();}, 1000);
@@ -296,6 +303,14 @@ export default {
         var res = JSON.parse(x.data);
         if(res.data.roles)
           self.rolesCSV = res.data.roles;
+      });
+    },
+    fetchCharts: function() {
+      const self = this;
+      const app = self.$f7;
+      self.promiseWithAuth('charts/all').then( function(x) {
+        self.charts = JSON.parse(x.data).data;
+        console.log("Total charts: ", self.charts.length );
       });
     },
     fetchFlashCards: function() {
