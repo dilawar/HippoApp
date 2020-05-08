@@ -30,8 +30,8 @@ init:
 	npm install
 
 browser:
-	cordova build --release browser 
-	rsync -azv www/ /var/www/https/hippo/
+	cordova build --release browser && rsync -azv www/ /var/www/html/hippo/
+	# sudo chown -R apache:root /var/www/html/hippo/ 
 
 build : 
 	@cordova run android 
