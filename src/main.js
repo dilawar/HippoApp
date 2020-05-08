@@ -6,6 +6,11 @@ import Dropzone from "vue2-dropzone";
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 Vue.component('vue-dropzone', Dropzone);
 
+// Vue charts.
+import Chartkick from 'vue-chartkick'
+import Chart from 'chart.js'
+Vue.use(Chartkick.use(Chart))
+
 // Editor
 import { VueEditor, Quill } from 'vue2-editor';
 Vue.component('vue-editor', VueEditor);

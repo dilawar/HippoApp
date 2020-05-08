@@ -88,7 +88,16 @@
 
       <f7-block v-if="$store.getters.roles.includes('ADMIN')">
       <f7-block-title>Hippo Admin</f7-block-title>
+        <f7-list>
+          <f7-list-item link="/admin/holidays/" 
+                        target="_blank"
+                        view=".view-main"
+                        title="Holidays" 
+                        panel-close>
+          </f7-list-item>
+        </f7-list>
       </f7-block>
+
    </f7-page>
 </template>
 

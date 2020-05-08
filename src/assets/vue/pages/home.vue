@@ -1,13 +1,16 @@
 <template>
-  <f7-page class="with_photography_club">
+  <f7-page class="page-content infinite-scroll-content">
     <f7-navbar>
+
+      <!-- LEFT PANEL -->
       <f7-nav-left>
-        <!-- LEFT PANEL -->
         <f7-link v-if="isUserAuthenticated()" panel-open="left" icon="fa fa-bars fw">
         </f7-link>
       </f7-nav-left>
 
       <f7-nav-title>NCBS Hippo</f7-nav-title>
+
+      <!-- RIGHT PANEL -->
       <f7-nav-right>
         <f7-link v-if="isUserAuthenticated()"
                  icon="fas fa-sign-out-alt" @click="signOut" 
@@ -24,7 +27,6 @@
                  slot="media">
         </f7-link>
 
-        <!-- RIGHT PANEL -->
         <f7-link v-if="rolesCSV.includes('ADMIN')" 
                  panel-open="right" 
                  icon="fa fa-bars fa-fw"
@@ -33,10 +35,21 @@
       </f7-nav-right>
     </f7-navbar>
 
+    <div class="with_photography_club">
     <f7-row>
-      <f7-col width="20" medium="50"></f7-col>
-      <f7-col width="80" medium="50">
+      <f7-col width="20" medium="40">
+      </f7-col>
+      <f7-col width="80" medium="40">
         <f7-list no-hairlines media-list>
+
+          <f7-list-item v-if="isUserAuthenticated()"
+                        link="/smartbook/" 
+                        title="Booking" 
+                        tooltip="Create a new booking"
+                        panel-close>
+            <f7-icon slot="after" icon="fa fa-hand-pointer fa-2x"></f7-icon>
+          </f7-list-item>
+
           <f7-list-item v-if="isUserAuthenticated()"
                         link="/inventory/" 
                         title="Inventory" 
@@ -104,6 +117,7 @@
       </f7-swiper-slide>
     </f7-swiper>
 
+
     <!-- FAB Right Bottom (Blue) -->
     <f7-fab v-if="isUserAuthenticated()" 
             text="Book"
@@ -111,9 +125,8 @@
             slot="fixed" 
             color="blue"
             href="/smartbook/" 
-            fab-close
-            >
-            <f7-icon icon="fa fa-plus"></f7-icon>
+            fab-close>
+          <f7-icon icon="fa fa-plus"></f7-icon>
     </f7-fab>
 
     <!-- LOGIN SCREEN  -->
@@ -137,7 +150,6 @@
           </f7-list-input>
         </f7-list>
 
-        <f7-block>
           <f7-row>
             <f7-col width="45">
               <f7-button login-screen-close raised login-screen-close>Cancel</f7-button>
@@ -152,12 +164,34 @@
             that you can login to <a _target="blank" href="https://ncbs.res.in/hippo">
               Hippo Website</a>.
           </f7-block-footer>
-        </f7-block>
       </f7-page>
     </f7-login-screen>
+  </div>
 
-  </f7-page>
+  <!-- Charts -->
+  <f7-block style="margin-top:100px" strong inline>
+    <f7-block-header large>Some statistics</f7-block-header>
+    <f7-swiper navigation pagination scrollbar>
+      <f7-swiper-slide v-for="chart, key in charts" :key="key">
+        <!--
+        <vue-highcharts :options="chart">
+        </vue-highcharts>
+        -->
+        <line-chart v-if="chart.type=='line'" :data="chart.series" 
+          :title="chart.title"
+          :xtitle="chart.xlabel" :ytitle="chart.ylabel">
+        </line-chart>
+        <pie-chart v-if="chart.type=='pie'" :data="chart.data"
+          :title="chart.title" :legend="false">
+        </pie-chart>
+        <bar-chart v-if="chart.type=='bar'" :title="chart.title" 
+          :data="chart.data" >
+        </bar-chart>
+      </f7-swiper-slide>
+    </f7-swiper>
+  </f7-block>
 
+</f7-page>
 </template>
 
 <script>
@@ -171,6 +205,7 @@ export default {
       profile: { },
       upcomingTrips: '',
       rolesCSV: 'USER',
+      charts: {},
     };
   },
   mounted()
@@ -205,6 +240,7 @@ export default {
 
     self.fetchFlashCards();
     self.fetchRoles();
+    self.fetchCharts();
 
     // Get notification now and display them.
     setTimeout(() => {self.fetchNotifications();}, 1000);
@@ -279,6 +315,14 @@ export default {
         var res = JSON.parse(x.data);
         if(res.data.roles)
           self.rolesCSV = res.data.roles;
+      });
+    },
+    fetchCharts: function() {
+      const self = this;
+      const app = self.$f7;
+      self.promiseWithAuth('charts/all').then( function(x) {
+        self.charts = JSON.parse(x.data).data;
+        console.log("Total charts: ", self.charts.length );
       });
     },
     fetchFlashCards: function() {

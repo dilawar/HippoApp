@@ -50,6 +50,9 @@ import AdminManageSpeaker from './assets/vue/pages/admin_manages_speakers.vue';
 // Service Admin
 import ServiceAdminTransport from './assets/vue/pages/service_transport.vue';
 
+// Admin
+import AdminHolidays from './assets/vue/pages/admin_holidays.vue';
+
 export default [
    {
       path: '/',
@@ -210,5 +213,9 @@ export default [
    {
       path: '/noticeboards/:boardName',
       component: NoticeBoards
+   },
+   {
+      path: '/admin/holidays',
+      component: AdminHolidays
    },
 ]
