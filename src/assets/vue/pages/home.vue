@@ -1,5 +1,5 @@
 <template>
-  <f7-page class="with_photography_club page-content infinite-scroll-content">
+  <f7-page class="with_photography_club">
     <f7-navbar>
 
       <!-- LEFT PANEL -->
@@ -34,7 +34,6 @@
         </f7-link>
       </f7-nav-right>
     </f7-navbar>
-
 
     <f7-row>
       <f7-col width="20" medium="40">
@@ -177,8 +176,8 @@
         </vue-highcharts>
       </f7-swiper-slide>
     </f7-swiper>
-
   </f7-page>
+
 </template>
 
 <script>
