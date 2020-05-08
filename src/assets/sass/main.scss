@@ -277,9 +277,20 @@ div.watermark {
 
 .with_photography_club {
     background: url(https://ncbs.res.in/hippo/info/photography_club);
-    background-position: center center;
+    // overflow-x: scroll;
+    height: 100vh;
+    background-position: top right;
     background-color: transparent;
+    background-repeat: no-repeat;
+    background-size: cover;
     transition: background 500ms ease-in 200ms;
+    // display: inline-block;
+    margin: auto;
+    z-index: -1;
+}
+
+.highcharts-title {
+    font-size: small;
 }
 
 .hippo-login-screen {

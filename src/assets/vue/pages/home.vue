@@ -1,5 +1,5 @@
 <template>
-  <f7-page class="with_photography_club page-content infinite-scroll-content">
+  <f7-page class="page-content infinite-scroll-content">
     <f7-navbar>
 
       <!-- LEFT PANEL -->
@@ -35,7 +35,7 @@
       </f7-nav-right>
     </f7-navbar>
 
-
+    <div class="with_photography_club">
     <f7-row>
       <f7-col width="20" medium="40">
       </f7-col>
@@ -164,21 +164,34 @@
             that you can login to <a _target="blank" href="https://ncbs.res.in/hippo">
               Hippo Website</a>.
           </f7-block-footer>
-
       </f7-page>
     </f7-login-screen>
+  </div>
 
-    <!-- Charts -->
-    <div style="padding-bottom:80px"></div>
-
+  <!-- Charts -->
+  <f7-block style="margin-top:100px" strong inline>
+    <f7-block-header large>Some statistics</f7-block-header>
     <f7-swiper navigation pagination scrollbar>
       <f7-swiper-slide v-for="chart, key in charts" :key="key">
+        <!--
         <vue-highcharts :options="chart">
         </vue-highcharts>
+        -->
+        <line-chart v-if="chart.type=='line'" :data="chart.series" 
+          :title="chart.title"
+          :xtitle="chart.xlabel" :ytitle="chart.ylabel">
+        </line-chart>
+        <pie-chart v-if="chart.type=='pie'" :data="chart.data"
+          :title="chart.title" :legend="false">
+        </pie-chart>
+        <bar-chart v-if="chart.type=='bar'" :title="chart.title" 
+          :data="chart.data" >
+        </bar-chart>
       </f7-swiper-slide>
     </f7-swiper>
+  </f7-block>
 
-  </f7-page>
+</f7-page>
 </template>
 
 <script>
@@ -193,7 +206,6 @@ export default {
       upcomingTrips: '',
       rolesCSV: 'USER',
       charts: {},
-      options: {},
     };
   },
   mounted()
