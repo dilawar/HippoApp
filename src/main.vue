@@ -11,10 +11,8 @@
       <!--
       https://forum.framework7.io/t/solved-pushstateroot-custom-pushstateroot-adds-unwanted-for-the-url/6027
       -->
-      <f7-view main url="/" :push-state="true"
-        :history="true"
-        push-state-root="/hippo/"
-        push-state-separator="">
+        <!-- :push-state="true" :history="true" push-state-separator=""> -->
+      <f7-view main url="/"> 
         <f7-toolbar bottom tabber labels style="font-size:x-small">
 
           <f7-link text="Back"
