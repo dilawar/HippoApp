@@ -1,7 +1,6 @@
 <template>
   <!-- App -->
   <f7-app :params="f7params">
-    <f7-views>
       <f7-panel left cover>
         <f7-view name="left" url="/userpanel/" ></f7-view>
       </f7-panel>
@@ -9,7 +8,13 @@
         <f7-view name="right" url="/adminpanel/" ></f7-view>
       </f7-panel>
 
-      <f7-view main url="/" tab tab-active>
+      <!--
+      https://forum.framework7.io/t/solved-pushstateroot-custom-pushstateroot-adds-unwanted-for-the-url/6027
+      -->
+      <f7-view main url="/" :push-state="true"
+        :history="true"
+        push-state-root="/hippo/"
+        push-state-separator="">
         <f7-toolbar bottom tabber labels style="font-size:x-small">
 
           <f7-link text="Back"
@@ -91,14 +96,6 @@
         </f7-page>
       </f7-popup>
     </f7-view>
-
-    <!-- This is not currently used -->
-    <f7-view tab>
-      <f7-page>
-      </f7-page>
-    </f7-view>
-
-  </f7-views>
 </f7-app>
 </template>
 
@@ -124,6 +121,13 @@ export default {
           // Don't show tabber at the end, it hides some entries otherwise.
           showOnPageScrollEnd: false,
         },
+        // NOTE: Put it on main view.
+        // view: {
+        //   pushState: true,
+        //   history: true,
+        //   pushStateRoot: '',
+        //   pushStateSeparator: '',
+        // },
       },
       infoPopup: false,
       calendarPopup: false,
