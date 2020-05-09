@@ -278,7 +278,7 @@ div.watermark {
 .with_photography_club {
     background: url(https://ncbs.res.in/hippo/v1/info/photography_club);
     // overflow-x: scroll;
-    height: 100vh;
+    height: 95vh;
     background-position: top right;
     background-color: transparent;
     background-repeat: no-repeat;
@@ -303,9 +303,8 @@ div.watermark {
     border-radius: 3px;
 }
 
-.vue-highcharts {
-    max-width: 600px;
-    width: 80%;
-    margin: auto;
-    height: 300px;
+// Invisible scrollbar
+::-webkit-scrollbar {
+    display: none;
 }
+

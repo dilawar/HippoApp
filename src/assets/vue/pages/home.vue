@@ -185,25 +185,25 @@
   </div>
 
   <!-- Charts -->
-  <f7-block style="margin-top:100px" strong inline>
-    <f7-block-header large>Some statistics</f7-block-header>
-    <f7-swiper navigation pagination scrollbar>
-      <f7-swiper-slide v-for="chart, key in charts" :key="key">
-        <!--
-        <vue-highcharts :options="chart">
-        </vue-highcharts>
-        -->
-        <line-chart v-if="chart.type=='line'" :data="chart.series" 
-          :title="chart.title"
-          :xtitle="chart.xlabel" :ytitle="chart.ylabel">
-        </line-chart>
-        <pie-chart v-if="chart.type=='pie'" :data="chart.data"
-          :title="chart.title" :legend="false">
-        </pie-chart>
-        <bar-chart v-if="chart.type=='bar'" :data="chart.data" >
-        </bar-chart>
-      </f7-swiper-slide>
-    </f7-swiper>
+  <f7-block style="margin-top:40px">
+    <div style="margin:8%; padding:10px; border-radius:10px;"
+      v-for="chart, key in charts" :key="key">
+      <line-chart v-if="chart.type==='line'" :data="chart.data" 
+        :title="chart.title"
+        :xtitle="chart.xlabel" :ytitle="chart.ylabel">
+      </line-chart>
+      <pie-chart v-if="chart.type==='pie'" :data="chart.data"
+        :title="chart.title" :legend="! isMobileApp()">
+      </pie-chart>
+      <bar-chart v-if="chart.type==='bar'" :data="chart.data" 
+        :xtitle="chart.xlabel" :ytitle="chart.ylabel"
+        :title="chart.title">
+      </bar-chart>
+      <column-chart v-if="chart.type==='column'" :data="chart.data" 
+        :xtitle="chart.xlabel" :ytitle="chart.ylabel"
+        :title="chart.title">
+      </column-chart>
+    </div>
   </f7-block>
 
 </f7-page>
