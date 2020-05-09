@@ -531,8 +531,14 @@ export default new Vue({
             // console.log("New background FCM message: ", JSON.stringify(payload));
          });
 
-         // Subscribe to Emergency
-         cordova.plugins.firebase.messaging.subscribe("emergency");
+         try {
+            // Subscribe to Emergency
+            cordova.plugins.firebase.messaging.subscribe("emergency");
+         } catch (e) {
+            /* handle error */
+            console.log(e);
+         }
+
       
          //// Backbutton.
          document.addEventListener("backbutton", self.onBackButton, false);

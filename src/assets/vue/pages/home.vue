@@ -1,38 +1,54 @@
 <template>
   <f7-page class="page-content infinite-scroll-content">
-    <f7-navbar>
 
+    <f7-navbar>
       <!-- LEFT PANEL -->
       <f7-nav-left>
         <f7-link v-if="isUserAuthenticated()" panel-open="left" icon="fa fa-bars fw">
         </f7-link>
       </f7-nav-left>
 
-      <f7-nav-title>NCBS Hippo</f7-nav-title>
+      <f7-nav-title>
+        NCBS Hippo 
+        <f7-link no-link-class style="font-size:small" 
+          v-if="! isMobileApp()"
+          target="_system" external
+          href="https://ncbs.res.in/hippo/v1/welcome">
+          (Link to Old Hippo)</f7-link>
+      </f7-nav-title>
 
       <!-- RIGHT PANEL -->
       <f7-nav-right>
         <f7-link v-if="isUserAuthenticated()"
-                 icon="fas fa-sign-out-alt" @click="signOut" 
-                 panel-close
-                 header="Logout"
-                 slot="media">
+          icon="fas fa-sign-out-alt" @click="signOut" 
+          panel-close
+          header="Logout"
+          slot="media">
         </f7-link>
         <f7-link v-else
-                 @click="shutdown"
-                 color="red"
-                 icon="fa fa-power-off fa-fw" 
-                 panel-close
-                 header="Close"
-                 slot="media">
+          @click="shutdown"
+          color="red"
+          icon="fa fa-power-off fa-fw" 
+          panel-close
+          header="Close"
+          slot="media">
         </f7-link>
 
         <f7-link v-if="rolesCSV.includes('ADMIN')" 
-                 panel-open="right" 
-                 icon="fa fa-bars fa-fw"
-                 color="red">
+          panel-open="right" 
+          icon="fa fa-bars fa-fw"
+          color="red">
         </f7-link>
       </f7-nav-right>
+
+      <!--
+      <f7-subnavbar>
+        <f7-link target="_system" external href="https://ncbs.res.in/hippo/v1">
+          Link to old hippo.
+        </f7-link>
+      </f7-subnavbar>
+      -->
+
     </f7-navbar>
 
     <div class="with_photography_club">
@@ -184,8 +200,7 @@
         <pie-chart v-if="chart.type=='pie'" :data="chart.data"
           :title="chart.title" :legend="false">
         </pie-chart>
-        <bar-chart v-if="chart.type=='bar'" :title="chart.title" 
-          :data="chart.data" >
+        <bar-chart v-if="chart.type=='bar'" :data="chart.data" >
         </bar-chart>
       </f7-swiper-slide>
     </f7-swiper>
