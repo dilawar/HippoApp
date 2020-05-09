@@ -2,11 +2,12 @@
     user-select: none;
 }
 
-body {
-    // max-width: 1800px;
-    width: 90%;
-    min-width: 800px;
-    margin: auto;
+
+@media screen and (min-width: 800px) {
+  body {
+      max-width: 90%;
+      margin: auto;
+  }
 }
 
 .page-content {
