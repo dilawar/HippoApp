@@ -8,12 +8,12 @@
         </f7-link>
       </f7-nav-left>
 
-      <f7-nav-title>NCBS Hippo</f7-nav-title>
-      <f7-link external
-        style="font-size:14px"
-        target="_system" 
-        href="https://ncbs.res.in/hippo/v1/welcome">(Legacy Version)</f7-link>
-
+      <f7-nav-title>Hippo
+        <f7-link external
+          style="font-size:14px"
+          target="_system" 
+          href="https://ncbs.res.in/hippo/v1/welcome">(Legacy Version)</f7-link>
+      </f7-nav-title>
       <!-- RIGHT PANEL -->
       <f7-nav-right>
         <f7-link v-if="isUserAuthenticated()"
