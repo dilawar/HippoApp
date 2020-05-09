@@ -10,10 +10,11 @@
 
       <f7-nav-title>
         NCBS Hippo 
-        <a style="font-size:small" 
-          target="_system"
+        <f7-link no-link-class style="font-size:small" 
+          v-if="! isMobileApp()"
+          target="_system" external
           href="https://ncbs.res.in/hippo/v1/welcome">
-          (Legacy Version)</a>
+          (Link to Old Hippo)</f7-link>
       </f7-nav-title>
 
       <!-- RIGHT PANEL -->
