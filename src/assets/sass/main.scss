@@ -3,17 +3,23 @@
 }
 
 body {
+    // max-width: 1800px;
+    width: 90%;
+    min-width: 800px;
+    margin: auto;
+}
+
+.page-content {
     max-width: 800px;
-    align-self: auto;
-    margin: 0px auto;
+    margin: auto;
 }
 
 input {
     user-select: element !important;
 }
 
-.tab-link {
-
+.tab-link 
+{
     &.active:not(.offline),
     &.active:not(.online) {
         background-color: rgba(1, 18, 25, 0.1);
@@ -224,6 +230,7 @@ input {
     padding-right: 10px;
     height: 0;
 }
+
 .google-calendar iframe {
     position: absolute;
     top: 0;
@@ -306,5 +313,7 @@ div.watermark {
 // Invisible scrollbar
 ::-webkit-scrollbar {
     display: none;
+    width: 0;
+    height: 0;
 }
 

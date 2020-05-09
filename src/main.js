@@ -102,10 +102,10 @@ Vue.mixin({
             "crossDomain": true,
             "method": "GET",
             "url": "https://us1.locationiq.com/v1/search.php?key=0d166e7f031bfd" 
-               + "&countrycodes=in&matchlevel=city&format=json",
+            + "&countrycodes=in&matchlevel=city&format=json",
          },
          locationIQSearchURL: "https://us1.locationiq.com/v1/autocomplete.php?key=0d166e7f031bfd" 
-               + "&countrycodes=in&matchlevel=city&format=json",
+         + "&countrycodes=in&matchlevel=city&format=json",
       };
    },
    methods : {
@@ -261,8 +261,8 @@ Vue.mixin({
       isMobileApp: function() {
          // From  https://stackoverflow.com/a/13252184/1805129
          return (window.cordova || window.PhoneGap || window.phonegap) 
-             && /^file:\/{3}[^\/]/i.test(window.location.href) 
-             && /ios|iphone|ipod|ipad|android/i.test(navigator.userAgent);
+            && /^file:\/{3}[^\/]/i.test(window.location.href) 
+            && /ios|iphone|ipod|ipad|android/i.test(navigator.userAgent);
       },
       sendRequest: function(endpoint, post) {
          const self = this;
@@ -274,7 +274,7 @@ Vue.mixin({
                app.dialog.close();
                return;
             }
-         );
+            );
       },
       sendCoordinates: function(endpoint, coords) {
          const self = this;
@@ -289,7 +289,7 @@ Vue.mixin({
                const res = JSON.parse(x.data);
                return res.status;
             }
-         );
+            );
       },
       fetchVenues: function() {
          const self = this;
@@ -321,9 +321,9 @@ Vue.mixin({
       getInputTypeFromSchema: function(schemaObj) {
          let ret = 'type="text"';
          if( schemaObj.Type == 'date')
-             ret = 'date';
+            ret = 'date';
          else if( schemaObj.Type == 'time')
-             ret = 'time';
+            ret = 'time';
 
          console.log('type is ', ret);
          return ret;
@@ -539,7 +539,7 @@ export default new Vue({
             console.log(e);
          }
 
-      
+
          //// Backbutton.
          document.addEventListener("backbutton", self.onBackButton, false);
          // Open link in external browser
