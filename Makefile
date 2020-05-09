@@ -18,8 +18,9 @@ init:
 	#cordova plugin add https://github.com/dilawar/cordova-plugin-background-geolocation --save 
 	cordova plugin add cordova-plugin-local-notification --save || echo "D"
 	cordova plugin add cordova-plugin-dialogs --save || echo "E"
-	cordova plugin add cordova-plugin-firebase-messaging --save || echo "F"
-	cordova plugin add cordova-support-google-services --save || echo "F"
+	cordova plugin add cordova-plugin-firebase-messaging --save 
+	cordova plugin add cordova-support-google-services --save 
+	cordova plugin add cordova-plugin-whitelist --save
 	# https://github.com/arnesson/cordova-plugin-firebase/issues/1083#issuecomment-503650114 
 	cordova plugin add cordova-plugin-androidx || echo "F"
 	cordova plugin add cordova-plugin-androidx || echo "F"
