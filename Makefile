@@ -32,6 +32,7 @@ init:
 
 browser:
 	cordova build --release browser && rsync -azv www/ /var/www/html/hippo/
+	cd /var/www/html/hippo/v1 && git pull origin master 
 	# sudo chown -R apache:root /var/www/html/hippo/ 
 
 build : 
