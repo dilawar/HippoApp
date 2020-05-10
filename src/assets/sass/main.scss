@@ -5,10 +5,16 @@
 
 @media screen and (min-width: 800px) {
   body {
-      max-width: 90%;
+      max-width: 800px;
       margin: auto;
   }
 }
+
+// Invisible scrollbar
+.body::-webkit-scrollbar {
+    display: none;
+}
+
 
 .page-content {
     max-width: 800px;
@@ -287,18 +293,15 @@ div.watermark {
     background: url(https://ncbs.res.in/hippo/v1/info/photography_club);
     // overflow-x: scroll;
     height: 95vh;
-    background-position: top right;
+    background-position: right top;
     background-color: transparent;
     background-repeat: no-repeat;
     background-size: cover;
+    background-blend-mode: multiply;
     transition: background 500ms ease-in 200ms;
     // display: inline-block;
     margin: auto;
     z-index: -1;
-}
-
-.highcharts-title {
-    font-size: small;
 }
 
 .hippo-login-screen {
@@ -311,10 +314,13 @@ div.watermark {
     border-radius: 3px;
 }
 
-// Invisible scrollbar
-::-webkit-scrollbar {
-    display: none;
-    width: 0;
-    height: 0;
+.visible-scrollbar, .invisible-scrollbar, .mostly-customized-scrollbar {
+  display: block;
+  width: 10em;
+  overflow: auto;
+  height: 2em;
 }
 
+canvas.chartjs-render-monitor {
+    size: inherit;
+}
