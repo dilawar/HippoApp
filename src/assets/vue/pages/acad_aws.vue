@@ -1,6 +1,5 @@
 <template>
   <f7-page ptr ptr:refresh="refreshPage">
-
     <f7-navbar title="Upcoming AWS" back-link="Back">
     </f7-navbar>
 
@@ -84,10 +83,10 @@
       </f7-page>
     </f7-popup>
 
-    <!-- Change AWS venue . -->
-    <f7-popup :opened="changeVenuePopup" @popup:close="changeVenuePopup=false">
+    <!-- Change AWS weekly info . -->
+    <f7-popup :opened="popupWeeklyInfo" @popup:close="popupWeeklyInfo=false">
       <f7-page>
-        <f7-navbar title="Change Venue location">
+        <f7-navbar title="Change location/chair">
           <f7-nav-right>
             <f7-link popup-close>Close</f7-link>
           </f7-nav-right>
@@ -106,6 +105,22 @@
               </option>
             </f7-list-input>
 
+            <f7-list-input :input="false" label="Chair">
+              <v-autocomplete  slot="input"
+                input-class="form-control"
+                ref="refAWSChair"
+                placeholder="Search faculty"
+                :initial-value="thisAWS.chair"
+                results-property="email"
+                results-display="name"
+                results-value="email"
+                :request-headers="apiPostData()"
+                method="post"
+                @selected="chairSelected"
+                :source="(q)=>searchPeopleURI(q, 'faculty')">
+              </v-autocomplete>
+            </f7-list-input>
+
             <f7-list-input type="url" 
               label="VC URL" 
               :value="thisAWS.vc_url"
@@ -113,13 +128,11 @@
             </f7-list-input>
           </f7-list>
 
-          <f7-button raised fill @click="changeVenue"> Submit </f7-button>
+          <f7-button raised fill @click="changeAWSData"> Submit </f7-button>
 
         </f7-block>
       </f7-page>
     </f7-popup>
-
-
 
     <f7-block-title small :padding="false">
       <f7-button small fill raised tooltip="Select a day and assign AWS"
@@ -128,17 +141,26 @@
       </f7-button>
     </f7-block-title>
 
-    <f7-block>
+      <f7-block-header>
+        To update the venue or the chair of the week, click on <tt>UPDATE</tt>
+        button.
+      </f7-block-header>
 
-      <f7-card  v-for="(AWSes, date) in upcomingAWS" :key="date" no-gap>
-
-        <f7-card-header> 
-          <div> {{date | date }} | {{venueInfo(AWSes[0].venue)}} </div>
+      <f7-card  v-for="(AWSes, date) in upcomingAWS" :key="date">
+        <f7-card-header style="font-size:medium">
           <div>
-            <f7-button small float-right @click="openChangeVenuePopup(AWSes[0])"> 
-              Change Venue
-            </f7-button>
+            {{date | date }}
+            {{AWSes[0].venue}}
+            <br />
+            <a :href="'mailto:'+AWSes[0].chair" external target="_system"
+              style="font-size:small">
+              <i class="fa fa-chair"></i>
+              {{AWSes[0].chair}}
+            </a>
           </div>
+          <f7-button raised small float-right @click="openChangeWeekPopup(AWSes[0])"> 
+            Update 
+          </f7-button>
         </f7-card-header>
 
         <f7-card-content>
@@ -183,10 +205,7 @@
             </f7-list-item>
           </f7-list>
         </f7-card-content>
-
       </f7-card>
-
-    </f7-block>
 
     <!-- Upcoming schedule -->
     <f7-block-title small>
@@ -233,12 +252,12 @@ export default {
   data() {
     const self = this;
     return {
-      thisAWS: {date:'', speaker:'', venue:'', title:'', abstract:'', vc_url:""},
+      thisAWS: {date:'', speaker:'', venue:'', title:'', abstract:'', chair:'', vc_url:""},
       venues: [],
       upcomingAWS: [],
       popupTitle: 'Review request',
       openAssignPopup: false,
-      changeVenuePopup: false,
+      popupWeeklyInfo: false,
       openEditPopup: false,
       popupAction: '',
       resules: [],
@@ -365,7 +384,6 @@ export default {
     {
       const self = this;
       const app = self.$f7;
-      console.log('thisAWS', self.thisAWS);
       self.thisAWS.date = self.dbDate(self.thisAWS.date);
       self.thisAWS.status = 'VALID'
       //app.dialog.preloader('Assigning AWS of ' + self.thisAWS.speaker);
@@ -395,7 +413,7 @@ export default {
         });
       setTimeout(() => app.preloader.hide(), 10000);
     },
-    openChangeVenuePopup: function(aws) {
+    openChangeWeekPopup: function(aws) {
       const self = this;
       self.thisAWS = aws;
       self.postWithPromise('aws/vc_url/get').then(function(x) {
@@ -403,18 +421,16 @@ export default {
       });
       self.postWithPromise('venue/list/aws').then(function(x) {
         self.venues = JSON.parse(x.data).data;
-        self.changeVenuePopup = true;
+        self.popupWeeklyInfo = true;
       });
     },
-    changeVenue: function() 
+    changeAWSData: function() 
     {
       const self = this;
-      // Open a popup to change the venue.
-      console.log("Changing venue for AWS date", self.thisAWS);
-      self.promiseWithAuth('aws/venue/change', self.thisAWS).then(function(x) {
+      self.promiseWithAuth('aws/weekinfo/change', self.thisAWS).then(function(x) {
         let res = JSON.parse(x.data);
       });
-      self.changeVenuePopup = false;
+      self.popupWeeklyInfo = false;
     },
     removeAWS: function(aws) 
     {
@@ -438,6 +454,10 @@ export default {
         }, function(ev) {
           console.log( 'NAH');
         });
+    },
+    chairSelected: function(x) {
+      const self = this;
+      self.thisAWS.chair = x.selectedObject.email;
     },
   },
 }
