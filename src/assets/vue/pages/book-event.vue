@@ -1,11 +1,10 @@
 <template>
   <f7-page> 
-  <f7-navbar title="Booking Events" back-link="Back"></f7-navbar>
+  <f7-navbar title="Creating a booking" back-link="Back"></f7-navbar>
 
   <!-- VENUE POPUP -->
   <f7-popup :opened="popupVenueSelect" @popup:close="popupVenueSelect=false">
     <f7-page>
-
       <f7-navbar title="Select a venue">
         <f7-nav-right>
           <f7-link popup-close>Close</f7-link>
@@ -13,7 +12,9 @@
       </f7-navbar>
 
       <f7-block-title>
-        Venues: {{thisBooking.startDateTime | dateTime}} to {{thisBooking.endTime | dateTime}}
+        Status of venues
+        <br />
+        {{thisBooking.startDateTime | dateTime}} to {{thisBooking.endTime | dateTime}}
       </f7-block-title>
 
       <!-- Fetch venues and show the status. -->
@@ -135,7 +136,7 @@
 
   <!-- BOOKING INTERFACE -->
   <f7-block>
-    <f7-list media-list>
+    <f7-list media-list no-hairlines>
       <!-- NOT READONLY -->
       <f7-list-group v-if="! thisEvent.readonly" media-list>
         <f7-list-input
@@ -236,6 +237,7 @@
         
         <f7-list-item checkbox 
                        title="Add to NCBS Calendar?"
+                       text="Check if you want this to appear on NCBS public calendar."
                        :checked="thisBooking.is_public_event==='YES'"
                        @change="thisBooking.is_public_event=$event.target.checked?'YES':'NO'">
         </f7-list-item>

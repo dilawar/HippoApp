@@ -59,10 +59,10 @@
 
             <f7-list-item v-if="isUserAuthenticated()"
               link="/smartbook/" 
-              title="Booking" 
+              title="Create a booking" 
               tooltip="Create a new booking"
               panel-close>
-              <f7-icon slot="after" icon="fa fa-hand-pointer fa-2x"></f7-icon>
+              <f7-icon slot="after" icon="fa fa-plus fa-2x"></f7-icon>
             </f7-list-item>
 
             <f7-list-item v-if="isUserAuthenticated()"
