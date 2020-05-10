@@ -20,9 +20,9 @@
                       :checked="sendEmailToAcademic"
                       @change="changeSendEmailToAcademic"
                       title="Send email(s) to Academic community"
-                      footer="Hippo will send email to academic community on the 
-                              day of event. I'll also add this to NCBS public 
-                              calendar. Usually ticked for talks and seminars.">
+                      footer="I will send email to academic mailing list on the 
+                              day of event and associated event to NCBS public 
+                              calendar. Usually CHECKED for talks and seminars.">
         </f7-list-item>
       </f7-list>
 

@@ -1,10 +1,10 @@
 <template>
-  <f7-page class="page-content infinite-scroll-content">
-
+  <f7-page>
     <f7-navbar>
       <!-- LEFT PANEL -->
       <f7-nav-left>
-        <f7-link v-if="isUserAuthenticated()" panel-open="left" icon="fa fa-bars fw">
+        <f7-link v-if="isUserAuthenticated()" panel-open="left" 
+          icon="fa fa-bars fw">
         </f7-link>
       </f7-nav-left>
 
@@ -52,119 +52,112 @@
     </f7-navbar>
 
     <div class="with_photography_club">
-    <f7-row>
-      <f7-col width="20" medium="40">
-      </f7-col>
-      <f7-col width="80" medium="40">
-        <f7-list no-hairlines media-list>
+      <f7-row>
+        <f7-col width="20" medium="50"></f7-col>
+        <f7-col width="80" medium="50">
+          <f7-list no-hairlines media-list>
 
-          <f7-list-item v-if="isUserAuthenticated()"
-                        link="/smartbook/" 
-                        title="Booking" 
-                        tooltip="Create a new booking"
-                        panel-close>
-            <f7-icon slot="after" icon="fa fa-hand-pointer fa-2x"></f7-icon>
-          </f7-list-item>
+            <f7-list-item v-if="isUserAuthenticated()"
+              link="/smartbook/" 
+              title="Create a booking" 
+              tooltip="Create a new booking"
+              panel-close>
+              <f7-icon slot="after" icon="fa fa-plus fa-2x"></f7-icon>
+            </f7-list-item>
 
-          <f7-list-item v-if="isUserAuthenticated()"
-                        link="/inventory/" 
-                        title="Inventory" 
-                        tooltip="Search and borrow"
-                        panel-close>
-            <f7-icon slot="after" icon="fa fa-archive fa-2x"></f7-icon>
-          </f7-list-item>
+            <f7-list-item v-if="isUserAuthenticated()"
+              link="/inventory/" 
+              title="Inventory" 
+              tooltip="Search and borrow"
+              panel-close>
+              <f7-icon slot="after" icon="fa fa-archive fa-2x"></f7-icon>
+            </f7-list-item>
 
-          <f7-list-item link="/accomodation/" 
-                        title="Accomodations" 
-                        tooltip="Browse/create TO-LET listing"
-                        panel-close>
-            <f7-icon slot="after" icon="fa fa-home fa-2x"></f7-icon>
+            <f7-list-item link="/accomodation/" 
+              title="Accomodations" 
+              tooltip="Browse/create TO-LET listing"
+              panel-close>
+              <f7-icon slot="after" icon="fa fa-home fa-2x"></f7-icon>
 
-          </f7-list-item>
+            </f7-list-item>
 
-          <f7-list-item link="/noticeboards/all" 
-                        title="Notice Board" 
-                        tooltip="Because you hate spamming mailing list"
-                        panel-close>
-            <f7-icon slot="after" icon="fa fa-bullhorn fa-2x"></f7-icon>
-          </f7-list-item>
+            <f7-list-item link="/noticeboards/all" 
+              title="Notice Board" 
+              tooltip="Because you hate spamming mailing list"
+              panel-close>
+              <f7-icon slot="after" icon="fa fa-bullhorn fa-2x"></f7-icon>
+            </f7-list-item>
 
-          <f7-list-item link="/transport/" title="Transport" panel-close>
-            <f7-icon slot="after" icon="fa fa-bus fa-2x"></f7-icon>
-            <div slot="text" v-html="upcomingTrips"></div>
-          </f7-list-item>
+            <f7-list-item link="/transport/" title="Transport" panel-close>
+              <f7-icon slot="after" icon="fa fa-bus fa-2x"></f7-icon>
+              <div slot="text" v-html="upcomingTrips"></div>
+            </f7-list-item>
 
-        <!--
-          <f7-list-item link="/covid/" title="COVID" panel-close>
-            <f7-icon slot="after" icon="fa fa-bug fa-2x"></f7-icon>
-          </f7-list-item>
-        -->
+          </f7-list>
+        </f7-col>
+      </f7-row>
 
-        </f7-list>
-      </f7-col>
-    </f7-row>
+      <f7-row v-if="! isUserAuthenticated()" style="margin-right:5px" class="pull-right">
+        <f7-col>
+        </f7-col>
+        <f7-col>
+          <div>
+            <font v-if="isHippoAlive">Hippo is Alive. You may login.</font>
+            <font v-else>
+              <f7-preloader color="blue"></f7-preloader> Pinging Hippo ...
+            </font>
+          </div>
+          <f7-button fill :disabled="! isHippoAlive" login-screen-open=".hippo-login-screen">
+            {{isHippoAlive?'Login':'Pinging Hippo server...'}}
+          </f7-button>
+        </f7-col>
+      </f7-row>
 
-    <f7-row v-if="! isUserAuthenticated()" style="margin-right:5px" class="pull-right">
-      <f7-col>
-      </f7-col>
-      <f7-col>
-        <div>
-          <font v-if="isHippoAlive">Hippo is Alive. You may login.</font>
-          <font v-else>
-            <f7-preloader color="blue"></f7-preloader> Pinging Hippo ...
-          </font>
-        </div>
-        <f7-button fill :disabled="! isHippoAlive" login-screen-open=".hippo-login-screen">
-          {{isHippoAlive?'Login':'Pinging Hippo server...'}}
-        </f7-button>
-      </f7-col>
-    </f7-row>
-
-    <!-- FLASH cards -->
-    <f7-swiper navigation :params="{loop:true}">
-      <f7-swiper-slide v-for="(card,key) in flashCards" :key="key">
-        <div style="margin:8%; padding:20px; 
-                      border-radius:10px;
-                      background-color:rgba(255,255,255,0.9)">
-          {{humanReadableDateTime(card.date, card.time)}} 
-          | {{card.venue}} 
-          | {{card.title}}
-        </div>
-      </f7-swiper-slide>
-    </f7-swiper>
+      <!-- FLASH cards -->
+      <f7-swiper navigation :params="{loop:true}">
+        <f7-swiper-slide v-for="(card,key) in flashCards" :key="key">
+          <div style="margin:8%; padding:20px; 
+            border-radius:10px;
+            background-color:rgba(255,255,255,0.9)">
+            {{humanReadableDateTime(card.date, card.time)}} 
+            | {{card.venue}} 
+            | {{card.title}}
+          </div>
+        </f7-swiper-slide>
+      </f7-swiper>
 
 
-    <!-- FAB Right Bottom (Blue) -->
-    <f7-fab v-if="isUserAuthenticated()" 
-            text="Book"
-            position="right-bottom"
-            slot="fixed" 
-            color="blue"
-            href="/smartbook/" 
-            fab-close>
-          <f7-icon icon="fa fa-plus"></f7-icon>
-    </f7-fab>
+      <!-- FAB Right Bottom (Blue) -->
+      <f7-fab v-if="isUserAuthenticated()" 
+        text="Book"
+        position="right-bottom"
+        slot="fixed" 
+        color="blue"
+        href="/smartbook/" 
+        fab-close>
+        <f7-icon icon="fa fa-plus"></f7-icon>
+      </f7-fab>
 
-    <!-- LOGIN SCREEN  -->
-    <f7-login-screen class="hippo-login-screen">
-      <f7-page login-screen>
-        <f7-login-screen-title>Login</f7-login-screen-title>
-        <f7-list form>
-          <f7-list-input
-            label="Username"
-            type="text"
-            placeholder="Your username"
-            :value="username"
-            @input="username = $event.target.value">
-          </f7-list-input>
-          <f7-list-input
-            label="Password"
-            type="password"
-            placeholder="Your password"
-            :value="password"
-            @input="password = $event.target.value">
-          </f7-list-input>
-        </f7-list>
+      <!-- LOGIN SCREEN  -->
+      <f7-login-screen class="hippo-login-screen">
+        <f7-page login-screen>
+          <f7-login-screen-title>Login</f7-login-screen-title>
+          <f7-list form>
+            <f7-list-input
+              label="Username"
+              type="text"
+              placeholder="Your username"
+              :value="username"
+              @input="username = $event.target.value">
+            </f7-list-input>
+            <f7-list-input
+              label="Password"
+              type="password"
+              placeholder="Your password"
+              :value="password"
+              @input="password = $event.target.value">
+            </f7-list-input>
+          </f7-list>
 
           <f7-row>
             <f7-col width="45">
@@ -180,33 +173,32 @@
             that you can login to <a _target="blank" href="https://ncbs.res.in/hippo">
               Hippo Website</a>.
           </f7-block-footer>
-      </f7-page>
-    </f7-login-screen>
-  </div>
-
-  <!-- Charts -->
-  <f7-block style="margin-top:40px">
-    <div style="margin:8%; padding:10px; border-radius:10px;"
-      v-for="chart, key in charts" :key="key">
-      <line-chart v-if="chart.type==='line'" :data="chart.data" 
-        :title="chart.title"
-        :xtitle="chart.xlabel" :ytitle="chart.ylabel">
-      </line-chart>
-      <pie-chart v-if="chart.type==='pie'" :data="chart.data"
-        :title="chart.title" :legend="! isMobileApp()">
-      </pie-chart>
-      <bar-chart v-if="chart.type==='bar'" :data="chart.data" 
-        :xtitle="chart.xlabel" :ytitle="chart.ylabel"
-        :title="chart.title">
-      </bar-chart>
-      <column-chart v-if="chart.type==='column'" :data="chart.data" 
-        :xtitle="chart.xlabel" :ytitle="chart.ylabel"
-        :title="chart.title">
-      </column-chart>
+        </f7-page>
+      </f7-login-screen>
     </div>
-  </f7-block>
 
-</f7-page>
+    <!-- Charts -->
+    <f7-block style="margin-top:40px">
+      <div style="margin:8%; padding:10px; border-radius:10px;"
+        v-for="chart, key in charts" :key="key">
+        <line-chart v-if="chart.type==='line'" :data="chart.data" 
+          :title="chart.title"
+          :xtitle="chart.xlabel" :ytitle="chart.ylabel">
+        </line-chart>
+        <pie-chart v-if="chart.type==='pie'" :data="chart.data"
+          :title="chart.title" :legend="! isMobileApp()">
+        </pie-chart>
+        <bar-chart v-if="chart.type==='bar'" :data="chart.data" 
+          :xtitle="chart.xlabel" :ytitle="chart.ylabel"
+          :title="chart.title">
+        </bar-chart>
+        <column-chart v-if="chart.type==='column'" :data="chart.data" 
+          :xtitle="chart.xlabel" :ytitle="chart.ylabel"
+          :title="chart.title">
+        </column-chart>
+      </div>
+    </f7-block>
+  </f7-page>
 </template>
 
 <script>

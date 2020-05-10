@@ -1,6 +1,7 @@
 <template>
   <!-- App -->
   <f7-app :params="f7params">
+
       <f7-panel left cover>
         <f7-view name="left" url="/userpanel/" ></f7-view>
       </f7-panel>
@@ -8,16 +9,10 @@
         <f7-view name="right" url="/adminpanel/" ></f7-view>
       </f7-panel>
 
-      <!--
-      https://forum.framework7.io/t/solved-pushstateroot-custom-pushstateroot-adds-unwanted-for-the-url/6027
-      -->
-        <!-- :push-state="true" :history="true" push-state-separator=""> -->
-      <f7-view main url="/"> 
+      <f7-view main url="/" >
         <f7-toolbar bottom tabber labels style="font-size:x-small">
 
-          <f7-link text="Back"
-            icon="fa fa-step-backward fa-2x"
-            back>
+          <f7-link text="Back" icon="fa fa-step-backward fa-2x" back>
           </f7-link>
 
           <f7-link v-if="isUserAuthenticated()" text="People"
@@ -94,6 +89,7 @@
         </f7-page>
       </f7-popup>
     </f7-view>
+
 </f7-app>
 </template>
 
@@ -119,13 +115,6 @@ export default {
           // Don't show tabber at the end, it hides some entries otherwise.
           showOnPageScrollEnd: false,
         },
-        // NOTE: Put it on main view.
-        // view: {
-        //   pushState: true,
-        //   history: true,
-        //   pushStateRoot: '',
-        //   pushStateSeparator: '',
-        // },
       },
       infoPopup: false,
       calendarPopup: false,
@@ -141,10 +130,10 @@ export default {
   methods: {
     fetchRoles: function() {
       const self = this;
-      if(self.fetchedRoles)
-        return;
       const app = self.$f7;
-      console.log('Right panel open');
+      console.log("Right panel is open. Fetching roles.");
+      /* if(self.fetchedRoles) */
+        /* return; */
       app.preloader.show();
       self.postWithPromise('me/roles').then( function(x) {
         const res = JSON.parse(x.data).data.roles;
