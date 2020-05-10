@@ -110,22 +110,22 @@
   <f7-block>
     <!-- SPEAKER -->
     <f7-list no-hairlines media-list>
-    <f7-list-group>
-      <f7-list-input :input="false" label="Speaker (required)">
-        <v-autocomplete  slot="input"
-                         ref="refEventSpeaker"
-                         input-class="form-control"
-                         placeholder="Email (you can add a new speaker if none found)"
-                         results-property="email"
-                         results-display="name"
-                         :request-headers="apiPostData()"
-                         method="post"
-                         @selected="onSpeakerSelected"
-                         @results="foundSpeakersOnSearch"
-                         @noResults="createNewSpeaker=true"
-                         :source="(q)=>searchPeopleURI(q, 'speaker')">
-        </v-autocomplete>
-      </f7-list-input>
+      <f7-list-group>
+        <f7-list-input :input="false" label="Speaker (required)">
+          <v-autocomplete  slot="input"
+            ref="refEventSpeaker"
+            input-class="form-control"
+            placeholder="Email (you can add a new speaker if none found)"
+            results-property="email"
+            results-display="name"
+            :request-headers="apiPostData()"
+            method="post"
+            @selected="onSpeakerSelected"
+            @results="foundSpeakersOnSearch"
+            @noResults="createNewSpeaker=true"
+            :source="(q)=>searchPeopleURI(q, 'speaker')">
+          </v-autocomplete>
+        </f7-list-input>
       <f7-list-item v-if="parseInt(thisSpeaker.id) > 0"
                     style="background-color:lightyellow">
         <img slot="media" width="70px" :src="'data:image/jpeg;base64, '+thisSpeaker.photo">

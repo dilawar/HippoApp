@@ -56,7 +56,6 @@
         <f7-col width="20" medium="50"></f7-col>
         <f7-col width="80" medium="50">
           <f7-list no-hairlines media-list>
-
             <f7-list-item v-if="isUserAuthenticated()"
               link="/smartbook/" 
               title="Create a booking" 
@@ -113,12 +112,12 @@
         </f7-col>
       </f7-row>
 
-      <!-- FLASH cards -->
-      <f7-swiper navigation :params="{loop:true}">
+      <!-- flash cards -->
+      <f7-swiper navigation :params="{loop:true}" style="margin-top:100px">
         <f7-swiper-slide v-for="(card,key) in flashCards" :key="key">
           <div style="margin:8%; padding:20px; 
             border-radius:10px;
-            background-color:rgba(255,255,255,0.9)">
+            background-color:rgba(255,255,255,0.8)">
             {{humanReadableDateTime(card.date, card.time)}} 
             | {{card.venue}} 
             | {{card.title}}
@@ -177,27 +176,89 @@
       </f7-login-screen>
     </div>
 
-    <!-- Charts -->
-    <f7-block style="margin-top:40px">
-      <div style="margin:8%; padding:10px; border-radius:10px;"
-        v-for="chart, key in charts" :key="key">
-        <line-chart v-if="chart.type==='line'" :data="chart.data" 
-          :title="chart.title"
-          :xtitle="chart.xlabel" :ytitle="chart.ylabel">
-        </line-chart>
-        <pie-chart v-if="chart.type==='pie'" :data="chart.data"
-          :title="chart.title" :legend="! isMobileApp()">
-        </pie-chart>
-        <bar-chart v-if="chart.type==='bar'" :data="chart.data" 
-          :xtitle="chart.xlabel" :ytitle="chart.ylabel"
-          :title="chart.title">
-        </bar-chart>
-        <column-chart v-if="chart.type==='column'" :data="chart.data" 
-          :xtitle="chart.xlabel" :ytitle="chart.ylabel"
-          :title="chart.title">
-        </column-chart>
-      </div>
-    </f7-block>
+    <!-- Make charts -->
+    <!--
+    <f7-list style="list-style-type:none;" no-hairlines>
+      <f7-row resizable>
+        <f7-list-item class="small-100 medium-50 xlarge-25"
+          v-for="chart, key in charts" :key="key">
+          <line-chart v-if="chart.type==='line'" :data="chart.data" 
+            :library="{maintainAspectRatio:false}"
+            :title="chart.title"
+            :xtitle="chart.xlabel" :ytitle="chart.ylabel">
+          </line-chart>
+          <pie-chart v-if="chart.type==='pie'" :data="chart.data"
+            :title="chart.title" :legend="! isMobileApp()">
+          </pie-chart>
+          <bar-chart v-if="chart.type==='bar'" :data="chart.data" 
+            :xtitle="chart.xlabel" :ytitle="chart.ylabel"
+            :title="chart.title">
+          </bar-chart>
+          <column-chart v-if="chart.type==='column'" :data="chart.data" 
+            :xtitle="chart.xlabel" :ytitle="chart.ylabel"
+            :title="chart.title">
+          </column-chart>
+        </f7-list-item>
+      </f7-row>
+    </f7-list>
+    -->
+
+    <f7-swiper style="margin-top:50px" navigation 
+      :params="{effect:'flip', dataLoop:true, autoHeight:true}">
+      <f7-swiper-slide v-for="chart, key in charts" :key="key">
+        <div style="padding:10%">
+          <line-chart v-if="chart.type==='line'" :data="chart.data" 
+            :library="{maintainAspectRatio:false}"
+            :title="chart.title"
+            :xtitle="chart.xlabel" :ytitle="chart.ylabel">
+          </line-chart>
+          <pie-chart v-if="chart.type==='pie'" :data="chart.data"
+            :title="chart.title" :legend="! isMobileApp()">
+          </pie-chart>
+          <bar-chart v-if="chart.type==='bar'" :data="chart.data" 
+            :xtitle="chart.xlabel" :ytitle="chart.ylabel"
+            :title="chart.title">
+          </bar-chart>
+          <column-chart v-if="chart.type==='column'" :data="chart.data" 
+            :xtitle="chart.xlabel" :ytitle="chart.ylabel"
+            :title="chart.title">
+          </column-chart>
+        </div>
+      </f7-swiper-slide>
+    </f7-swiper>
+
+    <!-- footer -->
+    <f7-block-footer 
+      style="text-align:right; padding:1%;font-size:small">
+      <!-- top row -->
+      <f7-link external 
+        class="col-30 medium-25"
+        target="_system"
+        icon="fab fa-readme"
+        link="https://ncbs-hippo.readthedocs.io/en/latest/">
+        Docs
+      </f7-link> |
+      <f7-link external target="_system"
+        icon="fab fa-github fa-fw"
+        class="col-30 medium-25"
+        link="https://github.com/dilawar/hippo/">
+        Code Repository
+      </f7-link> |
+      <f7-link external 
+        class="col-30 medium-25"
+        link="https://ncbs.res.in" 
+        target="_system">
+        NCBS Bangalore
+      </f7-link>
+    <!-- bottom row -->
+    <div margin-bottom:30px>
+      Code licensed under <f7-link>GNU GPLv3</f7-link>, 
+      &copy 2018- <f7-link external target="_system" href="https://github.com/dilawar">Dilawar Singh</f7-link>
+      <br />
+      Server is provided by NCBS IT Dept.  
+      Logo &copy Nuno Jesus
+    </div>
+  </f7-block-footer>
   </f7-page>
 </template>
 
