@@ -130,10 +130,10 @@ export default {
   methods: {
     fetchRoles: function() {
       const self = this;
-      if(self.fetchedRoles)
-        return;
       const app = self.$f7;
-      console.log('Right panel open');
+      console.log("Right panel is open. Fetching roles.");
+      /* if(self.fetchedRoles) */
+        /* return; */
       app.preloader.show();
       self.postWithPromise('me/roles').then( function(x) {
         const res = JSON.parse(x.data).data.roles;

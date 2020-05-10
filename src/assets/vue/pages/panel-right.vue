@@ -114,7 +114,8 @@ export default {
     };
   },
   mounted: function() {
-    const self = this;
+    // NOTE. See main.vue. We have a function there which triggers when right
+    // panel is opened.
   },
   methods: {
   },
