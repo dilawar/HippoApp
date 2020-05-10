@@ -8,12 +8,12 @@
       <f7-row>
         <f7-col noGap width="25" v-for="(tag, key) in boards" :key="key">
           <f7-link @click="unsubscribeForum(tag)"
-                                 icon="fa fa-bell-o" 
+                                 icon="far fa-bell" 
                                  v-if="subscriptions.includes(tag)">
             {{tag}}
           </f7-link>
           <f7-link @click="subscribeForum(tag)"
-                                 icon="fa fa-bell-slash-o" 
+                                 icon="far fa-bell-slash" 
                                  v-else>
             {{tag}}
           </f7-link>
