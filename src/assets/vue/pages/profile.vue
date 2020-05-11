@@ -5,8 +5,8 @@
     <f7-block inset>
       <f7-block-header>
         <div v-if="profile.eligible_for_aws==='NO'">
-          You are not <tt>ELIGIBLE FOR AWS</tt>. If this is a mistake, please
-          write to Academic office to include your name.
+          This profile is not <tt>ELIGIBLE FOR AWS</tt>. If this is a mistake, please
+          write to Academic office.
         </div>
       </f7-block-header>
       <f7-row>
@@ -133,6 +133,10 @@ export default {
     {
       const self = this;
       const app = self.$f7;
+
+      // TODO: Change the login (test it).
+      self.dropzoneOptions.headers.login = self.profile.login;
+
       self.$refs.profilePic.processQueue();
     },
     updateProfile: function() {
@@ -142,9 +146,9 @@ export default {
       // I can update my profile. Only admin can update other profiles.
       let endpoint = '/me/profile/update';
       if(self.whoAmI() !== self.profile.login)
-        endpoint = '/admin/profile/update';
+        endpoint = '/admin/logins/update';
 
-      self.promiseWithAuth('/me/profile/update', self.profile)
+      self.promiseWithAuth(endpoint, self.profile)
         .then(function(x) {
           var x = JSON.parse(x.data).data;
           if(x.success) {
