@@ -27,7 +27,7 @@
             </f7-list-item>
             -->
 
-            <f7-list-item link="/myprofile/" 
+            <f7-list-item :link="'/profile/'+username" 
                           target="_blank"
                           view=".view-main"
                           title="My Profile" 

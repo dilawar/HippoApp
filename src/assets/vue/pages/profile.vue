@@ -57,12 +57,9 @@
             </option>
           </f7-list-input>
         </f7-row>
-        <f7-list-item>
-          <f7-button raised outline @click="updateProfile()">
-            Update
-          </f7-button>
-        </f7-list-item>
-        <f7-list-item></f7-list-item>
+        <f7-button raised small @click="updateProfile()">
+          Update
+        </f7-button>
       </f7-list>
     </f7-block>
 
@@ -75,6 +72,7 @@ export default {
   data() {
     const self = this;
     return {
+      login : self.$f7route.params.login,
       profile: {},
       editables: [],
       dropzoneOptions: {
@@ -101,7 +99,7 @@ export default {
       const self = this;
       const app = self.$f7;
       app.preloader.show();
-      self.postWithPromise('me/profile/get')
+      self.postWithPromise('me/profile/get/'+self.login)
         .then(function(x) {
           self.profile = JSON.parse(x.data).data;
         });
@@ -117,7 +115,7 @@ export default {
       const app = self.$f7;
       self.$refs.profilePic.removeAllFiles();
       app.preloader.show();
-      self.postWithPromise('me/photo')
+      self.postWithPromise('me/photo/'+self.login)
         .then(function(x) {
           var res = JSON.parse(x.data).data;
           var byteString = atob(res.base64);
@@ -140,6 +138,12 @@ export default {
     updateProfile: function() {
       const self = this;
       const app = self.$f7;
+
+      // I can update my profile. Only admin can update other profiles.
+      let endpoint = '/me/profile/update';
+      if(self.whoAmI() !== self.profile.login)
+        endpoint = '/admin/profile/update';
+
       self.promiseWithAuth('/me/profile/update', self.profile)
         .then(function(x) {
           var x = JSON.parse(x.data).data;
@@ -148,7 +152,7 @@ export default {
             self.fetchProfile();
           }
           else
-            self.notify("Failed", "Could not update profile.");
+            self.notify("Failed", x.msg);
         });
     },
   },

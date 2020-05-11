@@ -1,5 +1,4 @@
 import Home from './assets/vue/pages/home.vue';
-import ProfilePage from './assets/vue/pages/myprofile.vue';
 import NotificationPage from './assets/vue/pages/notifications.vue';
 import AccomodationPage from './assets/vue/pages/accomodation.vue';
 import CanteenPage from './assets/vue/pages/canteen.vue';
@@ -33,6 +32,9 @@ import Vuex from './assets/vue/pages/vuex.vue';
 import InventoryPage from './assets/vue/pages/inventory.vue';
 import NoticeBoards from './assets/vue/pages/noticeboards.vue';
 import Email from './assets/vue/pages/email.vue';
+
+// Common profile page.
+import ProfilePage from './assets/vue/pages/profile.vue';
 
 // BMV ADMIN
 import BmvBookingRequests from './assets/vue/pages/bmv_booking_requests.vue';
@@ -121,7 +123,7 @@ export default [
       component: ServiceAdminTransport
    },
    {
-      path: '/myprofile/',
+      path: '/profile/:login',
       component: ProfilePage
    },
    {

@@ -14,7 +14,7 @@
         results-value="login"
         :request-headers="apiPostData()"
         method="post"
-        @selected="fetchAndUpdateLogin"
+        @selected="(x)=>$f7router.navigate('/profile/'+x.value)"
         @clear="thisLogin={}"
         :source="(q)=>searchPeopleURI(q, 'login')">
       </v-autocomplete>
