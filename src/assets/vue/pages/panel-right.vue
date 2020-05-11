@@ -95,6 +95,12 @@
                         title="Holidays" 
                         panel-close>
           </f7-list-item>
+          <f7-list-item link="/admin/emailtemplate/" 
+                        target="_blank"
+                        view=".view-main"
+                        title="Email Templates" 
+                        panel-close>
+          </f7-list-item>
         </f7-list>
       </f7-block>
 

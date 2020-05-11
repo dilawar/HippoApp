@@ -205,6 +205,11 @@
             </f7-list-item>
           </f7-list>
         </f7-card-content>
+        <f7-card-footer>
+          <f7-button small icon="far fa-envelope" 
+            :href="'/email/upcoming_aws/'+AWSes[0].date">Send Email
+          </f7-button>
+        </f7-card-footer>
       </f7-card>
 
     <!-- Upcoming schedule -->

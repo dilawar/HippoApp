@@ -52,6 +52,7 @@ import ServiceAdminTransport from './assets/vue/pages/service_transport.vue';
 
 // Admin
 import AdminHolidays from './assets/vue/pages/admin_holidays.vue';
+import AdminEmailTemplates from './assets/vue/pages/admin_email_template.vue';
 
 export default [
    {
@@ -217,5 +218,9 @@ export default [
    {
       path: '/admin/holidays',
       component: AdminHolidays
+   },
+   {
+      path: '/admin/emailtemplate',
+      component: AdminEmailTemplates
    },
 ]
