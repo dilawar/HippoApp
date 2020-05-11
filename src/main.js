@@ -184,7 +184,7 @@ Vue.mixin({
          const self = this;
          return {
             'HIPPO-API-KEY': self.$localStorage.get('HIPPO-API-KEY'), 
-            'login': self.$store.getters.login
+            'HIPPO-LOGIN': self.$store.getters.login
          };
       },
       getLogin: function() {
