@@ -5,45 +5,38 @@
 
   <f7-block v-if="Object.keys(requestGroups).length>0">
     <f7-block-title medium>
-      <f7-icon icon="fa fa-bell-o fa-fw"></f7-icon>
+      <f7-icon icon="far fa-bell fa-fw"></f7-icon>
       Pending Requests.
     </f7-block-title>
 
     <f7-card v-for="(requests, gid, index) in requestGroups" :key="gid">
-
-      <f7-card-header>
-        {{requests[0].title}} ({{requests.length}})
-      </f7-card-header>
-
       <f7-card-content>
-        <f7-block-header>
-          Public Event: {{requests[0].is_public_event}}
-        </f7-block-header>
-        <f7-block inset>
-          <f7-list media-list no-hairlines>
-            <f7-list-item v-for="(val, index) in requests" 
-                          :key="val.gid+'.'+val.rid" 
-                          :title="humanReadableDateTime(val.date,val.start_time)+' ('+val.venue+')'">
+        <div>
+          {{requests[0].title}} ({{requests.length}})
+        </div>
+        <br>
 
-              <f7-button small raised 
-                         color="red"
-                         tooltip="Delete this booking only"
-                         icon="fa fa-trash fa-fw"
-                         slot="after"
-                         @click="deleteThisRequest(val.gid, val.rid)"> 
-              </f7-button>
-            </f7-list-item>
-          </f7-list>
-        </f7-block>
+        <f7-list media-list>
+          <f7-list-item v-for="(val, index) in requests" 
+            :key="val.gid+'.'+val.rid" 
+            :title="humanReadableDateTime(val.date,val.start_time)+' ('+val.venue+')'">
+            <f7-button small raised color="red"
+              tooltip="Delete this booking only"
+              icon="fa fa-trash fa-fw" slot="after"
+              @click="deleteThisRequest(val.gid, val.rid)"> 
+            </f7-button>
+          </f7-list-item>
+        </f7-list>
+        <div>
+          Public Event: {{requests[0].is_public_event}}
+        </div>
       </f7-card-content>
       <f7-card-footer>
-          <f7-button v-if="requests.length>1"
-                     color="red" raised small 
+          <f7-button v-if="requests.length>1" color="red" raised small 
                      @click="deleteThisRequest(requests[0].gid)">
             Delete All
           </f7-button>
-          <f7-button raised small 
-                     icon="fa fa-pencil fa-1x"
+          <f7-button raised small icon="fa fa-pencil fa-1x"
                      @click="popupEditRequest(requests[0], true)">
             Edit All
           </f7-button>
