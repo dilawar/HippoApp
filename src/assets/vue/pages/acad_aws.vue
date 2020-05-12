@@ -86,7 +86,7 @@
     <!-- Change AWS weekly info . -->
     <f7-popup :opened="popupWeeklyInfo" @popup:close="popupWeeklyInfo=false">
       <f7-page>
-        <f7-navbar title="Change location/chair">
+        <f7-navbar title="Change location and chair">
           <f7-nav-right>
             <f7-link popup-close>Close</f7-link>
           </f7-nav-right>
@@ -95,21 +95,23 @@
         <f7-block>
           <f7-list no-hairlines>
 
-            <f7-list-input :value="thisAWS.date" label="Date" readonly>
+            <f7-list-input :value="thisAWS.date" label="Date" readonly
+              inline-label>
             </f7-list-input>
 
             <f7-list-input @change="thisAWS.venue=$event.target.value"
-              :default="thisAWS.venue" type="select" label="Venue">
+              :default="thisAWS.venue" type="select" label="Venue"
+              inline-label>
               <option v-for="(venue, key) in venues" :selected="venue.id===thisAWS.venue">
                 {{key}}
               </option>
             </f7-list-input>
 
-            <f7-list-input :input="false" label="Chair">
+            <f7-list-input :input="false" label="Chair" inline-label>
               <v-autocomplete  slot="input"
                 input-class="form-control"
                 ref="refAWSChair"
-                placeholder="Search faculty"
+                :placeholder="thisAWS.chair?thisAWS.chair:'Search faculty'"
                 :initial-value="thisAWS.chair"
                 results-property="email"
                 results-display="name"
@@ -121,14 +123,29 @@
               </v-autocomplete>
             </f7-list-input>
 
+            <f7-list-input label="Has chair confirmed?" inline-label
+              :value="thisAWS.has_chair_confirmed" readonly>
+            </f7-list-input>
+
             <f7-list-input type="url" 
-              label="VC URL" 
+              label="VC URL"  inline-label
               :value="thisAWS.vc_url"
               @change="thisAWS.vc_url=$event.target.value">
             </f7-list-input>
           </f7-list>
 
-          <f7-button raised fill @click="changeAWSData"> Submit </f7-button>
+          <f7-row>
+            <f7-col v-if="thisAWS.has_chair_confirmed === 'NO'">
+              Chair has not confirmed yet. You can also confirm on the chair
+              behalf if they have told you so.
+              <f7-button raised @click="confirmChair">
+                Confirm Chair
+              </f7-button>
+            </f7-col>
+            <f7-col>
+              <f7-button raised fill @click="changeAWSData"> Submit </f7-button>
+            </f7-col>
+          </f7-row>
 
         </f7-block>
       </f7-page>
@@ -432,7 +449,7 @@ export default {
     changeAWSData: function() 
     {
       const self = this;
-      self.promiseWithAuth('aws/weekinfo/change', self.thisAWS).then(function(x) {
+      self.promiseWithAuth('acadadmin/upcomingaws/weekinfo/change', self.thisAWS).then(function(x) {
         let res = JSON.parse(x.data);
       });
       self.popupWeeklyInfo = false;
@@ -463,6 +480,20 @@ export default {
     chairSelected: function(x) {
       const self = this;
       self.thisAWS.chair = x.selectedObject.email;
+    },
+    confirmChair: function() {
+      const self = this;
+      self.promiseWithAuth('acadadmin/upcomingaws/confirmchair/'+self.thisAWS.date)
+        .then( function(x) {
+          let res = JSON.parse(x.data).data;
+          if(res.success) {
+            self.notify("Success", "Successfully confirmed the chair");
+            self.fetchUpcomingAws();
+            self.popupWeeklyInfo = false;
+          }
+          else
+            self.notify("Failed", res.msg);
+        });
     },
   },
 }

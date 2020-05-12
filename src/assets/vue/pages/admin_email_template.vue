@@ -9,14 +9,14 @@
         developers only.
       </f7-block-header>
       <f7-list media-list>
+        <f7-list-item>
+          <f7-button raised small @click="addNewTemplate">Add a new template</f7-button>
+        </f7-list-item>
         <f7-list-item v-for="template, key in templates" :key="key"
             @click="updateTemplate(template)">
             <div slot="header">{{template.id}}</div>
             <div slot="footer">{{template.when_to_send}}</div>
         </f7-list-item> 
-        <f7-list-item>
-          <f7-button raised small @click="addNewTemplate">Add a new template</f7-button>
-        </f7-list-item>
       </f7-list>
     </f7-block>
 
@@ -37,12 +37,20 @@
               :readonly="thisTemplate.idreadonly">
             </f7-list-input>
 
+            <!--
             <f7-list-input type="texteditor" 
               resizable
               :value="thisTemplate.description"
-              @input="thisTemplate.description=$event.target.value"
+              :textEditorParams="{mode:'popover'}"
+              @texteditor:change="(v) => thisTemplate.description = v"
               label="Description" required>
             </f7-list-input>
+            -->
+
+            <f7-list-item header="Description">
+              <vue-editor id="templateDescription" v-model="thisTemplate.description">
+              </vue-editor>
+            </f7-list-item>
 
             <f7-list-input label="Recipients" 
               :value="thisTemplate.recipients"
