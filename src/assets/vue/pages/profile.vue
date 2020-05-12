@@ -8,6 +8,9 @@
           This profile is not <tt>ELIGIBLE FOR AWS</tt>. If this is a mistake, please
           write to Academic office.
         </div>
+        <div>
+          <img data-src="thisProfile.photo" class="lazy">
+        </div>
       </f7-block-header>
       <f7-row>
         <f7-col width="100" 
@@ -134,7 +137,9 @@ export default {
       const self = this;
       const app = self.$f7;
 
-      // TODO: Change the login (test it).
+      // login is the profile for which we are changing picture. Only admin is
+      // allowed to do that. API won't allow if you don't have admin
+      // privileges.
       self.dropzoneOptions.headers.login = self.profile.login;
 
       self.$refs.profilePic.processQueue();
