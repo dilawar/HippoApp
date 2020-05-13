@@ -154,17 +154,21 @@
       </f7-page>
     </f7-popup>
 
-    <f7-block-title small :padding="false">
+    <f7-block-header>
+      Click on an AWS item below to see and modify details.
+
       <f7-button small fill raised tooltip="Select a day and assign AWS"
         @click="openAssignPopup=true" style="float:right"> 
         Assign AWS
       </f7-button>
-    </f7-block-title>
+    </f7-block-header>
 
     <!-- LIST OF UPCOMING AWSes -->
     <f7-list accordion-list no-hairlines>
       <f7-list-item accordion-item v-for="(AWSes, date) in upcomingAWS" 
-        :key="date" :header="humanReadableDate(date) + ' | ' + AWSes[0].venue">
+        :header="humanReadableDate(date) + ' | ' + AWSes[0].venue"
+        :after="AWSes.length<3?'Some slots missing.':''"
+        :key="date">
 
         <div slot="title">{{awsSummary(AWSes)}}</div>
         <div slot="footer">
@@ -178,11 +182,6 @@
         <f7-accordion-content style="background-color:ivory">
           <f7-block no-margin inset>
             <f7-row>
-              <f7-col v-if="AWSes.length < 3">
-                <f7-button small outline @click="addAWSSchedule(date, AWSes[0])">
-                  Add AWS
-                </f7-button>
-              </f7-col>
               <f7-col col-30>
                 <f7-button small @click="openChangeWeekPopup(AWSes[0])">
                   Change Venue/Chair
@@ -191,6 +190,11 @@
               <f7-col col-30>
                 <f7-button small icon="far fa-envelope" 
                   :href="'/email/upcoming_aws/'+AWSes[0].date">Send Email
+                </f7-button>
+              </f7-col>
+              <f7-col v-if="AWSes.length < 3">
+                <f7-button small fill @click="addAWSSchedule(date, AWSes[0])">
+                  Fill missing slot
                 </f7-button>
               </f7-col>
             </f7-row>
