@@ -135,7 +135,7 @@
           </f7-list>
 
           <f7-row>
-            <f7-col v-if="thisAWS.has_chair_confirmed === 'NO'">
+            <f7-col v-if="thisAWS.chair && thisAWS.has_chair_confirmed === 'NO'">
               Chair has not confirmed yet. You can also confirm on the chair
               behalf if they have told you so.
               <f7-button raised @click="confirmChair">
@@ -143,7 +143,10 @@
               </f7-button>
             </f7-col>
             <f7-col>
-              <f7-button raised fill @click="changeAWSData"> Submit </f7-button>
+              <f7-button small @click="removeChair()">Remove Chair</f7-button>
+            </f7-col>
+            <f7-col>
+              <f7-button raised small fill @click="changeAWSData"> Submit </f7-button>
             </f7-col>
           </f7-row>
 
@@ -158,82 +161,82 @@
       </f7-button>
     </f7-block-title>
 
-      <f7-block-header>
-        To update the venue or the chair of the week, click on <tt>UPDATE</tt>
-        button.
-      </f7-block-header>
+    <!-- LIST OF UPCOMING AWSes -->
+    <f7-list accordion-list no-hairlines>
+      <f7-list-item accordion-item v-for="(AWSes, date) in upcomingAWS" 
+        :key="date" :header="humanReadableDate(date) + ' | ' + AWSes[0].venue">
 
-      <f7-card  v-for="(AWSes, date) in upcomingAWS" :key="date">
-        <f7-card-header style="font-size:medium">
-          <div>
-            {{date | date }}
-            {{AWSes[0].venue}}
-            <br />
-            <a :href="'mailto:'+AWSes[0].chair" external target="_system"
-              style="font-size:small">
-              <i class="fa fa-chair"></i>
-              {{AWSes[0].chair}}
-            </a>
-          </div>
-          <f7-button raised small float-right @click="openChangeWeekPopup(AWSes[0])"> 
-            Update 
-          </f7-button>
-        </f7-card-header>
+        <div slot="title">{{awsSummary(AWSes)}}</div>
+        <div slot="footer">
+          <i class="fa fa-chair"></i>
+          {{AWSes[0].chair?AWSes[0].chair:'No chair assigned'}}
+          <span tooltip="Chair has confirmed?" v-if="AWSes[0].chair">
+            (confirmed: {{AWSes[0].has_chair_confirmed}})
+          </span>
+        </div>
 
-        <f7-card-content>
-          <f7-list media-list>
-            <f7-list-item v-if="AWSes.length < 3">
-              <div slot="title" text-color="gray">Some slots are empty ...</div>
-              <f7-button slot="after" small outline raised @click="addAWSSchedule(date, AWSes[0])">
-                Add AWS
-              </f7-button>
-            </f7-list-item>
+        <f7-accordion-content style="background-color:ivory">
+          <f7-block no-margin inset>
+            <f7-row>
+              <f7-col v-if="AWSes.length < 3">
+                <f7-button small outline @click="addAWSSchedule(date, AWSes[0])">
+                  Add AWS
+                </f7-button>
+              </f7-col>
+              <f7-col col-30>
+                <f7-button small @click="openChangeWeekPopup(AWSes[0])">
+                  Change Venue/Chair
+                </f7-button>
+              </f7-col>
+              <f7-col col-30>
+                <f7-button small icon="far fa-envelope" 
+                  :href="'/email/upcoming_aws/'+AWSes[0].date">Send Email
+                </f7-button>
+              </f7-col>
+            </f7-row>
 
-            <f7-list-item v-for="(aws, key) in AWSes" :key="key" accordion-item>
-              <div slot="title" v-html="aws.by"></div>
-              <div slot="text" v-html="aws.title"></div>
-              <div slot="footer">{{aws.supervisor_1}}</div>
-              <div slot="footer">{{aws.supervisor_2}}</div>
-              <f7-accordion-content>
-                <f7-block>
-                  <f7-block-header> {{aws.title}} </f7-block-header>
-                  <div v-html="aws.abstract"></div>
-                  <f7-row>
-                    <f7-col>
-                      <f7-button small fill @click="removeAWS(aws)" color="red">
-                        Remove
-                      </f7-button>
-                    </f7-col>
-                    <f7-col></f7-col>
-                    <f7-col>
-                      <f7-button small fill @click="editAWSClick(aws)">
-                        Edit
-                      </f7-button>
-                    </f7-col>
-                  </f7-row>
-                </f7-block>
-              </f7-accordion-content>
-              <div slot="media" v-if="aws.acknowledged==='NO'">
-                <f7-icon icon="fa fa-question fa-2x"></f7-icon>
-              </div>
-              <div slot="media" v-else>
-                <f7-icon icon="fa fa-check fa-fw"></f7-icon>
-              </div>
-            </f7-list-item>
-          </f7-list>
-        </f7-card-content>
-        <f7-card-footer>
-          <f7-button small icon="far fa-envelope" 
-            :href="'/email/upcoming_aws/'+AWSes[0].date">Send Email
-          </f7-button>
-        </f7-card-footer>
-      </f7-card>
+            <f7-card v-for="(aws, key) in AWSes" :key="key" outline no-shadow>
+              <f7-card-header>
+                <div v-html="aws.by" class="color-gray"></div>
+                <div v-html="aws.title"></div>
+              </f7-card-header>
+              <f7-card-content>
+                <f7-block-header> {{aws.title}} </f7-block-header>
+                <div v-html="aws.abstract"></div>
+                <div slot="media" v-if="aws.acknowledged==='NO'">
+                  <f7-icon icon="fa fa-question fa-2x"></f7-icon>
+                </div>
+                <div slot="media" v-else>
+                  <f7-icon icon="fa fa-check fa-fw"></f7-icon>
+                </div>
+                <f7-row>
+                  <f7-col>{{aws.supervisor_1}}</f7-col>
+                  <f7-col>{{aws.supervisor_2}}</f7-col>
+                </f7-row>
+                <f7-row>
+                  <f7-col>
+                    <f7-button small @click="removeAWS(aws)" color="red">
+                      Remove
+                    </f7-button>
+                  </f7-col>
+                  <f7-col>
+                    <f7-button small @click="editAWSClick(aws)">
+                      Edit
+                    </f7-button>
+                  </f7-col>
+                </f7-row>
+              </f7-card-content>
+            </f7-card>
+          </f7-block>
+        </f7-accordion-content>
+      </f7-list-item>
+    </f7-list>
 
     <!-- Upcoming schedule -->
     <f7-block-title small>
       Click on login to assign AWS.
       <f7-button small color="gray" fill style="float:right"
-                     @click="computeSchedule()">
+        @click="computeSchedule()">
         Recompute Schedule
       </f7-button>
     </f7-block-title>
@@ -265,7 +268,6 @@
     </f7-block>
 
   </f7-page>
-
 </template>
 
 <script>
@@ -305,7 +307,7 @@ export default {
         const autocomplete = this;
         var results = [];
 
-        if(2 >= q.length)
+        if(1 >= q.length)
         {
           render(results);
           return;
@@ -446,13 +448,40 @@ export default {
         self.popupWeeklyInfo = true;
       });
     },
+    removeChair: function() {
+      const self = this;
+      self.postWithPromise('acadadmin/upcomingaws/weekinfo/removechair/'+self.thisAWS.date)
+        .then(function(x) {
+          let res = JSON.parse(x.data).data;
+          if(res.success) {
+            self.notify("Success", "Removed chair." + res.msg);
+            self.thisAWS.chair = '';
+          }
+          else
+            self.notify("Failed", res.msg);
+          self.fetchUpcomingAws();
+        });
+    },
     changeAWSData: function() 
     {
       const self = this;
       self.promiseWithAuth('acadadmin/upcomingaws/weekinfo/change', self.thisAWS).then(function(x) {
-        let res = JSON.parse(x.data);
+        let res = JSON.parse(x.data).data;
+        if(res.success)
+          self.notify("Success", "Updated successfully." + res.msg);
+        else
+          self.notify("Failed", res.msg);
+        self.fetchUpcomingAws();
+        self.popupWeeklyInfo = false;
       });
-      self.popupWeeklyInfo = false;
+      setTimeout(() => self.popupWeeklyInfo = false, 3000);
+    },
+    awsSummary: function(awses) {
+      let title = '';
+      awses.forEach(aws => {
+        title += aws.speaker + ', ';
+      });
+      return title;
     },
     removeAWS: function(aws) 
     {

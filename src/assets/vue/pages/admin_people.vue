@@ -88,29 +88,34 @@
     </f7-popup>
 
     <!-- Faculty block -->
-    <f7-block>
-      <f7-block-header>
-        Total {{faculty.length}} faculty found. <br />
-        Expand the list of faculty below and click on the faculty to update.
-      </f7-block-header>
-      <f7-list accordion-list inset>
-        <f7-list-item>
-          <f7-button slot="after" small raised @click="addNewFacultyPopup()">Add a new faculty.</f7-button>
-        </f7-list-item>
-        <f7-list-item accordion-item title="List of faculty" 
-          footer="Click to expand">
-          <f7-accordion-content>
-            <f7-list-item v-for="fac, key in faculty" :key="key"
-              :title="arrayToName(fac) + ' <' + fac.email + '>'"
-              :after="fac.status"
-              :header="fac.specialization"
-              :footer="fac.affiliation + ' | ' + fac.institute"
-              @click="updateFacultyPopup(fac)">
-            </f7-list-item>
-          </f7-accordion-content>
-        </f7-list-item>
-      </f7-list>
-    </f7-block>
+    <f7-block-header>
+      Total {{faculty.length}} faculty found. <br />
+      Expand the list of faculty below and click on the faculty to update.
+    </f7-block-header>
+    <f7-list accordion-list inset>
+      <f7-list-item>
+        <f7-button slot="after" small raised @click="addNewFacultyPopup()">Add a new faculty.</f7-button>
+      </f7-list-item>
+      <f7-list-item accordion-item title="List of faculty" 
+        footer="Click to expand">
+        <f7-accordion-content>
+          <f7-list-item v-for="fac, key in faculty" :key="key"
+            v-if="fac.status === 'ACTIVE'"
+            :title="arrayToName(fac) + ' <' + fac.email + '>'"
+            :header="fac.specialization"
+            :footer="fac.affiliation + ' | ' + fac.institute"
+            @click="updateFacultyPopup(fac)">
+          </f7-list-item>
+          <f7-list-item v-else
+            :title="arrayToName(fac) + ' <' + fac.email + '>'"
+            :after="fac.status"
+            :header="fac.specialization"
+            :footer="fac.affiliation + ' | ' + fac.institute"
+            @click="updateFacultyPopup(fac)">
+          </f7-list-item>
+        </f7-accordion-content>
+      </f7-list-item>
+    </f7-list>
 
 
   </f7-page>
