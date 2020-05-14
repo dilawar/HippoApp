@@ -121,7 +121,7 @@
     </f7-list>
     <f7-row>
       <f7-col>
-        <f7-button back>Close</f7-button>
+        <f7-button raised small back>Close</f7-button>
       </f7-col>
       <f7-col>
         <f7-button raised popup-close small fill @click="updateAWS()">
@@ -258,10 +258,12 @@ export default {
         self.thisAWS['tcm_member_'+(1+index)] = val.trim();
       });
 
-      let x = self.isupcoming==='YES'?'upcomingaws':'aws';
-      let endpoint = 'acadadmin/'+x+'/update';
-      if(self.whoAmI() === self.thisAWS.speaker)
-          endpoint = 'me/'+x+'/update';
+      let endpoint = 'acadadmin/aws/update';
+      if(self.isupcoming === 'YES') {
+        endpoint = 'acadadmin/upcomingaws/update';
+        if(self.whoAmI() === self.thisAWS.speaker)
+            endpoint = 'me/upcomingaws/update';
+      }
       
       self.promiseWithAuth(endpoint, self.thisAWS)
         .then(function(x) {

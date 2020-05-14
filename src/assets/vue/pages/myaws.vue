@@ -106,7 +106,7 @@ export default {
       const self = this;
       const app = self.$f7;
       app.preloader.show();
-      self.postWithPromise('/me/aws').then( function(x) {
+      self.postWithPromise('/me/aws/get').then( function(x) {
         let awses = JSON.parse(x.data).data;
         self.awses = awses.filter( x => self.dbDate(x.date) <= self.today()); 
         self.upcoming = awses.filter(x => self.dbDate(x.date) > self.today()); 
