@@ -46,7 +46,7 @@
 
         </f7-list-group>
 
-        <f7-list-group v-if="thisTalk.booking" media-list>
+        <f7-list-group v-if="thisTalk.booking" media-list no-hairlines>
           <f7-list-item>
             <div slot="title" style="font-size:small">
               Booking status: {{thisTalk.booking_status}}
@@ -59,41 +59,26 @@
             </div>
 
             <!-- TASKS -->
-            <f7-button small
-                       color="red"
-                       slot="after"
-                       class="float-right" 
-                       @click="removeBooking()"
-                       v-if="thisTalk.booking_status!=='UNSCHEDULED'">
+            <f7-button small color="red" slot="after" class="float-right" 
+              @click="removeBooking()" v-if="thisTalk.booking_status!=='UNSCHEDULED'">
               Remove Booking
             </f7-button>
-            <f7-button raised
-                       small
-                       class="float-right" 
-                       slot="after"
-                       :href="'/bookevent/talks.'+thisTalk.id+'/'+thisTalk.class+'/'"
-                       v-else>
-              Schedule
+            <f7-button raised small class="float-right" slot="after"
+              :href="'/bookevent/talks.'+thisTalk.id+'/'+thisTalk.class+'/'"
+              v-else>
+              Book a venue
             </f7-button>
           </f7-list-item>
 
           <f7-list-item>
             <f7-row>
               <f7-col>
-                <f7-button @click="removeTalk()"
-                       small
-                       fill
-                       popup-close 
-                       color="red"
-                       raised>
+                <f7-button @click="removeTalk()" small fill popup-close color="red" raised>
                   Remove Talk
                 </f7-button>
               </f7-col>
               <f7-col>
-                <f7-button @click="updateTalk()" 
-                       small
-                       popup-close 
-                       raised>
+                <f7-button @click="updateTalk()" small popup-close raised>
                   Update Talk
                 </f7-button>
               </f7-col>

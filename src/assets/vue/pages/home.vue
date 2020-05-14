@@ -48,10 +48,19 @@
         </f7-link>
       </f7-subnavbar>
       -->
-
     </f7-navbar>
 
     <div class="with_photography_club">
+      <!-- extra links -->
+      <!--
+      <f7-row style="font-size:x-small;text-align:center;background-color:white">
+        <f7-col col-25
+          v-for="page, key in ['aws', 'talks', 'courses', 'statistics']" 
+          :key="key">
+          <f7-link :href="'/public/'+page"><u>{{page.toUpperCase()}}</u></f7-link>
+        </f7-col>
+      </f7-row>
+      -->
       <f7-row>
         <f7-col width="20" medium="50"></f7-col>
         <f7-col width="80" medium="50">
@@ -253,7 +262,10 @@
     <!-- bottom row -->
     <div margin-bottom:30px>
       Code licensed under <f7-link>GNU GPLv3</f7-link>, 
-      &copy 2018- <f7-link external target="_system" href="https://github.com/dilawar">Dilawar Singh</f7-link>
+      &copy 2018-2020 
+      <f7-link external target="_system" href="https://github.com/dilawar">
+        Dilawar Singh
+      </f7-link>
       <br />
       Server is provided by NCBS IT Dept.  
       Logo &copy Nuno Jesus

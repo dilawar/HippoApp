@@ -112,6 +112,15 @@ Vue.mixin({
       dbDate: function( date ) {
          return moment(date).format("YYYY-MM-DD");
       },
+      resetSimple: function(obj) {
+         Object.keys(obj).map(key => {
+            if (obj[key] instanceof Array) obj[key] = []
+            else if (obj[key] instanceof Number) obj[key] = 0
+            else if (obj[key] instanceof Boolean) obj[key] = false
+            else if (obj[key] instanceof Object) obj[key] = {}
+            else obj[key] = ''
+         })
+      },
       subscribeFCM: function(topic) {
          try {
             cordova.plugins.firebase.messaging.subscribe(topic);
@@ -184,7 +193,7 @@ Vue.mixin({
          const self = this;
          return {
             'HIPPO-API-KEY': self.$localStorage.get('HIPPO-API-KEY'), 
-            'login': self.$store.getters.login
+            'HIPPO-LOGIN': self.$store.getters.login
          };
       },
       getLogin: function() {

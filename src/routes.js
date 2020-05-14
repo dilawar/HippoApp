@@ -1,5 +1,4 @@
 import Home from './assets/vue/pages/home.vue';
-import ProfilePage from './assets/vue/pages/myprofile.vue';
 import NotificationPage from './assets/vue/pages/notifications.vue';
 import AccomodationPage from './assets/vue/pages/accomodation.vue';
 import CanteenPage from './assets/vue/pages/canteen.vue';
@@ -34,6 +33,9 @@ import InventoryPage from './assets/vue/pages/inventory.vue';
 import NoticeBoards from './assets/vue/pages/noticeboards.vue';
 import Email from './assets/vue/pages/email.vue';
 
+// Common profile page.
+import ProfilePage from './assets/vue/pages/profile.vue';
+
 // BMV ADMIN
 import BmvBookingRequests from './assets/vue/pages/bmv_booking_requests.vue';
 import BmvEvents from './assets/vue/pages/bmv_events.vue';
@@ -52,6 +54,8 @@ import ServiceAdminTransport from './assets/vue/pages/service_transport.vue';
 
 // Admin
 import AdminHolidays from './assets/vue/pages/admin_holidays.vue';
+import AdminEmailTemplates from './assets/vue/pages/admin_email_template.vue';
+import AdminManagesPeople from './assets/vue/pages/admin_people.vue';
 
 export default [
    {
@@ -119,7 +123,7 @@ export default [
       component: ServiceAdminTransport
    },
    {
-      path: '/myprofile/',
+      path: '/profile/:login',
       component: ProfilePage
    },
    {
@@ -217,5 +221,13 @@ export default [
    {
       path: '/admin/holidays',
       component: AdminHolidays
+   },
+   {
+      path: '/admin/emailtemplate',
+      component: AdminEmailTemplates
+   },
+   {
+      path: '/admin/people',
+      component: AdminManagesPeople
    },
 ]

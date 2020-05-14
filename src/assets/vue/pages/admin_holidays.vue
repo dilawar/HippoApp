@@ -124,7 +124,7 @@ export default {
       self.promiseWithAuth('admin/holidays/submit', self.thisHoliday)
         .then(function(x) {
           let res = JSON.parse(x.data).data;
-          if(res.status) {
+          if(res.success) {
             self.notify("Success", "Successfully added holiday.");
             self.fetchHolidays();
             self.popupHoliday = false;
@@ -150,7 +150,7 @@ export default {
       self.promiseWithAuth('admin/holidays/delete', self.thisHoliday)
         .then( function(x) {
           let res = JSON.parse(x.data).data;
-          if(res.status) {
+          if(res.success) {
             self.notify("Success", "Sucessfully delete holiday");
             self.fetchHolidays();
             self.popupHoliday = false;
