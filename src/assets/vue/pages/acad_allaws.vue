@@ -103,7 +103,7 @@
             </f7-button>
           </f7-col>
           <f7-col col-50 medium-50>
-            <f7-button :href="'/awsedit/'+thisAWS.id">Update</f7-button>
+            <f7-button :href="'/awsedit/'+thisAWS.id+'/false'">Update</f7-button>
           </f7-col>
         </f7-row>
       </div>
@@ -143,7 +143,7 @@ export default {
       const self = this;
       const app = self.$f7;
       self.thisAWS = result.selectedObject;
-      console.log("Selected. ", result);
+      /* console.log("Selected. ", result); */
     },
     refreshPage: function()
     {
