@@ -159,6 +159,9 @@ Vue.mixin({
       today : function() {
          return moment().format();
       },
+      anchor: function(url) {
+         return "<a href='" + url + "'>"+url+"</a>";
+      },
       dbDateTime: function(date) {
          return moment(date).format('YYYY-MM-DD HH:mm');
       },

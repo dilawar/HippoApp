@@ -155,18 +155,22 @@
     </f7-popup>
 
     <f7-block-header>
-      Click on an AWS item below to see and modify details.
-
-      <f7-button small fill raised tooltip="Select a day and assign AWS"
-        @click="openAssignPopup=true" style="float:right"> 
-        Assign AWS
-      </f7-button>
+      <f7-row>
+        <f7-col width="70">
+          Click on an AWS item below to see and modify details.
+        </f7-col>
+        <f7-col width="30">
+          <f7-button small raised tooltip="Select a day and assign AWS" @click="openAssignPopup=true"> 
+            Assign AWS
+          </f7-button>
+        </f7-col>
+      </f7-row>
     </f7-block-header>
 
     <!-- LIST OF UPCOMING AWSes -->
-    <f7-list accordion-list no-hairlines>
+    <f7-list accordion-list media-list no-hairlines>
       <f7-list-item accordion-item v-for="(AWSes, date) in upcomingAWS" 
-        :header="humanReadableDate(date) + ' | ' + AWSes[0].venue"
+        :header="humanReadableDate(date)+', '+AWSes[0].venue + ', ' + AWSes[0].vc_url"
         :after="AWSes.length<3?'Some slots missing.':''"
         :key="date">
 
