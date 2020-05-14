@@ -40,14 +40,6 @@
           color="red">
         </f7-link>
       </f7-nav-right>
-
-      <!--
-      <f7-subnavbar>
-        <f7-link target="_system" external href="https://ncbs.res.in/hippo/v1">
-          Link to old hippo.
-        </f7-link>
-      </f7-subnavbar>
-      -->
     </f7-navbar>
 
     <div class="with_photography_club">
@@ -62,15 +54,15 @@
       </f7-row>
       -->
       <f7-row>
-        <f7-col width="20" medium="50"></f7-col>
-        <f7-col width="80" medium="50">
-          <f7-list no-hairlines media-list>
+        <f7-col width="50" medium="50"></f7-col>
+        <f7-col width="50" medium="50">
+          <f7-list no-hairlines>
             <f7-list-item v-if="isUserAuthenticated()"
               link="/smartbook/" 
-              title="Create a booking" 
+              title="Booking" 
               tooltip="Create a new booking"
               panel-close>
-              <f7-icon slot="after" icon="fa fa-plus fa-2x"></f7-icon>
+              <f7-icon slot="media" icon="fa fa-plus fa-2x"></f7-icon>
             </f7-list-item>
 
             <f7-list-item v-if="isUserAuthenticated()"
@@ -78,14 +70,14 @@
               title="Inventory" 
               tooltip="Search and borrow"
               panel-close>
-              <f7-icon slot="after" icon="fa fa-archive fa-2x"></f7-icon>
+              <f7-icon slot="media" icon="fa fa-archive fa-2x"></f7-icon>
             </f7-list-item>
 
             <f7-list-item link="/accomodation/" 
               title="Accomodations" 
               tooltip="Browse/create TO-LET listing"
               panel-close>
-              <f7-icon slot="after" icon="fa fa-home fa-2x"></f7-icon>
+              <f7-icon slot="media" icon="fa fa-home fa-2x"></f7-icon>
 
             </f7-list-item>
 
@@ -93,11 +85,11 @@
               title="Notice Board" 
               tooltip="Because you hate spamming mailing list"
               panel-close>
-              <f7-icon slot="after" icon="fa fa-bullhorn fa-2x"></f7-icon>
+              <f7-icon slot="media" icon="fa fa-bullhorn fa-2x"></f7-icon>
             </f7-list-item>
 
             <f7-list-item link="/transport/" title="Transport" panel-close>
-              <f7-icon slot="after" icon="fa fa-bus fa-2x"></f7-icon>
+              <f7-icon slot="media" icon="fa fa-bus fa-2x"></f7-icon>
               <div slot="text" v-html="upcomingTrips"></div>
             </f7-list-item>
 
@@ -122,7 +114,7 @@
       </f7-row>
 
 
-      <!-- FAB Right Bottom (Blue) -->
+      <!--
       <f7-fab v-if="isUserAuthenticated()" 
         text="Book"
         position="right-bottom"
@@ -132,12 +124,21 @@
         fab-close>
         <f7-icon icon="fa fa-plus"></f7-icon>
       </f7-fab>
+      -->
+
+      <!-- FAB Right Bottom (Orange) -->
+      <f7-fab position="right-bottom" slot="fixed" color="orange">
+        <f7-icon icon="fa fa-info"></f7-icon>
+        <f7-fab-buttons position="top">
+          <f7-fab-button href="info/talks_aws_jc" label="Talks/AWS/JC">1</f7-fab-button>
+          <f7-fab-button href="info/courses" label="Courses">2</f7-fab-button>
+          <f7-fab-button href="info/statistics" label="Statistics">3</f7-fab-button>
+        </f7-fab-buttons>
+      </f7-fab>
 
       <!-- flash cards -->
-      <f7-block inset style="background:rgba(255,255,255,0.5)">
-        <f7-swiper :params="{slidesPerView: 'auto', loop: true, loopedSlides:3
-          , autoplay:{delay:1500, disableOnInteraction:true}
-          }">
+      <f7-block inset style="background:rgba(255,255,255,0.6); margin-top:25%">
+        <f7-swiper :params="{slidesPerView: 'auto', loop: true, autoplay:{delay:1500, disableOnInteraction:true}}">
           <f7-swiper-slide v-for="(card,key) in flashCards" :key="key">
             <div style="padding:5% 10% 0 10%; text-align:center">
               {{humanReadableDateTime(card.date, card.time)}} | <span v-html="card.venue"></span>
@@ -188,55 +189,33 @@
       </f7-login-screen>
     </div>
 
-    <!-- Make charts -->
+    <!-- Show upcoming events. -->
     <!--
-    <f7-list style="list-style-type:none;" no-hairlines>
-      <f7-row resizable>
-        <f7-list-item class="small-100 medium-50 xlarge-25"
-          v-for="chart, key in charts" :key="key">
-          <line-chart v-if="chart.type==='line'" :data="chart.data" 
-            :library="{maintainAspectRatio:false}"
-            :title="chart.title"
-            :xtitle="chart.xlabel" :ytitle="chart.ylabel">
-          </line-chart>
-          <pie-chart v-if="chart.type==='pie'" :data="chart.data"
-            :title="chart.title" :legend="! isMobileApp()">
-          </pie-chart>
-          <bar-chart v-if="chart.type==='bar'" :data="chart.data" 
-            :xtitle="chart.xlabel" :ytitle="chart.ylabel"
-            :title="chart.title">
-          </bar-chart>
-          <column-chart v-if="chart.type==='column'" :data="chart.data" 
-            :xtitle="chart.xlabel" :ytitle="chart.ylabel"
-            :title="chart.title">
-          </column-chart>
-        </f7-list-item>
-      </f7-row>
-    </f7-list>
+    <f7-block inset>
+      <f7-swiper :params="{effect:'flip', loop:true}">
+        <f7-swiper-slide v-for="chart, key in charts" :key="key">
+          <div style="padding:10% 10% 0 10%">
+            <line-chart v-if="chart.type==='line'" :data="chart.data" 
+              :library="{maintainAspectRatio:false}"
+              :title="chart.title"
+              :xtitle="chart.xlabel" :ytitle="chart.ylabel">
+            </line-chart>
+            <pie-chart v-if="chart.type==='pie'" :data="chart.data"
+              :title="chart.title" :legend="! isMobileApp()">
+            </pie-chart>
+            <bar-chart v-if="chart.type==='bar'" :data="chart.data" 
+              :xtitle="chart.xlabel" :ytitle="chart.ylabel"
+              :title="chart.title">
+            </bar-chart>
+            <column-chart v-if="chart.type==='column'" :data="chart.data" 
+              :xtitle="chart.xlabel" :ytitle="chart.ylabel"
+              :title="chart.title">
+            </column-chart>
+          </div>
+        </f7-swiper-slide>
+      </f7-swiper>
+    </f7-block>
     -->
-
-    <f7-swiper navigation :params="{effect:'flip', dataLoop:true, autoHeight:true}">
-      <f7-swiper-slide v-for="chart, key in charts" :key="key">
-        <div style="padding:10% 10% 0 10%">
-          <line-chart v-if="chart.type==='line'" :data="chart.data" 
-            :library="{maintainAspectRatio:false}"
-            :title="chart.title"
-            :xtitle="chart.xlabel" :ytitle="chart.ylabel">
-          </line-chart>
-          <pie-chart v-if="chart.type==='pie'" :data="chart.data"
-            :title="chart.title" :legend="! isMobileApp()">
-          </pie-chart>
-          <bar-chart v-if="chart.type==='bar'" :data="chart.data" 
-            :xtitle="chart.xlabel" :ytitle="chart.ylabel"
-            :title="chart.title">
-          </bar-chart>
-          <column-chart v-if="chart.type==='column'" :data="chart.data" 
-            :xtitle="chart.xlabel" :ytitle="chart.ylabel"
-            :title="chart.title">
-          </column-chart>
-        </div>
-      </f7-swiper-slide>
-    </f7-swiper>
 
     <!-- footer -->
     <f7-block-footer 
@@ -322,7 +301,7 @@ export default {
 
     self.fetchFlashCards();
     self.fetchRoles();
-    self.fetchCharts();
+    /* self.fetchCharts(); */
 
     // Get notification now and display them.
     setTimeout(() => {self.fetchNotifications();}, 1000);

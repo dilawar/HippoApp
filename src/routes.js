@@ -21,6 +21,7 @@ import MyInventoryPage from './assets/vue/pages/myinventory.vue';
 import EventPage from './assets/vue/pages/events.vue';
 import UpdateTalkPage from './assets/vue/pages/updatetalk.vue';
 
+import InfoPage from './assets/vue/pages/info.vue';
 
 import TravelPage from './assets/vue/pages/travel.vue';
 import NCBSMap from './assets/vue/pages/map.vue';
@@ -229,5 +230,9 @@ export default [
    {
       path: '/admin/people',
       component: AdminManagesPeople
+   },
+   {
+      path: '/info/:what',
+      component: InfoPage
    },
 ]
