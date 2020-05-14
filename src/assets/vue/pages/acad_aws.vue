@@ -448,9 +448,8 @@ export default {
     openChangeWeekPopup: function(aws) {
       const self = this;
       self.thisAWS = aws;
-      self.postWithPromise('aws/vc_url/get').then(function(x) {
-        self.thisAWS.vc_url = JSON.parse(x.data).data.AWS_VC_URL;
-      });
+
+      // Now fetch venues possible for scheduling AWS.
       self.postWithPromise('venue/list/aws').then(function(x) {
         self.venues = JSON.parse(x.data).data;
         self.popupWeeklyInfo = true;
