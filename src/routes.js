@@ -135,7 +135,7 @@ export default [
       component: AWSPage
    },
    {
-      path: '/awsedit/:awsid',
+      path: '/awsedit/:awsid/:isupcoming',
       component: AWSEditPage
    },
    {
