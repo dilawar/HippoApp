@@ -148,6 +148,10 @@
           <span inset style="font-size:small" v-html="aws.abstract"></span>
 
           <f7-row style="font-size:x-small">
+            <f7-col>Supervisor(s)/Host</f7-col>
+            <f7-col>TCM</f7-col>
+          </f7-row>
+          <f7-row style="font-size:x-small">
             <f7-col>
               <f7-link v-for="i in [1,2]" external target="_system"
                 :href="aws['supervisor_'+i]" :key="'sup'+i"> 
@@ -187,6 +191,24 @@
           <f7-accordion-content style="background-color:Ivory">
             <div> <strong>{{aws.title}}</strong> </div>
             <span inset style="font-size:small" v-html="aws.abstract"></span>
+            <f7-row style="font-size:x-small">
+              <f7-col>Supervisor(s)/Host</f7-col>
+              <f7-col>TCM</f7-col>
+            </f7-row>
+            <f7-row style="font-size:x-small">
+              <f7-col>
+                <f7-link v-for="i in [1,2]" external target="_system"
+                  :href="aws['supervisor_'+i]" :key="'sup'+i"> 
+                  <u>{{aws['supervisor_'+i]}}</u>&nbsp;&nbsp;
+                </f7-link>
+              </f7-col>
+              <f7-col>
+                <f7-link v-for="i in [1,2,3,4]" external taregt="_system"
+                  :href="aws['tcm_member_'+i]" :key="'tcm'+i">
+                  <u>{{aws['tcm_member_'+i]}}</u>&nbsp;&nbsp;
+                </f7-link> 
+              </f7-col>
+            </f7-row>
           </f7-accordion-content>
         </f7-list-item>
       </f7-list>
