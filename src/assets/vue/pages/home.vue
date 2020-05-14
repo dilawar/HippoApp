@@ -121,19 +121,6 @@
         </f7-col>
       </f7-row>
 
-      <!-- flash cards -->
-      <f7-swiper navigation :params="{loop:true}" style="margin-top:100px">
-        <f7-swiper-slide v-for="(card,key) in flashCards" :key="key">
-          <div style="margin:8%; padding:20px; 
-            border-radius:10px;
-            background-color:rgba(255,255,255,0.8)">
-            {{humanReadableDateTime(card.date, card.time)}} 
-            | {{card.venue}} 
-            | {{card.title}}
-          </div>
-        </f7-swiper-slide>
-      </f7-swiper>
-
 
       <!-- FAB Right Bottom (Blue) -->
       <f7-fab v-if="isUserAuthenticated()" 
@@ -145,6 +132,22 @@
         fab-close>
         <f7-icon icon="fa fa-plus"></f7-icon>
       </f7-fab>
+
+      <!-- flash cards -->
+      <f7-block inset style="background:rgba(255,255,255,0.5)">
+        <f7-swiper :params="{slidesPerView: 'auto', loop: true, loopedSlides:3
+          , autoplay:{delay:1500, disableOnInteraction:true}
+          }">
+          <f7-swiper-slide v-for="(card,key) in flashCards" :key="key">
+            <div style="padding:5% 10% 0 10%; text-align:center">
+              {{humanReadableDateTime(card.date, card.time)}} | <span v-html="card.venue"></span>
+              <div v-html="card.title">
+              </div>
+            </div>
+          </f7-swiper-slide>
+        </f7-swiper>
+      </f7-block>
+
 
       <!-- LOGIN SCREEN  -->
       <f7-login-screen class="hippo-login-screen">
@@ -212,10 +215,9 @@
     </f7-list>
     -->
 
-    <f7-swiper style="margin-top:50px" navigation 
-      :params="{effect:'flip', dataLoop:true, autoHeight:true}">
+    <f7-swiper navigation :params="{effect:'flip', dataLoop:true, autoHeight:true}">
       <f7-swiper-slide v-for="chart, key in charts" :key="key">
-        <div style="padding:10%">
+        <div style="padding:10% 10% 0 10%">
           <line-chart v-if="chart.type==='line'" :data="chart.data" 
             :library="{maintainAspectRatio:false}"
             :title="chart.title"
