@@ -47,10 +47,12 @@
             </f7-list-input>
             -->
 
-            <f7-list-item header="Description">
-              <vue-editor id="templateDescription" v-model="thisTemplate.description">
+            <f7-list-input label="Description" :input="false">
+              <vue-editor slot="input" 
+                id="templateDescription" 
+                v-model="thisTemplate.description">
               </vue-editor>
-            </f7-list-item>
+            </f7-list-input>
 
             <f7-list-input label="Recipients" 
               :value="thisTemplate.recipients"
