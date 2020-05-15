@@ -289,23 +289,18 @@ div.watermark {
     border: none;
 }
 
-.with_photography_club {
-    background: url(https://ncbs.res.in/hippo/v1/info/photography_club);
-    // overflow-x: scroll;
-    height: 95vh;
-    background-position: right top;
-    background-color: transparent;
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-blend-mode: multiply;
-    transition: background 500ms ease-in 200ms;
-    // display: inline-block;
-    margin: auto;
-    z-index: -1;
-}
-
 .hippo-login-screen {
     background-color: transparent;
+}
+
+.with_photography_club {
+    background: url(https://ncbs.res.in/hippo/v1/info/photography_club) no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    height: 100vh;
+    overflow: hidden;
+    // background-size: cover;
 }
 
 .with_photography_club ul {
