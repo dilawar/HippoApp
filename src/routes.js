@@ -46,6 +46,8 @@ import AcadAdminAWSRoster from './assets/vue/pages/acad_aws_roster.vue';
 import AcadAdminAWS from './assets/vue/pages/acad_aws.vue';
 import AcadAdminAllAWS from './assets/vue/pages/acad_allaws.vue';
 import AcadAdminCourses from './assets/vue/pages/acad_courses.vue';
+import AcadAdminJC from './assets/vue/pages/acad_jc.vue';
+
 import UpdateCoursePage from './assets/vue/pages/updatecourse.vue';
 import AdminManageTalks from './assets/vue/pages/admin_manages_talks.vue';
 import AdminManageSpeaker from './assets/vue/pages/admin_manages_speakers.vue';
@@ -106,6 +108,10 @@ export default [
    {
       path: '/acadadmin/awsroster/',
       component: AcadAdminAWSRoster
+   },
+   {
+      path: '/acadadmin/jc/',
+      component: AcadAdminJC
    },
    {
       path: '/acadadmin/courses/',

@@ -550,8 +550,6 @@ export default new Vue({
             /* handle error */
             console.log(e);
          }
-
-
          //// Backbutton.
          document.addEventListener("backbutton", self.onBackButton, false);
          // Open link in external browser

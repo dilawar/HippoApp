@@ -7,7 +7,6 @@
     <!-- POPUP EDIT -->
     <f7-popup :opened="openEditPopup" @popup:close="openEditPopup = false">
       <f7-page>
-
         <f7-navbar title="Edit AWS">
           <f7-nav-right>
             <f7-link popup-close>Close</f7-link>
@@ -70,21 +69,26 @@
     </f7-popup>
 
     <!-- Main page -->
-    <f7-block strong inset>
-      <f7-row>
-        <v-autocomplete ref="refAWS"
-                        input-class="item-input searchbar-inner-wrap"
-                        placeholder="Search AWS speaker, title or date (2019-01-12 etc.)"
-                        results-value="id"
-                        results-display="summary"
-                        :request-headers="apiPostData()"
-                        method="post"
-                        @selected="onAWSSelected"
-                        @results="foundAWSOnSearch"
-                        @noResults="createNewSpeaker=true"
-                        :source="(q)=>getAPIUrl()+'/acadadmin/aws/search/'+q">
-        </v-autocomplete>
-      </f7-row>
+    <f7-block>
+      <f7-block-title>
+        Annual Work Seminar
+      </f7-block-title>
+      <f7-list no-hairlines>
+        <f7-list-input :input="false">
+          <v-autocomplete ref="refAWS" slot="input"
+            input-class="item-input searchbar-inner-wrap"
+            placeholder="Search AWS speaker, title or date (2019-01-12 etc.)"
+            results-value="id"
+            results-display="summary"
+            :request-headers="apiPostData()"
+            method="post"
+            @selected="onAWSSelected"
+            @results="foundAWSOnSearch"
+            @noResults="createNewSpeaker=true"
+            :source="(q)=>getAPIUrl()+'/acadadmin/aws/search/'+q">
+          </v-autocomplete>
+        </f7-list-input>
+      </f7-list>
 
       <div v-if="parseInt(thisAWS.id) > 0">
         <f7-row class="bg-color-yellow margin-vertical">
@@ -97,8 +101,7 @@
                        @click="deleteThisAWS(thisAWS.id)">
               Delete
             </f7-button>
-            <f7-button raised fill color=red v-else
-                       @click="deleteThisAWS(thisAWS.id)">
+            <f7-button raised fill color=red v-else @click="deleteThisAWS(thisAWS.id)">
               Delete
             </f7-button>
           </f7-col>
@@ -107,6 +110,14 @@
           </f7-col>
         </f7-row>
       </div>
+    </f7-block>
+
+    <!-- Roster -->
+    <f7-block style="margin-top:20vh">
+      <f7-block-title> AWS Roster </f7-block-title>
+      <f7-button raised href="/acadadmin/awsroster/">
+        Open Roster
+      </f7-button>
     </f7-block>
 
   </f7-page>
