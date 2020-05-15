@@ -130,9 +130,11 @@
       <f7-fab position="right-bottom" slot="fixed" color="orange">
         <f7-icon icon="fa fa-info"></f7-icon>
         <f7-fab-buttons position="top">
-          <f7-fab-button href="info/talks_aws_jc" label="Talks/AWS/JC">1</f7-fab-button>
-          <f7-fab-button href="info/courses" label="Courses">2</f7-fab-button>
-          <f7-fab-button href="info/statistics" label="Statistics">3</f7-fab-button>
+          <f7-fab-button href="/info/talks" label="Talks">1</f7-fab-button>
+          <f7-fab-button href="/info/upcomingawses" label="Upcoming AWS">2</f7-fab-button>
+          <f7-fab-button href="/info/jcs" label="JC">3</f7-fab-button>
+          <f7-fab-button href="/info/courses" label="Courses">4</f7-fab-button>
+          <f7-fab-button href="/info/statistics" label="Statistics">5</f7-fab-button>
         </f7-fab-buttons>
       </f7-fab>
 
