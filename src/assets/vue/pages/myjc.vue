@@ -26,7 +26,7 @@
       <f7-block-header v-if="isAdminOfAnyJC()">
         <f7-row class="text-align-center">
           <f7-col>
-            <f7-button small @click="managePresentation()">Assign
+            <f7-button small raised @click="managePresentation()">Assign
               Presentations</f7-button>
           </f7-col>
           <f7-col>
@@ -85,32 +85,30 @@
               <f7-link popup-close>Close</f7-link>
             </f7-nav-right>
           </f7-navbar>
+
           <f7-block>
-             <f7-list media-list>
-                <f7-list-input label="Title"
-                               resizable
-                               @input="thisJC.title = $event.target.value"
-                               :value="thisJC.title"
-                               >
-                </f7-list-input>
+            <f7-list media-list>
+              <f7-list-input label="Title" resizable
+                @input="thisJC.title = $event.target.value"
+                :value="thisJC.title">
+              </f7-list-input>
 
-                <f7-list-input label="Description"
-                               :value="thisJC.description"
-                               @input="thisJC.description = $event.target.value"
-                               type="texteditor"
-                               >
-                </f7-list-input>
+              <f7-list-input label="Description"
+                :value="thisJC.description"
+                @input="thisJC.description = $event.target.value"
+                type="texteditor">
+              </f7-list-input>
 
-                <f7-list-input label="Paper URL"
-                               :value="thisJC.url"
-                               @input="thisJC.url = $event.target.value"
-                               >
-                </f7-list-input>
+              <f7-list-input label="Paper URL"
+                :value="thisJC.url"
+                @input="thisJC.url = $event.target.value"
+              >
+              </f7-list-input>
 
-                <f7-button small raised fill
-                           @click="submitJCChanges()"
-                   >Submit</f7-button>
-             </f7-list>
+              <f7-button small raised fill
+                @click="submitJCChanges()"
+              >Submit</f7-button>
+            </f7-list>
           </f7-block>
         </f7-page>
       </f7-popup>
@@ -224,12 +222,10 @@
 
           <f7-row>
             <f7-col v-for="(jc, id) in myjcs" :key="id">
-              <f7-button small 
-                         :fill="(jc.jc_id === thisJC.jc_id)?true:false" 
-                         raised 
-                         @click="fetchSubscriptions(jc.jc_id)"
-                         >
-                         {{jc.jc_id}}
+              <f7-button small raised
+                :fill="(jc.jc_id === thisJC.jc_id)?true:false" 
+                @click="fetchSubscriptions(jc.jc_id)">
+                {{jc.jc_id}}
               </f7-button>
             </f7-col>
           </f7-row>
@@ -241,37 +237,30 @@
           <f7-block strong tabs v-if="thisJC.jc_id" no-hairlines>
             <f7-list no-hairlines>
               <f7-list-item style="background-color:lightyellow">
-                  <f7-col>
-                    <f7-list-input type="text"
-                                   placeholder="Login"
-                                   :value="thisLogin"
-                                   @input="thisLogin = $event.target.value"
-                                   >
-                    </f7-list-input>
-                  </f7-col>
-                  <f7-col>
-                    <f7-button small fill @click="subscribeToJC(thisLogin, thisJC.jc_id)">
-                      Subscribe to {{thisJC.jc_id}}
-                    </f7-button>
-                  </f7-col>
+                <f7-col>
+                  <f7-list-input type="text" placeholder="Login" :value="thisLogin"
+                    @input="thisLogin = $event.target.value">
+                  </f7-list-input>
+                </f7-col>
+                <f7-col>
+                  <f7-button small fill @click="subscribeToJC(thisLogin, thisJC.jc_id)">
+                    Subscribe to {{thisJC.jc_id}}
+                  </f7-button>
+                </f7-col>
               </f7-list-item>
               <f7-list-item swipeout 
-                            v-for="(sub, key) in thisJCSubscrptions" :key="key"
-                            @swipeout:delete="unsubscribeFromJC(sub.login, thisJC.jc_id)"
-                            >
+                v-for="(sub, key) in thisJCSubscrptions" :key="key"
+                @swipeout:delete="unsubscribeFromJC(sub.login, thisJC.jc_id)">
                 <div slot="title"> {{sub.login}} </div>
                 <f7-swipeout-actions right>
                   <f7-swipeout-button delete
-                          :confirm-text="`${sub.login} from ${thisJC.jc_id}?`"
-                          confirm-title="Unsubscribe?"
-                          >
-                          Unsubscribe
+                    :confirm-text="`${sub.login} from ${thisJC.jc_id}?`"
+                    confirm-title="Unsubscribe?">
+                    Unsubscribe
                   </f7-swipeout-button>
                 </f7-swipeout-actions>
                 <f7-swipeout-actions left>
-                  <f7-swipeout-button
-                    @click="assignPresentationDateSwiper(sub.login, thisJC.jc_id)"
-                    >
+                  <f7-swipeout-button @click="assignPresentationDateSwiper(sub.login, thisJC.jc_id)">
                     Assign presentation date
                   </f7-swipeout-button>
                 </f7-swipeout-actions>
@@ -456,8 +445,8 @@ export default {
     removeJC: function(jcid) {
       const self = this;
       const app = self.$f7;
-      app.notification.confirm( "Are you sure?", "Removing JC",
-        function( ) {
+      app.dialog.confirm( "Are you sure?", "Removing JC",
+        function() {
           self.promiseWithAuth('/jcadmin/remove/' + jcid)
             .then( function(x) {
               self.fetchJC(false);
