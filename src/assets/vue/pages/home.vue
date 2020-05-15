@@ -54,8 +54,8 @@
       </f7-row>
       -->
       <f7-row>
-        <f7-col width="50" medium="50"></f7-col>
-        <f7-col width="50" medium="50">
+        <f7-col width="40" medium="40" large="60"></f7-col>
+        <f7-col width="60" medium="60" large="40">
           <f7-list no-hairlines>
             <f7-list-item v-if="isUserAuthenticated()"
               link="/smartbook/" 
@@ -190,34 +190,6 @@
         </f7-page>
       </f7-login-screen>
     </div>
-
-    <!-- Show upcoming events. -->
-    <!--
-    <f7-block inset>
-      <f7-swiper :params="{effect:'flip', loop:true}">
-        <f7-swiper-slide v-for="chart, key in charts" :key="key">
-          <div style="padding:10% 10% 0 10%">
-            <line-chart v-if="chart.type==='line'" :data="chart.data" 
-              :library="{maintainAspectRatio:false}"
-              :title="chart.title"
-              :xtitle="chart.xlabel" :ytitle="chart.ylabel">
-            </line-chart>
-            <pie-chart v-if="chart.type==='pie'" :data="chart.data"
-              :title="chart.title" :legend="! isMobileApp()">
-            </pie-chart>
-            <bar-chart v-if="chart.type==='bar'" :data="chart.data" 
-              :xtitle="chart.xlabel" :ytitle="chart.ylabel"
-              :title="chart.title">
-            </bar-chart>
-            <column-chart v-if="chart.type==='column'" :data="chart.data" 
-              :xtitle="chart.xlabel" :ytitle="chart.ylabel"
-              :title="chart.title">
-            </column-chart>
-          </div>
-        </f7-swiper-slide>
-      </f7-swiper>
-    </f7-block>
-    -->
 
     <!-- footer -->
     <f7-block-footer 
@@ -378,14 +350,6 @@ export default {
         var res = JSON.parse(x.data);
         if(res.data.roles)
           self.rolesCSV = res.data.roles;
-      });
-    },
-    fetchCharts: function() {
-      const self = this;
-      const app = self.$f7;
-      self.promiseWithAuth('charts/all').then( function(x) {
-        self.charts = JSON.parse(x.data).data;
-        console.log("Total charts: ", self.charts.length );
       });
     },
     fetchFlashCards: function() {

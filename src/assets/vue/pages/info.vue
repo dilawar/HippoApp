@@ -112,6 +112,29 @@
     </f7-list>
   </f7-block>
 
+  <f7-block v-if="what==='statistics'">
+    <div v-for="chart, key in charts" :key="key">
+      <div style="padding:10% 10% 0 10%">
+        <line-chart v-if="chart.type==='line'" :data="chart.data" 
+          :library="{maintainAspectRatio:false}"
+          :title="chart.title"
+          :xtitle="chart.xlabel" :ytitle="chart.ylabel">
+        </line-chart>
+        <pie-chart v-if="chart.type==='pie'" :data="chart.data"
+          :title="chart.title" :legend="! isMobileApp()">
+        </pie-chart>
+        <bar-chart v-if="chart.type==='bar'" :data="chart.data" 
+          :xtitle="chart.xlabel" :ytitle="chart.ylabel"
+          :title="chart.title">
+        </bar-chart>
+        <column-chart v-if="chart.type==='column'" :data="chart.data" 
+          :xtitle="chart.xlabel" :ytitle="chart.ylabel"
+          :title="chart.title">
+        </column-chart>
+      </div>
+    </div>
+  </f7-block>
+
 </f7-page>
 </template>
 
@@ -130,6 +153,7 @@ export default {
       title: '',
       registrations: [],
       emails: [],
+      charts: [],
     };
   },
   mounted()
@@ -165,6 +189,7 @@ export default {
     }
     else if(self.what === 'statistics') {
       self.title = 'Statistics';
+      self.fetchCharts();
     }
     else
       self.title = 'Unknown';
@@ -192,6 +217,17 @@ export default {
           app.preloader.hide();
         });
       setTimeout(() => app.preloader.hide(), 2000);
+    },
+    fetchCharts: function() {
+      const self = this;
+      const app = self.$f7;
+      app.preloader.show();
+      self.promiseWithAuth('charts/all').then( function(x) {
+        self.charts = JSON.parse(x.data).data;
+        console.log("Total charts: ", self.charts.length );
+        app.preloader.hide();
+      });
+      setTimeout(()=> app.preloader.hide(), 2000);
     },
   },
 }
