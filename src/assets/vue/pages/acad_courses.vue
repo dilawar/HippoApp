@@ -16,44 +16,41 @@
 
           <f7-list media-list no-hairlines>
             <f7-row>
-            <f7-list-input label="ID" 
-                           inline-label
-                           :value="thisCourseMetadata.id"
-                           @change="thisCourseMetadata.id=$event.target.value">
-            </f7-list-input>
+              <f7-list-input label="ID" 
+                inline-label
+                :value="thisCourseMetadata.id"
+                @change="thisCourseMetadata.id=$event.target.value">
+              </f7-list-input>
 
-            <f7-list-input label="Name"
-                           inline-label
-                           :value="thisCourseMetadata.name"
-                           @change="thisCourseMetadata.name=$event.target.value"
-                           >
-            </f7-list-input>
+              <f7-list-input label="Name"
+                inline-label
+                :value="thisCourseMetadata.name"
+                @change="thisCourseMetadata.name=$event.target.value">
+              </f7-list-input>
 
-            <f7-list-input label="Credit"
-                           inline-label
-                           :value="thisCourseMetadata.credits"
-                           type="number" 
-                           min="0"
-                           validate
-                           @change="thisCourseMetadata.credits=$event.target.value"
-                           >
-            </f7-list-input>
+              <f7-list-input label="Credit"
+                inline-label
+                :value="thisCourseMetadata.credits"
+                type="number" 
+                min="0"
+                validate
+                @change="thisCourseMetadata.credits=$event.target.value">
+              </f7-list-input>
 
-            <f7-list-input label="Description"
-                           float-label
-                           type="texteditor"
-                           :value="thisCourseMetadata.description"
-                           @texteditor:change="(value)=>thisCourseMetadata.description=value"
-                           >
-            </f7-list-input>
+              <f7-list-input label="Description"
+                float-label
+                type="texteditor"
+                :value="thisCourseMetadata.description"
+                @texteditor:change="(value)=>thisCourseMetadata.description=value">
+              </f7-list-input>
 
-            <!-- Instructors -->
-            <f7-list-group>
-              <f7-list-item title="Instructors" group-title >
-              </f7-list-item>
+              <!-- Instructors -->
+              <f7-list-group>
+                <f7-list-item title="Instructors" group-title >
+                </f7-list-item>
                 <f7-list-item v-for="i in 6" :key="'inst'+i"
-                              v-if="thisCourseMetadata['instructor_'+i]"
-                              media-item>
+                  v-if="thisCourseMetadata['instructor_'+i]"
+                  media-item>
                   <div slot="title">
                     {{thisCourseMetadata['instructor_'+i]}}
                   </div>
@@ -65,49 +62,48 @@
                 <f7-list-input :input="false" label="Add an instructor" inline-label>
                   <input id="autocomplete-instructor" placeholder="autocomplete" slot="input" />
                 </f7-list-input>
-            </f7-list-group>
+              </f7-list-group>
 
-            <f7-list-group>
-              <f7-list-item>
-                <f7-row>
-                  <f7-col v-if="thisCourseMetadata.status === 'VALID' && ! thisCourseMetadata.is_new">
-                    <f7-button color=red raised @click="deactivateCourseMetadata()">
-                      Deactivate
-                    </f7-button>
-                  </f7-col>
-                  <f7-col v-if="thisCourseMetadata.status !== 'VALID' && ! thisCourseMetadata.is_new">
-                    <f7-button color=red raised @click="activateCourseMetaata()">
-                      Activate
-                    </f7-button>
-                  </f7-col>
-                  <f7-col>
-                    <f7-button raised 
-                               @click="thisCourseMetadata.is_new?addNewCourseMetadata():updateCourseMetadata()"
-                               v-if="'OK' === thisCourseMetadataStatus">
-                      Submit Course
-                    </f7-button>
-                    <f7-button raised disabled v-else>
-                      {{thisCourseMetadataStatus}}
-                    </f7-button>
-                  </f7-col>
-                </f7-row>
-              </f7-list-item>
-              <f7-list-item>
-                <f7-row v-if="thisCourseMetadata.id && !  thisCourseMetadata.is_new">
-                  <f7-col>
-                    <f7-button icon="fa fa-danger" small raised fill
-                               @click="deleteThisCourseMetadata()"
-                               color=red>
-                      Delete This course
-                    </f7-button>
-                  </f7-col>
-                  <f7-col></f7-col>
-                </f7-row>
-              </f7-list-item>
-            </f7-list-group>
+              <f7-list-group>
+                <f7-list-item>
+                  <f7-row>
+                    <f7-col v-if="thisCourseMetadata.status === 'VALID' && ! thisCourseMetadata.is_new">
+                      <f7-button color=red raised @click="deactivateCourseMetadata()">
+                        Deactivate
+                      </f7-button>
+                    </f7-col>
+                    <f7-col v-if="thisCourseMetadata.status !== 'VALID' && ! thisCourseMetadata.is_new">
+                      <f7-button color=red raised @click="activateCourseMetaata()">
+                        Activate
+                      </f7-button>
+                    </f7-col>
+                    <f7-col>
+                      <f7-button raised 
+                        @click="thisCourseMetadata.is_new?addNewCourseMetadata():updateCourseMetadata()"
+                        v-if="'OK' === thisCourseMetadataStatus">
+                        Submit Course
+                      </f7-button>
+                      <f7-button raised disabled v-else>
+                        {{thisCourseMetadataStatus}}
+                      </f7-button>
+                    </f7-col>
+                  </f7-row>
+                </f7-list-item>
+                <f7-list-item>
+                  <f7-row v-if="thisCourseMetadata.id && !  thisCourseMetadata.is_new">
+                    <f7-col>
+                      <f7-button icon="fa fa-danger" small raised fill
+                        @click="deleteThisCourseMetadata()"
+                        color=red>
+                        Delete This course
+                      </f7-button>
+                    </f7-col>
+                    <f7-col></f7-col>
+                  </f7-row>
+                </f7-list-item>
+              </f7-list-group>
             </f7-row>
           </f7-list>
-
         </f7-block>
       </f7-page>
     </f7-popup>
@@ -127,86 +123,85 @@
 
         <f7-list media-list no-hairlines>
           <f7-list-input label="Slot" 
-                         inline-label
-                         type="select"
-                         :value="thisCourse.slot"
-                         @input="thisCourse.slot=$event.target.value">
+            inline-label type="select"
+            :value="thisCourse.slot"
+            @input="thisCourse.slot=$event.target.value">
             <option>Please select a slot...</option>
             <option v-for="(slot, key) in slots" :key="key" :value="key">
-            {{key}}, {{slot.html}}
+              {{key}}, {{slot.html}}
             </option>
             <option key="XXX" value="NONE">No Slot</option>
           </f7-list-input>
 
           <f7-list-input label="Ignore Tiles"
-                         inline-label
-                         type="text" 
-                         @change="thisCourse.ignore_tiles=$event.target.value"
-                         :value="thisCourse.ignore_tiles">
+            inline-label
+            type="text" 
+            @change="thisCourse.ignore_tiles=$event.target.value"
+            :value="thisCourse.ignore_tiles">
           </f7-list-input>
 
           <f7-list-input label="Venue" 
-                         inline-label
-                         type="select" 
-                         v-model="thisCourse.venue"
-                         @input="thisCourse.venue=$event.target.value">
+            inline-label
+            type="select" 
+            v-model="thisCourse.venue"
+            @input="thisCourse.venue=$event.target.value">
             <option v-for="(venue, key) in venues" 
-                    name="venue" 
-                    :key="key" 
-                    :value="venue.id">
-            {{venue.id}}
+              name="venue" 
+              :key="key" 
+              :value="venue.id">
+              {{venue.id}}
             </option>
           </f7-list-input>
 
           <f7-list-input label="Start Date"
-                         inline-label
-                         type="date" 
-                         @input="thisCourse.start_date=$event.target.value"
-                         :value="thisCourse.start_date">
+            inline-label
+            type="date" 
+            @input="thisCourse.start_date=$event.target.value"
+            :value="thisCourse.start_date">
           </f7-list-input>
 
           <f7-list-input label="End Date"
-                         inline-label
-                         type="date" 
-                         @input="thisCourse.end_date=$event.target.value"
-                         :value="thisCourse.end_date">
+            inline-label
+            type="date" 
+            @input="thisCourse.end_date=$event.target.value"
+            :value="thisCourse.end_date">
           </f7-list-input>
 
           <f7-list-input label="Allow Dropping until?"
-                         inline-label
-                         type="date" 
-                         @change="thisCourse.allow_deregistration_until=$event.target.value"
-                         :value="thisCourse.allow_deregistration_until">
+            inline-label
+            type="date" 
+            @change="thisCourse.allow_deregistration_until=$event.target.value"
+            :value="thisCourse.allow_deregistration_until">
           </f7-list-input>
 
           <f7-list-input label="Is AUDIT allowed?"
-                         inline-label
-                         type="select" 
-                         @change="thisCourse.is_audit_allowed=$event.target.value"
-                         v-model="thisCourse.is_audit_allowed">
+            inline-label
+            type="select" 
+            @change="thisCourse.is_audit_allowed=$event.target.value"
+            v-model="thisCourse.is_audit_allowed">
             <option value="YES">Yes</option>
             <option value="No">No</option>
           </f7-list-input>
 
           <f7-list-input label="Max registrations?"
-                         inline-label
-                         type="number" 
-                         @input="thisCourse.max_registration=$event.target.value"
-                         v-model="thisCourse.max_registration">
+            inline-label
+            type="number" 
+            @input="thisCourse.max_registration=$event.target.value"
+            v-model="thisCourse.max_registration">
           </f7-list-input>
 
           <f7-list-input label="url"
-                         inline-label
-                         type="url" 
-                         @change="thisCourse.url=$event.target.value"
-                         :value="thisCourse.url">
+            inline-label
+            type="url" 
+            @change="thisCourse.url=$event.target.value"
+            :value="thisCourse.url">
           </f7-list-input>
 
           <f7-list-input label="Note"
-                         inline-label
-                         type="textarea" 
-                         @change="thisCourse.note=$event.target.value"
-                         :value="thisCourse.note">
+            inline-label
+            type="textarea" 
+            @change="thisCourse.note=$event.target.value"
+            :value="thisCourse.note">
           </f7-list-input>
 
           <f7-list-item v-if="thisCourseStatus === 'OK'">
@@ -218,7 +213,7 @@
               </f7-col>
               <f7-col>
                 <!-- If already assigned then we are updating. else we are
-                  adding. 
+                adding. 
                 -->
                 <f7-button raised @click="addRunningCourse()" v-if="thisCourse.is_new">
                   Add To Running Courses
@@ -232,9 +227,7 @@
           <f7-list-button v-else>
             <f7-button raised disabled> {{thisCourseStatus}} </f7-button>
           </f7-list-button>
-
         </f7-list>
-
       </f7-page>
     </f7-popup>
 
@@ -255,55 +248,51 @@
         <f7-block>
           <f7-list media-list no-hairlines>
             <f7-list-input label="Available Slots"
-                           @input="checkVenueSlot(thisVenue, $event.target.value)"
-                           :value="thisSlot"
-                           type="select">
+              @input="checkVenueSlot(thisVenue, $event.target.value)"
+              :value="thisSlot"
+              type="select">
               <option v-for="(slot, key) in slots" :key="key" :value="key">
-              {{key}}
+                {{key}}
               </option>
             </f7-list-input>
             <f7-list-input label="Available Venues" 
-                           @input="checkVenueSlot($event.target.value, thisSlot)"
-                           :value="thisVenue"
-                           type="select">
+              @input="checkVenueSlot($event.target.value, thisSlot)"
+              :value="thisVenue"
+              type="select">
               <option v-for="(venue, key) in venues" :key="key" :value="venue.id">
-              {{venue.id}}
+                {{venue.id}}
               </option>
             </f7-list-input>
             <f7-button raised 
-                       v-if="thisSlotVenueStatus === 'OK'"
-                       @click="assignSlotVenue()">
+              v-if="thisSlotVenueStatus === 'OK'"
+              @click="assignSlotVenue()">
               Assign
             </f7-button>
             <f7-button small v-else disabled>{{thisSlotVenueStatus}}</f7-button>
           </f7-list>
-
-
-
         </f7-block>
-
       </f7-page>
     </f7-popup>
     
     <!-- Running courses -->
+    <!-- Select year/semester here -->
     <f7-block-header>
-      <!-- Select year/semester here -->
       Select <tt>YEAR</tt> and <tt>SEMESTER</tt> to see the running courses.
       <f7-row style="margin-top:15px">
         <f7-col width="45">
           <f7-input @change="fetchRunningCourses()" 
-                       @input="thisYear=$event.target.value"
-                       label="Year"
-                       type="number" 
-                       :value="thisYear">
+            @input="thisYear=$event.target.value"
+            label="Year"
+            type="number" 
+            :value="thisYear">
           </f7-input>
         </f7-col>
         <f7-col width="45">
           <f7-input @change="fetchRunningCourses()" 
-                       @input="thisSemester=$event.target.value"
-                       label="Semester" 
-                       type="select" 
-                       :value="thisSemester">
+            @input="thisSemester=$event.target.value"
+            label="Semester" 
+            type="select" 
+            :value="thisSemester">
             <option value="AUTUMN">Autumn</option>
             <option value="SPRING">Spring</option>
           </f7-input>
@@ -314,100 +303,100 @@
     <f7-block-title medium>
       Running Courses in {{thisYear}}/{{thisSemester}}.
     </f7-block-title>
+    <f7-block>
 
-    <f7-row>
-      <f7-card v-for="(course,key) in runningCourses" :key="key"
-               class="col-100 medium-45">
-        <f7-card-header>
+    <!-- list view -->
+    <f7-list accordion-list>
+      <f7-list-item v-for="course, key in runningCourses" :key="key" accordion-item>
+        <div slot="header">
+          {{course.venue}}  
+          | {{humanReadableDate(course.start_date)}} to {{humanReadableDate(course.end_date)}} 
+          | Slot {{course.slot}}
+          | {{course.course_id}}
+        </div>
+        <div slot="title">
           {{course.name}}
-          <span class="pull-right">
-            <tt> <small> {{course.course_id}} </small> </tt>
-          </span>
-        </f7-card-header>
-        <f7-card-content>
-          <span class="pull-right">
-            <strong>{{course.venue}}</strong>
-            slot {{course.slot}}, {{course.ignore_tiles}}
-          </span>
-          <div class="text-small">
-            {{course.start_date | date}} to {{course.end_date | date}}
-          </div>
-
-          <div style="font-size:small;margin:5px;padding:10px;">
+        </div>
+        <div slot="footer" class="text-color-red"> {{course.note}} </div>
+        <f7-accordion-content>
+          <f7-block inset>
             <f7-row>
-              <f7-col>Max Registrations: {{course.max_registration}}</f7-col>
-              <f7-col>Is Audit Allowed?: {{course.is_audit_allowed}}</f7-col>
+              <f7-col>
+                Registrations = {{course.max_registration}}
+              </f7-col>
+              <f7-col>
+                Audit Allowed? {{course.is_audit_allowed}}
+              </f7-col>
             </f7-row>
             <f7-row>
-              <f7-col>URL: {{course.url}}</f7-col>
+              <f7-col>
+                <f7-link v-if="course.url" external target="_system" :href="course.url">{{course.url}}</f7-link>
+              </f7-col>
+            </f7-row>
+            <f7-row>
+              <f7-col>
+                <f7-button small :href="'/updatecourse/'+course.id+'/'"
+                  icon="fa fa-users">
+                  Registrations
+                </f7-button>
+              </f7-col>
+              <f7-col>
+                <f7-button small @click="showCurrentCourse(course)" 
+                  icon="fa fa-edit">
+                  Edit
+                </f7-button>
+              </f7-col>
             </f7-row>
           </div>
+        </f7-block>
+      </f7-accordion-content>
+    </f7-list-item>
+  </f7-list>
 
-          <div class="bg-color-yellow">
-            <small>{{course.note}}</small>
-          </div>
-
-          <f7-row class="text-align-center" style="padding:0;padding-top:0px">
-            <f7-col>
-              <f7-link :href="'/updatecourse/'+course.id+'/'"
-                                            icon="fa fa-group fa-fw">
-                Registrations
-              </f7-link>
-            </f7-col>
-            <f7-col>
-              <f7-link @click="showCurrentCourse(course)"
-                                            icon="fa fa-pencil fa-fw">
-                Edit
-              </f7-link>
-            </f7-col>
-          </f7-row>
-        </f7-card-content>
-      </f7-card>
-    </f7-row>
+</f7-block>
 
 
-    <!-- All courses -->
-    <f7-block strong medium-inset>
-      <f7-block-title medium> All Courses 
-        <div style="font-size:small" class="float-right">
-          <f7-button fill small @click="addNewCourseMetadataPopup()">
-            Add New Course
+<!-- All courses -->
+<f7-block strong medium-inset>
+  <f7-block-title medium> All Courses 
+    <div style="font-size:small" class="float-right">
+      <f7-button fill small @click="addNewCourseMetadataPopup()">
+        Add New Course
+      </f7-button>
+    </div>
+  </f7-block-title>
+  <f7-block-header>
+    <f7-searchbar no-hairlines
+      search-container=".course-list"
+      search-in=".item-title, .item-text, .item-footer, .item-header">
+    </f7-searchbar>
+  </f7-block-header>
+
+  <f7-list class="course-list" media-list>
+    <f7-row style="list-style-type:none">
+      <f7-list-item v-for="(course,key) in metadata" 
+        class="col-100 medium-50"
+        :style="(course.status==='DEACTIVATED')?'background-color:red':''"
+        :text="course.name"
+        :key="key">
+
+        <div slot="header">
+          <f7-link @click="showCourseMetaData(course)" 
+            color="blue" icon="fa fa-pencil fa-fw">
+          </f7-link>
+          {{course.id}}, Credit: {{course.credits}}
+          <f7-button small raised
+            :disabled="isARunningCourse(course.id)"
+            @click="scheduleCourse(course)" 
+            class="pull-right">
+            Schedule
           </f7-button>
         </div>
-      </f7-block-title>
-    <f7-block-header>
-      <f7-searchbar no-hairlines
-                    search-container=".course-list"
-                    search-in=".item-title, .item-text, .item-footer, .item-header">
-      </f7-searchbar>
-    </f7-block-header>
-
-    <f7-list class="course-list" media-list>
-      <f7-row style="list-style-type:none">
-        <f7-list-item v-for="(course,key) in metadata" 
-                      class="col-100 medium-50"
-                      :style="(course.status==='DEACTIVATED')?'background-color:red':''"
-                      :text="course.name"
-                      :key="key">
-
-          <div slot="header">
-            <f7-link @click="showCourseMetaData(course)" 
-               color="blue" icon="fa fa-pencil fa-fw">
-            </f7-link>
-            {{course.id}}, Credit: {{course.credits}}
-            <f7-button small raised
-                       :disabled="isARunningCourse(course.id)"
-                       @click="scheduleCourse(course)" 
-                       class="pull-right">
-              Schedule
-            </f7-button>
-          </div>
-        </f7-list-item>
-        <f7-list-item></f7-list-item>
-      </f7-row>
-    </f7-list>
-    </f7-block>
-
+      </f7-list-item>
+      <f7-list-item></f7-list-item>
+    </f7-row>
+  </f7-list>
+</f7-block>
 
   </f7-page>
 </template>

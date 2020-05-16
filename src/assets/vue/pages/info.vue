@@ -54,7 +54,6 @@
   <!-- JCS -->
   <f7-block v-if="what === 'jcs'">
     <f7-block-title>Journal Clubs</f7-block-title>
-
     <f7-list accordion-list media-list no-hairlines>
       <f7-list-item v-for="jc, key in jcs" :key="key" 
         :header="jc.jc_id + ' | ' + humanReadableDateTime(jc.date, jc.time) + ' | ' + jc.venue" 
@@ -62,7 +61,10 @@
         <div slot="text"> {{jc.by}} <{{jc.presenter}}> </div>
         <div slot="title" v-html="jc.title"></div>
         <f7-accordion-content>
-          <f7-block style="padding:10px; background-color:ivory">
+          <f7-block inset style="padding:10px; background-color:ivory">
+            <f7-link exteral target="_system"href="jc.vc_url" v-if="jc.vc_url">
+              {{jc.vc_url}}
+            </f7-link>
             <div v-html="jc.description"></div>
           </f7-block>
         </f7-accordion-content>
