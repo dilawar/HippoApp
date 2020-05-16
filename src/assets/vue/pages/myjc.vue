@@ -87,7 +87,10 @@
           </f7-navbar>
 
           <f7-block>
-            <f7-list media-list>
+            <f7-block-title>
+              Edit JC entry
+            </f7-block-title>
+            <f7-list media-list no-hairlines>
               <f7-list-input label="Title" resizable
                 @input="thisJC.title = $event.target.value"
                 :value="thisJC.title">
@@ -99,15 +102,19 @@
                 type="texteditor">
               </f7-list-input>
 
-              <f7-list-input label="Paper URL"
-                :value="thisJC.url"
-                @input="thisJC.url = $event.target.value"
-              >
+              <f7-list-input label="VC URL (zoom/Jitsi etc)."
+                :value="thisJC.vc_url"
+                type="url" validate
+                @input="thisJC.vc_url = $event.target.value">
               </f7-list-input>
 
-              <f7-button small raised fill
-                @click="submitJCChanges()"
-              >Submit</f7-button>
+              <f7-list-input label="Paper URL" 
+                :value="thisJC.url"
+                @input="thisJC.url = $event.target.value"
+                type="url" validate>
+              </f7-list-input>
+
+              <f7-button small raised fill @click="submitJCChanges()">Submit</f7-button>
             </f7-list>
           </f7-block>
         </f7-page>
