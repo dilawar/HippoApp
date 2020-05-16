@@ -60,7 +60,6 @@ module.exports = function (options) {
         },
         {
           test: /\.vue$/,
-          exclude: /node_modules/,
           loader: 'vue-loader',
           options: {
             loaders: {

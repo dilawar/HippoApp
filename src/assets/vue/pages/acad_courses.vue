@@ -11,9 +11,8 @@
             <f7-link popup-close>Close</f7-link>
           </f7-nav-right>
         </f7-navbar>
-    
-        <f7-block>
 
+        <f7-block>
           <f7-list media-list no-hairlines>
             <f7-row>
               <f7-list-input label="ID" 
@@ -319,7 +318,7 @@
         </div>
         <div slot="footer" class="text-color-red"> {{course.note}} </div>
         <f7-accordion-content>
-          <f7-block inset>
+          <f7-block inset style="background-color:ivory">
             <f7-row>
               <f7-col>
                 Registrations = {{course.max_registration}}
@@ -328,26 +327,31 @@
                 Audit Allowed? {{course.is_audit_allowed}}
               </f7-col>
             </f7-row>
+
             <f7-row>
               <f7-col>
                 <f7-link v-if="course.url" external target="_system" :href="course.url">{{course.url}}</f7-link>
               </f7-col>
             </f7-row>
-            <f7-row>
+            <f7-row style="padding:5px">
               <f7-col>
-                <f7-button small :href="'/updatecourse/'+course.id+'/'"
-                  icon="fa fa-users">
+                <f7-button raised small
+                  :href="'/coursefeedback/'+course.year+'/'+course.semester+'/'+course.course_id+'/'"
+                  icon="far fa-comment-dots">
+                  Feedback ({{course.numfeedback}})
+                </f7-button>
+              </f7-col>
+              <f7-col>
+                <f7-button raised small :href="'/updatecourse/'+course.id+'/'" icon="fa fa-users">
                   Registrations
                 </f7-button>
               </f7-col>
               <f7-col>
-                <f7-button small @click="showCurrentCourse(course)" 
-                  icon="fa fa-edit">
+                <f7-button raised small @click="showCurrentCourse(course)" icon="fa fa-edit">
                   Edit
                 </f7-button>
               </f7-col>
             </f7-row>
-          </div>
         </f7-block>
       </f7-accordion-content>
     </f7-list-item>
@@ -416,8 +420,8 @@ export default {
       metadata: [],
       slots: [],
       runningCourses: [],
-      thisYear: moment().format('YYYY'),
-      thisSemester: moment().month() <= 6?'SPRING':'AUTUMN',
+      thisYear: '',
+      thisSemester: '',
       openCoursePopup: false,
       popupMetadata: false,
       popupCurrentCourse: false,
@@ -500,6 +504,10 @@ export default {
   {
     const self = this;
     const app = self.$f7;
+
+    self.thisYear = self.thisYear || moment().format('YYYY');
+    self.thisSemester = self.thisSemester ||  moment().month() <= 6?'SPRING':'AUTUMN';
+
     self.fetchRunningCourses();
     self.fetchCourseMetadata();
 
@@ -582,10 +590,15 @@ export default {
     fetchRunningCourses: function() 
     {
       const self = this;
-      self.postWithPromise('courses/running/'+self.thisYear+'/'+self.thisSemester)
+      const app = self.$f7;
+
+      app.preloader.show();
+      self.postWithPromise('courses/list/'+self.thisYear+'/'+self.thisSemester)
         .then(function(x) {
           self.runningCourses = JSON.parse(x.data).data;
+          app.preloader.hide();
         });
+      setTimeout(() => app.preloader.hide(), 3000);
     },
     fetchCourseMetadata: function()
     {

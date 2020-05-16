@@ -3,7 +3,7 @@
     <f7-navbar title="Admin panel"></f7-navbar>
 
       <!-- More information here -->
-      <f7-block v-if="$store.getters.roles.includes('BOOKMYVENUE_ADMIN')">
+      <f7-block v-if="roles.includes('BOOKMYVENUE_ADMIN')">
         <f7-block-title>BookMyVenue Admin</f7-block-title>
         <f7-list>
           <f7-list-item link="/bmvadmin/bookingrequests/" 
@@ -33,7 +33,7 @@
         </f7-list>
       </f7-block>
 
-      <f7-block v-if="$store.getters.roles.includes('ACAD_ADMIN')">
+      <f7-block v-if="roles.includes('ACAD_ADMIN')">
         <f7-block-title>Acad Admin</f7-block-title>
         <f7-list>
           <f7-list-item link="/acadadmin/aws/" 
@@ -75,13 +75,13 @@
             target="_blank"
             view=".view-main"
             title="Manage Talks/Seminar" 
-            v-if="! $store.getters.roles.includes('BOOKMYVENUE_ADMIN')"
+            v-if="! roles.includes('BOOKMYVENUE_ADMIN')"
             panel-close>
           </f7-list-item>
         </f7-list>
       </f7-block>
 
-      <f7-block v-if="$store.getters.roles.includes('SERVICES_ADMIN')">
+      <f7-block v-if="roles.includes('SERVICES_ADMIN')">
         <f7-block-title>Services Admin</f7-block-title>
         <f7-list>
           <f7-list-item link="/serviceadmin/transport/" 
@@ -94,7 +94,7 @@
         </f7-list>
       </f7-block>
 
-      <f7-block v-if="$store.getters.roles.includes('ADMIN')">
+      <f7-block v-if="roles.includes('ADMIN')">
         <f7-block-title>Hippo Admin</f7-block-title>
         <f7-list>
           <f7-list-item link="/admin/holidays/" 
@@ -136,6 +136,11 @@ export default {
   mounted: function() {
     // NOTE. See main.vue. We have a function there which triggers when right
     // panel is opened.
+    const self = this;
+    self.postWithPromise('me/roles').then(
+      function(x) {
+        self.roles = JSON.parse(x.data).data.roles.split(',');
+      });
   },
   methods: {
   },

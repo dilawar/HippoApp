@@ -47,8 +47,8 @@ import AcadAdminAWS from './assets/vue/pages/acad_aws.vue';
 import AcadAdminAllAWS from './assets/vue/pages/acad_allaws.vue';
 import AcadAdminCourses from './assets/vue/pages/acad_courses.vue';
 import AcadAdminJC from './assets/vue/pages/acad_jc.vue';
-
 import UpdateCoursePage from './assets/vue/pages/updatecourse.vue';
+import CourseFeedbackPage from './assets/vue/pages/acad_courses_feedback.vue';
 import AdminManageTalks from './assets/vue/pages/admin_manages_talks.vue';
 import AdminManageSpeaker from './assets/vue/pages/admin_manages_speakers.vue';
 
@@ -96,6 +96,10 @@ export default [
    {
       path: '/updatecourse/:courseid/',
       component: UpdateCoursePage
+   },
+   {
+      path: '/coursefeedback/:year/:semester/:cid',
+      component: CourseFeedbackPage
    },
    {
       path: '/acadadmin/aws/',
