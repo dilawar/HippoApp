@@ -255,6 +255,11 @@ Vue.mixin({
                   console.log('Warn: Failed to fetch from '+endpoint);
             });
       },
+      writeCSVFile: function(fileEntry, content) {
+         fileEntry.createWriter(function(fw) {
+            fw.write(content);
+         });
+      },
       saveStore: function(key, data) {
          const self=this;
          self.$localStorage.set(key, JSON.stringify(data));

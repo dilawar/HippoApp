@@ -18,15 +18,20 @@
     <f7-block>
 
       <!-- Summary -->
-      <f7-block-title medium>
-        {{thisYear}}/{{thisSemester}}/{{thisCid}}: <strong>Score {{feedbacks.score.toFixed(1)}}/10</strong>
+      <f7-block-title>
+        {{thisYear}}/{{thisSemester}}/{{thisCid}}: 
+        <strong>Score {{feedbacks.score.toFixed(1)}}/10</strong>
+
+        <f7-button raised small icon="fas fa-download"
+          @click="downloadFeedback('data.csv')" class="float-right">
+          Download Feedback
+        </f7-button>
 
       </f7-block-title>
 
       <f7-card v-for="vals, key1 in feedbacks.responses" :key="key1" outline no-shadow>
         <f7-card-header v-html="getQuestion(key1).question">
         </f7-card-header>
-
         <f7-card-content>
           <div v-for="val, type in vals" :key="type">
             <div v-if="type==='text'">
@@ -41,17 +46,12 @@
           </div>
         </f7-card-content>
       </f7-card>
-
     </f7-block>
-
   </f7-page>
 </template>
 
 <script>
-
-import Vue from 'vue'
-import excel from 'vue-excel-export'
-Vue.use(excel)
+import Papa from 'papaparse';
 
   export default {
     data() {
@@ -61,7 +61,7 @@ Vue.use(excel)
         thisSemester: self.$f7route.params.semester,
         thisCid: self.$f7route.params.cid,
         thisCourseMetadata: {},
-        feedbacks: {},
+        feedbacks: {score:0, responses:[], data:[],},
         thisFeedbcak: {},
         openPopup: false,
       };
@@ -102,27 +102,32 @@ Vue.use(excel)
           return self.feedbacks.questions[qid];
         return {question:'', choices:''};
       },
-      getFeedbackSummary: function(val, qid) {
+      downloadFeedback: function(filename) {
         const self = this;
-        let q = self.getQuestion(qid);
 
-        let responses = {};
-        let html = '<table><tr>';
-        q.choices.forEach(x => {
-          responses[x] = 0;
-          html += "<th>" + x + "</th>";
-        });
-        html += "</tr><tr>";
-        val.forEach(x => {
-          responses[x.response] += 1;
-        });
+        window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fs) {
 
-        Object.entries(responses).forEach((v, x) => {
-          html += '<td>'+v[1]+'</td>';
-        });
-        html += "</tr></table>";
+          console.log('file system open: ' + fs.name);
+          fs.root.getFile(filename, { create: true, exclusive: false }, function (fileEntry) {
 
-        return html;
+            console.log("fileEntry is file?" + fileEntry.isFile.toString(), fileEntry);
+            // fileEntry.name == 'someFile.txt'
+            // fileEntry.fullPath == '/someFile.txt'
+            let csv = Papa.unparse(self.feedbacks.data);
+            self.writeCSVFile(fileEntry, csv);
+
+          }, null);
+        }, null);
+
+        // window.resolveLocalFileSystemURL(cordova.file.externalRootDirectory, function (rootDirEntry) {
+        //   rootDirEntry.getDirectory("", { create: true }, function (dirEntry) {
+        //     var isAppend = false;
+        //     dirEntry.getFile(filename, { create: true }, function (fileEntry) {
+        //       let csv = Papa.unparse(self.feedbacks.data);
+        //       self.writeCSVFile(fileEntry, csv, isAppend);
+        //     });
+        //   });
+        // });
       },
     },
   }
