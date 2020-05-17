@@ -74,6 +74,9 @@
 
   <!-- Courses -->
   <f7-block v-if="what === 'courses'">
+    <f7-block-title>
+      Click on a course to see registrations and more details.
+    </f7-block-title>
     <f7-list accordion-list media-list no-hairlines>
       <f7-list-item v-for="course, key in courses" 
         :title="course.name"
