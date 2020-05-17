@@ -130,7 +130,7 @@ export default {
       alreadyLoggedIn: false,
       notifications: [],
       profile: self.$store.getters.profile,
-      roles: self.$store.getters.roles,
+      roles: [],
     };
   },
   mounted: function() {
