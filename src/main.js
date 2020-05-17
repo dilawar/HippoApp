@@ -87,6 +87,9 @@ Framework7.use(Framework7Vue)
 
 Vue.use(VueLocalStorage)
 
+// Papa
+import Papa from 'papaparse';
+
 // Global function.
 Vue.mixin({
    data: function() {
@@ -255,10 +258,22 @@ Vue.mixin({
                   console.log('Warn: Failed to fetch from '+endpoint);
             });
       },
-      writeCSVFile: function(fileEntry, content) {
-         fileEntry.createWriter(function(fw) {
-            fw.write(content);
-         });
+      writeCSVFile: function(filename, json) {
+        const self = this;
+        let csv = Papa.unparse(json, {quotes:true});
+        let mimeType = "text/plain";
+        var blob = new Blob([csv], {type:mimeType});
+        let dlink = document.createElement('a');
+        dlink.target = "_blank";
+        dlink.download = filename;
+        dlink.href = window.URL.createObjectURL(blob);
+        dlink.onclick = function(e) {
+          setTimeout( () => { 
+            window.URL.revokeObjectURL(self.href);
+          }, 1000);
+        };
+        dlink.click();
+        dlink.remove();
       },
       saveStore: function(key, data) {
          const self=this;

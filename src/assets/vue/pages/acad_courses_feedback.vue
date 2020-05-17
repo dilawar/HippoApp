@@ -23,7 +23,7 @@
         <strong>Score {{feedbacks.score.toFixed(1)}}/10</strong>
 
         <f7-button raised small icon="fas fa-download"
-          @click="downloadFeedback('data.csv')" class="float-right">
+          @click="downloadFeedback()" class="float-right">
           Download Feedback
         </f7-button>
 
@@ -51,7 +51,6 @@
 </template>
 
 <script>
-import Papa from 'papaparse';
 
   export default {
     data() {
@@ -102,32 +101,10 @@ import Papa from 'papaparse';
           return self.feedbacks.questions[qid];
         return {question:'', choices:''};
       },
-      downloadFeedback: function(filename) {
+      downloadFeedback: function() {
         const self = this;
-
-        window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fs) {
-
-          console.log('file system open: ' + fs.name);
-          fs.root.getFile(filename, { create: true, exclusive: false }, function (fileEntry) {
-
-            console.log("fileEntry is file?" + fileEntry.isFile.toString(), fileEntry);
-            // fileEntry.name == 'someFile.txt'
-            // fileEntry.fullPath == '/someFile.txt'
-            let csv = Papa.unparse(self.feedbacks.data);
-            self.writeCSVFile(fileEntry, csv);
-
-          }, null);
-        }, null);
-
-        // window.resolveLocalFileSystemURL(cordova.file.externalRootDirectory, function (rootDirEntry) {
-        //   rootDirEntry.getDirectory("", { create: true }, function (dirEntry) {
-        //     var isAppend = false;
-        //     dirEntry.getFile(filename, { create: true }, function (fileEntry) {
-        //       let csv = Papa.unparse(self.feedbacks.data);
-        //       self.writeCSVFile(fileEntry, csv, isAppend);
-        //     });
-        //   });
-        // });
+        let filename = self.getThisCourseId() + '.csv';
+        self.writeCSVFile(filename, self.feedbacks.data);
       },
     },
   }
