@@ -223,7 +223,6 @@ export default {
   methods: {
     fetchCoursesPromise: function() {
       const self = this;
-      const app = self.$f7;
       return self.postWithPromise('/me/course')
         .then( function(x) {
           self.courses = JSON.parse(x.data).data;
@@ -232,18 +231,22 @@ export default {
     fetchCourses: function() {
       const self = this;
       const app = self.$f7;
-      app.dialog.preloader('Fetching your courses...');
+      app.preloader.show();
       self.fetchCoursesPromise().then(function(x) {
-        app.dialog.close();
+        app.preloader.hide();
       });
-      setTimeout(() => app.dialog.close(), 5000);
+      setTimeout(() => app.preloader.hide(), 5000);
     },
     fetchCoursesMetadata: function() {
       const self = this;
+      const app = self.$f7;
+      app.preloader.show();
       self.postWithPromise('/courses/metadata/'+btoa('all'))
         .then( function(x) {
           self.metadata =  JSON.parse(x.data).data;
+          app.preloader.hide();
         });
+      setTimeout(() => app.preloader.hide(), 2000);
     },
     fetchRunningCourses: function() {
       const self = this;
