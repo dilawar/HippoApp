@@ -1,6 +1,6 @@
 KEYSTORE:=$(HOME)/Work/APPS/KeyStore/dilawar.jks
 
-all : run
+all : browser
 
 create:
 	cordova create . com.dilawar.hippo Hippo \
