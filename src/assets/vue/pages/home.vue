@@ -1,5 +1,5 @@
 <template>
-  <f7-page>
+  <f7-page class="with_photography_club hide-native-scrollbar">
     <f7-navbar>
       <!-- LEFT PANEL -->
       <f7-nav-left>
@@ -42,17 +42,7 @@
       </f7-nav-right>
     </f7-navbar>
 
-    <div class="with_photography_club">
-      <!-- extra links -->
-      <!--
-      <f7-row style="font-size:x-small;text-align:center;background-color:white">
-        <f7-col col-25
-          v-for="page, key in ['aws', 'talks', 'courses', 'statistics']" 
-          :key="key">
-          <f7-link :href="'/public/'+page"><u>{{page.toUpperCase()}}</u></f7-link>
-        </f7-col>
-      </f7-row>
-      -->
+    <div>
       <f7-row>
         <f7-col width="40" medium="40" large="60"></f7-col>
         <f7-col width="60" medium="60" large="40">
@@ -193,24 +183,24 @@
 
     <!-- footer -->
     <f7-block-footer 
-      style="text-align:right; padding:1%;font-size:small">
+      style="text-align:right; padding:1%;font-size:small;margin-top:20%">
       <!-- top row -->
       <f7-link external 
-        class="col-30 medium-25"
-        target="_system"
         icon="fab fa-readme"
-        link="https://ncbs-hippo.readthedocs.io/en/latest/">
+        class="col-30 medium-25"
+        external target="_system"
+        href="https://ncbs-hippo.readthedocs.io/en/latest/">
         Docs
       </f7-link> |
       <f7-link external target="_system"
         icon="fab fa-github fa-fw"
         class="col-30 medium-25"
-        link="https://github.com/dilawar/hippo/">
+        href="https://github.com/dilawar/hippo/">
         Code Repository
       </f7-link> |
       <f7-link external 
         class="col-30 medium-25"
-        link="https://ncbs.res.in" 
+        href="https://ncbs.res.in" 
         target="_system">
         NCBS Bangalore
       </f7-link>
