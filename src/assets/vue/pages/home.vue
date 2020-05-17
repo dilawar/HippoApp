@@ -10,11 +10,19 @@
 
       <f7-nav-title>
         NCBS Hippo 
-        <f7-link no-link-class style="font-size:small" 
+        <br />
+        <f7-link no-link-class style="font-size:x-small" 
           v-if="! isMobileApp()"
           target="_system" external
           href="https://ncbs.res.in/hippo/v1/welcome">
-          (Link to Old Hippo)</f7-link>
+          Old Hippo</f7-link>
+        <f7-link no-link-class style="font-size:x-small" 
+          v-if="! isMobileApp()"
+          target="_system" external
+          icon="fa fa-android fa-fw"
+          href="https://play.google.com/store/apps/details?id=com.dilawar.hippo">
+          Android App
+        </f7-link>
       </f7-nav-title>
 
       <!-- RIGHT PANEL -->
