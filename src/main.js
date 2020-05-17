@@ -7,9 +7,11 @@ import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 Vue.component('vue-dropzone', Dropzone);
 
 // Vue charts.
-import Chartkick from 'vue-chartkick'
-import Chart from 'chart.js'
-Vue.use(Chartkick.use(Chart))
+import Chartkick from 'vue-chartkick';
+//import Chart from 'chart.js'
+//Vue.use(Chartkick.use(Chart));
+import Highcharts from 'highcharts';
+Vue.use(Chartkick.use(Highcharts))
 
 // Editor
 import { VueEditor, Quill } from 'vue2-editor';

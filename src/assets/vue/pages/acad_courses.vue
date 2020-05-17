@@ -211,9 +211,7 @@
                 </f7-button>
               </f7-col>
               <f7-col>
-                <!-- If already assigned then we are updating. else we are
-                adding. 
-                -->
+                <!-- If already assigned then we are updating. else we are adding.  -->
                 <f7-button raised @click="addRunningCourse()" v-if="thisCourse.is_new">
                   Add To Running Courses
                 </f7-button>
@@ -274,35 +272,36 @@
     </f7-popup>
     
     <!-- Running courses -->
-    <!-- Select year/semester here -->
-    <f7-block-header>
-      Select <tt>YEAR</tt> and <tt>SEMESTER</tt> to see the running courses.
-      <f7-row style="margin-top:15px">
-        <f7-col width="45">
+    <f7-block inset>
+      <f7-row>
+        <f7-col>
           <f7-input @change="fetchRunningCourses()" 
             @input="thisYear=$event.target.value"
-            label="Year"
-            type="number" 
-            :value="thisYear">
+            label="Year" type="number" :value="thisYear">
           </f7-input>
         </f7-col>
-        <f7-col width="45">
+        <f7-col>
           <f7-input @change="fetchRunningCourses()" 
             @input="thisSemester=$event.target.value"
-            label="Semester" 
-            type="select" 
-            :value="thisSemester">
+            label="Semester" type="select" :value="thisSemester">
             <option value="AUTUMN">Autumn</option>
             <option value="SPRING">Spring</option>
+            <option value="OTHER">Other</option>
           </f7-input>
         </f7-col>
       </f7-row>
-    </f7-block-header>
+    </f7-block>
 
     <f7-block-title medium>
-      Running Courses in {{thisYear}}/{{thisSemester}}.
+      Running courses ({{thisYear}}/{{thisSemester}})
+      <f7-button small raised
+        :href="'/coursefeedback/'+thisYear+'/'+thisSemester+'/'"
+        class="float-right">All Feedback</f7-button>
     </f7-block-title>
-    <f7-block>
+
+    <f7-block-header>
+      Click on the course to update, see registrations and course specific feedback.
+    </f7-block-header>
 
     <!-- list view -->
     <f7-list accordion-list>
@@ -352,12 +351,10 @@
                 </f7-button>
               </f7-col>
             </f7-row>
-        </f7-block>
-      </f7-accordion-content>
-    </f7-list-item>
-  </f7-list>
-
-</f7-block>
+          </f7-block>
+        </f7-accordion-content>
+      </f7-list-item>
+    </f7-list>
 
 
 <!-- All courses -->

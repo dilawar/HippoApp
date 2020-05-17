@@ -98,7 +98,7 @@ export default [
       component: UpdateCoursePage
    },
    {
-      path: '/coursefeedback/:year/:semester/:cid',
+      path: '/coursefeedback/:year/:semester/:cid?',
       component: CourseFeedbackPage
    },
    {

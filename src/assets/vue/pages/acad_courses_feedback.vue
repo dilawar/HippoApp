@@ -1,6 +1,6 @@
 <template>
   <f7-page>
-    <f7-navbar title="Manage Feedback" back-link="Back">
+    <f7-navbar title="Course Feedback" back-link="Back">
     </f7-navbar>
 
     <!-- POPUP  -->
@@ -18,9 +18,10 @@
     <f7-block>
 
       <!-- Summary -->
-      <f7-block-title>
-        {{thisYear}}/{{thisSemester}}/{{thisCid}}: 
-        <strong>Score {{feedbacks.score.toFixed(1)}}/10</strong>
+      <f7-block-title medium>
+        {{thisYear}}/{{thisSemester}} 
+        <span v-if="thisCid"> ({{thisCid}})</span>
+        <span v-else> (all courses)</span>
 
         <f7-button raised small icon="fas fa-download"
           @click="downloadFeedback()" class="float-right">
@@ -28,6 +29,12 @@
         </f7-button>
 
       </f7-block-title>
+
+      <f7-card title="Summary plot of selected courses (max score possible=10)">
+        <column-chart :data="feedbacks.score" slot="content" :max="10" :download="true">
+        </column-chart>
+      </f7-card>
+
 
       <f7-card v-for="vals, key1 in feedbacks.responses" :key="key1" outline no-shadow>
         <f7-card-header v-html="getQuestion(key1).question">
@@ -40,8 +47,7 @@
             </div>
             <div v-else>
               <!-- <column-chart :data="val" height="230px"></column-chart> -->
-              <pie-chart :library="{cutoutPercentage:30,
-                legend:{position:'right'}}" :data="val" height="230px"></pie-chart>
+              <pie-chart :data="val"></pie-chart>
             </div>
           </div>
         </f7-card-content>
@@ -79,6 +85,8 @@
     methods : {
       getThisCourseId: function() {
         const self = this;
+        if(! self.thisCid)
+          self.thisCid = '';
         let cid = self.thisCid + '-' + self.thisSemester + '-' + self.thisYear;
         return cid;
       },
@@ -86,9 +94,11 @@
       {
         const self = this;
         const app = self.$f7;
+        let cid = self.getThisCourseId();
+        console.log("Fetching feedback for " + cid);
         app.dialog.preloader('Fetching feedback...');
-        self.postWithPromise('acadadmin/course/feedback/'+btoa(self.getThisCourseId()))
-          .then( function(x) {
+        self.postWithPromise('acadadmin/course/feedback/'+btoa(cid))
+          .then(function(x) {
             self.feedbacks = JSON.parse(x.data).data;
             app.dialog.close();
           });
