@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.dilawar.hippo" version="2020.05.03" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <preference name="android-minSdkVersion" value="19"/>
+    <preference name="AndroidPersistentFileLocation" value="Compatibility"/>
     <preference name="DisallowOverscroll" value="true"/>
     <hook src="hooks/hookers.js" type="before_prepare"/>
     <hook src="hooks/beforedep.js" type="before_deploy"/>

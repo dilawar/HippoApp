@@ -7,9 +7,11 @@ import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 Vue.component('vue-dropzone', Dropzone);
 
 // Vue charts.
-import Chartkick from 'vue-chartkick'
-import Chart from 'chart.js'
-Vue.use(Chartkick.use(Chart))
+import Chartkick from 'vue-chartkick';
+//import Chart from 'chart.js'
+//Vue.use(Chartkick.use(Chart));
+import Highcharts from 'highcharts';
+Vue.use(Chartkick.use(Highcharts))
 
 // Editor
 import { VueEditor, Quill } from 'vue2-editor';
@@ -86,6 +88,9 @@ import VueLocalStorage from 'vue-localstorage';
 Framework7.use(Framework7Vue)
 
 Vue.use(VueLocalStorage)
+
+// Papa
+import Papa from 'papaparse';
 
 // Global function.
 Vue.mixin({
@@ -254,6 +259,23 @@ Vue.mixin({
                else
                   console.log('Warn: Failed to fetch from '+endpoint);
             });
+      },
+      writeCSVFile: function(filename, json) {
+        const self = this;
+        let csv = Papa.unparse(json, {quotes:true});
+        let mimeType = "text/plain";
+        var blob = new Blob([csv], {type:mimeType});
+        let dlink = document.createElement('a');
+        dlink.target = "_blank";
+        dlink.download = filename;
+        dlink.href = window.URL.createObjectURL(blob);
+        dlink.onclick = function(e) {
+          setTimeout( () => { 
+            window.URL.revokeObjectURL(self.href);
+          }, 1000);
+        };
+        dlink.click();
+        dlink.remove();
       },
       saveStore: function(key, data) {
          const self=this;
