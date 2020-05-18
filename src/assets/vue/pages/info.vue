@@ -14,7 +14,6 @@
           :key="key" 
           accordion-item>
         <f7-accordion-content>
-          <div v-html="talk.vc_url"></div>
           <f7-block style="padding:20px;background-color:ivory" inset>
             <div v-html="talk.title" style="font-weight:bold"></div>
             <f7-link v-if="talk.vc_url" external target="_system" href="talk.vc_url">
@@ -30,13 +29,17 @@
   <!-- AWS -->
   <f7-block v-if="what === 'upcomingawses'">
     <f7-list v-for="awss, date in awses" :key="date" accordion-list media-list>
-      <f7-list-item group-title :title="humanReadableDateTime(date,awss[0].time) + ' | ' + awss[0].venue">
+      <f7-list-item group-title :title="humanReadableDateTime(date,awss[0].time) 
+        + ' | ' + awss[0].venue">
       </f7-list-item>
-      <f7-list-item v-if="awss[0].vc_url">
-        <f7-link slot="after" external target="_system" :href="awss[0].vc_url">
+
+      <f7-list-item v-if="awss[0].vc_url || awss[0].chair">
+        <f7-icon icon="fa fa-chair" slot="after"> {{awss[0].chair}}</f7-icon>
+        <f7-link slot="title" external target="_system" :href="awss[0].vc_url">
           {{awss[0].vc_url}}
         </f7-link>
       </f7-list-item>
+
       <f7-list-item v-for="aws, key in awss" :key="key" 
         :text='aws.title'
         :header="aws.supervisor_1"

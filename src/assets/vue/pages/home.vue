@@ -9,8 +9,7 @@
       </f7-nav-left>
 
       <f7-nav-title>
-        <img src="static/logo.png" style="height:30px;align:middle;" /> 
-        NCBS Hippo 
+        <img src="static/logo.png" style="height:30px;align:middle;"> NCBS Hippo </img>
         <br />
         <f7-link no-link-class style="font-size:x-small" 
           v-if="! isMobileApp()"
@@ -112,22 +111,12 @@
         </f7-col>
       </f7-row>
 
-
-      <!--
-      <f7-fab v-if="isUserAuthenticated()" 
-        text="Book"
-        position="right-bottom"
-        slot="fixed" 
-        color="blue"
-        href="/smartbook/" 
-        fab-close>
-        <f7-icon icon="fa fa-plus"></f7-icon>
-      </f7-fab>
-      -->
-
       <!-- FAB Right Bottom (Orange) -->
-      <f7-fab position="right-bottom" slot="fixed" color="orange">
-        <f7-icon icon="fa fa-info"></f7-icon>
+      <f7-fab position="right-bottom" 
+        slot="fixed">
+        <f7-icon icon="fa fa-info fa-2x"
+          tooltip="See AWS, JC, Courses and other public info">
+        </f7-icon>
         <f7-fab-buttons position="top">
           <f7-fab-button href="/info/talks" label="Talks">1</f7-fab-button>
           <f7-fab-button href="/info/upcomingawses" label="Upcoming AWS">2</f7-fab-button>
