@@ -9,8 +9,8 @@
       </f7-nav-left>
 
       <f7-nav-title>
-        <img src="static/logo.png" style="height:30px;align:middle;"> NCBS Hippo </img>
-        <br />
+        <img src="static/logo.png" height="20px" alt=""/>
+         Hippo
         <f7-link no-link-class style="font-size:x-small" 
           v-if="! isMobileApp()"
           target="_system" external
@@ -50,50 +50,49 @@
       </f7-nav-right>
     </f7-navbar>
 
-    <div>
-      <f7-row>
-        <f7-col width="40" medium="40" large="60"></f7-col>
-        <f7-col width="60" medium="60" large="40">
-          <f7-list no-hairlines>
-            <f7-list-item v-if="isUserAuthenticated()"
-              link="/smartbook/" 
-              title="Booking" 
-              tooltip="Create a new booking"
-              panel-close>
-              <f7-icon slot="media" icon="fa fa-plus fa-2x"></f7-icon>
-            </f7-list-item>
+    <f7-row>
+      <f7-col width="40" medium="40" large="60"></f7-col>
+      <f7-col width="60" medium="60" large="40">
+        <f7-list no-hairlines>
+          <f7-list-item v-if="isUserAuthenticated()"
+            link="/smartbook/" 
+            title="Booking" 
+            tooltip="Create a new booking"
+            panel-close>
+            <f7-icon slot="media" icon="fa fa-plus fa-2x"></f7-icon>
+          </f7-list-item>
 
-            <f7-list-item v-if="isUserAuthenticated()"
-              link="/inventory/" 
-              title="Inventory" 
-              tooltip="Search and borrow"
-              panel-close>
-              <f7-icon slot="media" icon="fa fa-archive fa-2x"></f7-icon>
-            </f7-list-item>
+          <f7-list-item v-if="isUserAuthenticated()"
+            link="/inventory/" 
+            title="Inventory" 
+            tooltip="Search and borrow"
+            panel-close>
+            <f7-icon slot="media" icon="fa fa-archive fa-2x"></f7-icon>
+          </f7-list-item>
 
-            <f7-list-item link="/accomodation/" 
-              title="Accomodations" 
-              tooltip="Browse/create TO-LET listing"
-              panel-close>
-              <f7-icon slot="media" icon="fa fa-home fa-2x"></f7-icon>
+          <f7-list-item link="/accomodation/" 
+            title="Accomodations" 
+            tooltip="Browse/create TO-LET listing"
+            panel-close>
+            <f7-icon slot="media" icon="fa fa-home fa-2x"></f7-icon>
 
-            </f7-list-item>
+          </f7-list-item>
 
-            <f7-list-item link="/noticeboards/all" 
-              title="Notice Board" 
-              tooltip="Because you hate spamming mailing list"
-              panel-close>
-              <f7-icon slot="media" icon="fa fa-bullhorn fa-2x"></f7-icon>
-            </f7-list-item>
+          <f7-list-item link="/noticeboards/all" 
+            title="Notice Board" 
+            tooltip="Because you hate spamming mailing list"
+            panel-close>
+            <f7-icon slot="media" icon="fa fa-bullhorn fa-2x"></f7-icon>
+          </f7-list-item>
 
-            <f7-list-item link="/transport/" title="Transport" panel-close>
-              <f7-icon slot="media" icon="fa fa-bus fa-2x"></f7-icon>
-              <div slot="text" v-html="upcomingTrips"></div>
-            </f7-list-item>
+          <f7-list-item link="/transport/" title="Transport" panel-close>
+            <f7-icon slot="media" icon="fa fa-bus fa-2x"></f7-icon>
+            <div slot="text" v-html="upcomingTrips"></div>
+          </f7-list-item>
 
-          </f7-list>
-        </f7-col>
-      </f7-row>
+        </f7-list>
+      </f7-col>
+    </f7-row>
 
       <f7-row v-if="! isUserAuthenticated()" style="margin-right:5px" class="pull-right">
         <f7-col>
@@ -140,7 +139,6 @@
         </f7-swiper>
       </f7-block>
 
-
       <!-- LOGIN SCREEN  -->
       <f7-login-screen class="hippo-login-screen">
         <f7-page login-screen>
@@ -178,44 +176,43 @@
           </f7-block-footer>
         </f7-page>
       </f7-login-screen>
-    </div>
 
-    <!-- footer -->
-    <f7-block-footer 
-      style="text-align:right;
-      padding:1%;font-size:small;margin-top:30%;background:rgba(255,255,255,0.5)">
-      <!-- top row -->
-      <f7-link external 
-        icon="fab fa-readme"
-        class="col-30 medium-25"
-        external target="_system"
-        href="https://ncbs-hippo.readthedocs.io/en/latest/">
-        Docs
-      </f7-link> |
-      <f7-link external target="_system"
-        icon="fab fa-github fa-fw"
-        class="col-30 medium-25"
-        href="https://github.com/dilawar/hippo/">
-        Code Repository
-      </f7-link> |
-      <f7-link external 
-        class="col-30 medium-25"
-        href="https://ncbs.res.in" 
-        target="_system">
-        NCBS Bangalore
-      </f7-link>
-    <!-- bottom row -->
-    <div margin-bottom:30px>
-      Code licensed under <f7-link>GNU GPLv3</f7-link>, 
-      &copy 2018-2020 
-      <f7-link external target="_system" href="https://github.com/dilawar">
-        Dilawar Singh
-      </f7-link>
-      <br />
-      Server is provided by NCBS IT Dept.  
-      Logo &copy Nuno Jesus
-    </div>
-  </f7-block-footer>
+
+      <!-- footer -->
+      <f7-block-footer class="main-footer">
+        <!-- top row -->
+        <f7-link external 
+          icon="fab fa-readme"
+          class="col-30 medium-25"
+          external target="_system"
+          href="https://ncbs-hippo.readthedocs.io/en/latest/">
+          Docs
+        </f7-link> |
+        <f7-link external target="_system"
+          icon="fab fa-github fa-fw"
+          class="col-30 medium-25"
+          href="https://github.com/dilawar/hippo/">
+          Code Repository
+        </f7-link> |
+        <f7-link external 
+          class="col-30 medium-25"
+          href="https://ncbs.res.in" 
+          target="_system">
+          NCBS Bangalore
+        </f7-link>
+        <!-- bottom row -->
+        <div margin-bottom:30px>
+          Code licensed under <f7-link>GNU GPLv3</f7-link>, 
+          &copy 2018-2020 
+          <f7-link external target="_system" href="https://github.com/dilawar">
+            Dilawar Singh
+          </f7-link>
+          Server is provided by NCBS IT Dept.  
+          Logo &copy Nuno Jesus.
+        </div>
+      </f7-block-footer>
+
+
   </f7-page>
 </template>
 

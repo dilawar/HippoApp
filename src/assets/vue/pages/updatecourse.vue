@@ -8,15 +8,17 @@
 
       <f7-row >
         <f7-col width="40">
-          <v-autocomplete  placeholder="Student login"
-            results-property="email"
-            results-display="name"
-            results-value="login"
-            @selected="(v)=>thisRegistration.student_id=v.selectedObject.login"
-            :request-headers="apiPostData()"
-            method="post"
-            :source="(q)=>searchPeopleURI(q, 'login')">
-          </v-autocomplete>
+          <f7-input>
+            <v-autocomplete  placeholder="Student login"
+              results-property="email"
+              results-display="name"
+              results-value="login"
+              @selected="(v)=>thisRegistration.student_id=v.selectedObject.login"
+              :request-headers="apiPostData()"
+              method="post"
+              :source="(q)=>searchPeopleURI(q, 'login')">
+            </v-autocomplete>
+          </f7-input>
         </f7-col>
         <f7-col width="25">
           <f7-input label="Type" 
@@ -28,20 +30,24 @@
           </f7-input>
         </f7-col>
         <f7-col width="25">
-          <f7-button @click="addRegistration()"
+          <f7-button raised @click="addRegistration()"
             :disabled="thisRegistration.student_id.length<2">
             Register
           </f7-button>
         </f7-col>
       </f7-row>
 
-      <f7-block-title small> {{thisCourseId}}: 
-        Total {{registrations.length}} registrations.
+      <!-- Registrations -->
+      <f7-block-title> 
+        {{thisCourseId}} (total {{registrations.length}} registrations)
         <br />
         Click on the row to change registration or to assign grade.
       </f7-block-title>
 
       <f7-list media-list no-hairlines>
+        <f7-list-item>
+          <f7-button slot="after" @click="downloadRegs()" small raised>Download All</f7-button>
+        </f7-list-item>
         <f7-list-item v-for="(st,key) in registrations"
           :key="key"
           :title="st.name + ' <' + st.email + '>'"
@@ -64,6 +70,7 @@
         </f7-navbar>
 
         <f7-block>
+
           <f7-block-title>
             {{thisRegistration.student_id}}, {{thisCourseId}}
           </f7-block-title>
@@ -228,6 +235,13 @@
                 , closeOnClick: true, closeTimeout: 10000}).open();
           });
         self.openPopup = false;
+      },
+      downloadRegs: function() 
+      {
+        const self = this;
+        const app = self.$f7;
+        console.log("Downloading regs.");
+        self.writeCSVFile(self.thisCourseId+'.csv', self.registrations);
       },
     }
   }
