@@ -14,94 +14,92 @@
 
         <f7-block>
           <f7-list media-list no-hairlines>
-            <f7-row>
-              <f7-list-input label="ID" 
-                inline-label
-                :value="thisCourseMetadata.id"
-                @change="thisCourseMetadata.id=$event.target.value">
+            <f7-list-input label="ID" 
+              inline-label
+              :value="thisCourseMetadata.id"
+              @change="thisCourseMetadata.id=$event.target.value">
+            </f7-list-input>
+
+            <f7-list-input label="Name"
+              inline-label
+              :value="thisCourseMetadata.name"
+              @change="thisCourseMetadata.name=$event.target.value">
+            </f7-list-input>
+
+            <f7-list-input label="Credit"
+              inline-label
+              :value="thisCourseMetadata.credits"
+              type="number" 
+              min="0"
+              validate
+              @change="thisCourseMetadata.credits=$event.target.value">
+            </f7-list-input>
+
+            <f7-list-input label="Description"
+              float-label
+              type="texteditor"
+              :value="thisCourseMetadata.description"
+              @texteditor:change="(value)=>thisCourseMetadata.description=value">
+            </f7-list-input>
+
+            <!-- Instructors -->
+            <f7-list-group>
+              <f7-list-item title="Instructors" group-title >
+              </f7-list-item>
+              <f7-list-item v-for="i in 6" :key="'inst'+i"
+                v-if="thisCourseMetadata['instructor_'+i]"
+                media-item>
+                <div slot="title">
+                  {{thisCourseMetadata['instructor_'+i]}}
+                </div>
+                <div slot="after">
+                  <f7-link raised small @click="removeInstructor(i)"> REMOVE </f7-link> 
+                </div>
+              </f7-list-item>
+
+              <f7-list-input :input="false" label="Add an instructor" inline-label>
+                <input id="autocomplete-instructor" placeholder="autocomplete" slot="input" />
               </f7-list-input>
+            </f7-list-group>
 
-              <f7-list-input label="Name"
-                inline-label
-                :value="thisCourseMetadata.name"
-                @change="thisCourseMetadata.name=$event.target.value">
-              </f7-list-input>
-
-              <f7-list-input label="Credit"
-                inline-label
-                :value="thisCourseMetadata.credits"
-                type="number" 
-                min="0"
-                validate
-                @change="thisCourseMetadata.credits=$event.target.value">
-              </f7-list-input>
-
-              <f7-list-input label="Description"
-                float-label
-                type="texteditor"
-                :value="thisCourseMetadata.description"
-                @texteditor:change="(value)=>thisCourseMetadata.description=value">
-              </f7-list-input>
-
-              <!-- Instructors -->
-              <f7-list-group>
-                <f7-list-item title="Instructors" group-title >
-                </f7-list-item>
-                <f7-list-item v-for="i in 6" :key="'inst'+i"
-                  v-if="thisCourseMetadata['instructor_'+i]"
-                  media-item>
-                  <div slot="title">
-                    {{thisCourseMetadata['instructor_'+i]}}
-                  </div>
-                  <div slot="after">
-                    <f7-link raised small @click="removeInstructor(i)"> REMOVE </f7-link> 
-                  </div>
-                </f7-list-item>
-
-                <f7-list-input :input="false" label="Add an instructor" inline-label>
-                  <input id="autocomplete-instructor" placeholder="autocomplete" slot="input" />
-                </f7-list-input>
-              </f7-list-group>
-
-              <f7-list-group>
-                <f7-list-item>
-                  <f7-row>
-                    <f7-col v-if="thisCourseMetadata.status === 'VALID' && ! thisCourseMetadata.is_new">
-                      <f7-button color=red raised @click="deactivateCourseMetadata()">
-                        Deactivate
-                      </f7-button>
-                    </f7-col>
-                    <f7-col v-if="thisCourseMetadata.status !== 'VALID' && ! thisCourseMetadata.is_new">
-                      <f7-button color=red raised @click="activateCourseMetaata()">
-                        Activate
-                      </f7-button>
-                    </f7-col>
-                    <f7-col>
-                      <f7-button raised 
-                        @click="thisCourseMetadata.is_new?addNewCourseMetadata():updateCourseMetadata()"
-                        v-if="'OK' === thisCourseMetadataStatus">
-                        Submit Course
-                      </f7-button>
-                      <f7-button raised disabled v-else>
-                        {{thisCourseMetadataStatus}}
-                      </f7-button>
-                    </f7-col>
-                  </f7-row>
-                </f7-list-item>
-                <f7-list-item>
-                  <f7-row v-if="thisCourseMetadata.id && !  thisCourseMetadata.is_new">
-                    <f7-col>
-                      <f7-button icon="fa fa-danger" small raised fill
-                        @click="deleteThisCourseMetadata()"
-                        color=red>
-                        Delete This course
-                      </f7-button>
-                    </f7-col>
-                    <f7-col></f7-col>
-                  </f7-row>
-                </f7-list-item>
-              </f7-list-group>
-            </f7-row>
+            <f7-list-group>
+              <f7-list-item>
+                <f7-row>
+                  <f7-col v-if="thisCourseMetadata.status === 'VALID' && ! thisCourseMetadata.is_new">
+                    <f7-button color=red raised @click="deactivateCourseMetadata()">
+                      Deactivate
+                    </f7-button>
+                  </f7-col>
+                  <f7-col v-if="thisCourseMetadata.status !== 'VALID' && ! thisCourseMetadata.is_new">
+                    <f7-button color=red raised @click="activateCourseMetaata()">
+                      Activate
+                    </f7-button>
+                  </f7-col>
+                  <f7-col>
+                    <f7-button raised 
+                      @click="thisCourseMetadata.is_new?addNewCourseMetadata():updateCourseMetadata()"
+                      v-if="'OK' === thisCourseMetadataStatus">
+                      Submit Course
+                    </f7-button>
+                    <f7-button raised disabled v-else>
+                      {{thisCourseMetadataStatus}}
+                    </f7-button>
+                  </f7-col>
+                </f7-row>
+              </f7-list-item>
+              <f7-list-item>
+                <f7-row v-if="thisCourseMetadata.id && !  thisCourseMetadata.is_new">
+                  <f7-col>
+                    <f7-button icon="fa fa-danger" small raised fill
+                      @click="deleteThisCourseMetadata()"
+                      color=red>
+                      Delete This course
+                    </f7-button>
+                  </f7-col>
+                  <f7-col></f7-col>
+                </f7-row>
+              </f7-list-item>
+            </f7-list-group>
           </f7-list>
         </f7-block>
       </f7-page>
@@ -359,13 +357,15 @@
 
 <!-- All courses -->
 <f7-block strong medium-inset>
-  <f7-block-title medium> All Courses 
+  <f7-block-title medium> 
+    All Courses 
     <div style="font-size:small" class="float-right">
       <f7-button fill small @click="addNewCourseMetadataPopup()">
         Add New Course
       </f7-button>
     </div>
   </f7-block-title>
+
   <f7-block-header>
     <f7-searchbar no-hairlines
       search-container=".course-list"
@@ -378,23 +378,18 @@
       <f7-list-item v-for="(course,key) in metadata" 
         class="col-100 medium-50"
         :style="(course.status==='DEACTIVATED')?'background-color:red':''"
-        :text="course.name"
+        :header="course.name"
         :key="key">
-
-        <div slot="header">
-          <f7-link @click="showCourseMetaData(course)" 
-            color="blue" icon="fa fa-pencil fa-fw">
-          </f7-link>
+        <f7-link @click="showCourseMetaData(course)" 
+          color="blue" icon="fas fa-edit" slot="title">
           {{course.id}}, Credit: {{course.credits}}
-          <f7-button small raised
-            :disabled="isARunningCourse(course.id)"
-            @click="scheduleCourse(course)" 
-            class="pull-right">
-            Schedule
-          </f7-button>
-        </div>
+        </f7-link>
+        <f7-button small raised slot="after"
+          :disabled="isARunningCourse(course.id)"
+          @click="scheduleCourse(course)">
+          Schedule
+        </f7-button>
       </f7-list-item>
-      <f7-list-item></f7-list-item>
     </f7-row>
   </f7-list>
 </f7-block>

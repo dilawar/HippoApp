@@ -9,8 +9,7 @@
       </f7-nav-left>
 
       <f7-nav-title>
-        <img src="static/logo.png" height="20px" alt=""/>
-         Hippo
+        <img src="static/logo.png" height="20px" alt=""/>Hippo
         <f7-link no-link-class style="font-size:x-small" 
           v-if="! isMobileApp()"
           target="_system" external
