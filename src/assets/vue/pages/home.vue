@@ -9,6 +9,7 @@
       </f7-nav-left>
 
       <f7-nav-title>
+        <img src="static/logo.png" style="height:30px;align:middle;" /> 
         NCBS Hippo 
         <br />
         <f7-link no-link-class style="font-size:x-small" 
@@ -137,10 +138,11 @@
       </f7-fab>
 
       <!-- flash cards -->
-      <f7-block inset style="background:rgba(255,255,255,0.6); margin-top:25%">
-        <f7-swiper :params="{slidesPerView: 'auto', loop: true, autoplay:{delay:1500, disableOnInteraction:true}}">
+      <f7-block inset style="background:rgba(255,255,255,0.9); margin-top:25%">
+        <f7-swiper navigation 
+          :params="{slidesPerView: 'auto', loop: true, autoplay:{delay:1500, disableOnInteraction:true}}">
           <f7-swiper-slide v-for="(card,key) in flashCards" :key="key">
-            <div style="padding:5% 10% 0 10%; text-align:center">
+            <div style="padding:1% 1% 0 1%; text-align:center">
               {{humanReadableDateTime(card.date, card.time)}} | <span v-html="card.venue"></span>
               <div v-html="card.title">
               </div>
@@ -191,7 +193,8 @@
 
     <!-- footer -->
     <f7-block-footer 
-      style="text-align:right; padding:1%;font-size:small;margin-top:20%">
+      style="text-align:right;
+      padding:1%;font-size:small;margin-top:30%;background:rgba(255,255,255,0.5)">
       <!-- top row -->
       <f7-link external 
         icon="fab fa-readme"
