@@ -9,32 +9,32 @@
       <f7-list no-hairlines>
 
         <f7-list-input label="Recipients"
-                       floating-label
-                       type="text"
-                       :value="thisEmail.recipients"
-                       @change="thisEmail.recipients=$event.target.value">
+          floating-label
+          type="text"
+          :value="thisEmail.recipients"
+          @change="thisEmail.recipients=$event.target.value">
         </f7-list-input>
 
         <f7-list-input label="CC"
-                       type="text"
-                       floating-label
-                       :value="thisEmail.cc"
-                       @change="thisEmail.cc=$event.target.value">
+          type="text"
+          floating-label
+          :value="thisEmail.cc"
+          @change="thisEmail.cc=$event.target.value">
         </f7-list-input>
 
         <f7-list-input label="Subject"
-                       type="textarea"
-                       floating-label
-                       resizable
-                       @change="thisEmail.subject=$event.target.value"
-                       :value="thisEmail.subject">
+          type="textarea"
+          floating-label
+          resizable
+          @change="thisEmail.subject=$event.target.value"
+          :value="thisEmail.subject">
         </f7-list-input>
 
         <f7-list-input label="Email Body"
-                       :value="thisEmail.email_body"
-                       resizable
-                       @texteditor:change="(v)=>thisEmail.email_body=v"
-                       type="texteditor">
+          :value="thisEmail.email_body"
+          resizable
+          @texteditor:change="(v)=>thisEmail.email_body=v"
+          type="texteditor">
         </f7-list-input>
 
         <f7-list-input label="Attachments" readonly :value="thisEmail.attachments">

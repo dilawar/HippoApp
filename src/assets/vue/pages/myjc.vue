@@ -81,7 +81,9 @@
                   <f7-col v-if="isPresenterMe(jc.presenter) && jc.acknowledged==='NO'">
                     <f7-button small @click="acknowledgeJC(jc.id)">Acknowledge</f7-button>
                   </f7-col>
-
+                  <f7-col v-if="amIJCAdmin(jc.jc_id)">
+                    <f7-button :href="'/email/jc/'+jc.id" icon="fa fa-email">Email</f7-button>
+                  </f7-col>
                   <f7-col v-if="amIJCAdmin(jc.jc_id)">
                     <f7-button color="red" @click="removeJC(jc.id)">Remove</f7-button>
                   </f7-col>

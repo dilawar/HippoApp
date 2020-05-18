@@ -130,7 +130,7 @@
         <f7-swiper navigation 
           :params="{slidesPerView: 'auto', loop: true, autoplay:{delay:1500, disableOnInteraction:true}}">
           <f7-swiper-slide v-for="(card,key) in flashCards" :key="key">
-            <div style="padding:1% 1% 0 1%; text-align:center">
+            <div style="padding:3% 10% 3% 10%; text-align:center">
               {{humanReadableDateTime(card.date, card.time)}} | <span v-html="card.venue"></span>
               <div v-html="card.title">
               </div>
