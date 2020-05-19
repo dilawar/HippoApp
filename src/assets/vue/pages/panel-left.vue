@@ -1,8 +1,5 @@
 <template>
-  <f7-page @page:init="refreshData" @page:refresh="refreshData">
-    <f7-navbar title="Hippo"></f7-navbar>
-    <!-- More information here -->
-
+  <f7-page>
     <f7-block-title>Welcome {{username}}. </f7-block-title>
 
     <f7-list no-hairlines>
@@ -83,28 +80,19 @@ export default {
   data() {
     const self = this;
     return {
-      username: self.$store.getters.profile.login,
+      username: self.whoAmI(),
       alreadyLoggedIn: false,
-      profile: [],
+      profile: {},
       notifications: [],
     };
   },
   mounted()
   {
     const self = this;
-    self.notifications = self.loadStore('notifications').filter(x =>false==x.is_read);
-    self.alreadyLoggedIn = self.isUserAuthenticated();
-    self.postWithPromise('/me/profile').then(function(x) {
-      self.profile = JSON.parse(x.data).data;
-      self.saveStore('me.profile', self.profile);
-    });
+    console.log('Left panel begin mounted');
+    // mounted event is not fired when panel is loaded.
   },
   methods : {
-    refreshData: function( ) {
-      const self = this;
-      self.profile = self.loadStore("me.profile");
-      self.alreadyLoggedIn = self.isUserAuthenticated();
-    },
   },
 }
 </script>
