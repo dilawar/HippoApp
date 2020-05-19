@@ -2,7 +2,6 @@
   <f7-page>
     <f7-navbar title="Admin panel">
       <f7-block-title>
-        <f7-button small @click="refreshRoles">Refresh</f7-button>
       </f7-block-title>
     </f7-navbar>
       <!-- More information here -->
@@ -121,6 +120,9 @@
         </f7-list>
       </f7-block>
 
+      <f7-block-footer>
+        <f7-button small @click="refreshRoles">Refresh</f7-button>
+      </f7-block-footer>
    </f7-page>
 </template>
 
