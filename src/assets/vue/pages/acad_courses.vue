@@ -270,7 +270,7 @@
     </f7-popup>
     
     <!-- Running courses -->
-    <f7-block inset>
+    <f7-block inset strong>
       <f7-row>
         <f7-col>
           <f7-input @change="fetchRunningCourses()" 
@@ -292,7 +292,7 @@
 
     <f7-block-title medium>
       Running courses ({{thisYear}}/{{thisSemester}})
-      <f7-button small raised
+      <f7-button small fill
         :href="'/coursefeedback/'+thisYear+'/'+thisSemester+'/'"
         class="float-right">All Feedback</f7-button>
     </f7-block-title>
@@ -315,7 +315,7 @@
         </div>
         <div slot="footer" class="text-color-red"> {{course.note}} </div>
         <f7-accordion-content>
-          <f7-block inset style="background-color:ivory">
+          <f7-block inset style="background-color:peachpuff">
             <f7-row>
               <f7-col>
                 Registrations = {{course.max_registration}}
@@ -330,21 +330,21 @@
                 <f7-link v-if="course.url" external target="_system" :href="course.url">{{course.url}}</f7-link>
               </f7-col>
             </f7-row>
-            <f7-row style="padding:5px">
-              <f7-col>
-                <f7-button raised small
+            <f7-row style="padding:5px;magin:10px;">
+              <f7-col width=50 medium=30>
+                <f7-button small
                   :href="'/coursefeedback/'+course.year+'/'+course.semester+'/'+course.course_id+'/'"
                   icon="far fa-comment-dots">
-                  Feedback ({{course.numfeedback}})
+                  {{course.numfeedback}} Feedbacks
                 </f7-button>
               </f7-col>
-              <f7-col>
-                <f7-button raised small :href="'/updatecourse/'+course.id+'/'" icon="fa fa-users">
+              <f7-col width=50 medium=30>
+                <f7-button small :href="'/updatecourse/'+course.id+'/'" icon="fa fa-users">
                   Registrations
                 </f7-button>
               </f7-col>
-              <f7-col>
-                <f7-button raised small @click="showCurrentCourse(course)" icon="fa fa-edit">
+              <f7-col width=50 medium=30>
+                <f7-button small fill @click="showCurrentCourse(course)" icon="fa fa-edit">
                   Edit
                 </f7-button>
               </f7-col>

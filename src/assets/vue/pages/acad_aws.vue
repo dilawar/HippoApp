@@ -86,14 +86,14 @@
     <!-- Change AWS weekly info . -->
     <f7-popup :opened="popupWeeklyInfo" @popup:close="popupWeeklyInfo=false">
       <f7-page>
-        <f7-navbar title="Change location and chair">
+        <f7-navbar title="Change venue/chair">
           <f7-nav-right>
             <f7-link popup-close>Close</f7-link>
           </f7-nav-right>
         </f7-navbar>
 
         <f7-block>
-          <f7-list no-hairlines>
+          <f7-list no-hairlines media-list>
 
             <f7-list-input :value="thisAWS.date" label="Date" readonly
               inline-label>
@@ -131,21 +131,24 @@
               :value="thisAWS.vc_url"
               @change="thisAWS.vc_url=$event.target.value">
             </f7-list-input>
+
+            <f7-list-item v-if="thisAWS.chair && thisAWS.has_chair_confirmed === 'NO'">
+              <div slot="header">
+                Chair has not confirmed yet. You can also confirm on the chair
+                behalf.
+              </div>
+              <f7-button raised small @click="confirmChair" slot="header">
+                Confirm Chair
+              </f7-button>
+            </f7-list-item>
           </f7-list>
 
           <f7-row>
-            <f7-col v-if="thisAWS.chair && thisAWS.has_chair_confirmed === 'NO'">
-              Chair has not confirmed yet. You can also confirm on the chair
-              behalf if they have told you so.
-              <f7-button raised @click="confirmChair">
-                Confirm Chair
-              </f7-button>
+            <f7-col>
+              <f7-button fill color=red @click="removeChair()">Remove Chair</f7-button>
             </f7-col>
             <f7-col>
-              <f7-button small @click="removeChair()">Remove Chair</f7-button>
-            </f7-col>
-            <f7-col>
-              <f7-button raised small fill @click="changeAWSData"> Submit </f7-button>
+              <f7-button fill @click="changeAWSData()"> Submit </f7-button>
             </f7-col>
           </f7-row>
 
@@ -183,7 +186,7 @@
         </div>
 
         <f7-accordion-content style="background-color:ivory">
-          <f7-block no-margin inset>
+          <f7-block no-margin>
             <f7-row>
               <f7-col col-30>
                 <f7-button small @click="openChangeWeekPopup(AWSes[0])">
