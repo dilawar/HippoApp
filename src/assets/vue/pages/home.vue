@@ -307,7 +307,7 @@ export default {
               app.notification.create({
                 title:'Invalid response from server'
                 , subtitle: 'Is your username/password correct?'
-                , closeTimeout: 5000
+                , closeTimeout: 30000
                 , closeOnClick: true, closeButton: true
               }).open();
             return;

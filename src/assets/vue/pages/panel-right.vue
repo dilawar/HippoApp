@@ -139,7 +139,13 @@ export default {
     const self = this;
     self.postWithPromise('me/roles').then(
       function(x) {
-        self.roles = JSON.parse(x.data).data.roles.split(',');
+        let res = JSON.parse(x.data);
+        if(res.success) {
+          if('roles' in res.data)
+            self.roles = res.data.roles.split(',');
+          else
+            self.roles = ['USER'];
+        }
       });
   },
   methods: {

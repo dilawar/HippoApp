@@ -305,10 +305,8 @@ Vue.mixin({
          return app.request.promise.post(self.$store.state.api+'/'+endpoint, data)
             .then( function(x) {
                const res = JSON.parse(x.data);
-               app.dialog.close();
                return;
-            }
-            );
+            });
       },
       sendCoordinates: function(endpoint, coords) {
          const self = this;
