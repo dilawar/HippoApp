@@ -410,8 +410,9 @@ Vue.mixin({
             title: header,
             subtitle: msg,
             closeTimeout: t,
-            closeOnClick: true,
+            closeOnClick: false,
             swipeToClose: true,
+            closeButton: true,
          }).open();
       },
       deleteComment: function(id) {

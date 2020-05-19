@@ -112,7 +112,6 @@
                 input-class="form-control"
                 ref="refAWSChair"
                 :placeholder="thisAWS.chair?thisAWS.chair:'Search faculty'"
-                :initial-value="thisAWS.chair"
                 results-property="email"
                 results-display="name"
                 results-value="email"

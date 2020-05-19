@@ -28,7 +28,7 @@
         </div>
       </f7-nav-title>
 
-      <!-- RIGHT PANEL -->
+      <!-- RIGHT nav -->
       <f7-nav-right>
         <f7-link v-if="isUserAuthenticated()"
           icon="fas fa-sign-out-alt" @click="signOut" 
@@ -36,15 +36,6 @@
           header="Logout"
           slot="media">
         </f7-link>
-        <f7-link v-else
-          @click="shutdown"
-          color="red"
-          icon="fa fa-power-off fa-fw" 
-          panel-close
-          header="Close"
-          slot="media">
-        </f7-link>
-
         <f7-link v-if="rolesCSV.includes('ADMIN')" 
           panel-open="right" 
           icon="fa fa-bars fa-fw"
@@ -307,7 +298,7 @@ export default {
               app.notification.create({
                 title:'Invalid response from server'
                 , subtitle: 'Is your username/password correct?'
-                , closeTimeout: 30000
+                , closeTimeout: 5000
                 , closeOnClick: true, closeButton: true
               }).open();
             return;
@@ -332,7 +323,8 @@ export default {
             app.dialog.alert("Failed to login. Try again.", "Error");
           app.dialog.close();
         });
-      setTimeout(() => app.dialog.close(), 2000);
+      // Timeout for a minute.
+      setTimeout(() => app.dialog.close(), 120000);
     },
     fetchRoles: function() {
       const self = this;
