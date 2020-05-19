@@ -119,6 +119,7 @@
             results-property="email"
             results-display="name"
             :request-headers="apiPostData()"
+            :showNoResults="false"
             method="post"
             @selected="onSpeakerSelected"
             @results="foundSpeakersOnSearch"
@@ -135,12 +136,14 @@
           Update
         </f7-button>
       </f7-list-item>
+
       <f7-list-item v-if="createNewSpeaker">
-        <div slot="header">No one is found..</div>
-        <f7-button small raised href="/admin/speaker/add/-1">
+        <f7-button slot="title" href="/admin/speaker/add/-1">
           Add new Speaker
         </f7-button>
+        <div slot="after">No one is found...</div>
       </f7-list-item>
+
     </f7-list-group>
 
     <!-- WHEN SPEAKER IS SET, SHOW THE TALK SECTION -->
