@@ -104,7 +104,7 @@ export default {
       app.preloader.show();
 
       // Bug. Hack
-      if(self.login && self.login === 'undefined')
+      if(self.login && (self.login === 'undefined' || self.login === 'null'))
         self.login = self.whoAmI();
 
       if(self.login) {
