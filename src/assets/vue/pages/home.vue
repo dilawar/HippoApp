@@ -298,7 +298,7 @@ export default {
               app.notification.create({
                 title:'Invalid response from server'
                 , subtitle: 'Is your username/password correct?'
-                , closeTimeout: 30000
+                , closeTimeout: 5000
                 , closeOnClick: true, closeButton: true
               }).open();
             return;
@@ -323,7 +323,8 @@ export default {
             app.dialog.alert("Failed to login. Try again.", "Error");
           app.dialog.close();
         });
-      setTimeout(() => app.dialog.close(), 2000);
+      // Timeout for a minute.
+      setTimeout(() => app.dialog.close(), 120000);
     },
     fetchRoles: function() {
       const self = this;
