@@ -1,0 +1,41 @@
+site_name: NCBS Hippo
+site_url: https://ncbs.res.in/hippo
+site_author: Dilawar Singh <dilawars@ncbs.res.in>
+copyright: 'Copyright &copy; 2016-2020 Dilawar Singh'
+repo_url: https://github.com/dilawar/HippoApp
+theme:
+    name: readthedocs
+    highlightjs: true
+    hljs_languages:
+        - php
+        - python
+
+nav:
+    - Home: index.md
+    - User Manual: user_manual.md
+    - Admin Manual:
+        - BookMyVenue Admin manual: bmv_admin_manual.md
+        - Acadmic Admin Manual: acadic_admin_manual.md
+        - Admin Manual: admin_manual.md
+    - Developer Documents: developer.md
+    - Bug tracker: https://github.com/dilawar/hippo/issues
+
+extra_css: [extra.css]
+
+markdown_extensions:
+    - admonition
+    - toc
+    - attr_list
+    - pymdownx.caret
+    - pymdownx.details
+    - pymdownx.inlinehilite
+    - pymdownx.magiclink
+    - pymdownx.mark
+    - pymdownx.smartsymbols
+    - pymdownx.superfences
+    - pymdownx.tilde
+
+extra:
+    social:
+        type: 'github'
+        link: 'https://github.com/dilawar'
