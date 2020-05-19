@@ -105,7 +105,7 @@
       </f7-row>
 
       <!-- FAB Right Bottom (Orange) -->
-      <f7-fab position="right-bottom" slot="fixed">
+      <f7-fab position="right-bottom" slot="fixed" v-if="isUserAuthenticated()">
         <f7-icon icon="fa fa-info fa-2x" 
           tooltip="See AWS, JC, Courses and other public info">
         </f7-icon>
