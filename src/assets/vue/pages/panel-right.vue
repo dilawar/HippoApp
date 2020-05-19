@@ -1,7 +1,10 @@
 <template>
   <f7-page>
-    <f7-navbar title="Admin panel"></f7-navbar>
-
+    <f7-navbar title="Admin panel">
+      <f7-block-title>
+        <f7-button small @click="refreshRoles">Refresh</f7-button>
+      </f7-block-title>
+    </f7-navbar>
       <!-- More information here -->
       <f7-block v-if="roles.includes('BOOKMYVENUE_ADMIN')">
         <f7-block-title>BookMyVenue Admin</f7-block-title>
@@ -129,26 +132,21 @@ export default {
       username: 'Guest',
       alreadyLoggedIn: false,
       notifications: [],
-      profile: self.$store.getters.profile,
-      roles: [],
+      roles: self.$store.getters.roles,
     };
   },
   mounted: function() {
     // NOTE. See main.vue. We have a function there which triggers when right
     // panel is opened.
-    const self = this;
-    self.postWithPromise('me/roles').then(
-      function(x) {
-        let res = JSON.parse(x.data);
-        if(res.success) {
-          if('roles' in res.data)
-            self.roles = res.data.roles.split(',');
-          else
-            self.roles = ['USER'];
-        }
-      });
   },
   methods: {
+    refreshRoles: function() {
+      const self = this;
+      console.log('Refreshing page');
+      self.postWithPromise('/me/roles').then( function(x) {
+        self.roles = JSON.parse(x.data).data.roles.split(',');
+      });
+    },
   },
 }
 </script>

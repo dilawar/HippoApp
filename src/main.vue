@@ -1,10 +1,10 @@
 <template>
   <!-- App -->
   <f7-app :params="f7params">
-      <f7-panel left cover>
+      <f7-panel left>
         <f7-view name="left" url="/userpanel/" ></f7-view>
       </f7-panel>
-      <f7-panel right cover @panel:open="fetchRoles()">
+      <f7-panel right @panel:open="fetchRoles()">
         <f7-view name="right" url="/adminpanel/" ></f7-view>
       </f7-panel>
 

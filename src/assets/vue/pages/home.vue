@@ -28,7 +28,7 @@
         </div>
       </f7-nav-title>
 
-      <!-- RIGHT PANEL -->
+      <!-- RIGHT nav -->
       <f7-nav-right>
         <f7-link v-if="isUserAuthenticated()"
           icon="fas fa-sign-out-alt" @click="signOut" 
@@ -36,15 +36,6 @@
           header="Logout"
           slot="media">
         </f7-link>
-        <f7-link v-else
-          @click="shutdown"
-          color="red"
-          icon="fa fa-power-off fa-fw" 
-          panel-close
-          header="Close"
-          slot="media">
-        </f7-link>
-
         <f7-link v-if="rolesCSV.includes('ADMIN')" 
           panel-open="right" 
           icon="fa fa-bars fa-fw"
