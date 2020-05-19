@@ -114,6 +114,7 @@ export default {
           });
       } else {
         self.notify("Error", "Invalid profile");
+        app.preloader.hide();
         return;
       }
 
@@ -122,7 +123,7 @@ export default {
           self.editables = JSON.parse(x.data).data;
           app.preloader.hide();
         });
-      setTimeout(()=> app.preloader.hide(), 2000);
+      setTimeout(()=> app.preloader.hide(), 30000);
     },
     fetchImage: function() {
       const self = this;
@@ -144,7 +145,7 @@ export default {
           self.$refs.profilePic.addFile(img);
           app.preloader.hide();
         });
-      setTimeout(()=> app.preloader.hide(), 2000);
+      setTimeout(()=> app.preloader.hide(), 10000);
     },
     uploadFiles: function() 
     {
