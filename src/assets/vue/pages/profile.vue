@@ -102,10 +102,13 @@ export default {
       const self = this;
       const app = self.$f7;
       app.preloader.show();
-      self.postWithPromise('me/profile/get/'+self.login)
-        .then(function(x) {
-          self.profile = JSON.parse(x.data).data;
-        });
+      if(self.login) {
+        self.postWithPromise('me/profile/get/'+self.login)
+          .then(function(x) {
+            self.profile = JSON.parse(x.data).data;
+          });
+      }
+
       self.postWithPromise('me/profile/editables')
         .then(function(x) {
           self.editables = JSON.parse(x.data).data;
@@ -116,6 +119,9 @@ export default {
     fetchImage: function() {
       const self = this;
       const app = self.$f7;
+      if(! self.login)
+        return;
+
       self.$refs.profilePic.removeAllFiles();
       app.preloader.show();
       self.postWithPromise('me/photo/'+self.login)

@@ -9,19 +9,23 @@
       </f7-nav-left>
 
       <f7-nav-title>
-        <img src="static/logo.png" height="20px" alt=""/>Hippo
-        <f7-link no-link-class style="font-size:x-small" 
-          v-if="! isMobileApp()"
-          target="_system" external
-          href="https://ncbs.res.in/hippo/v1/welcome">
-          Old Hippo</f7-link>
-        <f7-link no-link-class style="font-size:x-small" 
-          v-if="! isMobileApp()"
-          target="_system" external
-          icon="fa fa-android fa-fw"
-          href="https://play.google.com/store/apps/details?id=com.dilawar.hippo">
-          Android App
-        </f7-link>
+        <div style="vertical-align:text-top">
+          <img src="static/logo.png" height="20px" alt="logo" />
+          <span style="display:inline-block; font-size:25px">Hippo</span>
+          <span style="font-size:small;padding-left:10px">
+            <f7-link no-link-class 
+              v-if="! isMobileApp()"
+              target="_system" external
+              href="https://ncbs.res.in/hippo/v1/welcome">
+              Old Hippo</f7-link>
+            <f7-link no-link-class v-if="! isMobileApp()"
+              target="_system" external
+              icon="fab fa-android"
+              href="https://play.google.com/store/apps/details?id=com.dilawar.hippo">
+              App
+            </f7-link>
+          </span>
+        </div>
       </f7-nav-title>
 
       <!-- RIGHT PANEL -->
@@ -303,7 +307,7 @@ export default {
               app.notification.create({
                 title:'Invalid response from server'
                 , subtitle: 'Is your username/password correct?'
-                , closeTimeout: 5000
+                , closeTimeout: 30000
                 , closeOnClick: true, closeButton: true
               }).open();
             return;

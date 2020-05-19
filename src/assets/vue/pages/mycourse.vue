@@ -113,13 +113,13 @@
                       v-for="(course, key) in runningCourses" 
                       :key="key">
            <div slot="header">
-              Credits {{metadata[course.course_id].credits}},
+              Credits {{getMetadata(course.course_id, 'credits')}},
               Slot {{course.slot}} @{{course.venue}}, <tt>{{course.course_id}}</tt>
            </div>
            <div slot="media" v-if="alreadyRegistered(course.id)">
                 <f7-icon icon="fa fa-bookmark fa-2x"></f7-icon>
            </div>
-           <div slot="title"> {{metadata[course.course_id].name}} </div>
+           <div slot="title"> {{getMetadata(course.course_id, 'name')}} </div>
            <div slot="subtitle">
              {{course.start_date | date}} to {{course.end_date | date}} 
            </div>
@@ -128,10 +128,10 @@
            <f7-accordion-content>
               <f7-block>
               <p style="font-size:small;margin-left:3%;text-align:justify" 
-                 v-html="metadata[course.course_id].description"></p>
+                 v-html="getMetadata(course.course_id, 'description')"></p>
               <div>
                  <p><strong>Instructor(s)</strong></p>
-                 <p v-html="metadata[course.course_id].instructors.html"></p>
+                 <p v-html="getMetadata(course.course_id, 'instructors', 'html')"></p>
               </div>
 
               <f7-row>
@@ -207,17 +207,15 @@ export default {
       feedback: {responses:{}, unanswered:0, editable:[true, ""]},
     };
   },
-  mounted()
+  mounted: async function()
   {
     const self = this;
     const app = self.$f7;
 
     // Fetch metadata first.
-    self.fetchCoursesMetadata();
-    setTimeout( function() {
-      self.fetchCourses();
-      self.fetchRunningCourses();
-    }, 2000);
+    await self.fetchCoursesMetadata();
+    self.fetchCourses();
+    self.fetchRunningCourses();
 
   },
   methods: {
@@ -228,6 +226,15 @@ export default {
           self.courses = JSON.parse(x.data).data;
         });
     },
+    getMetadata: function(cid, key1, key2='') {
+      const self = this;
+      if(cid in self.metadata) {
+        let k1 = self.metadata[cid][key1];
+        if(key2 && key2 in k1)
+          return k1[key2];
+      }
+      return '';
+    },
     fetchCourses: function() {
       const self = this;
       const app = self.$f7;
@@ -237,7 +244,7 @@ export default {
       });
       setTimeout(() => app.preloader.hide(), 5000);
     },
-    fetchCoursesMetadata: function() {
+    fetchCoursesMetadata: async function() {
       const self = this;
       const app = self.$f7;
       app.preloader.show();
@@ -246,7 +253,7 @@ export default {
           self.metadata =  JSON.parse(x.data).data;
           app.preloader.hide();
         });
-      setTimeout(() => app.preloader.hide(), 2000);
+      setTimeout(() => app.preloader.hide(), 3000);
     },
     fetchRunningCourses: function() {
       const self = this;
@@ -310,7 +317,6 @@ export default {
     fetchFeedback: function(course) {
       const self = this;
       const app = self.$f7;
-
       let cid = course.course_id + '-' + course.semester + '-' + course.year;
       app.preloader.show();
       self.postWithPromise('/courses/feedback/get/'+btoa(cid))
