@@ -21,7 +21,7 @@
             :key="val.gid+'.'+val.rid" 
             :title="humanReadableDateTime(val.date,val.start_time)+' ('+val.venue+')'">
             <f7-button small raised color="red"
-              tooltip="Delete this booking only"
+              tooltip="Delete this booking"
               icon="fa fa-trash fa-fw" slot="after"
               @click="deleteThisRequest(val.gid, val.rid)"> 
             </f7-button>
@@ -51,9 +51,10 @@
   <!-- THESE ARE CONFIRMED EVENTS -->
   <f7-block v-if="Object.keys(eventGroups).length > 0">
     <f7-block-title medium>
-      <f7-icon icon="fa fa-calendar-check-o fa-fw"></f7-icon>
+      <f7-icon icon="far fa-calendar-check"></f7-icon>
       Confirmed bookings...
     </f7-block-title>
+
     <f7-list media-list no-hairlines>
       <f7-list-item accordion-item 
                     v-for="(events, gid, index) in eventGroups" 
@@ -68,7 +69,9 @@
               <f7-list-item v-if="events.length > 1">
                 <f7-row>
                   <f7-col>
-                    <f7-button raised fill color=red @click="deleteThisEvent(events[0].gid)"> 
+                    <f7-button raised fill 
+                      tooltip="Delete all bookings in this group"
+                      color=red @click="deleteThisEvent(events[0].gid)"> 
                       Delete this group
                     </f7-button>
                   </f7-col>
@@ -284,7 +287,7 @@ export default {
       const self = this;
       const app = self.$f7;
 
-      app.dialog.confirm("Really?", "Deleting", 
+      app.dialog.confirm("Deleting...", "Are you sure?", 
         function(val) {
           app.dialog.preloader();
           var link = 'mybooking/delete/event/'+gid+'.'+eid;
