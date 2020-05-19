@@ -102,11 +102,20 @@ export default {
       const self = this;
       const app = self.$f7;
       app.preloader.show();
+
+      // Bug. Hack
+      if(self.login && (self.login === 'undefined' || self.login === 'null'))
+        self.login = self.whoAmI();
+
       if(self.login) {
         self.postWithPromise('me/profile/get/'+self.login)
           .then(function(x) {
             self.profile = JSON.parse(x.data).data;
           });
+      } else {
+        self.notify("Error", "Invalid profile");
+        app.preloader.hide();
+        return;
       }
 
       self.postWithPromise('me/profile/editables')
@@ -114,7 +123,7 @@ export default {
           self.editables = JSON.parse(x.data).data;
           app.preloader.hide();
         });
-      setTimeout(()=> app.preloader.hide(), 2000);
+      setTimeout(()=> app.preloader.hide(), 30000);
     },
     fetchImage: function() {
       const self = this;
@@ -136,7 +145,7 @@ export default {
           self.$refs.profilePic.addFile(img);
           app.preloader.hide();
         });
-      setTimeout(()=> app.preloader.hide(), 2000);
+      setTimeout(()=> app.preloader.hide(), 10000);
     },
     uploadFiles: function() 
     {

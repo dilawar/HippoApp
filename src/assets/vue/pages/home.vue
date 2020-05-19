@@ -9,9 +9,9 @@
       </f7-nav-left>
 
       <f7-nav-title>
-        <div style="vertical-align:text-top">
-          <img src="static/logo.png" height="20px" alt="logo" />
-          <span style="display:inline-block; font-size:25px">Hippo</span>
+        <div style="vertical-align:bottom">
+          <img src="static/logo.png" height="25px" alt="logo" />
+          <span style="display:inline-block; font-size:30px">Hippo</span>
           <span style="font-size:small;padding-left:10px">
             <f7-link no-link-class 
               v-if="! isMobileApp()"
