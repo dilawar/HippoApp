@@ -297,7 +297,8 @@ export default {
             /* handle error */
             self.notify('Invalid response from server'
               , 'Is your username/password correct?'
-              , 60000);
+              , 10000);
+            app.dialog.close();
             return;
           }
 
@@ -321,7 +322,7 @@ export default {
           app.dialog.close();
         });
       // Timeout for a minute.
-      setTimeout(() => app.dialog.close(), 120000);
+      setTimeout(() => app.dialog.close(), 60000);
     },
     fetchRoles: function() {
       const self = this;
