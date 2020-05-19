@@ -105,11 +105,11 @@
       </f7-row>
 
       <!-- FAB Right Bottom (Orange) -->
-      <f7-fab position="right-bottom" 
-        slot="fixed">
-        <f7-icon icon="fa fa-info fa-2x"
+      <f7-fab position="right-bottom" slot="fixed">
+        <f7-icon icon="fa fa-info fa-2x" 
           tooltip="See AWS, JC, Courses and other public info">
         </f7-icon>
+        <f7-icon ios="f7:xmark" aurora="f7:xmark" md="material:close"></f7-icon>
         <f7-fab-buttons position="top">
           <f7-fab-button href="/info/talks" label="Talks">1</f7-fab-button>
           <f7-fab-button href="/info/upcomingawses" label="Upcoming AWS">2</f7-fab-button>
@@ -295,12 +295,9 @@ export default {
             var res = JSON.parse(x.data);
           } catch (e) {
             /* handle error */
-              app.notification.create({
-                title:'Invalid response from server'
-                , subtitle: 'Is your username/password correct?'
-                , closeTimeout: 5000
-                , closeOnClick: true, closeButton: true
-              }).open();
+            self.notify('Invalid response from server'
+              , 'Is your username/password correct?'
+              , 60000);
             return;
           }
 
