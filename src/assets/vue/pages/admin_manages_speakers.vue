@@ -3,27 +3,27 @@
     <f7-navbar title="Manage Speaker" back-link="Back">
     </f7-navbar>
 
-    <f7-list no-hairlines style="margin:10px">
+    <f7-list no-hairlines style="margin:10px" media-list>
       <f7-list-input :input="false">
         <v-autocomplete  slot="input"
-                         ref="refEventSpeaker"
-                         input-class="item-input"
-                         placeholder="Type Email or ID to search speaker..."
-                         results-property="id"
-                         results-display="name"
-                         :request-headers="apiPostData()"
-                         method="post"
-                         @selected="onSpeakerSelected"
-                         @noResults="createNewSpeaker=true"
-                         :source="(q)=>searchPeopleURI(q, 'speaker')">
+          ref="refEventSpeaker"
+          input-class="item-input"
+          placeholder="Type Email or ID to search speaker..."
+          results-property="id"
+          results-display="name"
+          :request-headers="apiPostData()"
+          method="post"
+          @selected="onSpeakerSelected"
+          @noResults="createNewSpeaker=true"
+          :source="(q)=>searchPeopleURI(q, 'speaker')">
         </v-autocomplete>
       </f7-list-input>
       <f7-list-item>
         <f7-col width="50" medium="30">
           <vue-dropzone ref="speakerPic"  
-                        id="speaker-pic-id"
-                        @vdropzone-files-added="(file)=>uploadFiles()"
-                        :options="dropzoneOptions">
+            id="speaker-pic-id"
+            @vdropzone-files-added="(file)=>uploadFiles()"
+            :options="dropzoneOptions">
           </vue-dropzone>
         </f7-col>
         <f7-col>
@@ -78,7 +78,6 @@ export default {
   data() {
     const self = this;
     const params = self.$f7route.params;
-    console.log("Params ", params);
     return {
       hideKeys: ['id', 'photo', 'html'],
       speaker: {},
@@ -136,7 +135,7 @@ export default {
     {
       // This should be called before page loads else form won't bind properly.
       const self = this;
-      self.postWithPromise('admin/table/fieldinfo/speakers')
+      self.postWithPromise('info/table/fieldinfo/speakers')
         .then(function(x) {
           self.finfo = JSON.parse(x.data).data;
 
@@ -177,7 +176,7 @@ export default {
     fetchSpeaker: function(speakerID) 
     {
       const self = this;
-      self.postWithPromise('admin/speaker/fetch/'+speakerID)
+      self.postWithPromise('me/speaker/fetch/'+speakerID)
         .then(function(x) {
           var res = JSON.parse(x.data);
           if(res.status === 'ok') {
@@ -195,7 +194,7 @@ export default {
     updateSpeaker: function() 
     {
       const self = this;
-      self.promiseWithAuth('admin/speaker/update', self.thisSpeaker)
+      self.promiseWithAuth('me/speaker/update', self.thisSpeaker)
         .then( function(x) {
           var res = JSON.parse(x.data).data;
           if(! res.success)
@@ -210,7 +209,7 @@ export default {
     addNewSpeaker: function() 
     {
       const self = this;
-      self.promiseWithAuth('admin/speaker/new', self.thisSpeaker)
+      self.promiseWithAuth('me/speaker/new', self.thisSpeaker)
         .then( function(x) {
           var res = JSON.parse(x.data).data;
           if(! res.success)
@@ -229,7 +228,7 @@ export default {
       app.dialog.confirm( "You can only delete a speaker without any talk."
         , "Note"
         , function() {
-          self.promiseWithAuth('admin/speaker/delete/' + sid)
+          self.promiseWithAuth('me/speaker/delete/' + sid)
             .then( function(x) {
               var res = JSON.parse(x.data).data;
               if(! res.success)
