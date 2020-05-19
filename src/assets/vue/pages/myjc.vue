@@ -5,7 +5,7 @@
       <!-- List of JCs -->
       <f7-block-header>
         <f7-row>
-          <f7-col col="25" v-for="jc, key in alljcs" :key="key">
+          <f7-col width=33 medium=20 v-for="jc, key in alljcs" :key="key">
             <f7-button icon="fa fa-toggle-on fa-fw" 
                        tooltip="Subscribed."
                        @click="unsubscribeMeFromJC(jc.id)"
