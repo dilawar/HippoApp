@@ -22,6 +22,7 @@
             <f7-list no-hairlines media-list>
               <f7-list-item v-for="(val, index) in requests" 
                 :key="val.gid+'.'+val.rid" 
+                :header="val.vc_url"
                 :title="humanReadableDateTime(val.date,val.start_time)+' ('+val.venue+')'">
                 <f7-button small raised color="red"
                   tooltip="Delete this booking"
@@ -40,7 +41,7 @@
                 </f7-button>
               </f7-col>
               <f7-col>
-                <f7-button raised small icon="fa fa-pencil fa-1x"
+                <f7-button raised small icon="fa fa-edit"
                   @click="popupEditRequest(requests[0], true)">
                   Edit All
                 </f7-button>
@@ -162,37 +163,37 @@
         <f7-list media-list no-hairlines>
 
           <f7-list-input label="Class" 
-                         :value="thisBooking.class"
-                         type="select"
-                         @input="thisBooking.class=$event.target.value">
+            :value="thisBooking.class"
+            type="select"
+            @input="thisBooking.class=$event.target.value">
             <option v-for="(cls, key) in classes" :key="cls" :value="cls">{{cls}}</option>
           </f7-list-input>
 
           <f7-list-input :value="thisBooking.title" 
-                 type="textarea"
-                 label="Title"
-                 @input="thisBooking.title=$event.target.value">
+            type="textarea"
+            label="Title"
+            @input="thisBooking.title=$event.target.value">
           </f7-list-input>
 
           <f7-list-input :value="thisBooking.description" 
-                 label="Description"
-                 type="texteditor"
-                 @input="thisBooking.description=$event.target.value">
+            label="Description"
+            type="texteditor"
+            @input="thisBooking.description=$event.target.value">
           </f7-list-input>
 
           <f7-list-input label="VC URL" 
-                         type="url"
-                         validate
-                         :value="thisBooking.vc_url"
-                         @input="thisBooking.vc_url=$event.target.value">
+            type="url"
+            validate
+            :value="thisBooking.vc_url"
+            @input="thisBooking.vc_url=$event.target.value">
           </f7-list-input>
 
           <f7-list-input label="Add to NCBS Calendar" 
-                         :value="thisBooking.is_public_event"
-                         type="select"
-                         @input="thisBooking.is_public_event=$event.target.value">
+            :value="thisBooking.is_public_event"
+            type="select"
+            @input="thisBooking.is_public_event=$event.target.value">
             <option v-for="(opt, key) in ['YES', 'NO']" :key="key" :value="opt">
-            {{opt}}
+              {{opt}}
             </option>
           </f7-list-input>
 
