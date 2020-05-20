@@ -1,10 +1,4 @@
-<script src="https://kit.fontawesome.com/ea1c2ca391.js" crossorigin="anonymous"></script>
-
-==This is a work in progress. If you want to correct a mistake or add some
-material, feel free to edit the page.==
-
-
-## Login 
+# Login 
 
 Use your NCBS, InStem, or CCAMP login id and associated password. Hippo accepts
 both `intranet` and `webmail` accounts. If you are using `webmail` credentials,
@@ -44,8 +38,6 @@ You can update your booking by visiting ==:fa-bars: -> My Bookings==.
     error.
 
 
-![](images/booking_details.png){: style="width:60%"}
-
 !!! info "Emails in spam"
     If you are importing work emails into other email accounts such as
     gmail, please check your spam folder.
@@ -55,80 +47,49 @@ You will receive an email alert to renew your booking, 5 to 7 days in
 advance before your last event expires.
 
 
-??? optional-class "I need to change a confirmed booking (of a public Talks/Seminar)?"
+## I need to change a confirmed booking (of a public Talks/Seminar)?
 
-    If the talk is already confirmed, then you need to contact academic admin or
-    deans office to cancel it. If not, then you need to cancel pending request.
+If the talk is already confirmed, then you need to contact academic admin or
+deans office to cancel it. If not, then you need to cancel pending request.
 
 
-??? optional-class "How do I upload my AWS abstract?"
-    Click on ==__My AWS__== link in your home page. If you cant’t find this link
-    that means you are not eligible for AWS. Please contact academic office if
-    you are (why would you be reading this otherwise!).
+## How do I upload my AWS abstract?
 
-    ![](images/faq_user_click_myaws.png) 
+Click on ==__My AWS__== link in your top left :fa-bars: menu. If you cant’t
+find this link that means you are not eligible for the AWS. Please contact
+academic office.
 
-    Click on it!
 
-    If you haven’t acknowledged the AWS schedule yet, you will see a button
-    ==__Acknowledge AWS__==. Click it. After acknowledging the AWS, you will see
-    a table of your AWS entry.  Press ==__Edit__== button below it.
+## How do I book my thesis seminar?
 
-    ![](images/faq_user_edit_aws.png)
+<iframe width="560" height="315" src="https://www.youtube.com/embed/6qUtg3mj9sg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-    Clicking on ==Edit== button will take to you a form. Fill it and ==Submit==.
-    Read the instructions at the top of the page. If you need help, do write to
-    [Academic Office](mainto:acadoffice@ncbs.res.in). 
 
-    After successful upload, you can see your abstract
-    [here](https://ncbs.res.in/hippo/info/aws). Select the appropriate date.
+# How to book a public talk, lecture or seminar?
 
-??? optional-class "How do I book my thesis seminar?"
+==:fa-plus: Booking --> Select the `TYPE` of event --> Add Speaker --> Talks
+details --> Save talk --> Book talk==
 
-    See the item just below. While booking, select the talk `CLASS` to `THESIS
-    SEMINAR`.
+Same as the above. Select the appropriate class and have the speaker details
+handy. We strongly recommend that you arrange photo and email id of speaker.
+Email of the speaker is never publicly displayed. 
 
-??? optional-class "How to book a public talk, lecture or seminar?"
+After approval, you can see your event
+[here](https://ncbs.res.in/hippo/v1/info/talks) and on google calendar after
+5pm or 9am.
 
-    !!! info 
-        Keep the photo and email id of speaker handy. You can continue without them but
-        they are very useful for preparing documents. We strongly recommend that you
-        arrange photo and email id of speaker. Email of speaker is never publicly displayed. 
+The emails will be sent to appropriate mailing lists at appropriate times.
+Morning 8am is the usual time when automatic email is sent.
 
-    In your home page after login, click on ==__Book for talk/seminar etc.
-    (Academic Events)__== and fill details.
+## Updating/scheduling and deleting talks and bookings?
 
-    First section is for speaker, second is for talk. Third (optional) contains
-    scheduling information. 
+Go to ==:fa-bars: (top left) --> My Bookings==. You will find all your bookings
+including upcoming talks and other bookings both confirmed and pending
+approval. Click a list item, to edit/update and even delete it.  
 
-    If there is already some event on your selected date/venue, booking will be
-    ignored but talk will be registered. You can schedule it later by visiting
-    ==__Manage my public events__== link.  If the venue is available on chosen
-    date and time, both talk and venue will be booked pending approval. After
-    approval, you can see your event
-    [here](https://ncbs.res.in/hippo/info/talks). 
 
-    It will also appear on calendar and emails will be sent to appropriate
-    mailing lists at appropriate times. Morning 8am is the usual time when
-    automatic email is sent.
+For the recurrent booking, you can chose to delete one or whole group
+together. You can also update all entries together. There is no provision of
+changing the description of only one entry.
 
-??? optional-class "Editing/updating/scheduling talks?"
-
-    Go to your home page, and click on ==__Manage my public events__==. You will
-    see all upcoming talks registered by you. You can click on ==__Edit__==
-    button to edit the description and title.  If it is not already scheduled,
-    you can schedule it by clicking on ==__Schedule__== button.
-
-??? optional-class "How to cancel or edit booking request/event?"
-
-    To edit or cancel a request or a confirmed booking, click 'My Home' (on top
-    right corner box) then on 'Manage My Private Events'.
-
-    ![](images/faq_go_to_link_to_edit.png){: style="width:60%"}
-
-    All of your bookings should be visible on this page. To cancel a request or
-    a confirmed booking, click on the button infront of a particular row. You
-    can also modify/cancel the whole group (recurrent bookings).
-
-    ![](images/faq_cancel_private_events.png){: style="width:60%"}
-
+![](images/faq_update_delete_recurrent.png){width=300}

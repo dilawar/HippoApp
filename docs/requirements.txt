@@ -1,0 +1,5 @@
+mkdocs
+pymdown-extensions
+mkdocs-markdownextradata-plugin
+fontawesome-markdown
+mkdocs-material
