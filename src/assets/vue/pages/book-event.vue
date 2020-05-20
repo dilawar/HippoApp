@@ -236,28 +236,31 @@
       <f7-list-group media-list>
         
         <f7-list-item checkbox 
-                       title="Add to NCBS Calendar?"
-                       text="Check if you want this to appear on NCBS public calendar."
-                       :checked="thisBooking.is_public_event==='YES'"
-                       @change="thisBooking.is_public_event=$event.target.checked?'YES':'NO'">
+          title="Add to NCBS Calendar?"
+          text="Check if you want this to appear on NCBS public calendar."
+          :checked="thisBooking.is_public_event==='YES'"
+          @change="thisBooking.is_public_event=$event.target.checked?'YES':'NO'">
         </f7-list-item>
 
         <f7-list-item>
           <f7-button raised small fill
-                     :disabled="! isBookingValid.status" 
-                     @click="bookThisEvent()"
-                     slot="after">
+            :disabled="! isBookingValid.status" 
+            @click="bookThisEvent()"
+            slot="after">
             {{isBookingValid.msg}}
           </f7-button>
           <f7-button small raised
-                     slot="header" 
-                     :disabled="! isBookingValid.status"
-                     style="width:100px"
-                     @click="popupRepeat=true">
+            slot="header" 
+            :disabled="! isBookingValid.status"
+            style="width:100px"
+            @click="popupRepeat=true">
             Add repeat
           </f7-button>
-          <div slot="footer" v-if="thisBooking.dates.length>0">
-            Dates: {{thisBooking.dates.join(', ')}}
+        </f7-list-item>
+        <f7-list-item v-if="thisBooking.date.length > 0" 
+          header="Selected dates">
+          <div slot="footer">
+            {{thisBooking.dates.join(', ')}}
           </div>
         </f7-list-item>
       </f7-list-group>
