@@ -1,5 +1,6 @@
 <template>
   <f7-page ptr ptr:refresh="refreshPage">
+
     <f7-navbar title="Upcoming AWS" back-link="Back">
     </f7-navbar>
 
@@ -33,7 +34,7 @@
           </f7-list>
           <f7-row>
             <f7-col>
-              <f7-button popup-close raised @click="assignThisAWS()"> 
+              <f7-button popup-close fill raised @click="assignThisAWS()"> 
                 Assign
               </f7-button>
             </f7-col>
@@ -86,7 +87,7 @@
     <!-- Change AWS weekly info . -->
     <f7-popup :opened="popupWeeklyInfo" @popup:close="popupWeeklyInfo=false">
       <f7-page>
-        <f7-navbar title="Change venue/chair">
+        <f7-navbar title="Change Venue/Chair">
           <f7-nav-right>
             <f7-link popup-close>Close</f7-link>
           </f7-nav-right>
@@ -162,7 +163,8 @@
           Click on an AWS item below to see and modify details.
         </f7-col>
         <f7-col width="30">
-          <f7-button small raised tooltip="Select a day and assign AWS" @click="openAssignPopup=true"> 
+          <f7-button small raised fill 
+            tooltip="Select a day and assign AWS" @click="openAssignPopup=true"> 
             Assign AWS
           </f7-button>
         </f7-col>
@@ -189,12 +191,12 @@
           <f7-block no-margin>
             <f7-row>
               <f7-col col-30>
-                <f7-button small @click="openChangeWeekPopup(AWSes[0])">
+                <f7-button @click="openChangeWeekPopup(AWSes[0])">
                   Change Venue/Chair
                 </f7-button>
               </f7-col>
               <f7-col col-30>
-                <f7-button small icon="far fa-envelope" 
+                <f7-button icon="far fa-envelope" 
                   :href="'/email/upcoming_aws/'+AWSes[0].date">Send Email
                 </f7-button>
               </f7-col>
@@ -207,18 +209,18 @@
 
             <f7-card v-for="(aws, key) in AWSes" :key="key" outline no-shadow>
               <f7-card-header>
-                <div v-html="aws.by" class="color-gray"></div>
+                <div v-html="aws.by"></div>
                 <div v-html="aws.title"></div>
+                <div v-if="aws.acknowledged==='NO'">
+                  <f7-icon icon="fa fa-question"></f7-icon>
+                </div>
+                <div v-else>
+                  <f7-icon icon="fa fa-check"></f7-icon>
+                </div>
               </f7-card-header>
               <f7-card-content>
                 <f7-block-header> {{aws.title}} </f7-block-header>
                 <div v-html="aws.abstract"></div>
-                <div slot="media" v-if="aws.acknowledged==='NO'">
-                  <f7-icon icon="fa fa-question fa-2x"></f7-icon>
-                </div>
-                <div slot="media" v-else>
-                  <f7-icon icon="fa fa-check fa-fw"></f7-icon>
-                </div>
                 <f7-row>
                   <f7-col>{{aws.supervisor_1}}</f7-col>
                   <f7-col>{{aws.supervisor_2}}</f7-col>
@@ -488,7 +490,8 @@ export default {
     awsSummary: function(awses) {
       let title = '';
       awses.forEach(aws => {
-        title += aws.speaker + ', ';
+        let ack = aws.acknowledged === 'YES'?'':'(⛌)';
+        title += aws.speaker + ack + ' / ';
       });
       return title;
     },
