@@ -1,61 +1,58 @@
+<script src="https://kit.fontawesome.com/ea1c2ca391.js" crossorigin="anonymous"></script>
+
 ==This is a work in progress. If you want to correct a mistake or add some
 material, feel free to edit the page.==
 
+
 ## Login 
 
-To login, use your NCBS, InStem, or CCAMP login id and password. Hippo accepts
-usernames/password associated with `intranet` and `webmail` accounts. If you
-are using `webmail` credentials, the login will be slow. We recommend that you
-use your [intranet](http://intranet.ncbs.res.in/user){target=blank}
-credentials.
+Use your NCBS, InStem, or CCAMP login id and associated password. Hippo accepts
+both `intranet` and `webmail` accounts. If you are using `webmail` credentials,
+the login will be slower. We recommend that you use your
+[intranet](http://intranet.ncbs.res.in/user){target=blank} credentials.
 
-!!! note "First time login"
-    You will be taken to a page to review your
-    profile. Kindly review/edit your details. If you are suppose to give Annual
+!!! info "First time login"
+
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/6iyZKCvX2lU" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+    Kindly review/edit your details. If you are suppose to give Annual
     Work Seminar (==AWS==), you must double check all entries. In case of
-    discrepency, write email to [Academic
-    Office](mailto:acadoffice@ncbs.res.in).
+    discrepency, write to [Academic Office](mailto:acadoffice@ncbs.res.in).
 
 
 
-## FAQ 
+# FAQ 
 
-??? optional-class "How to create a general booking request?"
+##  How to create a general booking request?
 
-    Click on ==**QuickBook**== at the top-right corner of the page. 
-
-    You will be asked for date, start time, and end time. And other optional
-    information. Click on ==__Show Available Venues__== to see the available
-    venues.
-
-    ![](images/booking.png){: style="width:60%"}
-
-    To book your venue, press ==__Book__== button below your venue. And you will be
-    presented with a form.
-
-    Please make sure you fill it under the right `CLASS` (e.g. `THESIS SEMINAR`,
-    `LAB MEETING`, `TALK` etc.).  Once a request is submitted, your slot/venue
-    is blocked and an email is sent your way. 
-
-    !!! note "Recurrent Event"
-        To make recurrent booking (maximum for 6 months), select appropriate
-        days in __select days__ list. To limit your booking to some weeks such
-        as first and third of every month, select those weeks (==Hold down
-        `Ctrl` keys when selecting multiple entries.==).
-
-        Don't worry, you can always delete your booking requests in case of
-        error.
+<iframe width="560" height="315" src="https://www.youtube.com/embed/8e3TCXek9qE" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 
-    ![](images/booking_details.png){: style="width:60%"}
+Make sure you file your booking under the right `CLASS` (e.g. `THESIS SEMINAR`,
+`LAB MEETING`, `TALK` etc.).  Once a request is submitted, your slot/venue is
+blocked and an email is sent your way. 
 
-    !!! info "Emails in spam"
-        If you are importing work emails into other email accounts such as
-        gmail, please check your spam folder.
+You can update your booking by visiting ==:fa-bars: -> My Bookings==.
 
-    You will receive confirmation/rejection email after approval/disapproval.
-    You will receive an email alert to renew your booking, 5 to 7 days in
-    advance before your last event expires.
+!!! note "Recurrent Event"
+    To make recurrent booking (maximum for 6 months), select appropriate
+    days in __select days__ list. To limit your booking to some weeks such
+    as first and third of every month, select those weeks (==Hold down
+    `Ctrl` keys when selecting multiple entries.==).
+
+    Don't worry, you can always delete your booking requests in case of
+    error.
+
+
+![](images/booking_details.png){: style="width:60%"}
+
+!!! info "Emails in spam"
+    If you are importing work emails into other email accounts such as
+    gmail, please check your spam folder.
+
+You will receive confirmation/rejection email after approval/disapproval.
+You will receive an email alert to renew your booking, 5 to 7 days in
+advance before your last event expires.
 
 
 ??? optional-class "I need to change a confirmed booking (of a public Talks/Seminar)?"

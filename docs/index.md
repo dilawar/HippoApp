@@ -1,10 +1,11 @@
 Welcome to the documentation of [NCBS Hippo](https://ncbs.res.in/hippo).
 
-- If you are an user, checkout [User Manual](user_manual)
-- If you are an admin, checkout [Admin Manuals](admin_manual)
-- If you are a developer or maintainer, checkout [Developer Document](developer)
+<iframe width="560" height="315" src="https://www.youtube.com/embed/tv9pOi6doHM" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-![Login Window](images/main_pages.png){: style="width:60%"}
+
+- If you are an user, checkout the [User Manual](user_manual)
+- If you are an admin, checkout the [Admin Manuals](admin_manual)
+- If you are a developer or maintainer, checkout [developer documents](developer)
 
 
 !!! info "Android App"

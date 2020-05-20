@@ -4,11 +4,7 @@ site_author: Dilawar Singh <dilawars@ncbs.res.in>
 copyright: 'Copyright &copy; 2016-2020 Dilawar Singh'
 repo_url: https://github.com/dilawar/HippoApp
 theme:
-    name: readthedocs
-    highlightjs: true
-    hljs_languages:
-        - php
-        - python
+    name: material
 
 nav:
     - Home: index.md
@@ -20,12 +16,11 @@ nav:
     - Developer Documents: developer.md
     - Bug tracker: https://github.com/dilawar/hippo/issues
 
-extra_css: [extra.css]
-
 markdown_extensions:
     - admonition
     - toc
     - attr_list
+    - fontawesome_markdown
     - pymdownx.caret
     - pymdownx.details
     - pymdownx.inlinehilite
@@ -34,8 +29,9 @@ markdown_extensions:
     - pymdownx.smartsymbols
     - pymdownx.superfences
     - pymdownx.tilde
+    - pymdownx.emoji:
+        emoji_index: !!python/name:materialx.emoji.twemoji
+        emoji_generator: !!python/name:materialx.emoji.to_svg
 
-extra:
-    social:
-        type: 'github'
-        link: 'https://github.com/dilawar'
+extra_javascript:
+    - js/fa.js
