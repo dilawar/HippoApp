@@ -3,8 +3,9 @@ site_url: https://ncbs.res.in/hippo
 site_author: Dilawar Singh <dilawars@ncbs.res.in>
 copyright: 'Copyright &copy; 2016-2020 Dilawar Singh'
 repo_url: https://github.com/dilawar/HippoApp
+
 theme:
-    name: readthedocs
+    name: material
 
 nav:
     - Home: index.md
