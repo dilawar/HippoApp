@@ -56,11 +56,10 @@
 
       <!-- Fetch venues and show the status. -->
       <f7-block>
-        <f7-block-title small>
-          <p> Add a repeat pattern or select 
-          dates manually below </p>
+        <f7-block-title>
+          Add a repeat pattern or select dates manually below
         </f7-block-title>
-        <f7-list media-list>
+        <f7-list media-list no-hairlines>
           <!-- Repeat pattern -->
           <f7-list-item header="Select days" smart-select
                         :smart-select-params="{openIn:'popover', routableModals:false}">
@@ -107,7 +106,7 @@
 
       <f7-block inset>
         <f7-block-title>Or,</f7-block-title>
-        <f7-list>
+        <f7-list no-hairlines>
           <f7-list-input :input="false" label="Pick multiple dates">
             <input class="item-input-wrap" slot="input" id="select-multiple-dates" />
           </f7-list-input>
@@ -120,11 +119,12 @@
 
       <f7-block inset>
         <f7-block-title small>Picked dates. </f7-block-title> 
-        <f7-list v-if="thisBooking.dates">
-          <f7-row>
+        <f7-list v-if="thisBooking.dates" simple-list>
+          <f7-row style="list-style-type:none">
             <f7-list-item v-for="(day, key) in thisBooking.dates" 
-                          class="col-30 medium-15" :wrap="false" :key="key">
-              <div slot="header">{{day | date2}}</div>
+              class="col-50 medium-33" 
+              :key="key">
+              {{day | date2}}
             </f7-list-item> 
           </f7-row>
         </f7-list>
@@ -236,28 +236,31 @@
       <f7-list-group media-list>
         
         <f7-list-item checkbox 
-                       title="Add to NCBS Calendar?"
-                       text="Check if you want this to appear on NCBS public calendar."
-                       :checked="thisBooking.is_public_event==='YES'"
-                       @change="thisBooking.is_public_event=$event.target.checked?'YES':'NO'">
+          title="Add to NCBS Calendar?"
+          text="Check if you want this to appear on NCBS public calendar."
+          :checked="thisBooking.is_public_event==='YES'"
+          @change="thisBooking.is_public_event=$event.target.checked?'YES':'NO'">
         </f7-list-item>
 
         <f7-list-item>
           <f7-button raised small fill
-                     :disabled="! isBookingValid.status" 
-                     @click="bookThisEvent()"
-                     slot="after">
+            :disabled="! isBookingValid.status" 
+            @click="bookThisEvent()"
+            slot="after">
             {{isBookingValid.msg}}
           </f7-button>
-          <f7-button small
-                     slot="header" 
-                     :disabled="! isBookingValid.status"
-                     style="width:100px"
-                     @click="popupRepeat=true">
+          <f7-button small raised
+            slot="header" 
+            :disabled="! isBookingValid.status"
+            style="width:100px"
+            @click="popupRepeat=true">
             Add repeat
           </f7-button>
-          <div slot="footer" v-if="thisBooking.dates.length>0">
-            Dates: {{thisBooking.dates.join(', ')}}
+        </f7-list-item>
+        <f7-list-item v-if="thisBooking.dates.length > 0" 
+          header="Selected dates">
+          <div slot="footer">
+            {{thisBooking.dates.join(', ')}}
           </div>
         </f7-list-item>
       </f7-list-group>
@@ -419,7 +422,7 @@ export default {
       const venueid = venue.id;
       const self = this;
       self.thisBooking.venue = venueid;
-      console.log('Selected venue is ' + venueid);
+      //console.log('Selected venue is ' + venueid);
       self.popupVenueSelect = false;
     },
     foundSpeakersOnSearch: function(res)
@@ -441,7 +444,7 @@ export default {
       // Attach the repeat_pat for the API.
       self.thisBooking.repeat_pat = pat;
 
-      console.log('BOOKING', self.thisBooking);
+      //console.log('BOOKING', self.thisBooking);
 
       // Assign the class to talk.
       app.dialog.preloader('Sending booking request...');
@@ -510,7 +513,7 @@ export default {
       const self = this;
       var rp = self.thisBooking.repeatPat;
       var pat = rp.days.join('/')+','+rp.weeks.join('/')+','+rp.months;
-      console.log('Resolving repeat pattern', pat);
+      //console.log('Resolving repeat pattern', pat);
       self.promiseWithAuth('info/repeatpat/'+btoa(pat))
         .then(function(x) {
           self.thisBooking.dates = JSON.parse(x.data).data;
