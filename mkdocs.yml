@@ -11,7 +11,7 @@ nav:
     - User Manual: user_manual.md
     - Admin Manual:
         - BookMyVenue Admin manual: bmv_admin_manual.md
-        - Acadmic Admin Manual: acadic_admin_manual.md
+        - Acadmic Admin Manual: acadmic_admin_manual.md
         - Admin Manual: admin_manual.md
     - Developer Documents: developer.md
     - Bug tracker: https://github.com/dilawar/hippo/issues
