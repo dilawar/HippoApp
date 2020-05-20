@@ -4,7 +4,7 @@ site_author: Dilawar Singh <dilawars@ncbs.res.in>
 copyright: 'Copyright &copy; 2016-2020 Dilawar Singh'
 repo_url: https://github.com/dilawar/HippoApp
 theme:
-    name: material
+    name: readthedocs
 
 nav:
     - Home: index.md
@@ -32,6 +32,19 @@ markdown_extensions:
     - pymdownx.emoji:
         emoji_index: !!python/name:materialx.emoji.twemoji
         emoji_generator: !!python/name:materialx.emoji.to_svg
+    - pymdownx.superfences:
+        custom_fences:
+          - name: mermaid
+            class: mermaid
+            format: !!python/name:pymdownx.superfences.fence_div_format
+
+extra_css:
+    - https://unpkg.com/mermaid@8.50/dist/mermaid.css
 
 extra_javascript:
-    - js/fa.js
+    - https://unpkg.com/mermaid@8.5.0/dist/mermaid.min.js
+    - https://kit.fontawesome.com/ea1c2ca391.js
+
+plugins:
+    - search
+    - mermaid2
