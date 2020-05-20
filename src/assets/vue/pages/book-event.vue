@@ -56,11 +56,10 @@
 
       <!-- Fetch venues and show the status. -->
       <f7-block>
-        <f7-block-title small>
-          <p> Add a repeat pattern or select 
-          dates manually below </p>
+        <f7-block-title>
+          Add a repeat pattern or select dates manually below
         </f7-block-title>
-        <f7-list media-list>
+        <f7-list media-list no-hairlines>
           <!-- Repeat pattern -->
           <f7-list-item header="Select days" smart-select
                         :smart-select-params="{openIn:'popover', routableModals:false}">
@@ -107,7 +106,7 @@
 
       <f7-block inset>
         <f7-block-title>Or,</f7-block-title>
-        <f7-list>
+        <f7-list no-hairlines>
           <f7-list-input :input="false" label="Pick multiple dates">
             <input class="item-input-wrap" slot="input" id="select-multiple-dates" />
           </f7-list-input>
@@ -120,11 +119,12 @@
 
       <f7-block inset>
         <f7-block-title small>Picked dates. </f7-block-title> 
-        <f7-list v-if="thisBooking.dates">
-          <f7-row>
+        <f7-list v-if="thisBooking.dates" simple-list>
+          <f7-row style="list-style-type:none">
             <f7-list-item v-for="(day, key) in thisBooking.dates" 
-                          class="col-30 medium-15" :wrap="false" :key="key">
-              <div slot="header">{{day | date2}}</div>
+              class="col-50 medium-33" 
+              :key="key">
+              {{day | date2}}
             </f7-list-item> 
           </f7-row>
         </f7-list>
@@ -249,7 +249,7 @@
                      slot="after">
             {{isBookingValid.msg}}
           </f7-button>
-          <f7-button small
+          <f7-button small raised
                      slot="header" 
                      :disabled="! isBookingValid.status"
                      style="width:100px"
