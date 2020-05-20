@@ -176,14 +176,15 @@ export default {
     fetchSpeaker: function(speakerID) 
     {
       const self = this;
+      const app = self.$f7;
+      app.preloader.show();
       self.postWithPromise('me/speaker/fetch/'+speakerID)
         .then(function(x) {
-          var res = JSON.parse(x.data);
-          if(res.status === 'ok') {
-            self.thisSpeaker = res.data;
-            self.updateImage();
-          }
+          self.thisSpeaker = JSON.parse(x.data).data;
+          self.updateImage();
+          app.preloader.hide();
         });
+      setTimeout(() => app.preloader.hide(), 10000);
     },
     onSpeakerSelected: function(res) {
       const self = this;
@@ -216,7 +217,7 @@ export default {
             self.notify("Failed.", res.msg);
           else
           {
-            self.notify("Success.", res.msg);
+            self.notify("Successfully added new speaker.", "");
             self.fetchSpeaker(self.thisSpeaker.id);
           }
         });
@@ -225,17 +226,19 @@ export default {
     {
       const self = this;
       const app = self.$f7;
-      app.dialog.confirm( "You can only delete a speaker without any talk."
+      app.dialog.confirm( "If this speaker has a talk, delete will be unsccessful."
         , "Note"
         , function() {
           self.promiseWithAuth('me/speaker/delete/' + sid)
             .then( function(x) {
               var res = JSON.parse(x.data).data;
-              if(! res.success)
-                self.notify("Failed to delete", res.msg);
+              if(! res.success) {
+                self.notify("Failed to delete.", res.msg);
+              }
               else
               {
-                self.notify("Successfully delete.", res.msg);
+                self.notify("Successfully deleted.", res.msg);
+                self.resetSimple(self.thisSpeaker);
                 self.createNewSpeaker = true;
               }
             });

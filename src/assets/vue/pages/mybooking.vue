@@ -9,39 +9,48 @@
       Pending Requests.
     </f7-block-title>
 
-    <f7-card v-for="(requests, gid, index) in requestGroups" :key="gid">
-      <f7-card-content>
-        <div>
-          {{requests[0].title}} ({{requests.length}})
-        </div>
-        <br>
+    <f7-list media-list accordion-list no-hairlines>
+      <f7-list-item v-for="(requests, gid, index) in requestGroups" 
+          :title="requests[0].title + ' (' + requests.length + ')'"
+          accordion-item :key="gid">
+        <f7-accordion-content>
+          <f7-block inset strong>
+            <f7-block-header>
+              Public Event: {{requests[0].is_public_event}}
+            </f7-block-header>
 
-        <f7-list media-list>
-          <f7-list-item v-for="(val, index) in requests" 
-            :key="val.gid+'.'+val.rid" 
-            :title="humanReadableDateTime(val.date,val.start_time)+' ('+val.venue+')'">
-            <f7-button small raised color="red"
-              tooltip="Delete this booking"
-              icon="fa fa-trash fa-fw" slot="after"
-              @click="deleteThisRequest(val.gid, val.rid)"> 
-            </f7-button>
-          </f7-list-item>
-        </f7-list>
-        <div>
-          Public Event: {{requests[0].is_public_event}}
-        </div>
-      </f7-card-content>
-      <f7-card-footer>
-          <f7-button v-if="requests.length>1" color="red" raised small 
-                     @click="deleteThisRequest(requests[0].gid)">
-            Delete All
-          </f7-button>
-          <f7-button raised small icon="fa fa-pencil fa-1x"
-                     @click="popupEditRequest(requests[0], true)">
-            Edit All
-          </f7-button>
-      </f7-card-footer>
-    </f7-card>
+            <f7-list no-hairlines media-list>
+              <f7-list-item v-for="(val, index) in requests" 
+                :key="val.gid+'.'+val.rid" 
+                :header="val.vc_url"
+                :title="humanReadableDateTime(val.date,val.start_time)+' ('+val.venue+')'">
+                <f7-button small raised color="red"
+                  tooltip="Delete this booking"
+                  icon="fa fa-trash fa-fw" slot="after"
+                  @click="deleteThisRequest(val.gid, val.rid)"> 
+                </f7-button>
+              </f7-list-item>
+            </f7-list>
+          </f7-block>
+          <f7-block inset strong>
+            <f7-row>
+              <f7-col>
+                <f7-button v-if="requests.length>1" color="red" raised small 
+                  @click="deleteThisRequest(requests[0].gid)">
+                  Delete All
+                </f7-button>
+              </f7-col>
+              <f7-col>
+                <f7-button raised small icon="fa fa-edit"
+                  @click="popupEditRequest(requests[0], true)">
+                  Edit All
+                </f7-button>
+              </f7-col>
+            </f7-row>
+          </f7-block>
+        </f7-accordion-content>
+      </f7-list-item>
+    </f7-list>
 
   </f7-block>
   <f7-block v-else>
@@ -154,37 +163,37 @@
         <f7-list media-list no-hairlines>
 
           <f7-list-input label="Class" 
-                         :value="thisBooking.class"
-                         type="select"
-                         @input="thisBooking.class=$event.target.value">
+            :value="thisBooking.class"
+            type="select"
+            @input="thisBooking.class=$event.target.value">
             <option v-for="(cls, key) in classes" :key="cls" :value="cls">{{cls}}</option>
           </f7-list-input>
 
           <f7-list-input :value="thisBooking.title" 
-                 type="textarea"
-                 label="Title"
-                 @input="thisBooking.title=$event.target.value">
+            type="textarea"
+            label="Title"
+            @input="thisBooking.title=$event.target.value">
           </f7-list-input>
 
           <f7-list-input :value="thisBooking.description" 
-                 label="Description"
-                 type="texteditor"
-                 @input="thisBooking.description=$event.target.value">
+            label="Description"
+            type="texteditor"
+            @input="thisBooking.description=$event.target.value">
           </f7-list-input>
 
           <f7-list-input label="VC URL" 
-                         type="url"
-                         validate
-                         :value="thisBooking.vc_url"
-                         @input="thisBooking.vc_url=$event.target.value">
+            type="url"
+            validate
+            :value="thisBooking.vc_url"
+            @input="thisBooking.vc_url=$event.target.value">
           </f7-list-input>
 
           <f7-list-input label="Add to NCBS Calendar" 
-                         :value="thisBooking.is_public_event"
-                         type="select"
-                         @input="thisBooking.is_public_event=$event.target.value">
+            :value="thisBooking.is_public_event"
+            type="select"
+            @input="thisBooking.is_public_event=$event.target.value">
             <option v-for="(opt, key) in ['YES', 'NO']" :key="key" :value="opt">
-            {{opt}}
+              {{opt}}
             </option>
           </f7-list-input>
 

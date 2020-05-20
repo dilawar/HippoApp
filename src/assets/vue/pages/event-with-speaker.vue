@@ -127,7 +127,14 @@
             :source="(q)=>searchPeopleURI(q, 'speaker')">
           </v-autocomplete>
         </f7-list-input>
-      <f7-list-item v-if="parseInt(thisSpeaker.id) > 0"
+
+      <f7-list-item v-if="createNewSpeaker">
+        <f7-button slot="title" href="/admin/speaker/add/-1">
+          Add new Speaker
+        </f7-button>
+        <div slot="after">No one is found...</div>
+      </f7-list-item>
+      <f7-list-item v-if="(! createNewSpeaker ) && parseInt(thisSpeaker.id) > 0"
                     style="background-color:lightyellow">
         <img slot="media" width="70px" :src="'data:image/jpeg;base64, '+thisSpeaker.photo">
         </img>
@@ -135,13 +142,6 @@
         <f7-button slot="footer" :href="'/admin/speaker/edit/'+thisSpeaker.id">
           Update
         </f7-button>
-      </f7-list-item>
-
-      <f7-list-item v-if="createNewSpeaker">
-        <f7-button slot="title" href="/admin/speaker/add/-1">
-          Add new Speaker
-        </f7-button>
-        <div slot="after">No one is found...</div>
       </f7-list-item>
 
     </f7-list-group>
