@@ -176,14 +176,15 @@ export default {
     fetchSpeaker: function(speakerID) 
     {
       const self = this;
+      const app = self.$f7;
+      app.preloader.show();
       self.postWithPromise('me/speaker/fetch/'+speakerID)
         .then(function(x) {
-          var res = JSON.parse(x.data);
-          if(res.success) {
-            self.thisSpeaker = res.data;
-            self.updateImage();
-          }
+          self.thisSpeaker = JSON.parse(x.data).data;
+          self.updateImage();
+          app.preloader.hide();
         });
+      setTimeout(() => app.preloader.hide(), 10000);
     },
     onSpeakerSelected: function(res) {
       const self = this;
