@@ -257,7 +257,7 @@
             Add repeat
           </f7-button>
         </f7-list-item>
-        <f7-list-item v-if="thisBooking.date.length > 0" 
+        <f7-list-item v-if="thisBooking.dates.length > 0" 
           header="Selected dates">
           <div slot="footer">
             {{thisBooking.dates.join(', ')}}
@@ -422,7 +422,7 @@ export default {
       const venueid = venue.id;
       const self = this;
       self.thisBooking.venue = venueid;
-      console.log('Selected venue is ' + venueid);
+      //console.log('Selected venue is ' + venueid);
       self.popupVenueSelect = false;
     },
     foundSpeakersOnSearch: function(res)
@@ -444,7 +444,7 @@ export default {
       // Attach the repeat_pat for the API.
       self.thisBooking.repeat_pat = pat;
 
-      console.log('BOOKING', self.thisBooking);
+      //console.log('BOOKING', self.thisBooking);
 
       // Assign the class to talk.
       app.dialog.preloader('Sending booking request...');
@@ -513,7 +513,7 @@ export default {
       const self = this;
       var rp = self.thisBooking.repeatPat;
       var pat = rp.days.join('/')+','+rp.weeks.join('/')+','+rp.months;
-      console.log('Resolving repeat pattern', pat);
+      //console.log('Resolving repeat pattern', pat);
       self.promiseWithAuth('info/repeatpat/'+btoa(pat))
         .then(function(x) {
           self.thisBooking.dates = JSON.parse(x.data).data;
