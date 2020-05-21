@@ -111,9 +111,9 @@
         :footer="fac.affiliation + ' | ' + fac.institute"
         @click="updateFacultyPopup(fac)">
         <div slot="header">
-          {{fac.specialization}} | 
-          <f7-icon icon="fa fa-chair"></f7-icon>
-          {{fac.willing_to_chair_aws}}
+          <strong> {{fac.specialization}} </strong>
+          (Willing to AWS <f7-icon icon="fa fa-chair"></f7-icon>
+          {{fac.willing_to_chair_aws}})
         </div>
       </f7-list-item>
       <f7-list-item v-else
