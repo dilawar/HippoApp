@@ -8,7 +8,7 @@
         <f7-view name="right" url="/adminpanel/" ></f7-view>
       </f7-panel>
 
-      <f7-view main url="/">
+      <f7-view main url="/" >
         <f7-toolbar bottom tabber labels style="font-size:x-small">
 
           <f7-link text="Back" icon="fa fa-step-backward fa-2x" back>
@@ -131,8 +131,8 @@ export default {
       const self = this;
       const app = self.$f7;
       console.log("Right panel is open. Fetching roles.");
-      /* if(self.fetchedRoles) */
-        /* return; */
+      if(self.fetchedRoles)
+        return;
       app.preloader.show();
       self.postWithPromise('me/roles').then( function(x) {
         const res = JSON.parse(x.data).data.roles;
