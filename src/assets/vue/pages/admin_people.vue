@@ -50,11 +50,11 @@
         </f7-block-header>
 
         <f7-list media-list no-hairlines>
-          <f7-list-input v-for="val, k in thisFaculty" :key="k" 
+          <f7-list-input v-for="val, k in thisFaculty" :key="'fac'+k" 
             v-if="k in facultySchema && facultySchema[k][0] === 'select'"
             @change="thisFaculty[k]= $event.target.value"
             :value="val" type="select" :label="formatKey(k)" inline-label>
-            <option v-for="opt in facultySchema[k][1]" :value="opt" :key="opt">
+            <option v-for="opt in facultySchema[k][1]" :value="opt" :key="'opt'+opt">
               {{opt}}
             </option>
           </f7-list-input>
@@ -105,7 +105,7 @@
           Add a new faculty
         </f7-button>
       </f7-list-item>
-      <f7-list-item v-for="fac, key in faculty" :key="key"
+      <f7-list-item v-for="fac, key in faculty" :key="'fac'+key"
         v-if="fac.status === 'ACTIVE'"
         :title="arrayToName(fac) + ' <' + fac.email + '>'"
         :footer="fac.affiliation + ' | ' + fac.institute"
@@ -165,12 +165,16 @@ export default {
   methods : {
     fetchFaculty: function() {
       const self = this;
+      const app = self.$f7;
+      app.preloader.show();
       self.postWithPromise('people/faculty/list')
         .then(function(x) {
           self.faculty = JSON.parse(x.data).data;
           self.thisFaculty = self.faculty[0];
+          app.preloader.hide();
           /* console.log('xx', self.thisFaculty); */
         });
+      setTimeout(() => app.preloader.hide(), 10000);
     },
     arrayToName: function(login) {
       const self = this;

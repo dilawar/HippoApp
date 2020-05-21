@@ -15,7 +15,8 @@
         <f7-block-header class="text-color-black">
           To create possible values that a table field can take, set <tt>ID</tt>
           to <tt>TABLENAME.FIELDNAME</tt> e.g., faculty.specialization to a CSV
-          of possible values. If values has ',' then use `;` as delimiter.
+          of possible values. If the values are complicated to be in a CSV
+          format, a JSON representation should be used.
         </f7-block-header>
 
         <f7-block>
@@ -37,7 +38,15 @@
               :value="thisConfig.comment">
             </f7-list-input>
             <f7-list-item>
-              <f7-button raised small @click="updateConfig">Add/Update</f7-button>
+              <f7-row>
+                <f7-col> 
+                  <f7-button  color=red fill  small @click="deleteConfig">Delete</f7-button>
+
+                </f7-col>
+                <f7-col>
+                  <f7-button raised small @click="updateConfig">Add/Update</f7-button>
+                </f7-col>
+              </f7-row>
             </f7-list-item>
           </f7-list>
         </f7-block>
@@ -98,7 +107,7 @@ export default {
     },
     updateConfigPopup: function(conf) {
       const self = this;
-      console.log('This conf', conf);
+      // console.log('This conf', conf);
       self.thisConfig = conf;
       self.popupConfig = true;
     },
@@ -121,6 +130,24 @@ export default {
       const app = self.$f7;
       self.resetSimple(self.thisConfig);
       self.popupConfig = true;
+    },
+    deleteConfig: function() {
+      const self = this;
+      const app = self.$f7;
+      app.dialog.confirm("Deleting this entry might break the system"
+        , "Are you sure?"
+        , function(x) {
+          self.promiseWithAuth('admin/config/delete', self.thisConfig)
+            .then( function(x) {
+              let res = JSON.parse(x.data).data;
+              if(! res.success)
+                self.notify("Failed", "Failed to delete config");
+              else {
+                self.fetchAllConfig();
+                self.popupConfig = false;
+              }
+            });
+        }, null);
     },
   },
 }
