@@ -59,6 +59,7 @@ import ServiceAdminTransport from './assets/vue/pages/service_transport.vue';
 import AdminHolidays from './assets/vue/pages/admin_holidays.vue';
 import AdminEmailTemplates from './assets/vue/pages/admin_email_template.vue';
 import AdminManagesPeople from './assets/vue/pages/admin_people.vue';
+import AdminHippoConfig from './assets/vue/pages/admin_config.vue';
 
 export default [
    {
@@ -240,6 +241,10 @@ export default [
    {
       path: '/admin/people',
       component: AdminManagesPeople
+   },
+   {
+      path: '/admin/config',
+      component: AdminHippoConfig
    },
    {
       path: '/info/:what',
