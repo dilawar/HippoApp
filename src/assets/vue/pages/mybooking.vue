@@ -12,13 +12,13 @@
     <f7-list media-list accordion-list no-hairlines>
       <f7-list-item v-for="(requests, gid, index) in requestGroups" 
           :title="requests[0].title + ' (' + requests.length + ')'"
+          :header="'Is Public Talk: ' + requests[0].is_public_event"
           accordion-item :key="gid">
         <f7-accordion-content>
           <f7-block inset strong>
             <f7-block-header>
-              Public Event: {{requests[0].is_public_event}}
+              {{requests[0].title}}
             </f7-block-header>
-
             <f7-list no-hairlines media-list>
               <f7-list-item v-for="(val, index) in requests" 
                 :key="val.gid+'.'+val.rid" 
@@ -30,23 +30,23 @@
                   @click="deleteThisRequest(val.gid, val.rid)"> 
                 </f7-button>
               </f7-list-item>
+              <f7-list-item>
+                <f7-row>
+                  <f7-col>
+                    <f7-button v-if="requests.length>1" color="red" raised small 
+                      @click="deleteThisRequest(requests[0].gid)">
+                      Delete All
+                    </f7-button>
+                  </f7-col>
+                  <f7-col>
+                    <f7-button raised small icon="fa fa-edit"
+                      @click="popupEditRequest(requests[0], true)">
+                      Edit All
+                    </f7-button>
+                  </f7-col>
+                </f7-row>
+              </f7-list-item>
             </f7-list>
-          </f7-block>
-          <f7-block inset strong>
-            <f7-row>
-              <f7-col>
-                <f7-button v-if="requests.length>1" color="red" raised small 
-                  @click="deleteThisRequest(requests[0].gid)">
-                  Delete All
-                </f7-button>
-              </f7-col>
-              <f7-col>
-                <f7-button raised small icon="fa fa-edit"
-                  @click="popupEditRequest(requests[0], true)">
-                  Edit All
-                </f7-button>
-              </f7-col>
-            </f7-row>
           </f7-block>
         </f7-accordion-content>
       </f7-list-item>
@@ -66,11 +66,14 @@
 
     <f7-list media-list no-hairlines>
       <f7-list-item accordion-item 
-                    v-for="(events, gid, index) in eventGroups" 
-                    :title="events[0].title"
-                    :footer="events[0].venue" 
-                    :key="gid">
-        <div slot="header">{{events.length}} confirmed</div>
+        v-for="(events, gid, index) in eventGroups" 
+        :title="events[0].title" :footer="events[0].venue" :key="gid">
+        <div slot="header" v-if="events[0].is_public_event === 'YES'">
+          {{events.length}} confirmed (PUBLIC EVENT)
+        </div>
+        <div v-else>
+          {{events.length}} confirmed 
+        </div>
         <f7-accordion-content>
           <f7-block>
             <f7-list media-list no-hairlines>
@@ -126,12 +129,11 @@
   <!-- MY TAKS -->
   <f7-block v-if="Object.keys(myTalks).length>0">
     <f7-block-title medium>
-      <f7-icon icon="fa fa-user-o fa-fw"></f7-icon>
-      My talks (total {{myTalks.length}})</f7-block-title>
+      <f7-icon icon="fa fa-bullhorn"></f7-icon>
+      My talks (Total {{myTalks.length}})</f7-block-title>
     <f7-list media-list no-hairlines>
       <f7-list-item v-for="(talk, key) in myTalks"
-                    :key="key"
-                    @click="$f7router.navigate('/updatetalk/'+talk.id+'/')">
+                    :key="key" :link="'/updatetalk/'+talk.id+'/'">
         <div slot="title">{{talk.class}} by {{talk.speaker}}</div>
         <div slot="text">{{talk.title}}</div>
 

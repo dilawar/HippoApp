@@ -7,39 +7,39 @@
       <f7-list>
         <f7-list-group media-list no-hairlines>
           <f7-list-item header="Speaker" 
-                        :title="thisTalk.speaker"
-                        footer="You can't change the speaker">
+            :title="thisTalk.speaker"
+            footer="You can't change the speaker">
           </f7-list-item>
           <f7-list-item header="Class" 
-                        :title="thisTalk.class"
-                        :smart-select-params="{openIn:'popover', closeOnSelect:true}"
-                        smart-select>
+            :title="thisTalk.class"
+            :smart-select-params="{openIn:'popover', closeOnSelect:true}"
+            smart-select>
             <select v-model="thisTalk.class">
               <option v-for="(cls, key) in classes" 
-                      :value="cls"
-                      :key="key">
-              {{cls}}
+                :value="cls"
+                :key="key">
+                {{cls}}
               </option>
             </select>
           </f7-list-item>
           <f7-list-input label="Title" 
-                         type="textarea" 
-                         @input="thisTalk.title = $event.target.value"
-                         :value="thisTalk.title">
+            type="textarea" 
+            @input="thisTalk.title = $event.target.value"
+            :value="thisTalk.title">
           </f7-list-input>
 
           <f7-list-input label="Decription" 
-                         type="texteditor"
-                         resizable
-                         @input="thisTalk.description=$event.target.value"
-                         :value="thisTalk.description">
+            type="texteditor"
+            resizable
+            @input="thisTalk.description=$event.target.value"
+            :value="thisTalk.description">
           </f7-list-input>
 
           <!--
           <f7-list-input :input="false" label="Description">
             <vue-editor slot="input" 
-                        id="description_editor"
-                        v-model="thisTalk.description">
+              id="description_editor"
+              v-model="thisTalk.description">
             </vue-editor>
           </f7-list-input>
           -->
@@ -149,20 +149,23 @@
         else
           endpoint = 'mybooking/delete/event/'+bk.gid+'.'+bk.eid;
 
-        // Prmise with auth.
-        self.promiseWithAuth(endpoint)
-          .then(function(x) {
-            let res = JSON.parse(x.data).data;
-            app.notification.create({
-              title: res.success?"Success":"Failed",
-              subtitle: res.msg, closeButton: true, closeOnClick: true,
-              closeTimeout: res.success?2000:10000,
-            }).open();
-            self.promiseWithAuth('talk/get/'+self.thisTalk.id)
-              .then( function(x) {
-                self.thisTalk = JSON.parse(x.data).data;
+        app.dialog.confirm("Deleting this booking?", "Are you sure?"
+          , function(x) {
+            // Prmise with auth.
+            self.promiseWithAuth(endpoint)
+              .then(function(x) {
+                let res = JSON.parse(x.data).data;
+                app.notification.create({
+                  title: res.success?"Success":"Failed",
+                  subtitle: res.msg, closeButton: true, closeOnClick: true,
+                  closeTimeout: res.success?2000:10000,
+                }).open();
+                self.promiseWithAuth('talk/get/'+self.thisTalk.id)
+                  .then( function(x) {
+                    self.thisTalk = JSON.parse(x.data).data;
+                  });
               });
-          });
+          }, null);
       },
       removeTalk: function()
       {
