@@ -35,34 +35,44 @@
       <f7-row>
         <f7-col width="70" medium="30">
           <vue-dropzone ref="profilePic"  
-                        id="profile-pic-id"
-                        @vdropzone-success="(file,res)=>fetchImage()"
-                        @vdropzone-files-added="(file)=>uploadFiles()"
-                        :options="dropzoneOptions">
+            id="profile-pic-id"
+            @vdropzone-success="(file,res)=>fetchImage()"
+            @vdropzone-files-added="(file)=>uploadFiles()"
+            :options="dropzoneOptions">
           </vue-dropzone>
         </f7-col>
       </f7-row>
 
 
-      <f7-list media-list no-hairlines>
-        <f7-row>
-          <f7-list-input v-for="(val, key, index) in editables" 
-                         class="col-100 medium-50"
-                         :wrap="false"
-                         :key="key"
-                         :label="formatKey(key)"
-                         :type="val[0]"
-                         @change="profile[key]=$event.target.value"
-                         :value="profile[key]">
-            <option v-for="(v,k) in val[0]==='select'?val[1]:[]" 
-                    :key="k" :value="v">
+      <f7-list media-list no-hairlines inline-labels>
+        <f7-list-input v-for="(val, key, index) in editables" 
+          :key="key"
+          :label="formatKey(key)"
+          :type="val[0]"
+          @change="profile[key]=$event.target.value"
+          :value="profile[key]">
+          <option v-for="(v,k) in val[0]==='select'?val[1]:[]" :key="k" :value="v">
             {{v}}
-            </option>
-          </f7-list-input>
-        </f7-row>
-        <f7-button raised small @click="updateProfile()">
-          Update
-        </f7-button>
+          </option>
+        </f7-list-input>
+
+        <!-- Roles -->
+        <f7-list-input label="Roles" :input="false">
+          <f7-row slot="input">
+            <f7-checkbox v-for="rl, k in roles.allroles" 
+              :value="rl" :name="rl"
+              :checked="roles.roles.includes(rl)"
+              @change="updateRoles($event.target.value)"
+              :key="k" class="col-50 medium-30">
+              <small> {{rl}} </small>
+            </f7-checkbox>
+          </f7-row>
+        </f7-list-input>
+        <f7-list-item>
+          <f7-button raised fill @click="updateProfile()" slot="after">
+            Update Profile
+          </f7-button>
+        </f7-list-item>
       </f7-list>
     </f7-block>
 
@@ -75,9 +85,12 @@ export default {
   data() {
     const self = this;
     return {
-      login : self.$f7route.params.login,
+      login : self.$f7route.params.login.trim(),
       profile: {},
       editables: [],
+      isAdmin: false,
+      roles: {roles:['USER'], allroles:[]},
+      allroles: [],
       dropzoneOptions: {
         url: self.$store.state.api + '/upload/image/profile',
         thumbnailWidth:"200",
@@ -94,6 +107,9 @@ export default {
   mounted()
   {
     const self = this;
+    if(self.login !== self.whoAmI())
+      self.isAdmin = true;
+
     self.fetchProfile();
     self.fetchImage();
   },
@@ -107,19 +123,27 @@ export default {
       if(self.login && (self.login === 'undefined' || self.login === 'null'))
         self.login = self.whoAmI();
 
+      let endpoint = '';
+
       if(self.login) {
-        self.postWithPromise('me/profile/get/'+self.login)
-          .then(function(x) {
+        endpoint = self.isAdmin ? '/people/profile/get/'+self.login:'/me/profile';
+        self.postWithPromise(endpoint).then(function(x) {
             self.profile = JSON.parse(x.data).data;
           });
       } else {
-        self.notify("Error", "Invalid profile");
+        self.notify("Error", "Invalid profile " + self.login);
         app.preloader.hide();
         return;
       }
 
-      self.postWithPromise('me/profile/editables')
-        .then(function(x) {
+      endpoint = self.isAdmin ? '/people/profile/roles/'+self.login : '/me/roles';
+      self.postWithPromise(endpoint).then(function(x) {
+        self.roles = JSON.parse(x.data).data;
+        console.log('roles', self.roles);
+      });
+
+      endpoint = self.isAdmin ? '/people/profile/editables':'/me/profile/editables';
+      self.postWithPromise(endpoint).then(function(x) {
           self.editables = JSON.parse(x.data).data;
           app.preloader.hide();
         });
@@ -133,8 +157,8 @@ export default {
 
       self.$refs.profilePic.removeAllFiles();
       app.preloader.show();
-      self.postWithPromise('me/photo/'+self.login)
-        .then(function(x) {
+      let endpoint = self.isAdmin ? '/people/profile/photo/'+self.login : '/me/photo/'+self.login;
+      self.postWithPromise(endpoint).then(function(x) {
           var res = JSON.parse(x.data).data;
           var byteString = atob(res.base64);
           var content = new Array();
@@ -164,10 +188,9 @@ export default {
       const app = self.$f7;
 
       // I can update my profile. Only admin can update other profiles.
-      let endpoint = '/me/profile/update';
-      if(self.whoAmI() !== self.profile.login)
-        endpoint = '/admin/logins/update';
+      let endpoint = self.isAdmin? '/admin/logins/update' : '/me/profile/update';
 
+      self.profile.roles = self.roles.roles.join(',');
       self.promiseWithAuth(endpoint, self.profile)
         .then(function(x) {
           var x = JSON.parse(x.data).data;
@@ -178,6 +201,17 @@ export default {
           else
             self.notify("Failed", x.msg);
         });
+    },
+    updateRoles: function(role) {
+      console.log("change", role);
+      if(role === 'USER')
+        return;
+
+      const self = this;
+      if(self.roles.roles.includes(role))
+        self.roles.roles = self.roles.roles.filter(x => x !== role);
+      else
+        self.roles.roles.push(role);
     },
   },
 }
