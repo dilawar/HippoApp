@@ -5,6 +5,17 @@
 
     <f7-block>
       <f7-block-title>List of holidays</f7-block-title>
+
+      <f7-block-header class="text-color-black"> 
+
+        <f7-icon icon="fas fa-flag"></f7-icon> On this page, you have usual
+        holidays as well as special events which are not public holidays. On
+        these events such as <tt>NCBS/InStem Annual Talks</tt>, AWS and public
+        talks MUST NOT be scheduled. You should add them here as as mark <tt>IS
+          PUBLIC HOLIDAY</tt> to <tt>NO</tt>.
+
+      </f7-block-header>
+
       <f7-list media-list>
         <f7-list-item v-for="holiday, key in holidays" :key="key"
             @click="updateHoliday(holiday)">
