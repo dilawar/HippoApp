@@ -12,7 +12,7 @@
     <f7-list media-list accordion-list no-hairlines>
       <f7-list-item v-for="(requests, gid, index) in requestGroups" 
           :title="requests[0].title + ' (' + requests.length + ')'"
-          :header="'Is Public Talk: ' + requests[0].is_public_event"
+          :header="requests[0].is_public_event==='YES'?'(PUBLIC EVENT)':''"
           accordion-item :key="gid">
         <f7-accordion-content>
           <f7-block inset strong>
