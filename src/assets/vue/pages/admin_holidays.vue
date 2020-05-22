@@ -17,6 +17,9 @@
       </f7-block-header>
 
       <f7-list media-list>
+        <f7-list-item>
+          <f7-button raised @click="addNewHoliday">Add a new holiday</f7-button>
+        </f7-list-item>
         <f7-list-item v-for="holiday, key in holidays" :key="key"
             @click="updateHoliday(holiday)">
           <div slot="header">{{holiday.date | date }}</div>
@@ -25,9 +28,6 @@
           <div slot="title">{{holiday.description}}</div>
           <div slot="footer">{{holiday.comment}}</div>
         </f7-list-item> 
-        <f7-list-item>
-          <f7-button raised @click="addNewHoliday">Add a new holiday</f7-button>
-        </f7-list-item>
       </f7-list>
     </f7-block>
 
@@ -121,10 +121,14 @@ export default {
     fetchHolidays: function() 
     {
       const self = this;
+      const app = self.$f7;
+      app.preloader.show();
       self.postWithPromise('admin/holidays/list')
         .then(function(x) {
           self.holidays = JSON.parse(x.data).data;
+          app.preloader.hide();
         });
+      setTimeout(() => app.preloader.hide(), 5000);
     },
     submitHoliday: function() 
     {
