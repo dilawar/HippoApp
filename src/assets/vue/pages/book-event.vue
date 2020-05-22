@@ -279,6 +279,7 @@ export default {
     const self = this;
     return {
       venues: self.loadStore('venues'),
+      holidays: [],
       popupVenueSelect: false,
       popupRepeat: false,
       externalId: self.$f7route.params.externalId,
@@ -321,6 +322,10 @@ export default {
   mounted: function() {
     const self = this;
     const app = this.$f7;
+
+    self.postWithPromise('info/holiday/list').then(function(x) {
+      self.holidays = JSON.parse(x.data).data;
+    });
 
     if(self.externalId && self.externalId.includes('.'))
     {
@@ -458,23 +463,13 @@ export default {
         .then(function(x) {
           app.dialog.close();
           var res = JSON.parse(x.data).data;
-          if(! res.success)
-            app.notification.create( {
-              title: "Failed"
-              , subtitle: res.msg
-              , closeButton: true
-              , closeOnClick: true
-              , closeTimeout: 10000,
-            }).open();
+          if(! res.success) {
+            self.notify("Failed to book", res.msg);
+            app.dialog.alert("Failed to book", res.msg);
+          }
           else
           {
-            app.notification.create( {
-              title: "Success"
-              , subtitle: "Created "+res.num_bookings+" bookings."
-              , closeButton: true
-              , closeOnClick: true
-              , closeTimeout: 5000,
-            }).open();
+            self.notify("Success", "Created "+res.num_bookings+" bookings.");
             // Go back and refresh previous page. The states has changed and we
             // must fetch updated data.
             self.$f7router.back({force:true, ignoreCache:true});
@@ -496,17 +491,27 @@ export default {
       const app = self.$f7;
 
       let date = self.dbDate(self.thisBooking.startDateTime);
-      let startTime = self.dbTime(self.thisBooking.startDateTime);
-      let endTime = self.dbTime(self.thisBooking.endTime);
 
-      app.dialog.preloader('Fetching venues...');
-      self.promiseWithAuth('info/venues/availability/all'
-        , {'date':date, 'start_time': startTime, 'end_time': endTime}
-      ).then(function(x) {
-          self.venues = JSON.parse(x.data).data;
-          app.dialog.close();
-          self.popupVenueSelect = true;
-        });
+      if(date in self.holidays) {
+        app.dialog.confirm("You are booking on a holiday or a \ day " +
+          " at which public events are discouraged. <br /> '" + 
+          self.holidays[date].description + "'. <br />" +
+          "Continue (some type of events will be rejected by Hippo)?"
+          , "Public holiday!"
+          , function(x) {
+            let startTime = self.dbTime(self.thisBooking.startDateTime);
+            let endTime = self.dbTime(self.thisBooking.endTime);
+
+            app.dialog.preloader('Fetching venues...');
+            self.promiseWithAuth('info/venues/availability/all'
+              , {'date':date, 'start_time': startTime, 'end_time': endTime}
+            ).then(function(x) {
+              self.venues = JSON.parse(x.data).data;
+              app.dialog.close();
+              self.popupVenueSelect = true;
+            });
+          }, null);
+      }
     },
     resolveRepeatPattern: function() 
     {
