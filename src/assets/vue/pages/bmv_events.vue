@@ -1,6 +1,6 @@
 <template>
   <f7-page infinite @infinite="loadMore">
-    <f7-navbar title="Events" back-link="Back">
+    <f7-navbar title="Confirmed Bookings..." back-link="Back">
       <f7-subnavbar :inner="false">
         <f7-searchbar
           search-container=".event-list"
@@ -12,9 +12,9 @@
     <f7-block>
       <f7-list media-list accordion-list class="event-list">
         <f7-list-item v-for="(event, key) in events" :key="key"
-                      accordion-item
-                      :style="event.is_public_event==='YES'?'background-color:yellow':''"
-                      @click="openEventPopup(event)">
+          accordion-item
+          :class="event.is_public_event==='YES'?'bg-color-yellow':''"
+          @click="openEventPopup(event)">
           <div slot="header">
             {{event.class}} 
             <span style="float:right">{{event.venue}}</span>
@@ -62,10 +62,10 @@
                 </f7-button>
               </f7-col>
               <!--
-                <f7-button close-popup 
-                  @click="toggleIsPublicEventGroup(thisEvent.gid)">
-                  Toggle <tt>PUBLIC EVENT</tt> group
-                </f7-button>
+              <f7-button close-popup 
+                @click="toggleIsPublicEventGroup(thisEvent.gid)">
+                Toggle <tt>PUBLIC EVENT</tt> group
+              </f7-button>
               -->
             </f7-card-footer>
           </f7-card>
@@ -78,10 +78,10 @@
             </div>
             <f7-list inset media-list>
               <f7-list-item v-for="(event, key) in theseEvents" :key="key"
-                            swipeout
-                            @swipeout:delete="deleteEvent(event)"
-                            :style="(event.is_public_event==='YES')?'background-color:yellow':''"
-                            >
+                swipeout
+                @swipeout:delete="deleteEvent(event)"
+                :style="(event.is_public_event==='YES')?'background-color:yellow':''"
+              >
                 <div slot="title">
                   {{event.date | date}}, 
                   {{event.start_time | clockTime}} to 
@@ -94,22 +94,22 @@
                 <div v-if="isMobileApp()"> <!-- MOBILE -->
                   <f7-swipeout-actions right>
                     <f7-swipeout-button delete 
-                                        confirm-text="Are you sure to cancel this event"
-                                        >
-                                        Cancel
+                      confirm-text="Are you sure to cancel this event"
+                    >
+                      Cancel
                     </f7-swipeout-button>
                   </f7-swipeout-actions>
                   <f7-swipeout-actions left>
                     <f7-swipeout-button v-if="event.is_public_event==='NO'"
-                                        @click="toggleIsPublicEvent(event)"
-                                        >
-                                        Mark PUBLIC Event
+                      @click="toggleIsPublicEvent(event)"
+                    >
+                      Mark PUBLIC Event
                     </f7-swipeout-button>
-                      <f7-swipeout-button v-else 
-                                          @click="toggleIsPublicEvent(event)"
-                                          >
-                                          Mark NON-PUBLIC Event
-                      </f7-swipeout-button>
+                    <f7-swipeout-button v-else 
+                      @click="toggleIsPublicEvent(event)"
+                    >
+                      Mark NON-PUBLIC Event
+                    </f7-swipeout-button>
                   </f7-swipeout-actions>
                 </div>
                 <div slot="footer" v-else> <!-- BROWSER -->
@@ -119,10 +119,10 @@
                         @click="deleteEvent(event)">Delete</f7-button>
                     </f7-col>
                     <f7-col>
-                        <f7-button small 
-                                   @click="toggleIsPublicEvent(event)">
-                          toggle PUBLIC EVENT
-                        </f7-button>
+                      <f7-button small 
+                        @click="toggleIsPublicEvent(event)">
+                        toggle PUBLIC EVENT
+                      </f7-button>
                     </f7-col>
                   </f7-row>
                 </div>
@@ -164,7 +164,7 @@
       fetchUpcomingEvents: function() 
       {
         const self = this;
-        self.promiseWithAuth('bmvadmin/events/upcoming/0/10').then(
+        self.promiseWithAuth('bmvadmin/events/upcoming/0/100').then(
           function(x) {
             self.events = JSON.parse(x.data).data;
           });
@@ -179,26 +179,36 @@
 
         const app = self.$f7;
         var from = Object.keys(self.events).length;
-        var to = from + 10;
+        var to = from + 20;
         console.log("Fetching from ", from, " to ", to );
         self.promiseWithAuth('bmvadmin/events/upcoming/'+from+'/'+to).then(
           function(x) {
             var moreE = JSON.parse(x.data).data;
-            for(var o in moreE)
-              self.events.push(moreE[o]);
-            self.allowInfinite = true;
+            if(moreE.length == 0) {
+              self.allowInfinite = false;
+              self.notfify("Notice", "No new data returned from server");
+            }
+            else {
+              for(var o in moreE)
+                self.events.push(moreE[o]);
+              self.allowInfinite = true;
+            }
           });
       },
       openEventPopup: function(event) 
       {
         const self = this;
+        const app = this;
+        app.preloader.show();
         self.thisEvent = event;
         // Fetch all events for this gid.
         self.promiseWithAuth('bmvadmin/events/gid/'+event.gid)
           .then( function(x) {
             self.theseEvents = JSON.parse(x.data).data;
+            app.preloader.hide();
             self.eventPopup = true;
           });
+        setTimeout(() => app.preloader.hide(), 10000);
       },
       selectEvent: function(e)
       {
