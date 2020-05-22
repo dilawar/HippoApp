@@ -16,6 +16,25 @@
 
       </f7-block-header>
 
+      <!--
+      <div class="timeline">
+          <div class="timeline-item" v-for="holiday, key in holidays" :key="'h'+key">
+            <div class="timeline-item-date">{{humanReadableDate(holiday.date, false)}}</div>
+            <div class="timeline-item-divider"></div>
+            <div class="timeline-item-content">
+              <f7-list no-hairlines>
+                <f7-list-item>
+                  <div slot="after" v-if="holiday.is_public_holiday">Public Holiday</div>
+                  <div slot="after" v-else>Local event</div>
+                  <div slot="title">{{holiday.description}}</div>
+                  <div slot="footer">{{holiday.comment}}</div>
+                </f7-list-item> 
+              </f7-list>
+            </div>
+          </div>
+      </div>
+      -->
+
       <f7-list media-list>
         <f7-list-item>
           <f7-button raised @click="addNewHoliday">Add a new holiday</f7-button>

@@ -5,7 +5,7 @@ copyright: 'Copyright &copy; 2016-2020 Dilawar Singh'
 repo_url: https://github.com/dilawar/HippoApp
 
 theme:
-    name: readthedocs
+    name: material
 
 nav:
     - Home: index.md
@@ -19,7 +19,8 @@ nav:
 
 markdown_extensions:
     - admonition
-    - toc
+    - toc:
+        permalink: true
     - attr_list
     - fontawesome_markdown
     - pymdownx.caret
