@@ -45,4 +45,3 @@ extra_javascript:
 
 plugins:
     - search
-    - mermaid2
