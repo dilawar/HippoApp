@@ -142,8 +142,11 @@ Vue.mixin({
             console.log("Failed to unsubscribe:", e);
          }
       },
-      humanReadableDate: function( date ) {
-         return moment(date, "YYYY-MM-DD").format("MMM DD, YYYY");
+      humanReadableDate: function(date, withyear=true) {
+         if(withyear)
+            return moment(date, "YYYY-MM-DD").format("MMM DD, YYYY");
+         else
+            return moment(date, "YYYY-MM-DD").format("MMM DD");
       },
       toNow: function(date, time){
          let b = moment(date + ' ' + time, 'YYYY-MM-DD HH:mm:ss');
@@ -155,6 +158,9 @@ Vue.mixin({
       },
       humanReadableTime: function( time ) {
          return moment(time, "HH:mm:ss").format("hh:mm A");
+      },
+      whichDay: function(date) {
+         return moment(date, "YYYY-MM-DD").format("ddd");
       },
       humanReadableDateTime: function(date, time) {
          var d = moment(date, "YYYY-MM-DD").format("(ddd) MMM DD");

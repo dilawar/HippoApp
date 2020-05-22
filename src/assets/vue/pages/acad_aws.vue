@@ -157,6 +157,7 @@
       </f7-page>
     </f7-popup>
 
+    <!-- Content -->
     <f7-block-header>
       <f7-row>
         <f7-col width="70">
@@ -172,12 +173,17 @@
     </f7-block-header>
 
     <!-- LIST OF UPCOMING AWSes -->
-    <f7-list accordion-list media-list no-hairlines>
-      <f7-list-item accordion-item v-for="(AWSes, date) in upcomingAWS" 
-        :header="humanReadableDate(date)+', '+AWSes[0].venue + ', ' + AWSes[0].vc_url"
-        :after="AWSes.length<3?'Some slots missing.':''"
-        :key="date">
-
+    <f7-list accordion-list media-list>
+      <f7-list-item accordion-item v-for="(AWSes, date) in upcomingAWS" :key="date">
+        <div slot="header">
+          <span v-if="date in holidays" 
+            class="bg-color-red" style="padding:2px">
+            <strong> This is a holiday: {{holidays[date].description}}/ </strong> </span>
+          {{humanReadableDate(date)}}, {{getAWSVenue(AWSes)}} ,{{getAWSUrl(AWSes)}}
+        </div>
+        <div slot="after" v-if="AWSes.length<3">
+          Some slots missing.
+        </div>
         <div slot="title">{{awsSummary(AWSes)}}</div>
         <div slot="footer">
           <i class="fa fa-chair"></i>
@@ -245,13 +251,19 @@
     </f7-list>
 
     <!-- Upcoming schedule -->
-    <f7-block-title small>
-      Click on login to assign AWS.
+    <f7-block-title medium>
+      Computed Schedule
       <f7-button small color="gray" fill style="float:right"
         @click="computeSchedule()">
         Recompute Schedule
       </f7-button>
     </f7-block-title>
+
+    <f7-block-header>
+      Click on the login to add him/her to upcoming AWS list. Click on 
+      <f7-button raised style="display:inline" disabled>Add All</f7-button> to add all logins
+      on that given date.
+    </f7-block-header>
 
     <f7-block>
       <div v-for="(awses, date) in schedule"
@@ -260,7 +272,7 @@
         <f7-row>
           <f7-col width="25"> 
             {{humanReadableDate(awses[0].date)}}
-            <f7-button small raised @click="acceptSchedule(awses)">Accept All</f7-button>
+            <f7-button small raised @click="acceptSchedule(awses)">Add All</f7-button>
           </f7-col>
           <f7-col width="25" v-for="(aws, key) in awses" :key="'yy'+key" no-gap>
             <f7-link @click="acceptSchedule([aws])">
@@ -277,6 +289,18 @@
           </f7-col>
         </f7-row>
       </div>
+    </f7-block>
+
+    <f7-block>
+      <f7-block-title>Public Holidays on AWS days</f7-block-title>
+      <f7-list>
+        <f7-list-item v-for="holi, key in Object.keys(holidays).filter(x => whichDay(x) === 'Mon')" 
+          :title="holi"
+          :after="holidays[holi].description"
+          :key="key">
+        </f7-list-item>
+        <f7-list-item></f7-list-item>
+      </f7-list>
     </f7-block>
 
   </f7-page>
@@ -298,6 +322,7 @@ export default {
       popupAction: '',
       resules: [],
       schedule: {},
+      holidays: [],
     };
   },
   mounted()
@@ -307,6 +332,11 @@ export default {
 
     self.fetchUpcomingAws();
     self.fetchSchedule();
+
+    self.postWithPromise('/info/holiday/list').then(function(x) {
+      self.holidays = JSON.parse(x.data).data;
+    });
+
 
     // Autocomplete.
     app.autocomplete.create({
@@ -421,6 +451,12 @@ export default {
       const self = this;
       const app = self.$f7;
       self.thisAWS.date = self.dbDate(self.thisAWS.date);
+      if(self.thisAWS.date in self.holidays) {
+        app.dialog.confirm("This is a public holiday. No AWS is allowed on '" +
+          self.holidays[self.thisAWS.date].description + "'."
+          , "Stop!", null, null);
+        return;
+      };
       self.thisAWS.status = 'VALID'
       //app.dialog.preloader('Assigning AWS of ' + self.thisAWS.speaker);
       app.preloader.show();
@@ -490,9 +526,13 @@ export default {
     awsSummary: function(awses) {
       let title = '';
       awses.forEach(aws => {
-        let ack = aws.acknowledged === 'YES'?'':'(⛌)';
-        title += aws.speaker + ack + ' / ';
+        if('speaker' in aws) {
+          let ack = aws.acknowledged === 'YES'?'':'(⛌)';
+          title += aws.speaker + ack + ' / ';
+        }
       });
+      if(! title)
+        title = "NO ONE HAS BEEN ASSIGNED.";
       return title;
     },
     removeAWS: function(aws) 
@@ -535,6 +575,12 @@ export default {
           else
             self.notify("Failed", res.msg);
         });
+    },
+    getAWSUrl: function(awses) {
+      return awses[0]? awses[0].vc_url:'';
+    },
+    getAWSVenue: function(awses) {
+      return awses[0] ? awses[0].venue : 'NA';
     },
   },
 }
