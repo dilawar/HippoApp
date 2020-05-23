@@ -9,10 +9,13 @@
       <f7-icon icon="fa fa-map fa-2x"></f7-icon>
     </f7-fab>
 
-    <f7-button external target="_system" class="float-right"
-      small href="https://www.ncbs.res.in/shuttle_trips">
-      Official Schedule
-    </f7-button> 
+    <f7-block-header class="text-color-black">
+      Last updated on: <strong> {{toNowDatetime(transport.last_updated_on)}} ago.</strong>
+      <f7-button external target="_system" class="float-right"
+        small href="https://www.ncbs.res.in/shuttle_trips">
+        Official Schedule
+      </f7-button> 
+    </f7-block-header>
 
     <!-- Select days buttons. -->
     <f7-block>

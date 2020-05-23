@@ -153,6 +153,11 @@ Vue.mixin({
          let a = moment();
          return b.toNow(a, true);
       },
+      toNowDatetime: function(datetime){
+         let b = moment(datetime, 'YYYY-MM-DD HH:mm:ss');
+         let a = moment();
+         return b.toNow(a, true);
+      },
       dbTime: function(date, addminutes=0) {
          return moment(date, "HH:mm").add(addminutes, 'm').format("HH:mm");
       },
