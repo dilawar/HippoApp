@@ -28,7 +28,7 @@
         <f7-list media-list inline-labels no-hairlines>
           <f7-list-item>
             <!-- geolocation -->
-            <l-map v-if="! isNew" :zoom="zoom" :center="center" :style="mapStyle">
+            <l-map :zoom="zoom" :center="center" :style="mapStyle">
               <l-control-layers position="topright"></l-control-layers>
               <l-tile-layer v-for="tileProvider in $store.state.OSM.tileProviders"
                 :key="tileProvider.name"
@@ -38,7 +38,9 @@
                 :attribution="tileProvider.attribution"
                 layer-type="base">
               </l-tile-layer>
-              <l-marker v-if="thisVenue.xy" :lat-lng="thisVenue.xy">
+              <l-marker v-if="thisVenue.xy" :lat-lng="thisVenue.xy"
+                @update:lat-lng="updatePos"
+                :draggable="true">
               </l-marker>
             </l-map>
           </f7-list-item>
@@ -165,6 +167,7 @@ export default {
       self.resetSimple(self.thisVenue);
       self.nonEditables = ['total_events'];
       self.isNew = true;
+      self.thisVenue.xy = self.center;
       self.popupVenue = true;
     },
     updateVenuePopup: function(venue)
@@ -172,10 +175,13 @@ export default {
       const self = this;
       self.thisVenue = venue;
       self.thisVenue.xy = null;
-      if(self.thisVenue.latitude && self.thisVenue.longitude) {
+      if(parseFloat(self.thisVenue.latitude) > 12.0 || 
+        parseFloat(self.thisVenue.longitude) > 50.0) {
         self.thisVenue.xy = L.latLng(self.thisVenue.latitude, self.thisVenue.longitude);
-        console.log('pos: ', self.thisVenue.xy);
       }
+      else
+        self.thisVenue.xy = self.center;
+      console.log('pos: ', self.thisVenue.xy);
       self.nonEditables = ['id', 'total_events'];
       self.isNew = false;
       self.popupVenue = true;
@@ -227,6 +233,12 @@ export default {
       link += '&mlat='+venue.latitude+'&mlon='+venue.longitude;
       link += '#map=19/'+venue.latitude+'/'+venue.longitude;
       return link;
+    },
+    updatePos: function(x) {
+      const self = this;
+      console.log('new pos', x);
+      self.thisVenue.latitude = x.lat;
+      self.thisVenue.longitude = x.lng;
     },
 
   },
