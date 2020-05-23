@@ -5,41 +5,43 @@
     <l-map ref="osm" :zoom="zoom" :center="center" :style="mapStyle"
            @update:center="centerUpdated" @update:zoom="zoomUpdated"
            @update:bounds="boundsUpdated">
+
        <l-control-layers position="topright"></l-control-layers>
 
        <l-tile-layer v-for="tileProvider in $store.state.OSM.tileProviders"
-                     :key="tileProvider.name"
-                     :name="tileProvider.name"
-                     :visible="tileProvider.visible"
-                     :url="tileProvider.url"
-                     :attribution="tileProvider.attribution"
-                     layer-type="base"
-                     >
+         :key="tileProvider.name"
+         :name="tileProvider.name"
+         :visible="tileProvider.visible"
+         :url="tileProvider.url"
+         :attribution="tileProvider.attribution"
+         layer-type="base">
        </l-tile-layer>
 
        <!-- Show hotlines -->
        <l-polyline v-for="(arr, key) in hotlines" 
-                   :lat-lngs="arr" 
-                   :key="key"
-                   color="blue"
-                   :weight="8"
-                   :smoothFactor="3.0"
-                   >
+         :lat-lngs="arr" 
+         :key="key"
+         color="blue"
+         :weight="8"
+         :smoothFactor="3.0">
        </l-polyline>
 
        <l-marker :lat-lng="myPos">
        </l-marker>
 
        <!-- Latest position -->
-       <l-marker v-for="(p, key) in latestPos" :key="p.id" :lat-lng="p.xy" :icon="p.options.icon"> 
+       <l-marker v-for="(p, key) in latestPos" :key="p.id" 
+         :lat-lng="p.xy" :icon="p.options.icon"> 
          <l-tooltip :options="{permanent: false}"
-                 style="white-space:normal;width:50px">
+           style="white-space:normal;width:50px">
            <div v-html="p.html"></div>
          </l-tooltip>
        </l-marker>
 
-       <l-marker :ref="v.id" v-for="v in markers" :key="v.id" :lat-lng="v.xy" :options="v.options"> 
-         <l-tooltip :options="$store.state.OSM.toolTipOpts" style="white-space:normal;width:100px">
+       <l-marker :ref="v.id" v-for="v in markers" :key="v.id" 
+         :lat-lng="v.xy" :options="v.options"> 
+         <l-tooltip :options="$store.state.OSM.toolTipOpts" 
+           style="white-space:normal;width:100px">
            <div v-html="v.html"></div>
          </l-tooltip>
        </l-marker>
