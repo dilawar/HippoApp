@@ -10,7 +10,6 @@
     </f7-fab>
 
     <f7-block-header class="text-color-black">
-      Last updated on: <strong> {{toNowDatetime(transport.last_updated_on)}} ago.</strong>
       <f7-button external target="_system" class="float-right"
         small href="https://www.ncbs.res.in/shuttle_trips">
         Official Schedule
@@ -19,6 +18,9 @@
 
     <!-- Select days buttons. -->
     <f7-block>
+      <f7-block-header>
+        Last updated on: <strong> {{toNowDatetime(transport.last_updated_on)}} ago.</strong>
+      </f7-block-header>
       <f7-row no-gap>
         <f7-col no-gap v-for="d in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']" :key="'col'+d">
           <f7-button small :key="d" :fill="(d==selectedDay)?true:false" @click="changeDay(d)"> 
@@ -29,7 +31,7 @@
     </f7-block>
 
     <!-- List of transport. -->
-    <f7-block inset>
+    <f7-block>
       <f7-list media-list accordion-list no-hairlines class="display-block">
         <f7-list-item accordion-item v-for="(route, key) in transport.routes" :key="key">
           <div slot="title">
