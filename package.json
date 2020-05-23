@@ -126,7 +126,7 @@
     "vue2-editor": "^2.10.2",
     "vue2-google-maps": "^0.10.7",
     "vue2-highcharts": "^1.2.5",
-    "vue2-leaflet": "^2.4.2",
+    "vue2-leaflet": "^2.5.2",
     "vue2-leaflet-geosearch": "^1.0.6",
     "vue2-leaflet-locatecontrol": "^1.0.1",
     "vue2-leaflet-movingmarker": "0.0.1",

@@ -8,7 +8,7 @@
         <f7-view name="right" url="/adminpanel/" ></f7-view>
       </f7-panel>
 
-      <f7-view main url="/" >
+      <f7-view main url="/">
         <f7-toolbar bottom tabber labels style="font-size:x-small">
 
           <f7-link text="Back" icon="fa fa-step-backward fa-2x" back>

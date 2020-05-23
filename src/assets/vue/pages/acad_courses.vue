@@ -270,34 +270,40 @@
     </f7-popup>
     
     <!-- Running courses -->
-    <f7-block inset strong>
-      <f7-row>
-        <f7-col>
-          <f7-input @change="fetchRunningCourses()" 
-            @input="thisYear=$event.target.value"
-            label="Year" type="number" :value="thisYear">
-          </f7-input>
-        </f7-col>
-        <f7-col>
-          <f7-input @change="fetchRunningCourses()" 
-            @input="thisSemester=$event.target.value"
-            label="Semester" type="select" :value="thisSemester">
+    <f7-block inset>
+      <f7-list>
+        <f7-row style="list-style-type:none">
+          <f7-list-input @change="fetchRunningCourses()" 
+              class="col-50"
+              @input="thisYear=$event.target.value"
+              label="Year" type="number" :value="thisYear">
+          </f7-list-input>
+          <f7-list-input @change="fetchRunningCourses()" 
+               class="col-50" @input="thisSemester=$event.target.value"
+               label="Semester" type="select" :value="thisSemester">
             <option value="AUTUMN">Autumn</option>
             <option value="SPRING">Spring</option>
             <option value="OTHER">Other</option>
-          </f7-input>
-        </f7-col>
-      </f7-row>
+          </f7-list-input>
+        </f7-row>
+      </f7-list>
     </f7-block>
 
     <f7-block-title medium>
       Running courses ({{thisYear}}/{{thisSemester}})
-      <f7-button small fill
-        :href="'/coursefeedback/'+thisYear+'/'+thisSemester+'/'"
-        class="float-right">All Feedback</f7-button>
     </f7-block-title>
-
     <f7-block-header>
+      <f7-row>
+        <f7-button small 
+                   class="col-50 medium-30"
+                   :href="'/coursefeedback/'+thisYear+'/'+thisSemester+'/'"
+                   tooltip="Combined feedback for whole semester">
+          Semester Feedback
+        </f7-button>
+        <f7-button small class="col-50 medium-30" @click="downloadCourseCSV">
+          Download Course list
+        </f7-button>
+      </f7-row>
       Click on the course to update, see registrations and course specific feedback.
     </f7-block-header>
 
@@ -306,19 +312,19 @@
       <f7-list-item v-for="course, key in runningCourses" :key="key" accordion-item>
         <div slot="header">
           {{course.venue}}  
-          | {{humanReadableDate(course.start_date)}} to {{humanReadableDate(course.end_date)}} 
-          | Slot {{course.slot}}
+          | {{humanReadableDate(course.start_date)}} 
+            to {{humanReadableDate(course.end_date)}} 
           | {{course.course_id}}
         </div>
-        <div slot="title">
-          {{course.name}}
-        </div>
+        <div slot="after">{{course.slot}}</div>
+        <div slot="title"> {{course.name}} </div>
         <div slot="footer" class="text-color-red"> {{course.note}} </div>
         <f7-accordion-content>
           <f7-block inset style="background-color:peachpuff">
             <f7-row>
               <f7-col>
-                Registrations = {{course.max_registration}}
+                Max Registrations: 
+                {{course.max_registration===-1?'Not limited':course.max_registration}}
               </f7-col>
               <f7-col>
                 Audit Allowed? {{course.is_audit_allowed}}
@@ -330,20 +336,21 @@
                 <f7-link v-if="course.url" external target="_system" :href="course.url">{{course.url}}</f7-link>
               </f7-col>
             </f7-row>
-            <f7-row style="padding:5px;magin:10px;">
-              <f7-col width=50 medium=30>
-                <f7-button small
+            <f7-row>
+              <f7-col width=50 medium=30 style="padding-top:5px">
+                <f7-button small raised
                   :href="'/coursefeedback/'+course.year+'/'+course.semester+'/'+course.course_id+'/'"
                   icon="far fa-comment-dots">
                   {{course.numfeedback}} Feedbacks
                 </f7-button>
               </f7-col>
-              <f7-col width=50 medium=30>
-                <f7-button small :href="'/updatecourse/'+course.id+'/'" icon="fa fa-users">
+              <f7-col width=50 medium=30 style="padding-top:5px">
+                <f7-button small raised 
+                  :href="'/updatecourse/'+course.id+'/'" icon="fa fa-users">
                   Registrations
                 </f7-button>
               </f7-col>
-              <f7-col width=50 medium=30>
+              <f7-col width=50 medium=30 style="padding-top:5px">
                 <f7-button small fill @click="showCurrentCourse(course)" icon="fa fa-edit">
                   Edit
                 </f7-button>
@@ -356,8 +363,8 @@
 
 
 <!-- All courses -->
-<f7-block strong medium-inset>
-  <f7-block-title medium> 
+<f7-block strong>
+  <f7-block-title> 
     All Courses 
     <div style="font-size:small" class="float-right">
       <f7-button fill small @click="addNewCourseMetadataPopup()">
@@ -798,6 +805,11 @@ export default {
       }
       return false;
     },
+    downloadCourseCSV: function() {
+      const self = this;
+      let filename = 'courses_'+ self.thisYear + '_' + self.thisSemester + '.csv';
+      self.writeCSVFile(filename, self.runningCourses);
+    }
   },
 }
 </script>

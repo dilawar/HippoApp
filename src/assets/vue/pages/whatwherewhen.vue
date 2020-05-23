@@ -5,8 +5,8 @@
            @page:afterin="pageAfterIn"
            infinite
            :infinite-preloader="showPreloader" 
-           @infinite="loadMore"
-    >
+           @infinite="loadMore">
+
   <f7-navbar title="What Where When" back-link="Back">
     <!-- Search bar -->
     <f7-subnavbar :inner="false">
@@ -58,31 +58,79 @@
   </f7-actions>
 
   <f7-block-header>
-    <f7-link external target="_system" :href="calendarLink"> 
+    <f7-link external target="_system" :href="calendarLink" 
+      class="float-right" icon="far fa-calendar">
       Google Calendar
     </f7-link>
   </f7-block-header>
 
-  <f7-list accordion-list media-list no-hairlines class="search-list">
-    <f7-list-item :accordion-item="item.description.length>80" v-for="(item, key) in items" :key="key">
-           <div slot="header" v-html="genWhereline(item)"></div>
-           <div slot="text" class="text-color-black">
-             <strong>{{item.title}}</strong>
-             <small>by {{item.created_by}}</small>
-           </div>
-           <div slot="title" v-if="item.vc_url">
-             <f7-link external target="_system" :href="item.vc_url">
-               {{item.vc_url}}
-             </f7-link>
-           </div>
-           <div slot="footer" v-html="genTimeline(item)"></div>
-           <f7-accordion-content style="background-color:Ivory">
-             <f7-block>
-               <div v-html="item.title+'<br />'+item.description"></div>
-             </f7-block>
-           </f7-accordion-content>
-    </f7-list-item>
-  </f7-list>
+  <!--
+  <div class="search-list timeline">
+    <f7-list media-list accordion-list style="list-style-type:none">
+      <div class="timeline-item" v-for="(item, key) in items" :key="key">
+        <div class="timeline-item-date">
+          {{humanReadableDate(item.date,false)}} 
+        </div>
+        <div class="timeline-item-divider"></div>
+
+        <div class="timeline-item-content">
+          <div class="timeline-item-time">
+            {{humanReadableTime(item.start_time)}} to
+            {{humanReadableTime(item.end_time)}}
+            ({{fromNow(item)}})
+          </div>
+
+          <f7-list-item :accordion-item="item.description.length>80" :key="key">
+            <div slot="header"> {{item.venue}} </div>
+            <div slot="text" class="text-color-black">
+              <strong>{{item.title}}</strong>
+              <small>by {{item.created_by}}</small>
+            </div>
+            <div slot="title" v-if="item.vc_url">
+              <f7-link external target="_system" :href="item.vc_url">
+                {{item.vc_url}}
+              </f7-link>
+            </div>
+            <f7-accordion-content style="background-color:Ivory">
+              <f7-block>
+                <div v-html="item.title+'<br />'+item.description"></div>
+              </f7-block>
+            </f7-accordion-content>
+          </f7-list-item>
+
+        </div>
+      </div>
+    </f7-list>
+  </div>
+  -->
+
+  <f7-block>
+    <f7-list accordion-list media-list no-hairlines class="search-list">
+      <f7-list-item :accordion-item="item.description.length>80" 
+        v-for="(item, key) in items" :key="key">
+        <div slot="header" v-html="genWhereline(item)"></div>
+        <div slot="media">
+          <small> {{humanReadableDate(item.date, false)}} </small>
+        </div>
+        <div slot="text" class="text-color-black">
+          <strong>{{item.title}}</strong>
+          <small>by {{item.created_by}}</small>
+        </div>
+        <div slot="title" v-if="item.vc_url">
+          <f7-link external target="_system" :href="item.vc_url">
+            {{item.vc_url}}
+          </f7-link>
+        </div>
+        <div slot="footer" v-html="genTimeline(item)"></div>
+        <f7-accordion-content style="background-color:Ivory">
+          <f7-block>
+            <div v-html="item.title+'<br />'+item.description"></div>
+          </f7-block>
+        </f7-accordion-content>
+      </f7-list-item>
+    </f7-list>
+  </f7-block>
+
   </f7-page>
 </template>
 
@@ -248,6 +296,10 @@ export default {
         ' to ' + moment(ev.end_time, 'HH:mm:ss').format('h:mm A')
       return whereWhere;
     },
+    fromNow: function(ev) {
+      const self = this;
+      return self.str2Moment(ev.date + ' ' + ev.start_time, 'YYYY-MM-DD HH:mm:ss').fromNow();
+    },
     genWhereline: function(ev) 
     {
       const self = this;
@@ -256,7 +308,7 @@ export default {
 
       let fromNow = self.str2Moment(ev.date + ' ' + ev.start_time
         , 'YYYY-MM-DD HH:mm:ss').fromNow();
-      content = '<span style="float:right">'+fromNow+'</span>' + content;
+      content = '<span style="float:right;padding-right:3%"> '+fromNow+'</span>' + content;
       return content;
     },
   },

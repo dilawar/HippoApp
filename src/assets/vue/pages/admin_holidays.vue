@@ -4,37 +4,50 @@
     </f7-navbar>
 
     <f7-block>
-      <f7-block-title>List of holidays</f7-block-title>
+      <f7-block-title medium>List of holidays</f7-block-title>
 
-      <f7-block-header class="text-color-black"> 
-
+      <f7-block-header> 
         <f7-icon icon="fas fa-flag"></f7-icon> On this page, you have usual
         holidays as well as special events which are not public holidays. On
         these events such as <tt>NCBS/InStem Annual Talks</tt>, AWS and public
         talks MUST NOT be scheduled. You should add them here as as mark <tt>IS
           PUBLIC HOLIDAY</tt> to <tt>NO</tt>.
-
       </f7-block-header>
 
-      <!--
-      <div class="timeline">
-          <div class="timeline-item" v-for="holiday, key in holidays" :key="'h'+key">
-            <div class="timeline-item-date">{{humanReadableDate(holiday.date, false)}}</div>
+      <f7-block inset strong>
+        <f7-list>
+          <f7-button raised @click="addNewHoliday">Add a new holiday</f7-button>
+        </f7-list>
+
+        <f7-block-header>Click on holiday card to edit details.</f7-block-header>
+
+        <div class="timeline medium-sides">
+          <div class="timeline-item" 
+            v-for="holiday, key in holidays" 
+            medium-sides :key="'h'+key">
+            <div class="timeline-item-date">
+              {{humanReadableDate(holiday.date)}}
+            </div>
             <div class="timeline-item-divider"></div>
             <div class="timeline-item-content">
-              <f7-list no-hairlines>
-                <f7-list-item>
-                  <div slot="after" v-if="holiday.is_public_holiday">Public Holiday</div>
-                  <div slot="after" v-else>Local event</div>
-                  <div slot="title">{{holiday.description}}</div>
-                  <div slot="footer">{{holiday.comment}}</div>
-                </f7-list-item> 
+              <f7-list style="list-style-type:none">
+                <div class="timeline-item-inner">
+                  <f7-list-item @click="updateHoliday(holiday)">
+                    <div slot="header" v-if="holiday.is_public_holiday==='YES'">
+                      Public Holiday
+                    </div>
+                    <div slot="header" v-else>Local Event</div>
+                    <div slot="title">{{holiday.description}}</div>
+                    <div slot="footer">{{holiday.comment}}</div>
+                  </f7-list-item> 
+                </div>
               </f7-list>
             </div>
           </div>
-      </div>
-      -->
+        </div>
+      </f7-block>
 
+      <!--
       <f7-list media-list>
         <f7-list-item>
           <f7-button raised @click="addNewHoliday">Add a new holiday</f7-button>
@@ -48,6 +61,8 @@
           <div slot="footer">{{holiday.comment}}</div>
         </f7-list-item> 
       </f7-list>
+      -->
+
     </f7-block>
 
     <f7-popup :opened="popupHoliday" @popup:close="popupHoliday = false">

@@ -40,6 +40,7 @@ import ProfilePage from './assets/vue/pages/profile.vue';
 // BMV ADMIN
 import BmvBookingRequests from './assets/vue/pages/bmv_booking_requests.vue';
 import BmvEvents from './assets/vue/pages/bmv_events.vue';
+import BmvVenues from './assets/vue/pages/venues.vue';
 
 // ACAD ADMIN 
 import AcadAdminAWSRoster from './assets/vue/pages/acad_aws_roster.vue';
@@ -241,6 +242,10 @@ export default [
    {
       path: '/admin/people',
       component: AdminManagesPeople
+   },
+   {
+      path: '/admin/venues',
+      component: BmvVenues
    },
    {
       path: '/admin/config',
