@@ -1,8 +1,5 @@
 <template>
-  <f7-page ptr @ptr:refresh="fetchTransportAgain" 
-    @page:beforein="pageBeforeIn"
-    @page:afterin="pageAfterIn"
-    page-content>
+  <f7-page ptr @ptr:refresh="fetchTransportAgain" page-content>
     <f7-navbar title="Transport" back-link="Back"></f7-navbar>
 
     <f7-fab position="right-bottom" slot="fixed" color="green" href="/osm/liveroute/60">
@@ -130,7 +127,7 @@ export default {
         return true;
       return false;
     },
-    filterTransport: function() {
+    filterTransport: async function() {
       const self = this;
       if(! self.transport.hasOwnProperty('timetable'))
         return;
@@ -141,7 +138,7 @@ export default {
         d = d[self.drop.toLowerCase()];
       self.thisTimetable = Object.values(d);
     },
-    routeFromTo: function(pickup, drop)
+    routeFromTo: async function(pickup, drop)
     {
       const self = this;
       self.pickup = pickup;
@@ -151,7 +148,7 @@ export default {
       // Change timetable else DOM won't render
       self.filterTransport( );
     },
-    changeDay: function(data) {
+    changeDay: async function(data) {
       console.log('Changing day ', data);
       const self = this;
       self.selectedDay = data;
@@ -164,7 +161,7 @@ export default {
       self.fetchTransport();
       self.$f7.ptr.done();
     },
-    fetchTransport: function( ) 
+    fetchTransport: async function( ) 
     {
       const self         = this;
       const app          = self.$f7;
