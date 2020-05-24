@@ -38,7 +38,9 @@
           <f7-accordion-content>
             <f7-list media-list>
               <f7-list-item v-for="(t, key) in thisRouteTimetable(route)"
+                :header="t.vehicle"
                 :key="key" v-if="isUpcomingTrip(t)">
+
                 <div slot="title">
                   {{str2Moment(t.trip_start_time, 'HH:mm:ss').format('hh:mm A')}}
                 </div>
@@ -48,6 +50,7 @@
                 <span slot='after' v-if="isUpcomingTrip(t)">
                   {{str2Moment(t.trip_start_time, 'HH:mm:ss').fromNow()}}
                 </span>
+
               </f7-list-item>
             </f7-list>
           </f7-accordion-content>
@@ -103,7 +106,7 @@ export default {
       var icon = 'fa ';
       vehicle = vehicle.toLowerCase();
       if(vehicle == 'shuttle')
-        icon += ' fa-bus'
+        icon += ' fa-space-shuttle'
       else if(vehicle == 'buggy')
         icon += ' fa-bug';
       else
@@ -112,7 +115,7 @@ export default {
       if(self.isNextTrip(startTime, day))
         icon += ' fa-spin fa-pulse fa-2x';
 
-      icon += ' fa-fw';
+      icon += ' fa-2x';
       return icon;
     },
     isNextTrip: function(startTime, day)
@@ -183,11 +186,17 @@ export default {
     },
     thisRouteTimetable: function(route) {
       const self = this;
+      if(! (self.selectedDay.toLowerCase() in self.transport.timetable))
+        return;
+
       let d = self.transport.timetable[self.selectedDay.toLowerCase()];
       if(d)
         d = d[route.pickup_point.toLowerCase()];
       if(d) 
         d = d[route.drop_point.toLowerCase()];
+      if(! d)
+        return [];
+
       return Object.values(d);
     },
     nextTrip: function(route) {
