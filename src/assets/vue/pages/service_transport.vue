@@ -2,9 +2,7 @@
   <f7-page page-content>
     <f7-navbar title="Timetable" back-link="Back"></f7-navbar>
 
-  <!-- Timetable -->
   <f7-block>
-
     <!-- Select days buttons. -->
     <f7-row>
       <f7-col v-for="d in alldays" :key="'col'+d">
@@ -48,10 +46,13 @@
     <f7-block-title medium>All Transport</f7-block-title>
     <f7-block-header>Current route: {{routeToHtml(thisRoute)}}</f7-block-header>
     <f7-row>
+      <!-- For each vehicle, create a table. May be empty -->
       <f7-col class="margin-top" 
-        v-for="(tt, veh, id) in timetable" :key="'col'+id" width=100 medium=50>
+        v-for="veh, id in vehicles" 
+        :key="'col'+id" 
+        width=100 medium=50>
 
-        <f7-button fill icon="fa fa-plus" @click="addNewVehicleTripPopup(veh)">
+        <f7-button fill small icon="fa fa-plus" @click="addNewVehicleTripPopup(veh)">
           Add {{veh}} trip
         </f7-button>
         <table style="border:1px gray solid;width:90%; margin:auto">
@@ -62,7 +63,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(trips, startTime, index) in tt" :key="'row'+startTime">
+            <tr v-for="(trips, startTime, index) in timetable[veh]" :key="'row'+startTime">
               <td>
                 <f7-link icon="fa fa-edit" 
                   @click="updateTripsPopup(trips, startTime, veh)">
@@ -72,7 +73,7 @@
               <td v-for="(day, k2) in selectedDays" :key="'td'+k2" 
                 style="background-color:lightyellow; border:1px dotted;
                 padding-left:3px">
-                <span v-for="(trip,k3) in tt[startTime][day]">
+                <span v-for="(trip,k3) in timetable[veh][startTime][day]">
                   <f7-icon :icon="transportIcon(trip.vehicle)"></f7-icon>
                 </span>
               </td>
@@ -201,12 +202,13 @@
       <f7-block inset>
         <f7-list media-list no-hairlines>
 
-          <!--
           <f7-list-input label="Trip Start Time" inline-label
                          :value="theseTrips.trip_start_time"
                          @input="theseTrips.trip_start_time=$event.target.value"
                          type="time">
           </f7-list-input>
+
+          <!--
           <f7-list-input label="Trip End Time" inline-label
                          :value="theseTrips.trip_end_time"
                          @input="theseTrips.trip_end_time=$event.target.value"
@@ -214,6 +216,7 @@
           </f7-list-input>
           -->
 
+          <!--
           <f7-list-input :input="false" label="Trip Start Time" inline-label>
             <date-picker slot="input" type="time" lang="en"
                          value-type="format" format="HH:mm" :minute-step="5"
@@ -222,10 +225,11 @@
                          v-model="theseTrips.trip_start_time">
             </date-picker>
           </f7-list-input>
+          -->
 
           <f7-list-input label="Duration" inline-label
                          :value="theseTrips.duration"
-                         @change="theseTrips.duration=$event.target.input"
+                         @change="theseTrips.duration=$event.target.value"
                          type="number">
           </f7-list-input>
 
@@ -287,7 +291,7 @@ export default {
       thisEntry: {day:'', pickup_point:'NCBS', drop_point:'IIsc', 'is_new':false},
       thisEntryStatus: "OK",
       theseTrips: {vehicle: '', days:[]
-        , trip_start_time:'', trip_end_time:'', duration: 30
+        , trip_start_time:'', trip_end_time:'', duration: '30'
         , timetable:{}, comment:'', is_new:false
       },
       popupTrips: false,
@@ -390,7 +394,10 @@ export default {
       const app = self.$f7;
       if(notify)
         app.dialog.preloader('Adding new trip...');
-      var promise = self.promiseWithAuth('transportation/schedule/add', entry)
+      if(notify)
+        setTimeout(() => app.dialog.close(), 5000);
+
+      return self.promiseWithAuth('transportation/schedule/add', entry)
         .then(function(x) {
           let res = JSON.parse(x.data).data;
           if(res.success) {
@@ -406,9 +413,6 @@ export default {
           if(notify)
             app.dialog.close();
         });
-      if(notify)
-        setTimeout(() => app.dialog.close(), 1000);
-      return promise;
     },
     deleteEntry: function(entry, interactive=true) {
       const self = this;
@@ -462,7 +466,7 @@ export default {
       }
       console.log('Days ', self.theseTrips.days);
     },
-    addRemoveTrip: function(day) {
+    addRemoveTrip: async function(day) {
       const self = this;
       if(self.theseTrips.days.includes(day)) {
         for(var trip of self.theseTrips.timetable[day]) 
@@ -475,7 +479,7 @@ export default {
           , 'trip_start_time': self.theseTrips.trip_start_time
           , 'duration': self.theseTrips.duration
           , 'vehicle': self.theseTrips.vehicle, ...self.thisRoute};
-        self.addNewEntry(entry);
+        let a = await self.addNewEntry(entry);
       }
     },
     deleteTheseTrips: function() {
@@ -498,29 +502,33 @@ export default {
     addNewVehicleTripPopup: function(vehicle) {
       const self = this;
       console.log("Adding new trip by ", vehicle);
+      self.resetSimple(self.theseTrips);
       self.theseTrips.vehicle = vehicle;
+      //self.theseTrips.timetable = {};
+      //self.theseTrips.trip_start_time = '';
+      //self.theseTrips.trip_end_time = '';
+      //self.theseTrips.timetable = {};
       self.theseTrips.is_new = true;
-      self.theseTrips.timetable = {};
-      self.theseTrips.trip_start_time = '';
-      self.theseTrips.trip_end_time = '';
-      self.theseTrips.duration = 30;
-      self.theseTrips.timetable = {};
+      self.theseTrips.duration = '30';
       self.theseTrips.days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
       self.popupAddTrips = true;
     },
     addTheseNewTrips: async function() {
       const self = this;
-      console.log("Adding followiing trips: ", self.theseTrips);
+      const app = self.$f7;
+
       for(var day of self.theseTrips.days) {
-        console.log("Adding on day : ", day);
+        app.dialog.preloader("Adding for " + day);
         var entry = {day: day, is_new:true
           , trip_start_time: self.theseTrips.trip_start_time
           , duration: self.theseTrips.duration
           , comment: self.theseTrips.comment
           , vehicle: self.theseTrips.vehicle
           , ...self.thisRoute};
-        await self.addNewEntry(entry, true, false);
+        await self.addNewEntry(entry, false, false);
+        app.dialog.close();
       }
+      let r = await self.fetchTransport();
       self.popupAddTrips = false;
     },
     addNewVehicle: function(veh) {
