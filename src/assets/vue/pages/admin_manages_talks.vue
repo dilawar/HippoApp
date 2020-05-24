@@ -73,10 +73,14 @@
                        @click="deleteEventOfThisTalk(thisTalk.event)">
               Delete Booking
             </f7-button>
-            <f7-link  popup-close :href="'/email/talk/'+thisTalk.id">Send Email</f7-link>
+            <f7-link  popup-close 
+              :href="'/email/talk/'+thisTalk.id">Send Email</f7-link>
           </f7-card-header>
           <f7-card-content>
-            {{thisTalk.event.venue}},
+            {{thisTalk.event.venue}}
+            <f7-link external target="_system" :href="thisTalk.event.vc_url">
+              {{thisTalk.event.vc_url}}
+            </f7-link>, 
             {{thisTalk.event.date | date}},
             {{thisTalk.event.start_time | clockTime}}
           </f7-card-content>

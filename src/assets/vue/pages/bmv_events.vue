@@ -198,7 +198,7 @@
       openEventPopup: function(event) 
       {
         const self = this;
-        const app = this;
+        const app = self.$f7;
         app.preloader.show();
         self.thisEvent = event;
         // Fetch all events for this gid.
@@ -224,7 +224,7 @@
       {
         const self = this;
         const app = self.$f7;
-        app.dialog.preloader();
+        app.preloader.show();
         self.promiseWithAuth('bmvadmin/event/update', event)
           .then( function(x) {
             // Fetch this group events.
@@ -234,7 +234,7 @@
                 app.dialog.close();
               });
           });
-        setTimeout(()=>app.dialog.close(), 1000);
+        setTimeout(()=>app.preloader.hide(), 1000);
       },
       deleteEvent: function(event) 
       {

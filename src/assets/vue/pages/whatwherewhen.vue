@@ -1,24 +1,24 @@
 <template>
   <f7-page page-content 
-           ptr @ptr:refresh="refreshFetchEvents"
-           @page:beforein="pageBeforeIn"
-           @page:afterin="pageAfterIn"
-           infinite
-           :infinite-preloader="showPreloader" 
-           @infinite="loadMore">
+    ptr @ptr:refresh="refreshFetchEvents"
+    @page:beforein="pageBeforeIn"
+    @page:afterin="pageAfterIn"
+    infinite
+    :infinite-preloader="showPreloader" 
+    @infinite="loadMore">
 
-  <f7-navbar title="What Where When" back-link="Back">
-    <!-- Search bar -->
-    <f7-subnavbar :inner="false">
-      <f7-searchbar
-        search-container=".search-list"
-        search-in=".item-title, .item-header, .item-footer, .item-after"
-        :disable-button="!$theme.aurora"
-        ></f7-searchbar>
-    </f7-subnavbar>
-  </f7-navbar>
+    <f7-navbar title="What Where When" back-link="Back">
+      <!-- Search bar -->
+      <f7-subnavbar :inner="false">
+        <f7-searchbar search-container=".search-list"
+          search-in=".item-title, .item-header, .item-text, .item-footer, .item-after"
+          :disable-button="!$theme.aurora">
+        </f7-searchbar>
+      </f7-subnavbar>
+    </f7-navbar>
 
   <!-- Filter by venue should be a floating button. -->
+  <!--
   <f7-fab position="right-top" slot="fixed" color="green" text="">
     <f7-icon icon="fa fa-filter fa-2x"></f7-icon>
     <f7-icon icon="fa fa-close fa-2x"></f7-icon>
@@ -31,6 +31,7 @@
       </f7-fab-button>
     </f7-fab-buttons>
   </f7-fab>
+  -->
 
   <!-- Grid -->
   <f7-actions :grid="true"
@@ -57,54 +58,13 @@
      </f7-actions-group>
   </f7-actions>
 
-  <f7-block-header>
-    <f7-link external target="_system" :href="calendarLink" 
-      class="float-right" icon="far fa-calendar">
-      Google Calendar
-    </f7-link>
-  </f7-block-header>
-
-  <!--
-  <div class="search-list timeline">
-    <f7-list media-list accordion-list style="list-style-type:none">
-      <div class="timeline-item" v-for="(item, key) in items" :key="key">
-        <div class="timeline-item-date">
-          {{humanReadableDate(item.date,false)}} 
-        </div>
-        <div class="timeline-item-divider"></div>
-
-        <div class="timeline-item-content">
-          <div class="timeline-item-time">
-            {{humanReadableTime(item.start_time)}} to
-            {{humanReadableTime(item.end_time)}}
-            ({{fromNow(item)}})
-          </div>
-
-          <f7-list-item :accordion-item="item.description.length>80" :key="key">
-            <div slot="header"> {{item.venue}} </div>
-            <div slot="text" class="text-color-black">
-              <strong>{{item.title}}</strong>
-              <small>by {{item.created_by}}</small>
-            </div>
-            <div slot="title" v-if="item.vc_url">
-              <f7-link external target="_system" :href="item.vc_url">
-                {{item.vc_url}}
-              </f7-link>
-            </div>
-            <f7-accordion-content style="background-color:Ivory">
-              <f7-block>
-                <div v-html="item.title+'<br />'+item.description"></div>
-              </f7-block>
-            </f7-accordion-content>
-          </f7-list-item>
-
-        </div>
-      </div>
-    </f7-list>
-  </div>
-  -->
-
   <f7-block>
+    <f7-block-header>
+      <f7-link external target="_system" :href="calendarLink" icon="far fa-calendar"> 
+        Google Calendar
+      </f7-link>
+    </f7-block-header>
+
     <f7-list accordion-list media-list no-hairlines class="search-list">
       <f7-list-item :accordion-item="item.description.length>80" 
         v-for="(item, key) in items" :key="key">
