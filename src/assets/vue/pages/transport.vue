@@ -1,21 +1,23 @@
 <template>
-  <f7-page ptr @ptr:refresh="fetchTransportAgain" 
-    @page:beforein="pageBeforeIn"
-    @page:afterin="pageAfterIn"
-    page-content>
+  <f7-page ptr @ptr:refresh="fetchTransportAgain" page-content>
     <f7-navbar title="Transport" back-link="Back"></f7-navbar>
 
     <f7-fab position="right-bottom" slot="fixed" color="green" href="/osm/liveroute/60">
       <f7-icon icon="fa fa-map fa-2x"></f7-icon>
     </f7-fab>
 
-    <f7-button external target="_system" class="float-right"
-      small href="https://www.ncbs.res.in/shuttle_trips">
-      Official Schedule
-    </f7-button> 
+    <f7-block-header class="text-color-black">
+      <f7-button external target="_system" class="float-right"
+        small href="https://www.ncbs.res.in/shuttle_trips">
+        Official Schedule
+      </f7-button> 
+    </f7-block-header>
 
     <!-- Select days buttons. -->
     <f7-block>
+      <f7-block-header>
+        Last updated on: <strong> {{toNowDatetime(transport.last_updated_on)}} ago.</strong>
+      </f7-block-header>
       <f7-row no-gap>
         <f7-col no-gap v-for="d in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']" :key="'col'+d">
           <f7-button small :key="d" :fill="(d==selectedDay)?true:false" @click="changeDay(d)"> 
@@ -26,7 +28,7 @@
     </f7-block>
 
     <!-- List of transport. -->
-    <f7-block inset>
+    <f7-block>
       <f7-list media-list accordion-list no-hairlines class="display-block">
         <f7-list-item accordion-item v-for="(route, key) in transport.routes" :key="key">
           <div slot="title">
@@ -36,7 +38,9 @@
           <f7-accordion-content>
             <f7-list media-list>
               <f7-list-item v-for="(t, key) in thisRouteTimetable(route)"
+                :header="t.vehicle"
                 :key="key" v-if="isUpcomingTrip(t)">
+
                 <div slot="title">
                   {{str2Moment(t.trip_start_time, 'HH:mm:ss').format('hh:mm A')}}
                 </div>
@@ -46,6 +50,7 @@
                 <span slot='after' v-if="isUpcomingTrip(t)">
                   {{str2Moment(t.trip_start_time, 'HH:mm:ss').fromNow()}}
                 </span>
+
               </f7-list-item>
             </f7-list>
           </f7-accordion-content>
@@ -101,7 +106,7 @@ export default {
       var icon = 'fa ';
       vehicle = vehicle.toLowerCase();
       if(vehicle == 'shuttle')
-        icon += ' fa-bus'
+        icon += ' fa-space-shuttle'
       else if(vehicle == 'buggy')
         icon += ' fa-bug';
       else
@@ -110,7 +115,7 @@ export default {
       if(self.isNextTrip(startTime, day))
         icon += ' fa-spin fa-pulse fa-2x';
 
-      icon += ' fa-fw';
+      icon += ' fa-2x';
       return icon;
     },
     isNextTrip: function(startTime, day)
@@ -125,7 +130,7 @@ export default {
         return true;
       return false;
     },
-    filterTransport: function() {
+    filterTransport: async function() {
       const self = this;
       if(! self.transport.hasOwnProperty('timetable'))
         return;
@@ -136,7 +141,7 @@ export default {
         d = d[self.drop.toLowerCase()];
       self.thisTimetable = Object.values(d);
     },
-    routeFromTo: function(pickup, drop)
+    routeFromTo: async function(pickup, drop)
     {
       const self = this;
       self.pickup = pickup;
@@ -146,7 +151,7 @@ export default {
       // Change timetable else DOM won't render
       self.filterTransport( );
     },
-    changeDay: function(data) {
+    changeDay: async function(data) {
       console.log('Changing day ', data);
       const self = this;
       self.selectedDay = data;
@@ -159,7 +164,7 @@ export default {
       self.fetchTransport();
       self.$f7.ptr.done();
     },
-    fetchTransport: function( ) 
+    fetchTransport: async function( ) 
     {
       const self         = this;
       const app          = self.$f7;
@@ -181,11 +186,17 @@ export default {
     },
     thisRouteTimetable: function(route) {
       const self = this;
+      if(! (self.selectedDay.toLowerCase() in self.transport.timetable))
+        return;
+
       let d = self.transport.timetable[self.selectedDay.toLowerCase()];
       if(d)
         d = d[route.pickup_point.toLowerCase()];
       if(d) 
         d = d[route.drop_point.toLowerCase()];
+      if(! d)
+        return [];
+
       return Object.values(d);
     },
     nextTrip: function(route) {
