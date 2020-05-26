@@ -2,13 +2,19 @@
   <f7-page> 
 
     <f7-navbar title="Booking Events" back-link="Back">
+      <f7-link external target="_system"
+        slot="right"
+        icon="far fa-question-circle"
+        href="https://ncbs-hippo.readthedocs.io/en/latest/user_manual/#how-to-create-a-general-booking-request"
+      >
+        <tt>DOCS</tt>
+      </f7-link>
     </f7-navbar>
 
     <f7-block>
       <f7-list media-list no-hairlines>
         <!-- Ask user for what purpose they are booking -->
         <f7-list-input label="Select the TYPE of event..."
-                       inline-label
                        type="select" 
                        @change="eventType=$event.target.value"
                        :value="eventType">
@@ -17,12 +23,14 @@
           </option>
         </f7-list-input>
         <f7-list-item checkbox 
-                      :checked="sendEmailToAcademic"
-                      @change="changeSendEmailToAcademic"
-                      title="Send email(s) to Academic community"
-                      footer="I will send email to academic mailing list on the 
-                              day of event and associated event to NCBS public 
-                              calendar. Usually CHECKED for talks and seminars.">
+          :checked="sendEmailToAcademic"
+          @change="changeSendEmailToAcademic"
+          title="Send email(s) to Academic community">
+          <div slot="text">
+            <strong>If cheched,</strong>, Hippo will send email
+            to academic mailing list on the day of the event. Also the event
+            will appear on the NCBS's Public Calendar.
+          </div>
         </f7-list-item>
       </f7-list>
 

@@ -1,10 +1,10 @@
 <template>
   <f7-page @page:beforein="initData">
-    <f7-navbar title="Manage Speaker" back-link="Back">
+    <f7-navbar title="Manage Speakers" back-link="Back">
     </f7-navbar>
 
     <f7-list no-hairlines style="margin:10px" media-list>
-      <f7-list-input :input="false">
+      <f7-list-input :input="false" v-if="! createNewSpeaker">
         <v-autocomplete  slot="input"
           ref="refEventSpeaker"
           input-class="item-input"
@@ -219,6 +219,8 @@ export default {
           {
             self.notify("Successfully added new speaker.", "");
             self.fetchSpeaker(self.thisSpeaker.id);
+            // go back.
+            self.$f7router.back();
           }
         });
     },

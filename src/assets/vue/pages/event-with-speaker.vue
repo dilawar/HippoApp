@@ -109,24 +109,37 @@
 
   <f7-block>
     <!-- SPEAKER -->
-    <f7-list no-hairlines media-list>
-      <f7-list-group>
-        <f7-list-input :input="false" label="Speaker (required)">
-          <v-autocomplete  slot="input"
-            ref="refEventSpeaker"
-            input-class="form-control"
-            placeholder="Email (you can add a new speaker if none found)"
-            results-property="email"
-            results-display="name"
-            :request-headers="apiPostData()"
-            :showNoResults="false"
-            method="post"
-            @selected="onSpeakerSelected"
-            @results="foundSpeakersOnSearch"
-            @noResults="createNewSpeaker=true"
-            :source="(q)=>searchPeopleURI(q, 'speaker')">
-          </v-autocomplete>
-        </f7-list-input>
+    <f7-list media-list>
+      <f7-list-item title="Step 1: Speaker informaton" group-title>
+      </f7-list-item>
+      <f7-list-item>
+        <div slot="media">
+          <f7-icon icon="fas fa-info fa-2x"></f7-icon>
+        </div>
+        Before I register your {{thisEvent.type}}, I need to know the
+        details of the <strong>speaker</strong>. Search for the speaker
+        below, if not found, I'll ask you to create a new speaker. After
+        creating the speaker, you will come back to this page and search
+        for the speaker again.  select the newly created speaker and
+        continue.
+      </f7-list-item>
+      <f7-list-input :input="false"
+        :label="'Speaker is required for ' + thisEvent.type">
+        <v-autocomplete  slot="input"
+          ref="refEventSpeaker"
+          input-class="form-control"
+          placeholder="Email (you can add a new speaker if none found)"
+          results-property="email"
+          results-display="name"
+          :request-headers="apiPostData()"
+          :showNoResults="false"
+          method="post"
+          @selected="onSpeakerSelected"
+          @results="foundSpeakersOnSearch"
+          @noResults="createNewSpeaker=true"
+          :source="(q)=>searchPeopleURI(q, 'speaker')">
+        </v-autocomplete>
+      </f7-list-input>
 
       <f7-list-item v-if="createNewSpeaker">
         <f7-button slot="title" href="/admin/speaker/add/-1">
@@ -135,7 +148,7 @@
         <div slot="after">No one is found...</div>
       </f7-list-item>
       <f7-list-item v-if="(! createNewSpeaker ) && parseInt(thisSpeaker.id) > 0"
-                    style="background-color:lightyellow">
+        style="background-color:lightyellow">
         <img slot="media" width="70px" :src="'data:image/jpeg;base64, '+thisSpeaker.photo">
         </img>
         <div slot="header" v-html="thisSpeaker.html"></div>
@@ -144,10 +157,11 @@
         </f7-button>
       </f7-list-item>
 
-    </f7-list-group>
 
     <!-- WHEN SPEAKER IS SET, SHOW THE TALK SECTION -->
     <f7-list-group v-if="parseInt(thisEvent.speaker_id)>0">
+      <f7-list-item :title="'Step 2: Details of your ' + thisEvent.type" group-title>
+      </f7-list-item>
       <f7-list-input v-if="parseInt(thisEvent.speaker_id) > 0"
                      @input="thisEvent.title = $event.target.value"
                      label="Title"
@@ -200,26 +214,31 @@
       </f7-list-input>
 
       <!-- Register talk and book venue for it. -->
-      <f7-list-item v-if="! thisEvent.isRegistered">
-        <f7-button small raised 
-                   :disabled="! isEventValid.status" 
-                   @click="registerTalk()"
-                   slot="after">
-          {{isEventValid.msg}}
-        </f7-button>
-      </f7-list-item>
-      <f7-list-item v-else>
-        <f7-button small raised 
-                   :disabled="! thisEvent.isRegistered" 
-                   :href="'/bookevent/talks.'+thisEvent.id+'/'+thisEvent.type"
-                   slot="after">
-          Book a venue
-        </f7-button>
+      <template v-if="! thisEvent.isRegistered">
+        <f7-list-item>
+          <f7-button raised 
+            :disabled="! isEventValid.status" 
+            @click="registerTalk()"
+            slot="after">
+            {{isEventValid.msg}}
+          </f7-button>
+        </f7-list-item>
+      </template>
+      <template v-else>
+        <f7-list-item title="Step 3" group-title>
+        </f7-list-item>
+        <f7-list-item>
+          <f7-button fill :disabled="! thisEvent.isRegistered" 
+            :href="'/bookevent/talks.'+thisEvent.id+'/'+thisEvent.type"
+            slot="after">
+            Book a venue
+          </f7-button>
+        </f7-list-item>
+      </template>
+      <!-- PROVIDE SOME SPACE AT BOTTOM -->
+      <f7-list-item>
       </f7-list-item>
     </f7-list-group>
-
-    <!-- PROVIDE SOME SPACE AT BOTTOM -->
-    <f7-list-item></f7-list-item>
     </f7-list>
 
   </f7-block>
