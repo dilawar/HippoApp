@@ -486,7 +486,7 @@ export default {
     },
     assignPresenter: function() {
       const self = this;
-      console.log('Submitting', self.thisJC);
+      // console.log('Submitting', self.thisJC);
       self.promiseWithAuth('/jcadmin/assign', self.thisJC)
         .then(function(x) {
           let res = JSON.parse(x.data).data;
