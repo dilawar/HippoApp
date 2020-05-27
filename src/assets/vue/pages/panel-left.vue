@@ -32,7 +32,7 @@
         <f7-icon slot="media" icon="fa fa-edit fa-2x"></f7-icon>
       </f7-list-item>
 
-      <f7-list-item v-if="profile.eligible_for_aws"
+      <f7-list-item 
         link="/myaws/" 
         target="_blank"
         view=".view-main"
@@ -82,7 +82,7 @@ export default {
     return {
       username: self.whoAmI(),
       alreadyLoggedIn: false,
-      profile: {},
+      profile: self.$store.getters.profile,
       notifications: [],
     };
   },
