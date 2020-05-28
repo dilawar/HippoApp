@@ -491,6 +491,8 @@ export default {
       const app = self.$f7;
 
       let date = self.dbDate(self.thisBooking.startDateTime);
+      let startTime = self.dbTime(self.thisBooking.startDateTime);
+      let endTime = self.dbTime(self.thisBooking.endTime);
 
       if(date in self.holidays) {
         app.dialog.confirm("You are booking on a holiday or a \ day " +
@@ -499,9 +501,6 @@ export default {
           "Continue (some type of events will be rejected by Hippo)?"
           , "Public holiday!"
           , function(x) {
-            let startTime = self.dbTime(self.thisBooking.startDateTime);
-            let endTime = self.dbTime(self.thisBooking.endTime);
-
             app.dialog.preloader('Fetching venues...');
             self.promiseWithAuth('info/venues/availability/all'
               , {'date':date, 'start_time': startTime, 'end_time': endTime}
@@ -511,6 +510,15 @@ export default {
               self.popupVenueSelect = true;
             });
           }, null);
+      } else {
+        app.dialog.preloader('Fetching venues...');
+        self.promiseWithAuth('info/venues/availability/all'
+          , {'date':date, 'start_time': startTime, 'end_time': endTime}
+        ).then(function(x) {
+          self.venues = JSON.parse(x.data).data;
+          app.dialog.close();
+          self.popupVenueSelect = true;
+        });
       }
     },
     resolveRepeatPattern: function() 
