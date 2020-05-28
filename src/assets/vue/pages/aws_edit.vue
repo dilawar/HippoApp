@@ -258,6 +258,7 @@ export default {
         self.thisAWS['tcm_member_'+(1+index)] = val.trim();
       });
 
+      self.thisAWS.speaker = self.thisAWS.speaker.toLowerCase();
       let endpoint = 'acadadmin/aws/update';
       if(self.isupcoming === 'YES') {
         endpoint = 'acadadmin/upcomingaws/update';
@@ -273,7 +274,7 @@ export default {
             self.fetchAWS(self.thisAWS.id);
           }
           else
-            self.notify("Failed", "Failed to updated AWS:" + res.msg);
+            self.notify("Failed", "Failed to update AWS:" + res.msg);
         });
     },
     addNewSupervisor: function()
