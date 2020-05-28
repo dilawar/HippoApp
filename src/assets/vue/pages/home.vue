@@ -152,16 +152,17 @@
               :value="password"
               @input="password = $event.target.value">
             </f7-list-input>
-          </f7-list>
 
-          <f7-row>
-            <f7-col width="45">
-              <f7-button login-screen-close raised login-screen-close>Cancel</f7-button>
-            </f7-col>
-            <f7-col width="45">
-              <f7-button @click="signIn()" raised login-screen-close>Sign In</f7-button>
-            </f7-col>
-          </f7-row>
+            <f7-row>
+              <f7-col width="45">
+                <f7-button login-screen-close raised login-screen-close>Cancel</f7-button>
+              </f7-col>
+              <f7-col width="45">
+                <f7-button @click="signIn()" raised login-screen-close>Sign In</f7-button>
+              </f7-col>
+            </f7-row>
+
+          </f7-list>
 
           <f7-block-footer>
             Use your NCBS/InSTEM/Others credentials. Verify
@@ -289,7 +290,7 @@ export default {
       const app = self.$f7;
       app.dialog.preloader("Loging in ...");
       app.request.promise.post( self.$store.state.api+"/authenticate"
-        , {login:self.username, password: btoa(self.password)})
+        , {login:self.username.toLowerCase(), password: btoa(self.password)})
         .then(function(x) {
           try {
             var res = JSON.parse(x.data);
