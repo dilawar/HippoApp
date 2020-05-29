@@ -229,7 +229,7 @@ Vue.mixin({
       },
       whoAmI: function() {
          const self = this;
-         return self.$localStorage.get('HIPPO-LOGIN');
+         return self.$localStorage.get('HIPPO-LOGIN').toLowerCase();
       },
       formatKey: function(key) {
          return key.split('_').join(' ').toUpperCase();

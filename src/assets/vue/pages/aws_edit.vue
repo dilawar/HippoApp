@@ -118,17 +118,19 @@
           header="No one  is found. Add...">
           <f7-button @click="popupSupervisor=true">Add new TCM</f7-button>
         </f7-list-item>
-    </f7-list>
-    <f7-row>
-      <f7-col>
-        <f7-button raised small back>Close</f7-button>
-      </f7-col>
-      <f7-col>
-        <f7-button raised popup-close small fill @click="updateAWS()">
-          Update
-        </f7-button>
-      </f7-col>
-    </f7-row>
+        <f7-list-item>
+          <f7-col>
+            <f7-button raised back>Close</f7-button>
+          </f7-col>
+          <f7-col>
+            <f7-button raised popup-close fill @click="updateAWS()">
+              Update
+            </f7-button>
+          </f7-col>
+        </f7-list-item>
+        <f7-list-item>
+        </f7-list-item>
+      </f7-list>
   </f7-block>
 </f7-page>
 </template>
@@ -260,6 +262,7 @@ export default {
 
       self.thisAWS.speaker = self.thisAWS.speaker.toLowerCase();
       let endpoint = 'acadadmin/aws/update';
+      console.log(111, self.whoAmI(), self.isupcoming, self.thisAWS.speaker);
       if(self.isupcoming === 'YES') {
         endpoint = 'acadadmin/upcomingaws/update';
         if(self.whoAmI() === self.thisAWS.speaker)
