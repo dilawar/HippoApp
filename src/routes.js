@@ -41,6 +41,7 @@ import ProfilePage from './assets/vue/pages/profile.vue';
 import BmvBookingRequests from './assets/vue/pages/bmv_booking_requests.vue';
 import BmvEvents from './assets/vue/pages/bmv_events.vue';
 import BmvVenues from './assets/vue/pages/venues.vue';
+import EditEventPage from './assets/vue/pages/event_edit.vue';
 
 // ACAD ADMIN 
 import AcadAdminAWSRoster from './assets/vue/pages/acad_aws_roster.vue';
@@ -86,6 +87,10 @@ export default [
    {
       path: '/bmvadmin/events/',
       component: BmvEvents
+   },
+   {
+      path: '/event/edit/:gid/:eid?',
+      component: EditEventPage
    },
    {
       path: '/updatetalk/:talkid/',

@@ -114,14 +114,19 @@
                 </div>
                 <div slot="footer" v-else> <!-- BROWSER -->
                   <f7-row>
-                    <f7-col>
+                    <f7-col width=30>
                       <f7-button small color="red"
                         @click="deleteEvent(event)">Delete</f7-button>
                     </f7-col>
-                    <f7-col>
+                    <f7-col width=30>
+                      <f7-button small @click=editEvent(event)>
+                        Edit
+                      </f7-button>
+                    </f7-col>
+                    <f7-col width=30>
                       <f7-button small 
                         @click="toggleIsPublicEvent(event)">
-                        toggle PUBLIC EVENT
+                        toggle Public Event
                       </f7-button>
                     </f7-col>
                   </f7-row>
@@ -160,6 +165,11 @@
     methods : {
       refreshData: function( ) {
         const self = this;
+      },
+      editEvent: function(ev) {
+        const self = this;
+        self.eventPopup = false;
+        self.$f7router.navigate("/event/edit/"+ev.gid+"/"+ev.eid);
       },
       fetchUpcomingEvents: function() 
       {
