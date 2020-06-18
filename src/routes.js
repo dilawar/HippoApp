@@ -34,6 +34,9 @@ import InventoryPage from './assets/vue/pages/inventory.vue';
 import NoticeBoards from './assets/vue/pages/noticeboards.vue';
 import Email from './assets/vue/pages/email.vue';
 
+// covid
+import Covid from './assets/vue/pages/covid.vue';
+
 // Common profile page.
 import ProfilePage from './assets/vue/pages/profile.vue';
 
@@ -259,5 +262,9 @@ export default [
    {
       path: '/info/:what',
       component: InfoPage
+   },
+   {
+      path: '/covid',
+      component: Covid
    },
 ]
