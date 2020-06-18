@@ -2,75 +2,70 @@
   <f7-page page-content>
     <f7-navbar title="COVID19 Information" back-link="Back"></f7-navbar>
 
-    <f7-block-header>
-      <f7-row>
-        <f7-col width="70">
-          Data shown here is scraped from BBMP website every hour.
-          <f7-link external target="_system"
-            href="https://covid19.bbmpgov.in"> 
-            https://covid19.bbmpgov.in
-          </f7-link>.
-        </f7-col>
-        <f7-col v-if="isUserAuthenticated()" width="30">
-          <f7-button small raised 
-            @click="notifyNewCovidAlert"
-            tooltip="Hippo will send you email alert if a new case is found in
-            your locality (1KM radius)">
-            Add Alert
-          </f7-button>
-          <div v-if="alerts.length > 0">
-            <small>
-              {{alerts.length}} active alerts (click on circle to remove);
-            </small>
-          </div>
+    <f7-row style="background-color:rgba(255,255,255,0.8);
+      position:absolute; width:100vw; bottom:60px; left:0px; z-index:1000">
+      <f7-col v-if="isUserAuthenticated()" width="30">
+        <f7-button small raised fill round
+          @click="notifyNewCovidAlert"
+          tooltip="Hippo will send you email alert if a new case is found in
+          your locality (1KM radius)">
+          + ALERT
+        </f7-button>
+      </f7-col>
+      <f7-col v-if="alerts.length > 0" width="40">
+        <small>
+          {{alerts.length}} alerts (click on circle to remove);
+        </small>
+      </f7-col>
+      <f7-col width="30">
+        <f7-link external target="_system" href="https://covid19.bbmpgov.in"> 
+          data source BBMP
+        </f7-link>
+      </f7-col>
+    </f7-row>
 
-        </f7-col>
-      </f7-row>
-    </f7-block-header>
+    <l-map ref="map" 
+      :zoom="zoom" 
+      :center="center"
+      :style="mapStyle"
+      @update:center="centerUpdated"
+      @update:zoom="zoomUpdated"
+      @update:bounds="boundsUpdated">
+      <l-control-layers position="topright">
+      </l-control-layers>
+      <l-tile-layer v-for="tileProvider in $store.state.OSM.tileProviders"
+        :key="tileProvider.name"
+        :name="tileProvider.name"
+        :visible="tileProvider.visible"
+        :url="tileProvider.url"
+        :attribution="tileProvider.attribution"
+        layer-type="base">
+      </l-tile-layer>
 
-    <div style="width=100%; height:800px">
-      <l-map ref="map" 
-        :zoom="zoom" 
-        :center="center"
-        :style="mapStyle"
-        @update:center="centerUpdated"
-        @update:zoom="zoomUpdated"
-        @update:bounds="boundsUpdated">
-        <l-control-layers position="topright">
-        </l-control-layers>
-        <l-tile-layer v-for="tileProvider in $store.state.OSM.tileProviders"
-          :key="tileProvider.name"
-          :name="tileProvider.name"
-          :visible="tileProvider.visible"
-          :url="tileProvider.url"
-          :attribution="tileProvider.attribution"
-          layer-type="base">
-        </l-tile-layer>
+      <l-marker v-for="v, key in coronaXY" :lat-lng="v.latlng"
+        :key="key" :visible="true" 
+        :icon="covidIcon"> 
+        <l-tooltip>{{v.address}}</l-tooltip>
+      </l-marker>
 
-        <l-marker v-for="v, key in coronaXY" :lat-lng="v.latlng"
-          :key="key" :visible="true" 
-          :icon="covidIcon"> 
-          <l-tooltip>{{v.address}}</l-tooltip>
-        </l-marker>
+      <!-- Draw distances -->
+      <l-circle 
+        @click="removeAlert(alert)"
+        v-for="alert in alerts"
+        :radius="1000" 
+        :opacity="0.1"
+        :lat-lng="[alert.latitude, alert.longitude]">
+      </l-circle>
 
-        <!-- Draw distances -->
-        <l-circle 
-          @click="removeAlert(alert)"
-          v-for="alert in alerts"
-          :radius="1000" 
-          :opacity="0.1"
-          :lat-lng="[alert.latitude, alert.longitude]">
-        </l-circle>
+      <l-circle :lat-lng="myLocation" :radius="200">
+      </l-circle>
+      <l-marker :lat-lng="myLocation" 
+        @update:latLng="updateMyLocation"
+        key="mylocation" 
+        :draggable="true">
+      </l-marker>
+    </l-map>
 
-        <l-circle :lat-lng="myLocation" :radius="200">
-        </l-circle>
-        <l-marker :lat-lng="myLocation" 
-          @update:latLng="updateMyLocation"
-          key="mylocation" 
-          :draggable="true">
-        </l-marker>
-      </l-map>
-    </div>
   </f7-page>
 </template>
 
@@ -94,33 +89,11 @@ export default {
       alerts: [],
       covidIcon: L.divIcon( {className: 'fas fa-disease fa-1x'
         , iconSize: [20, 20], iconAnchor:[10,10]}),
-      geosearchOptions: {},
-      CustomControl :  L.Control.extend({
+
+      textControl :  L.Control.extend({
         onAdd: function (map) {
-          var container = L.DomUtil.create('input');
-          container.type="input";
-          container.placeholder="Search venues";
-          container.value = "";
-
-          container.style.backgroundColor = 'white';     
-          container.style.backgroundSize = "100px 100px";
-          container.style.width = '110px';
-          container.style.height = '15px';
-
-          container.onmouseover = function(){
-            container.style.backgroundColor = 'pink'; 
-          }
-          container.onmouseout = function(){
-            container.style.backgroundColor = 'white'; 
-          }
-
-          container.oninput = function()
-          {
-            if(container.value.length >= 2){
-              let name = container.value;
-            }
-          }
-
+          var container = L.DomUtil.create('div');
+          container.value = "ABCF";
           return container;
         },
       }),
@@ -139,8 +112,8 @@ export default {
     let res = await self.fetchData();
     res = await self.fetchAlerts();
 
-    //self.map = this.$refs.map.mapObject;
-    // new self.CustomControl({position:'topright'}).addTo(self.map);
+    self.map = this.$refs.map.mapObject;
+    new self.textControl({position:'top'}).addTo(self.map);
 
   },
   methods: { 
