@@ -1,6 +1,23 @@
 <template>
   <f7-page page-content>
-    <f7-navbar title="Map" back-link="Back"></f7-navbar>
+    <f7-navbar title="COVID19 Information" back-link="Back"></f7-navbar>
+
+    <f7-block inset>
+      <f7-block-title>
+        Source <f7-link external target="_system"
+          href="https://covid19.bbmpgov.in"> 
+          https://covid19.bbmpgov.in
+        </f7-link>
+      </f7-block-title>
+      <iframe
+        width="100%"
+        height="600px"
+        title="Visualization by BBMP"
+        src="https://bbmp.maps.arcgis.com/apps/opsdashboard/index.html#/4f4f20e852744b96b493528aab76777d">
+      </iframe>
+    </f7-block>
+
+    <!--
     <l-map ref="map" 
            :zoom="zoom" 
            :center="center"
@@ -19,6 +36,8 @@
                     layer-type="base">
       </l-tile-layer>
     </l-map>
+    -->
+
   </f7-page>
 </template>
 
