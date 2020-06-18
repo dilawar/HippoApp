@@ -12,12 +12,18 @@
           </f7-link>.
         </f7-col>
         <f7-col v-if="isUserAuthenticated()" width="30">
-          <f7-button small raised class="float-right"
+          <f7-button small raised 
             @click="notifyNewCovidAlert"
             tooltip="Hippo will send you email alert if a new case is found in
             your locality (1KM radius)">
-            Send Me Email Alert
+            Add Alert
           </f7-button>
+          <div v-if="alerts.length > 0">
+            <small>
+              {{alerts.length}} active alerts (click on circle to remove);
+            </small>
+          </div>
+
         </f7-col>
       </f7-row>
     </f7-block-header>
@@ -48,8 +54,14 @@
         </l-marker>
 
         <!-- Draw distances -->
-        <l-circle :lat-lng="myLocation" :radius="1000">
+        <l-circle 
+          @click="removeAlert(alert)"
+          v-for="alert in alerts"
+          :radius="1000" 
+          :opacity="0.1"
+          :lat-lng="[alert.latitude, alert.longitude]">
         </l-circle>
+
         <l-circle :lat-lng="myLocation" :radius="200">
         </l-circle>
         <l-marker :lat-lng="myLocation" 
@@ -79,6 +91,7 @@ export default {
       polylines: {},
       mapVenues : [],
       coronaXY: [],
+      alerts: [],
       covidIcon: L.divIcon( {className: 'fas fa-disease fa-1x'
         , iconSize: [20, 20], iconAnchor:[10,10]}),
       geosearchOptions: {},
@@ -124,8 +137,9 @@ export default {
     });
 
     let res = await self.fetchData();
+    res = await self.fetchAlerts();
 
-    self.map = this.$refs.map.mapObject;
+    //self.map = this.$refs.map.mapObject;
     // new self.CustomControl({position:'topright'}).addTo(self.map);
 
   },
@@ -134,6 +148,13 @@ export default {
     refreshMap: function() {
       const map = this.$refs.map.mapObject;
     },
+    fetchAlerts: async function() {
+      const self = this;
+      const app = self.$f7;
+      self.postWithPromise('/covid19/alert/mylist').then(function(x) {
+        self.alerts = JSON.parse(x.data).data;
+      });
+    },
     fetchData: async function( ) {
       const self = this;
       const app = self.$f7;
@@ -141,30 +162,24 @@ export default {
 
       app.preloader.show();
       // URL is from BBMP map; available in public.
-      self.postWithPromise('config/BBMP_COVID_DATA_URL').then(function(x) {
-        let url = JSON.parse(x.data).data.value;
-        app.request.promise.get(url).then( function(x) {
-          var cases = JSON.parse(x.data).features;
-          for(var k in cases) {
-            let item = cases[k].attributes;
-            let loc = L.latLng(L.latLng(parseFloat(item.Y), parseFloat(item.X)));
-            self.coronaXY.push({latlng: loc, address: item.Address});
-
-            var distance = loc.distanceTo(self.myLocation);
-            self.distances[loc] = distance;
-            if(distance < 2000 ) {
-              self.polylines[loc] = {
-                loc: loc
-                , distance: distance
-                , latlngs : [self.myLocation, loc]
-                , color: 'red'
-              };
-            }
+      self.postWithPromise('covid19/data').then(function(x) {
+        let cases = JSON.parse(x.data).data;
+        for(var k in cases) {
+          let item = cases[k];
+          let loc = L.latLng(L.latLng(item.latitude, item.longitude));
+          self.coronaXY.push({latlng: loc, address: item.address});
+          var distance = loc.distanceTo(self.myLocation);
+          self.distances[loc] = distance;
+          if(distance < 2000 ) {
+            self.polylines[loc] = {
+              loc: loc
+              , distance: distance
+              , latlngs : [self.myLocation, loc]
+              , color: 'red'
+            };
           }
-          console.log(self.polylines);
-
-          app.preloader.hide();
-        });
+        }
+        app.preloader.hide();
       });
       setTimeout( () => app.preloader.hide(), 10000);
     },
@@ -200,14 +215,34 @@ export default {
       app.dialog.confirm("Tip! You can drag the marker to more precise location."
         , "Continue?"
         , function(x) {
-          console.log("Confirmed yet");
-          let data = {login: self.whoAmI(), loc: self.myLocation};
-          self.promiseWithAuth('/covid/alert/add/', data).then(function(x) {
-              console.log('Added alert: ', data);
-            });
+          let data = {login: self.whoAmI(), latitude: self.myLocation.lat
+            , longitude: self.myLocation.lng};
+          self.promiseWithAuth('/covid19/alert/add', data).then(function(x) {
+            let res = JSON.parse(x.data).data;
+            if(res.success) {
+              self.notify("Success", "Added alert");
+              self.fetchAlerts();
+            }
+          });
         }, function(no) {
           console.log("Rejected");
         });
+    },
+    removeAlert: function(alt) {
+      const self = this;
+      const app = self.$f7;
+      console.log("Removing alert ", alt);
+      app.dialog.confirm("Are you sure?", "Removing this alert?"
+        , function(sure) { 
+          self.promiseWithAuth('/covid19/alert/delete', alt)
+            .then(function(x) {
+              let res = JSON.parse(x.data).data;
+              if(res.success) {
+                self.notify("Success", "Successfully removed alert");
+                self.fetchAlerts();
+              }
+            });
+        }, null);
     },
   },
 };
