@@ -18,6 +18,11 @@
                     :attribution="tileProvider.attribution"
                     layer-type="base">
       </l-tile-layer>
+      <l-marker :ref="'marker'+v.id" v-for="v in mapVenues" :key="v.id" :lat-lng="v.xy"> 
+        <l-tooltip :ref="'tooltip'+v.id" :options="$store.state.OSM.toolTipOpts">
+          <span v-html="v.html"></span>
+        </l-tooltip>
+      </l-marker>
     </l-map>
   </f7-page>
 </template>

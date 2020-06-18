@@ -142,21 +142,6 @@ export default {
               });
             });
           });
-
-          //self.googleMapProvider.search({query: addr}).then( (results) => {
-          //  console.log( "Found many results ", results);
-          //  results.map((place, index) => {
-          //    self.markers.push({
-          //      id: index, xy: L.latLng(place.y, place.x)
-          //      , html: `<font style='color:red'> This position is found by
-          //                       Google Map as per given address. Use it at your
-          //                       own risk! <br /> </font>`
-          //      + place.label
-          //    });
-          //  });
-          //  console.log( 'Total markers ' + self.markers.length);
-          //  // Add the address on the 
-          //});
         }
       }
     }

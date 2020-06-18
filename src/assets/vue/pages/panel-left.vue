@@ -27,9 +27,8 @@
         target="_blank"
         view=".view-main"
         title="My Bookings" 
-        panel-close
-      >
-        <f7-icon slot="media" icon="fa fa-edit fa-2x"></f7-icon>
+        panel-close>
+        <f7-icon slot="media" icon="fa fa-plus fa-2x"></f7-icon>
       </f7-list-item>
 
       <f7-list-item 

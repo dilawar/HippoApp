@@ -68,14 +68,19 @@ export default {
   data() {
     const self = this;
     return {
-      zoom:18,
+      zoom:14,
       bounds: null,
       map: null,
-      center: L.latLng(13.071081, 77.58025),
+      center: L.latLng(13.07083, 77.58014),
+      myLocation: L.latLng(13.07083, 77.58014),
       mapStyle: 'width:100%; height:100%',
       venues: [],
+      distances: {},
+      polylines: {},
       mapVenues : [],
-      venueIcon: L.divIcon( {className: 'fa fa-map-marker fa-2x' }),
+      coronaXY: [],
+      covidIcon: L.divIcon( {className: 'fas fa-disease fa-1x'
+        , iconSize: [20, 20], iconAnchor:[10,10]}),
       geosearchOptions: {},
       CustomControl :  L.Control.extend({
         onAdd: function (map) {
@@ -100,19 +105,6 @@ export default {
           {
             if(container.value.length >= 2){
               let name = container.value;
-              let found = [];
-              for(let k in self.mapVenues)
-              {
-                let venue = self.mapVenues[k];
-                if( venue.id.toLowerCase().includes(name.toLowerCase()) )
-                  found.push(venue);
-              }
-              // Flash these venues
-              found.map( venue => {
-                // Find its reference.
-                let p = self.$refs['marker'+venue.id][0].mapObject;
-                p.bindPopup(venue.html).openPopup();
-              });
             }
           }
 
@@ -121,37 +113,60 @@ export default {
       }),
     };
   },
-  mounted: function() {
+  mounted: async function() {
     const self = this;
-    self.postWithPromise("/venue/list/all").then(function(x) {
-      let res = JSON.parse(x.data);
-      self.venues = res.data;
-      // Reformat to create mapVenues
-      for(var k in self.venues) {
-        var venue = self.venues[k];
-        if(venue.longitude > 0 && venue.latitude > 0) {
-          var mapV = { 
-            id: venue.id
-            , xy: L.latLng(parseFloat(venue.latitude), parseFloat(venue.longitude))
-            , html: venue.id + "<sup>" + venue.floor + "</sup>"
-            , size: parseInt(venue.strength),
-          };
-          self.mapVenues.push(mapV);
-        }
-      };
+    const app = self.$f7;
+
+    navigator.geolocation.getCurrentPosition( function(loc) {
+      self.myLocation = L.latLng(loc.coords.latitude, loc.coords.longitude);
+    }, function(x) {
+      //
     });
 
-    // Once venues have been fetched, add them to controller.
+    let res = await self.fetchData();
+
     self.map = this.$refs.map.mapObject;
-    new self.CustomControl({position:'topright'}).addTo(self.map);
+    // new self.CustomControl({position:'topright'}).addTo(self.map);
+
   },
   methods: { 
-    refreshVenues: function() {
-      self.fetchVenues();
-    },
     onResize: function() { },
     refreshMap: function() {
       const map = this.$refs.map.mapObject;
+    },
+    fetchData: async function( ) {
+      const self = this;
+      const app = self.$f7;
+      var map = self.$refs.map.mapObject;
+
+      app.preloader.show();
+      // URL is from BBMP map; available in public.
+      self.postWithPromise('config/BBMP_COVID_DATA_URL').then(function(x) {
+        let url = JSON.parse(x.data).data.value;
+        app.request.promise.get(url).then( function(x) {
+          var cases = JSON.parse(x.data).features;
+          for(var k in cases) {
+            let item = cases[k].attributes;
+            let loc = L.latLng(L.latLng(parseFloat(item.Y), parseFloat(item.X)));
+            self.coronaXY.push({latlng: loc, address: item.Address});
+
+            var distance = loc.distanceTo(self.myLocation);
+            self.distances[loc] = distance;
+            if(distance < 2000 ) {
+              self.polylines[loc] = {
+                loc: loc
+                , distance: distance
+                , latlngs : [self.myLocation, loc]
+                , color: 'red'
+              };
+            }
+          }
+          console.log(self.polylines);
+
+          app.preloader.hide();
+        });
+      });
+      setTimeout( () => app.preloader.hide(), 10000);
     },
     zoomUpdated (zoom) {
       const self = this;
@@ -162,13 +177,11 @@ export default {
     boundsUpdated (bounds) {
       this.bounds = bounds;
     },
-    getIcon: function( strength ) {
-      strength = 10+2*Math.sqrt(strength);
-      return L.icon({
-        iconUrl: "static/leaf-green.png",
-        iconSize:     [strength, 2*strength],
-        iconAnchor:   [strength*0.5, 2*strength],
-        popupAnchor:  [0, 10]
+    updateMyLoc: function() {
+      navigator.geolocation.getCurrentPosition( function(loc) {
+        self.myLocation = L.latLng(loc.coords.latitude, loc.coords.longitude);
+      }, function(x) {
+        self.notify("Failed", "Could not get your location.", 1000);
       });
     },
     markerClicked: function(loc) {
