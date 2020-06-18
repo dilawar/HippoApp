@@ -2,42 +2,63 @@
   <f7-page page-content>
     <f7-navbar title="COVID19 Information" back-link="Back"></f7-navbar>
 
-    <f7-block inset>
-      <f7-block-title>
-        Source <f7-link external target="_system"
-          href="https://covid19.bbmpgov.in"> 
-          https://covid19.bbmpgov.in
-        </f7-link>
-      </f7-block-title>
-      <iframe
-        width="100%"
-        height="600px"
-        title="Visualization by BBMP"
-        src="https://bbmp.maps.arcgis.com/apps/opsdashboard/index.html#/4f4f20e852744b96b493528aab76777d">
-      </iframe>
-    </f7-block>
+    <f7-block-header>
+      <f7-row>
+        <f7-col width="70">
+          Data shown here is scraped from BBMP website every hour.
+          <f7-link external target="_system"
+            href="https://covid19.bbmpgov.in"> 
+            https://covid19.bbmpgov.in
+          </f7-link>.
+        </f7-col>
+        <f7-col v-if="isUserAuthenticated()" width="30">
+          <f7-button small raised class="float-right"
+            @click="notifyNewCovidAlert"
+            tooltip="Hippo will send you email alert if a new case is found in
+            your locality (1KM radius)">
+            Send Me Email Alert
+          </f7-button>
+        </f7-col>
+      </f7-row>
+    </f7-block-header>
 
-    <!--
-    <l-map ref="map" 
-           :zoom="zoom" 
-           :center="center"
-           :style="mapStyle"
-           @update:center="centerUpdated"
-           @update:zoom="zoomUpdated"
-           @update:bounds="boundsUpdated">
-      <l-control-layers position="topright">
-      </l-control-layers>
-      <l-tile-layer v-for="tileProvider in $store.state.OSM.tileProviders"
-                    :key="tileProvider.name"
-                    :name="tileProvider.name"
-                    :visible="tileProvider.visible"
-                    :url="tileProvider.url"
-                    :attribution="tileProvider.attribution"
-                    layer-type="base">
-      </l-tile-layer>
-    </l-map>
-    -->
+    <div style="width=100%; height:800px">
+      <l-map ref="map" 
+        :zoom="zoom" 
+        :center="center"
+        :style="mapStyle"
+        @update:center="centerUpdated"
+        @update:zoom="zoomUpdated"
+        @update:bounds="boundsUpdated">
+        <l-control-layers position="topright">
+        </l-control-layers>
+        <l-tile-layer v-for="tileProvider in $store.state.OSM.tileProviders"
+          :key="tileProvider.name"
+          :name="tileProvider.name"
+          :visible="tileProvider.visible"
+          :url="tileProvider.url"
+          :attribution="tileProvider.attribution"
+          layer-type="base">
+        </l-tile-layer>
 
+        <l-marker v-for="v, key in coronaXY" :lat-lng="v.latlng"
+          :key="key" :visible="true" 
+          :icon="covidIcon"> 
+          <l-tooltip>{{v.address}}</l-tooltip>
+        </l-marker>
+
+        <!-- Draw distances -->
+        <l-circle :lat-lng="myLocation" :radius="1000">
+        </l-circle>
+        <l-circle :lat-lng="myLocation" :radius="200">
+        </l-circle>
+        <l-marker :lat-lng="myLocation" 
+          @update:latLng="updateMyLocation"
+          key="mylocation" 
+          :draggable="true">
+        </l-marker>
+      </l-map>
+    </div>
   </f7-page>
 </template>
 
@@ -149,6 +170,31 @@ export default {
         iconAnchor:   [strength*0.5, 2*strength],
         popupAnchor:  [0, 10]
       });
+    },
+    markerClicked: function(loc) {
+      const self = this;
+
+      const map = self.$refs.map.mapObject;
+      const distance = self.distances[loc];
+    },
+    updateMyLocation: function(loc) {
+      const self = this;
+      self.myLocation = L.latLng(loc.lat, loc.lng);
+    },
+    notifyNewCovidAlert: function(x) {
+      const self = this;
+      const app = self.$f7;
+      app.dialog.confirm("Tip! You can drag the marker to more precise location."
+        , "Continue?"
+        , function(x) {
+          console.log("Confirmed yet");
+          let data = {login: self.whoAmI(), loc: self.myLocation};
+          self.promiseWithAuth('/covid/alert/add/', data).then(function(x) {
+              console.log('Added alert: ', data);
+            });
+        }, function(no) {
+          console.log("Rejected");
+        });
     },
   },
 };
