@@ -54,12 +54,9 @@
       </l-marker>
 
       <!-- Draw distances -->
-      <l-circle 
-        @click="removeAlert(alert)"
-        v-for="alert in alerts" 
-        :key="alert.id"
-        :radius="1000" 
-        :opacity="0.5"
+      <l-circle @click="removeAlert(alert)"
+        v-for="alert, key in alerts" 
+        :key="'alert'+key" :radius="1000" :opacity="0.5" color="red"
         :lat-lng="[alert.latitude, alert.longitude]">
       </l-circle>
 
