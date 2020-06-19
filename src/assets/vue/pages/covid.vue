@@ -119,10 +119,11 @@ export default {
               self.center = self.myLocation;
 
             }, function(x) {
-              //
+              const app = self.$f7;
+              self.notify("Failed"
+                , "Hippo could not retrieve your current location");
+              console.log("Can't fetch position");
             });
-
-            
           }
           return container;
         },
