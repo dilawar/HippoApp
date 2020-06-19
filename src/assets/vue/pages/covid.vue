@@ -4,23 +4,28 @@
 
     <f7-row style="background-color:rgba(255,255,255,0.8);
       position:absolute; width:100vw; bottom:60px; left:0px; z-index:1000">
+      <!--
       <f7-col v-if="isUserAuthenticated()" width="30">
         <f7-button small raised fill round
-          @click="notifyNewCovidAlert"
+          style="width:100px"
+          @click="addNewCovidAlert"
           tooltip="Hippo will send you email alert if a new case is found in
           your locality (1KM radius)">
           + ALERT
         </f7-button>
       </f7-col>
+      -->
       <f7-col v-if="alerts.length > 0" width="40">
         <small>
           {{alerts.length}} alerts (click on circle to remove);
         </small>
       </f7-col>
       <f7-col width="30">
-        <f7-link external target="_system" href="https://covid19.bbmpgov.in"> 
-          data source BBMP
-        </f7-link>
+        <small>
+          <f7-link external target="_system" href="https://covid19.bbmpgov.in"> 
+            Data source BBMP
+          </f7-link>
+        </small>
       </f7-col>
     </f7-row>
 
@@ -51,19 +56,22 @@
       <!-- Draw distances -->
       <l-circle 
         @click="removeAlert(alert)"
-        v-for="alert in alerts"
+        v-for="alert in alerts" 
+        :key="alert.id"
         :radius="1000" 
-        :opacity="0.1"
+        :opacity="0.5"
         :lat-lng="[alert.latitude, alert.longitude]">
       </l-circle>
 
       <l-circle :lat-lng="myLocation" :radius="200">
       </l-circle>
+
       <l-marker :lat-lng="myLocation" 
         @update:latLng="updateMyLocation"
         key="mylocation" 
         :draggable="true">
       </l-marker>
+
     </l-map>
 
   </f7-page>
@@ -75,7 +83,7 @@ export default {
   data() {
     const self = this;
     return {
-      zoom:14,
+      zoom:12,
       bounds: null,
       map: null,
       center: L.latLng(13.07083, 77.58014),
@@ -97,6 +105,56 @@ export default {
           return container;
         },
       }),
+
+      currLocControl :  L.Control.extend({
+        onAdd: function (map) {
+          var container = L.DomUtil.create('button', 'leaflet-control');
+          container.innerHTML = "<i class='fa fa-map-marker-alt'></i>";
+          container.style = "width:34px; height:34px;";
+          container.tooltip = "Go to my current location";
+          container.onclick = function() {
+            navigator.geolocation.getCurrentPosition( function(loc) {
+              self.myLocation = L.latLng(loc.coords.latitude, loc.coords.longitude);
+              // recenter
+              self.center = self.myLocation;
+
+            }, function(x) {
+              //
+            });
+
+            
+          }
+          return container;
+        },
+      }),
+
+      alertControl :  L.Control.extend({
+        onAdd: function (map) {
+          var container = L.DomUtil.create('button', 'leaflet-control');
+          container.innerHTML = "<i class='fa fa-bell'></i>";
+          container.style = "width:34px; height:34px;";
+          container.tooltip = "Add an alert on location";
+          container.onclick = function() {
+            const app = self.$f7;
+            app.dialog.confirm("Tip! You can drag the marker to more precise location."
+              , "Continue?"
+              , function(x) {
+                let data = {login: self.whoAmI(), latitude: self.myLocation.lat
+                  , longitude: self.myLocation.lng};
+                self.promiseWithAuth('/covid19/alert/add', data).then(function(x) {
+                  let res = JSON.parse(x.data).data;
+                  if(res.success) {
+                    self.notify("Success", "Added alert");
+                    self.fetchAlerts();
+                  }
+                });
+              }, function(no) {
+                console.log("Rejected");
+              });
+          };
+          return container;
+        },
+      }),
     };
   },
   mounted: async function() {
@@ -105,6 +163,7 @@ export default {
 
     navigator.geolocation.getCurrentPosition( function(loc) {
       self.myLocation = L.latLng(loc.coords.latitude, loc.coords.longitude);
+      self.center = self.myLocation;
     }, function(x) {
       //
     });
@@ -113,7 +172,9 @@ export default {
     res = await self.fetchAlerts();
 
     self.map = this.$refs.map.mapObject;
-    new self.textControl({position:'top'}).addTo(self.map);
+    new self.currLocControl({position:'topleft'}).addTo(self.map);
+
+    new self.alertControl({position:'topleft'}).addTo(self.map);
 
   },
   methods: { 
@@ -182,7 +243,7 @@ export default {
       const self = this;
       self.myLocation = L.latLng(loc.lat, loc.lng);
     },
-    notifyNewCovidAlert: function(x) {
+    addNewCovidAlert: function(x) {
       const self = this;
       const app = self.$f7;
       app.dialog.confirm("Tip! You can drag the marker to more precise location."

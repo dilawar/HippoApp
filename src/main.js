@@ -23,7 +23,6 @@ Vue.component('v-autocomplete', Autocomplete);
 
 // OSM and leaflet.
 import {LMap, LTileLayer, LMarker, LPolyline, LPopup, LTooltip, LCircle, LControlLayers} from 'vue2-leaflet';
-import Vue2LeafletLocateControl from 'vue2-leaflet-locatecontrol';
 
 import {Icon} from 'leaflet'
 import 'leaflet/dist/leaflet.css'
@@ -36,7 +35,9 @@ Vue.component('l-tooltip', LTooltip);
 Vue.component('l-polyline', LPolyline);
 Vue.component('l-circle', LCircle);
 Vue.component('l-control-layers', LControlLayers);
-Vue.component('v-locatecontrol', Vue2LeafletLocateControl);
+
+// import Vue2LeafletLocateControl from 'vue2-leaflet-locatecontrol';
+// Vue.component('v-locatecontrol', Vue2LeafletLocateControl);
 
 delete Icon.Default.prototype._getIconUrl;
 Icon.Default.mergeOptions({
