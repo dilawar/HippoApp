@@ -15,17 +15,21 @@
         </f7-button>
       </f7-col>
       -->
-      <f7-col v-if="alerts.length > 0" width="40">
+
+      <f7-col v-if="alerts.length > 0">
         <small>
           {{alerts.length}} alerts (click on circle to remove);
         </small>
       </f7-col>
-      <f7-col width="30">
-        <small>
-          <f7-link external target="_system" href="https://covid19.bbmpgov.in"> 
-            Data source BBMP
-          </f7-link>
-        </small>
+      <f7-col>
+        <span v-if="lastUpdated">
+          <small>
+            Last updated: {{toNowDatetime(lastUpdated)}} ago.
+          </small>
+        </span>
+        <f7-link external target="_system" href="https://covid19.bbmpgov.in"> 
+          Data source BBMP
+        </f7-link>
       </f7-col>
     </f7-row>
 
@@ -56,7 +60,9 @@
       <!-- Draw distances -->
       <l-circle @click="removeAlert(alert)"
         v-for="alert, key in alerts" 
-        :key="'alert'+key" :radius="1000" :opacity="0.5" color="red"
+        :key="'alert'+key" :radius="1000" 
+        :opacity="0.5" 
+        color="red"
         :lat-lng="[alert.latitude, alert.longitude]">
       </l-circle>
 
@@ -91,6 +97,7 @@ export default {
       polylines: {},
       mapVenues : [],
       coronaXY: [],
+      lastUpdated: null,
       alerts: [],
       covidIcon: L.divIcon( {className: 'fas fa-disease fa-1x'
         , iconSize: [20, 20], iconAnchor:[10,10]}),
@@ -198,6 +205,16 @@ export default {
         let cases = JSON.parse(x.data).data;
         for(var k in cases) {
           let item = cases[k];
+
+          let ts = self.datetime2Moment(item.timestamp);
+
+          // Check if timestamp is newer than the last updated.
+          if(ts > self.lastUpdated)
+            self.lastUpdated = ts;
+
+          if(item.pstatus.toLowerCase() !== 'active')
+            continue;
+
           let loc = L.latLng(L.latLng(item.latitude, item.longitude));
           self.coronaXY.push({latlng: loc, address: item.address});
           var distance = loc.distanceTo(self.myLocation);
