@@ -45,7 +45,7 @@
       <l-marker v-for="v, key in coronaXY" :lat-lng="v.latlng"
         :key="key" :visible="true" 
         :icon="toCovidIcon(v.dateOfIdent)"> 
-        <l-tooltip>{{v.address}}</l-tooltip>
+        <l-tooltip v-if="isUserAuthenticated()">{{v.address}}</l-tooltip>
       </l-marker>
 
       <!-- Draw distances -->
@@ -171,8 +171,8 @@ export default {
     self.map = this.$refs.map.mapObject;
     new self.currLocControl({position:'topleft'}).addTo(self.map);
 
-    new self.alertControl({position:'topleft'}).addTo(self.map);
-
+    if(self.isUserAuthenticated())
+      new self.alertControl({position:'topleft'}).addTo(self.map);
   },
   methods: { 
     onResize: function() { },
