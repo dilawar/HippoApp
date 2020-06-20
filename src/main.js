@@ -38,7 +38,6 @@ Vue.component('l-control-layers', LControlLayers);
 
 // import Vue2LeafletLocateControl from 'vue2-leaflet-locatecontrol';
 // Vue.component('v-locatecontrol', Vue2LeafletLocateControl);
-
 delete Icon.Default.prototype._getIconUrl;
 Icon.Default.mergeOptions({
   iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
