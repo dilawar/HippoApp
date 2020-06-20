@@ -4,17 +4,6 @@
 
     <f7-row style="background-color:rgba(255,255,255,0.8);
       position:absolute; width:100vw; bottom:60px; left:0px; z-index:1000">
-      <!--
-      <f7-col v-if="isUserAuthenticated()" width="30">
-        <f7-button small raised fill round
-          style="width:100px"
-          @click="addNewCovidAlert"
-          tooltip="Hippo will send you email alert if a new case is found in
-          your locality (1KM radius)">
-          + ALERT
-        </f7-button>
-      </f7-col>
-      -->
 
       <f7-col v-if="alerts.length > 0">
         <small>
@@ -30,6 +19,8 @@
         <f7-link external target="_system" href="https://covid19.bbmpgov.in"> 
           Data source BBMP
         </f7-link>
+      </f7-col>
+      <f7-col>
       </f7-col>
     </f7-row>
 
@@ -53,7 +44,7 @@
 
       <l-marker v-for="v, key in coronaXY" :lat-lng="v.latlng"
         :key="key" :visible="true" 
-        :icon="covidIcon"> 
+        :icon="toCovidIcon(v.dateOfIdent)"> 
         <l-tooltip>{{v.address}}</l-tooltip>
       </l-marker>
 
@@ -81,6 +72,7 @@
 </template>
 
 <script>
+import moment from 'moment';
 
 export default {
   data() {
@@ -99,7 +91,7 @@ export default {
       coronaXY: [],
       lastUpdated: null,
       alerts: [],
-      covidIcon: L.divIcon( {className: 'fas fa-disease fa-1x'
+      covidIcon: L.divIcon({className: 'fas fa-disease fa-1x'
         , iconSize: [20, 20], iconAnchor:[10,10]}),
 
       textControl :  L.Control.extend({
@@ -187,6 +179,17 @@ export default {
     refreshMap: function() {
       const map = this.$refs.map.mapObject;
     },
+    toCovidIcon: function(dateOfIdent) {
+      const self = this;
+      let ts = moment(dateOfIdent, 'YYYY-MM-DD');
+      console.log('xx', moment().diff(ts, 'hours'), dateOfIdent);
+
+      // 1 week olk
+      let html = '<i class="fas fa-disease"></i>';
+      if(moment().diff(ts, 'days') < 7)
+        html = '<i class="fas fa-disease fa-2x fa-spin"></i>';
+      return L.divIcon({html: html, iconSize: [20, 20], iconAnchor:[10,10]});
+    },
     fetchAlerts: async function() {
       const self = this;
       const app = self.$f7;
@@ -216,7 +219,8 @@ export default {
             continue;
 
           let loc = L.latLng(L.latLng(item.latitude, item.longitude));
-          self.coronaXY.push({latlng: loc, address: item.address});
+          self.coronaXY.push({latlng: loc, address: item.address
+            , dateOfIdent : item.date_of_identification});
           var distance = loc.distanceTo(self.myLocation);
           self.distances[loc] = distance;
           if(distance < 2000 ) {
@@ -261,7 +265,8 @@ export default {
     addNewCovidAlert: function(x) {
       const self = this;
       const app = self.$f7;
-      app.dialog.confirm("Tip! You can drag the marker to more precise location."
+      app.dialog.confirm("Tip! You can drag the marker to more precise " 
+        + "location."
         , "Continue?"
         , function(x) {
           let data = {login: self.whoAmI(), latitude: self.myLocation.lat
@@ -295,5 +300,4 @@ export default {
     },
   },
 };
-
 </script>
