@@ -182,11 +182,10 @@ export default {
     toCovidIcon: function(dateOfIdent) {
       const self = this;
       let ts = moment(dateOfIdent, 'YYYY-MM-DD');
-      console.log('xx', moment().diff(ts, 'hours'), dateOfIdent);
 
-      // 1 week olk
+      // 2 days old.
       let html = '<i class="fas fa-disease"></i>';
-      if(moment().diff(ts, 'days') < 7)
+      if(moment().diff(ts, 'days') <= 2)
         html = '<i class="fas fa-disease fa-2x fa-spin"></i>';
       return L.divIcon({html: html, iconSize: [20, 20], iconAnchor:[10,10]});
     },
