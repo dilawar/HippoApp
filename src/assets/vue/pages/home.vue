@@ -248,7 +248,7 @@ export default {
       let data = JSON.parse(x.data).data;
       if(data) {
         self.upcomingTrips = '<div style="color:black;">'
-        self.upcomingTrips += '<marquee direction="left" scrollamount="3">';
+        self.upcomingTrips += '<marquee direction="left" scrollamount="4">';
         data.forEach( (val, key) => {
           self.upcomingTrips += '🚐  '
             + val.vehicle + ': ' + val.pickup_point + ' to '

@@ -86,7 +86,7 @@
 
         <!-- Card content -->
         <f7-card-content>
-          <div> {{acc.address}} </div>
+          <div v-html="acc.address"> </div>
           <span v-for="(val, key) in acc">
             <span v-if="showKeys.includes(key)">
               <span style="font-size:70%">{{formatKey(key)}}</span>
@@ -94,8 +94,7 @@
                 render html. Hence this hack: see
                 https://github.com/vuejs/vue/issues/4352
               -->
-              <span style="margin-right:2ex;"
-                    v-html="$options.filters.phone(val)"></span>
+              <span style="margin-right:2ex;" v-html="val"></span>
               <br />
             </span>
           </span>
@@ -196,127 +195,120 @@
         </f7-navbar>
 
         <f7-block>
-           <f7-list no-hairlines-md inset>
-              <f7-list-input label="Type"
-                             :value="accomodation.type"
-                             @input="accomodation.type = $event.target.value"
-                             type="select"
-                             defaultValue="1BHK"
-                             placeholder="Please choose ..."
-                             required 
-                             validate
-                             >
-                  <option v-for="typ in accomodations.types" :value="typ">
-                     {{typ}}
-                  </option>
-              </f7-list-input>
+          <f7-list no-hairlines-md inset>
+            <f7-list-input label="Type"
+              :value="accomodation.type"
+              @input="accomodation.type = $event.target.value"
+              type="select"
+              defaultValue="1BHK"
+              placeholder="Please choose ..."
+              required 
+              validate>
+              <option v-for="typ in accomodations.types" :value="typ">
+                {{typ}}
+              </option>
+            </f7-list-input>
 
-              <f7-list-input label="Available From" :input="false">
-                 <date-picker lang="en"
-                              v-model="accomodation.available_from"
-                              slot="input"
-                              type="date"
-                              format="YYYY-MM-DD"
-                              readonly
-                              >
-                  </date-picker>
-              </f7-list-input>
+            <f7-list-input label="Available From" :input="false">
+              <date-picker lang="en"
+                v-model="accomodation.available_from"
+                slot="input"
+                type="date"
+                format="YYYY-MM-DD"
+                readonly>
+              </date-picker>
+            </f7-list-input>
 
-              <f7-list-input label="Open Vacancies"
-                             @input="accomodation.open_vacancies=$event.target.value"
-                             type="number"
-                             :defaultValue="1"
-                             required
-                             >
-              </f7-list-input>
+            <f7-list-input label="Open Vacancies"
+              @input="accomodation.open_vacancies=$event.target.value"
+              type="number"
+              :defaultValue="1"
+              required>
+            </f7-list-input>
 
-              <f7-list-input label="Available For (Gender)"
-                             @input="accomodation.available_for=$event.target.value"
-                             type="select"
-                             required
-                             >
-                  <option v-for="(val, key) in accomodations.available_for" 
-                          :value="val" :key="key"
-                          > {{val}} </option>
-              </f7-list-input>
+            <f7-list-input label="Available For (Gender)"
+              @input="accomodation.available_for=$event.target.value"
+              type="select"
+              required>
+              <option v-for="(val, key) in accomodations.available_for" 
+                :value="val" :key="key"
+              > {{val}} </option>
+            </f7-list-input>
 
-               <f7-list-input label="Address"
-                              type="text"
-                              :input="false" 
-                              >
-                  <input id="autocomplete-dropdown-expand"  
-                         :value="accomodation.address"
-                         slot="input" type="text" />
-               </f7-list-input>
+            <f7-list-input label="Address" 
+              :value="accomodation.address"
+              @texteditor:input="accomodation.address=$event.target.value"
+              type="texteditor" :resizable="true"/>
+          </f7-list-input>
 
-              <f7-list-input label="Description"
-                             :value="accomodation.description"
-                             @input="accomodation.description = $event.target.value"
-                             :resizable="true"
-                             type="textarea" 
-                             >
-              </f7-list-input>
-              <f7-list-input label="Owner Contact"
-                             :value="accomodation.owner_contact"
-                             @input="accomodation.owner_contact = $event.target.value"
-                             :resizable="true"
-                             type="textarea" 
-                             >
-              </f7-list-input>
-              <f7-list-input label="Rent (Number only)"
-                             :value="accomodation.rent"
-                             @input="accomodation.rent = $event.target.value"
-                             required
-                             validate
-                             pattern="[0-9]{2,7}"
-                             >
-              </f7-list-input>
+          <f7-list-input label="Description"
+            :value="accomodation.description"
+            @input="accomodation.description = $event.target.value"
+            :resizable="true"
+            type="textarea">
+          </f7-list-input>
 
-              <f7-list-input label="Extra e.g. elecricity water"
-                               :value="accomodation.extra"
-                               @input="accomodation.extra = $event.target.value"
-                               type="text" 
-                               >
-              </f7-list-input>
+          <f7-list-input label="Owner Contact"
+            :value="accomodation.owner_contact"
+            @input="accomodation.owner_contact = $event.target.value"
+            :resizable="true"
+            type="textarea" 
+          >
+          </f7-list-input>
+          <f7-list-input label="Rent (Number only)"
+            :value="accomodation.rent"
+            @input="accomodation.rent = $event.target.value"
+            required
+            validate
+            pattern="[0-9]{2,7}"
+          >
+          </f7-list-input>
 
-              <f7-list-input label="Advance (Number)"
-                             :value="accomodation.advance"
-                             @input="accomodation.advance = $event.target.value"
-                             type="text" 
-                             validate
-                             pattern="[0-9]{2,7}"
-                             >
-              </f7-list-input>
+          <f7-list-input label="Extra e.g. elecricity water"
+            :value="accomodation.extra"
+            @input="accomodation.extra = $event.target.value"
+            type="text" 
+          >
+          </f7-list-input>
 
-              <f7-list-input v-if="popupAction == 'Update'"
-                             label="Change status"
-                             :value="accomodation.status"
-                             @input="accomodation.status = $event.target.value"
-                             type="select"
-                             :defaultValue="accomodation.status"
-                             info="To cancel change this field"
-                             >
-                             <option v-for="st in accomodations.status" :value="st">{{st}}</option>
-              </f7-list-input>
+          <f7-list-input label="Advance (Number)"
+            :value="accomodation.advance"
+            @input="accomodation.advance = $event.target.value"
+            type="text" 
+            validate
+            pattern="[0-9]{2,7}"
+          >
+          </f7-list-input>
 
-              <f7-list-item>
-                 <f7-button v-if="popupAction=='New'"
-                            slot="after" raised fill
-                            popup-close
-                            @click="submitAccomodation()"
-                            >Submit</f7-button>
-                 <f7-button v-if="popupAction=='Update'"
-                            slot="after" raised fill
-                            popup-close
-                            @click="updateAccomodation(accomodation.id)"
-                            >Submit</f7-button>
-              </f7-list-item>
+          <f7-list-input v-if="popupAction == 'Update'"
+            label="Change status"
+            :value="accomodation.status"
+            @input="accomodation.status = $event.target.value"
+            type="select"
+            :defaultValue="accomodation.status"
+            info="To cancel change this field"
+          >
+            <option v-for="st in accomodations.status" :value="st">{{st}}</option>
+          </f7-list-input>
 
-           </f7-list>
-        </f7-block>
+          <f7-list-item>
+            <f7-button v-if="popupAction=='New'"
+              slot="after" raised fill
+              popup-close
+              @click="submitAccomodation()"
+            >Submit</f7-button>
+            <f7-button v-if="popupAction=='Update'"
+              slot="after" raised fill
+              popup-close
+              @click="updateAccomodation(accomodation.id)"
+            >Submit</f7-button>
+          </f7-list-item>
 
-     </f7-page>
-  </f7-popup>
+        </f7-list>
+      </f7-block>
+
+      </f7-page>
+    </f7-popup>
 
   </f7-page>
 </template>
@@ -326,48 +318,48 @@ import moment from 'moment';
 import { OpenStreetMapProvider, GoogleProvider } from 'leaflet-geosearch'; 
 
 export default {
-   data() {
-      const self = this;
-     return {
-       accomodations: {list: []},
-       favouriteAccomodations: self.loadStore('me.favourite.accomodations'),
-       popupOpened: false,
-       showKeys: ["description","address","rent","advance","extra","owner_contact"],
-       popupAction: 'New',
-       photos: [],
-       autocompleteBlock: false,
-       locationMap : {
-         center: L.latLng(13.071081, 77.58025),
-         bounds: null,
-         zoom: 16,
-       },
-       accomodation: {
-         type: '',
-         status: 'AVAILABLE',
-         available_from: '',
-         available_for: '',
-         open_vacancies: 1,
-         address: '',
-         description: '',
-         owner_contact: '',
-         rent: 0,
-         extra: '',
-         advance: 0,
-         url: '',
-       },
-       // Comments.
-       thisComment: '',
-       comments: [],
-       thisAccomodation: '',
-       commentPopupOpened: false,
-       mapProvider: new GoogleProvider({
-         params: {
-           key: self.loadStoreStr('GOOGLE-MAP-API-KEY'), 
-           client: 'HippoAndroidApp',
-         },
-       }),
-     };
-   },
+  data() {
+    const self = this;
+    return {
+      accomodations: {list: []},
+      favouriteAccomodations: self.loadStore('me.favourite.accomodations'),
+      popupOpened: false,
+      showKeys: ["description","address","rent","advance","extra","owner_contact"],
+      popupAction: 'New',
+      photos: [],
+      autocompleteBlock: false,
+      locationMap : {
+        center: L.latLng(13.071081, 77.58025),
+        bounds: null,
+        zoom: 16,
+      },
+      accomodation: {
+        type: '',
+        status: 'AVAILABLE',
+        available_from: '',
+        available_for: '',
+        open_vacancies: 1,
+        address: '',
+        description: '',
+        owner_contact: '',
+        rent: 0,
+        extra: '',
+        advance: 0,
+        url: '',
+      },
+      // Comments.
+      thisComment: '',
+      comments: [],
+      thisAccomodation: '',
+      commentPopupOpened: false,
+      mapProvider: new GoogleProvider({
+        params: {
+          key: self.loadStoreStr('GOOGLE-MAP-API-KEY'), 
+          client: 'HippoAndroidApp',
+        },
+      }),
+    };
+  },
   mounted() {
     const self = this;
     const app = self.$f7;
@@ -403,6 +395,7 @@ export default {
         // Use Location IQ.
         if(q.length > 5) {
           self.autocompleteBlock = true;
+          self.accomodation.address = q;
           app.request.promise({url: self.locationIQSearchURL+'&q='+encodeURI(q)})
             .then( function(x) {
               res = JSON.parse(x.data);
@@ -414,7 +407,8 @@ export default {
       on: {
         change: function(val) {
           console.log('Changed to ', val);
-          self.accomodation.address = val[0];
+          let addr = val[0];
+          self.accomodation.address = self.osmUrl(addr.lat, addr.lon, addr.display_name);
         },
       },
     });
@@ -450,89 +444,89 @@ export default {
       //});
     },
     submitAccomodation: function() {
-       const self = this;
-       // Save it before it goes away.
-       self.$localStorage.set('me.accomodation', self.accomodation);
-       self.accomodation.available_from = moment(self.accomodation.available_from).format('YYYY-MM-DD')
-       self.promiseWithAuth('/accomodation/create', self.accomodation)
-         .then(function(x) {
-           var res = JSON.parse(x.data).data;
-           if(res.succcess)
-             self.$localStorage.delete('me.accomodation');
-           else
-             self.notify("Failed", "Failed to create accomodation.");
-         });
-     },
-     updateAction: function(acc) {
-       const self = this;
-       self.accomodation = acc;
-       self.popupAction = 'Update';
-       self.popupOpened = true;
-     },
-     updateAccomodation: function(id) 
-     {
-       const self = this;
-       self.popupAction = 'New';
-       self.accomodation.available_from = self.dbDate(self.accomodation.available_from);
-       self.promiseWithAuth('/accomodation/update/id', self.accomodation)
-         .then( function(x) {
-           self.fetchAccomodations();
-         });
-     },
-     readMore: function(obj) {
-       const self = this;
-       console.log( obj );
-     },
-     getNumVotes: function(externalID) {
-       return 0;
-     },
-     showPics: function(acc) {
-       const self = this;
-       self.$refs.standalone.photos = [ acc.url ];
-       self.$refs.standalone.open();
-     },
-     // COMMENT SECTION.
-     addComment: function(acc) {
-       const self = this;
-       const app = self.$f7;
-       self.thisAccomodation = acc;
+      const self = this;
+      // Save it before it goes away.
+      self.$localStorage.set('me.accomodation', self.accomodation);
+      self.accomodation.available_from = moment(self.accomodation.available_from).format('YYYY-MM-DD')
+      self.promiseWithAuth('/accomodation/create', self.accomodation)
+        .then(function(x) {
+          var res = JSON.parse(x.data).data;
+          if(res.succcess)
+            self.$localStorage.delete('me.accomodation');
+          else
+            self.notify("Failed", "Failed to create accomodation.");
+        });
+    },
+    updateAction: function(acc) {
+      const self = this;
+      self.accomodation = acc;
+      self.popupAction = 'Update';
+      self.popupOpened = true;
+    },
+    updateAccomodation: function(id) 
+    {
+      const self = this;
+      self.popupAction = 'New';
+      self.accomodation.available_from = self.dbDate(self.accomodation.available_from);
+      self.promiseWithAuth('/accomodation/update/id', self.accomodation)
+        .then( function(x) {
+          self.fetchAccomodations();
+        });
+    },
+    readMore: function(obj) {
+      const self = this;
+      console.log( obj );
+    },
+    getNumVotes: function(externalID) {
+      return 0;
+    },
+    showPics: function(acc) {
+      const self = this;
+      self.$refs.standalone.photos = [ acc.url ];
+      self.$refs.standalone.open();
+    },
+    // COMMENT SECTION.
+    addComment: function(acc) {
+      const self = this;
+      const app = self.$f7;
+      self.thisAccomodation = acc;
 
-       self.postWithPromise('/accomodation/comment/list/'+acc.id).then(
-         function(x) {
-           let res = JSON.parse(x.data);
-           if(res.status == 'ok')
-             self.comments = res.data.comments;
-         });
+      self.postWithPromise('/accomodation/comment/list/'+acc.id).then(
+        function(x) {
+          let res = JSON.parse(x.data);
+          if(res.status == 'ok')
+            self.comments = res.data.comments;
+        });
 
-       self.commentPopupOpened = true;
-     },
-     submitComment: function(id) {
-       const self = this;
-       let data =  {id:id, comment:self.thisComment};
-       console.log('Sending data: ', data);
-       self.sendRequest('/accomodation/comment/post', data);
-       self.commentPopupOpened = false;
-     },
-     addToFavoriteAcc: function(id) {
-       const self = this;
-       self.favouriteAccomodations = self.loadStore('me.favourite.accomodations');
-       if( ! self.favouriteAccomodations )
-         self.favouriteAccomodations = [];
+      self.commentPopupOpened = true;
+    },
+    submitComment: function(id) {
+      const self = this;
+      let data =  {id:id, comment:self.thisComment};
+      console.log('Sending data: ', data);
+      self.sendRequest('/accomodation/comment/post', data);
+      self.commentPopupOpened = false;
+    },
+    addToFavoriteAcc: function(id) {
+      const self = this;
+      self.favouriteAccomodations = self.loadStore('me.favourite.accomodations');
+      if( ! self.favouriteAccomodations )
+        self.favouriteAccomodations = [];
 
-       if(! self.favouriteAccomodations.includes(id))
-         self.favouriteAccomodations.push(id);
-       self.saveStore('me.favourite.accomodations', self.favouriteAccomodations);
-       console.log( 'Added ' + id + ' to favourite accomodations.');
-     },
-     removeFromFavoriteAcc: function(id) {
-       const self = this;
-       self.favouriteAccomodations = self.loadStore('me.favourite.accomodations');
-       if(self.favouriteAccomodations.includes(id))
-         self.removeFromArray(self.favouriteAccomodations, id);
-       self.saveStore('me.favourite.accomodations', self.favouriteAccomodations);
-     },
-     refreshMap: function() {
-       //const map = this.$refs.accmap.mapObject;
+      if(! self.favouriteAccomodations.includes(id))
+        self.favouriteAccomodations.push(id);
+      self.saveStore('me.favourite.accomodations', self.favouriteAccomodations);
+      console.log( 'Added ' + id + ' to favourite accomodations.');
+    },
+    removeFromFavoriteAcc: function(id) {
+      const self = this;
+      self.favouriteAccomodations = self.loadStore('me.favourite.accomodations');
+      if(self.favouriteAccomodations.includes(id))
+        self.removeFromArray(self.favouriteAccomodations, id);
+      self.saveStore('me.favourite.accomodations', self.favouriteAccomodations);
+    },
+    refreshMap: function() {
+      //const map = this.$refs.accmap.mapObject;
        //this.venues.map( x => x );
      },
      zoomUpdated (zoom) {
