@@ -82,7 +82,6 @@ export default {
       username: self.whoAmI(),
       alreadyLoggedIn: false,
       profile: self.$store.getters.profile,
-      notifications: [],
     };
   },
   mounted()

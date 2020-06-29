@@ -44,7 +44,7 @@
     </f7-popup>
 
     <!-- POPUP EDIT -->
-    <f7-popup :opened="openEditPopup" @popup:close="openEditPopup = false">
+    <f7-popup popup-tablet-fullscreen :opened="openEditPopup" @popup:close="openEditPopup = false">
       <f7-page>
         <f7-navbar title="Edit AWS">
           <f7-nav-right>
@@ -76,6 +76,19 @@
               <vue-editor ref="quillEditor" v-model="thisAWS.abstract">
               </vue-editor>
             </f7-list-item>
+
+            <f7-list-input label="First Supervisor" 
+              type="email" validate
+              :value="thisAWS.supervisor_1"
+              @input="thisAWS.supervisor_1=$event.target.value">
+            </f7-list-input>
+
+            <f7-list-input label="Second Supervisor (optional)" 
+              type="email" validate
+              :value="thisAWS.supervisor_2"
+              @input="thisAWS.supervisor_2=$event.target.value">
+            </f7-list-input>
+
           </f7-list>
 
           <f7-button raised popup-close @click="editThisAWS()"> Update </f7-button>

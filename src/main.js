@@ -119,6 +119,10 @@ Vue.mixin({
       dbDate: function( date ) {
          return moment(date).format("YYYY-MM-DD");
       },
+      osmUrl: function(lat, lon, text) {
+         let href = "https://www.openstreetmap.org/?lat="+lat+"&lon="+lon+"&zoom=14&layers=M";
+         return '<a target="_system" external href="' + href + '">' + text + '</a>';
+      },
       resetSimple: function(obj) {
          Object.keys(obj).map(key => {
             if (obj[key] instanceof Array) obj[key] = []
@@ -231,7 +235,11 @@ Vue.mixin({
       },
       whoAmI: function() {
          const self = this;
-         return self.$localStorage.get('HIPPO-LOGIN').toLowerCase();
+         let user = self.$localStorage.get('HIPPO-LOGIN');
+         if(user)
+            return user.toLowerCase();
+         else 
+            return 'Guest';
       },
       formatKey: function(key) {
          return key.split('_').join(' ').toUpperCase();
@@ -385,6 +393,8 @@ Vue.mixin({
          self.postWithPromise( 'notifications/get' ).then(
             function(x) {
                let notifications = JSON.parse(x.data).data;
+               if(! notifications)
+                  notifications = [];
                self.saveStore("notifications", notifications);
             }
          );
@@ -395,9 +405,11 @@ Vue.mixin({
          // See https://github.com/katzer/cordova-plugin-local-notifications#properties
          // for available properties.
          let data = self.loadStore('notifications');
-         const nots = data.filter( x => x.is_read == false);
-         if(nots.length > 0)
-            cordova.plugins.notification.local.schedule(nots);
+         if(data) {
+            const nots = data.filter( x => x.is_read == false);
+            if(nots.length > 0)
+               cordova.plugins.notification.local.schedule(nots);
+         }
       },
       removeFromArray: function(arr) {
          var what, a = arguments, L = a.length, ax;
