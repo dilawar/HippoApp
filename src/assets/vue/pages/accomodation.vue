@@ -237,7 +237,8 @@
 
             <f7-list-input label="Address" 
               :value="accomodation.address"
-              @texteditor:input="accomodation.address=$event.target.value"
+              @texteditor:change="(v) => accomodation.address=v"
+              :textEditorParams="{mode:'popover'}"
               type="texteditor" :resizable="true"/>
           </f7-list-input>
 
@@ -451,8 +452,11 @@ export default {
       self.promiseWithAuth('/accomodation/create', self.accomodation)
         .then(function(x) {
           var res = JSON.parse(x.data).data;
-          if(res.succcess)
-            self.$localStorage.delete('me.accomodation');
+          if(res.success) {
+            // self.$localStorage.delete('me.accomodation');
+            self.notify("Success", "Created new accomodation.");
+            self.fetchAccomodations();
+          }
           else
             self.notify("Failed", "Failed to create accomodation.");
         });
