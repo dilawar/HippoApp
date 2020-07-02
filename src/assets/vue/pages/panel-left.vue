@@ -80,6 +80,7 @@ export default {
     const self = this;
     return {
       username: self.whoAmI(),
+      notifications: [],
       alreadyLoggedIn: false,
       profile: self.$store.getters.profile,
     };
