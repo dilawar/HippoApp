@@ -1,6 +1,6 @@
 <template>
   <f7-page page-content>
-    <f7-navbar title="COVID19 Information" back-link="Back"></f7-navbar>
+    <f7-navbar title="COVID19: Bangalore Containment Zones" back-link="Back"></f7-navbar>
 
     <f7-row style="background-color:rgba(255,255,255,0.8);
       position:absolute; width:100vw; bottom:60px; left:0px; z-index:1000">
