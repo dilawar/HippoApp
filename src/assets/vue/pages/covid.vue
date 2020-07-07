@@ -1,6 +1,6 @@
 <template>
   <f7-page page-content>
-    <f7-navbar title="COVID19 Information" back-link="Back"></f7-navbar>
+    <f7-navbar title="COVID19: Bangalore Containment Zones" back-link="Back"></f7-navbar>
 
     <f7-row style="background-color:rgba(255,255,255,0.8);
       position:absolute; width:100vw; bottom:60px; left:0px; z-index:1000">
@@ -53,7 +53,7 @@
 
       <l-marker v-for="v, key in coronaXY" :lat-lng="v.latlng"
         :key="key" :visible="true" 
-        :icon="covidIcon"> 
+        :icon="defaultIcon"> 
         <l-tooltip>{{v.address}}</l-tooltip>
       </l-marker>
 
@@ -99,7 +99,7 @@ export default {
       coronaXY: [],
       lastUpdated: null,
       alerts: [],
-      covidIcon: L.divIcon( {className: 'fas fa-disease fa-1x'
+      defaultIcon: L.divIcon( {className: 'fas fa-disease fa-1x'
         , iconSize: [20, 20], iconAnchor:[10,10]}),
 
       textControl :  L.Control.extend({
@@ -187,6 +187,11 @@ export default {
     refreshMap: function() {
       const map = this.$refs.map.mapObject;
     },
+    covidIcon: function(type) {
+      console.log('type', type);
+      let icon = 'fas fa-disease fa-1x';
+      return L.divIcon( {className: icon, iconSize: [20, 20], iconAnchor:[10,10]});
+    },
     fetchAlerts: async function() {
       const self = this;
       const app = self.$f7;
@@ -212,11 +217,11 @@ export default {
           if(ts > self.lastUpdated)
             self.lastUpdated = ts;
 
-          if(item.pstatus.toLowerCase() !== 'active')
-            continue;
+          //if(item.pstatus.toLowerCase() !== 'active')
+          //  continue;
 
           let loc = L.latLng(L.latLng(item.latitude, item.longitude));
-          self.coronaXY.push({latlng: loc, address: item.address});
+          self.coronaXY.push({latlng: loc, address: item.address, pstatus:item.pstatus});
           var distance = loc.distanceTo(self.myLocation);
           self.distances[loc] = distance;
           if(distance < 2000 ) {
