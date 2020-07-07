@@ -53,7 +53,7 @@
 
       <l-marker v-for="v, key in coronaXY" :lat-lng="v.latlng"
         :key="key" :visible="true" 
-        :icon="defaultIcon"> 
+        :icon="covidIcon(v.data)"> 
         <l-tooltip>{{v.address}}</l-tooltip>
       </l-marker>
 
@@ -81,6 +81,8 @@
 </template>
 
 <script>
+
+import moment from 'moment';
 
 export default {
   data() {
@@ -187,9 +189,16 @@ export default {
     refreshMap: function() {
       const map = this.$refs.map.mapObject;
     },
-    covidIcon: function(type) {
-      console.log('type', type);
+    covidIcon: function(v) {
       let icon = 'fas fa-disease fa-1x';
+      if(v.type === 'INACTIVE')
+        icon = '';
+
+      if(moment().diff(moment(v.date_of_identification), 'days') < 2) {
+        //console.log('new zone');
+        icon = 'fas fa-disease fa-2x';
+      }
+
       return L.divIcon( {className: icon, iconSize: [20, 20], iconAnchor:[10,10]});
     },
     fetchAlerts: async function() {
@@ -217,11 +226,11 @@ export default {
           if(ts > self.lastUpdated)
             self.lastUpdated = ts;
 
-          //if(item.pstatus.toLowerCase() !== 'active')
-          //  continue;
+          if(item.pstatus.toLowerCase() !== 'active')
+            continue;
 
           let loc = L.latLng(L.latLng(item.latitude, item.longitude));
-          self.coronaXY.push({latlng: loc, address: item.address, pstatus:item.pstatus});
+          self.coronaXY.push({latlng: loc, address: item.address, data:item});
           var distance = loc.distanceTo(self.myLocation);
           self.distances[loc] = distance;
           if(distance < 2000 ) {
