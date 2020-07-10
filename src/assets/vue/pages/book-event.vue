@@ -284,6 +284,7 @@ export default {
       popupRepeat: false,
       externalId: self.$f7route.params.externalId,
       evType: self.$f7route.params.evType,
+      roles: self.$store.getters.roles,
       thisEvent: {
          type: '' 
         , external_id: self.externalId
@@ -420,12 +421,16 @@ export default {
     },
     onVenueSelected: function(venue)
     {
+      const self = this;
       if(venue.BOOKING_STATUS !== 'AVAILABLE')
         return;
-      if(venue.allow_booking_on_hippo !== 'YES')
+
+      // BOOKMYVENUE admin can booking any venue wheather it is allowed in
+      // Hippo or not.
+      if(venue.allow_booking_on_hippo !== 'YES' &&
+        (! self.roles.includes('BOOKMYVENUE_ADMIN')))
         return;
       const venueid = venue.id;
-      const self = this;
       self.thisBooking.venue = venueid;
       //console.log('Selected venue is ' + venueid);
       self.popupVenueSelect = false;
@@ -495,7 +500,7 @@ export default {
       let endTime = self.dbTime(self.thisBooking.endTime);
 
       if(date in self.holidays) {
-        app.dialog.confirm("You are booking on a holiday or a \ day " +
+        app.dialog.confirm("You are booking on a holiday or a day " +
           " at which public events are discouraged. <br /> '" + 
           self.holidays[date].description + "'. <br />" +
           "Continue (some type of events will be rejected by Hippo)?"

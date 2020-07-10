@@ -335,6 +335,7 @@ export default {
         var res = JSON.parse(x.data);
         if(res.data.roles)
           self.rolesCSV = res.data.roles;
+          self.$store.commit('ROLES', res.data.roles.split(','));
       });
     },
     fetchFlashCards: function() {
