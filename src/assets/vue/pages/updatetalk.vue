@@ -24,25 +24,26 @@
           </f7-list-item>
           <f7-list-input label="Title" 
             type="textarea" 
+            :resizable="true"
             @input="thisTalk.title = $event.target.value"
             :value="thisTalk.title">
           </f7-list-input>
 
+          <!--
           <f7-list-input label="Decription" 
             type="texteditor"
             resizable
-            @input="thisTalk.description=$event.target.value"
+            @texteditor:input="(e) => thisTalk.description=e"
             :value="thisTalk.description">
           </f7-list-input>
+          -->
 
-          <!--
           <f7-list-input :input="false" label="Description">
             <vue-editor slot="input" 
               id="description_editor"
               v-model="thisTalk.description">
             </vue-editor>
           </f7-list-input>
-          -->
 
         </f7-list-group>
 
