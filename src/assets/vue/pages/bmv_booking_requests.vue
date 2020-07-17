@@ -80,7 +80,8 @@
                 Hurray! This request looks clean.
               </div>
             </f7-list-item>
-            <f7-list-item v-if="thisRequest.is_public_event=='NO'"
+            <f7-list-item 
+              :checked="thisRequest.is_public_event==='YES'"
               checkbox
               title="Mark as PUBLIC EVENT"
               text="By marking it as PUBLIC EVENT, you are putting
@@ -195,10 +196,17 @@
       changeRequestPublic: function(value) 
       {
         const self = this;
-        if(value.target.checked)
+        if(value.target.checked) {
           self.thisRequest.is_public_event = "YES";
+        }
         else
           self.thisRequest.is_public_event = "NO";
+
+        self.promiseWithAuth('bmvadmin/request/update', self.thisRequest)
+          .then( function(x) {
+            self.notify("Success", "Successfully changed the 'is_public_event' value");
+            self.fetchPendingRequests();
+          });
       },
     },
   }
