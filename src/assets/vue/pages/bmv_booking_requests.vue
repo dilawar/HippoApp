@@ -80,7 +80,7 @@
                 Hurray! This request looks clean.
               </div>
             </f7-list-item>
-            <f7-list-item v-if="thisRequest.is_public_event=='NO'"
+            <f7-list-item v-if="thisRequest.is_public_event==='NO'"
               checkbox
               title="Mark as PUBLIC EVENT"
               text="By marking it as PUBLIC EVENT, you are putting
