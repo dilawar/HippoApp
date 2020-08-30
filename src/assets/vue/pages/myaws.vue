@@ -4,7 +4,11 @@
 
     <!-- Upcoming AWS -->
     <f7-block v-if="Object.keys(upcoming).length>0">
-      <f7-block-title>Upcoming Annual Work Seminar</f7-block-title>
+
+      <f7-block-title medium>
+        Upcoming Annual Work Seminar
+      </f7-block-title>
+
       <f7-card :key="key" v-for="(aws, key) in upcoming" no-shadow outline>
         <f7-card-header>
           {{aws.venue}} | {{humanReadableDate(aws.date)}} | 
@@ -50,35 +54,50 @@
 
     <!-- Past AWS -->
     <f7-block>
-      <f7-block-title>Annual Work Seminar</f7-block-title>
+
+      <f7-block-title medium>Annual Work Seminar</f7-block-title>
+
+      <f7-block-title>
+        If you need to change any of the following entries, please contact the
+        Academic Office.
+      </f7-block-title>
+
       <f7-list accodion-list no-hairlines media-list>
         <f7-list-item accordion-item 
           v-for="(aws, key) in awses" 
           :key="key" 
           :text="aws.title"
           :header="aws.venue+' | '+humanReadableDateTime(aws.date, aws.time)">
+
+          <div slot="footer" v-if="'YES'===aws.is_presynopsis_seminar">
+            Presynopsis Seminar
+          </div>
+
           <f7-accordion-content style="background-color:Ivory">
-            <div> <strong>{{aws.title}}</strong> </div>
-            <span inset style="font-size:small" v-html="aws.abstract"></span>
-            <f7-row style="font-size:x-small">
-              <f7-col>Supervisor(s)/Host</f7-col>
-              <f7-col>TCM</f7-col>
-            </f7-row>
-            <f7-row style="font-size:x-small">
-              <f7-col>
-                <f7-link v-for="i in [1,2]" external target="_system"
-                  :href="aws['supervisor_'+i]" :key="'sup'+i"> 
-                  <u>{{aws['supervisor_'+i]}}</u>&nbsp;&nbsp;
-                </f7-link>
-              </f7-col>
-              <f7-col>
-                <f7-link v-for="i in [1,2,3,4]" external taregt="_system"
-                  :href="aws['tcm_member_'+i]" :key="'tcm'+i">
-                  <u>{{aws['tcm_member_'+i]}}</u>&nbsp;&nbsp;
-                </f7-link> 
-              </f7-col>
-            </f7-row>
+            <f7-block inset>
+              <div> <strong>{{aws.title}}</strong> </div>
+              <span inset style="font-size:small" v-html="aws.abstract"></span>
+              <f7-row style="font-size:x-small">
+                <f7-col>Supervisor(s)/Host</f7-col>
+                <f7-col>TCM</f7-col>
+              </f7-row>
+              <f7-row style="font-size:x-small">
+                <f7-col>
+                  <f7-link v-for="i in [1,2]" external target="_system"
+                    :href="aws['supervisor_'+i]" :key="'sup'+i"> 
+                    <u>{{aws['supervisor_'+i]}}</u>&nbsp;&nbsp;
+                  </f7-link>
+                </f7-col>
+                <f7-col>
+                  <f7-link v-for="i in [1,2,3,4]" external taregt="_system"
+                    :href="aws['tcm_member_'+i]" :key="'tcm'+i">
+                    <u>{{aws['tcm_member_'+i]}}</u>&nbsp;&nbsp;
+                  </f7-link> 
+                </f7-col>
+              </f7-row>
+            </f7-block>
           </f7-accordion-content>
+
         </f7-list-item>
       </f7-list>
     </f7-block>

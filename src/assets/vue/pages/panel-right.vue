@@ -56,7 +56,7 @@
         <f7-list-item link="/acadadmin/allaws/" 
           target="_blank"
           view=".view-main"
-          title="AWS & AWS Roster" 
+          title="Previous AWS & Roster" 
           panel-close>
         </f7-list-item>
         <f7-list-item link="/acadadmin/courses/" 

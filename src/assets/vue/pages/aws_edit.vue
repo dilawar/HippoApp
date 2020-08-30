@@ -68,6 +68,16 @@
           </vue-editor>
         </f7-list-input>
 
+        <!-- is presynopsis seminar -->
+        <f7-list-input label="Is Presynopsis Seminar?" 
+          type="select" 
+          @change="thisAWS.is_presynopsis_seminar=$event.target.value"
+          :value="thisAWS.is_presynopsis_seminar">
+          <option value="YES">Yes</option>
+          <option value="NO">No</option>
+        </f7-list-input>
+
+
         <!-- Supervisors -->
         <f7-list-item group-title title="Supervisors"></f7-list-item>
         <f7-list-item v-for="pi, key in thisAWS.supervisors" :header="pi" :key="'super'+key">
@@ -143,7 +153,7 @@ export default {
     const self = this;
     return {
       thisAWS: {date:'', speaker:'', venue:'', title:'', abstract:''
-        , tcms:[], supervisors:[]},
+        , is_presynopsis_seminar:'', tcms:[], supervisors:[]},
       awsid: self.$f7route.params.awsid,
       isupcoming: self.$f7route.params.isupcoming,
       add_new_tcm: false,

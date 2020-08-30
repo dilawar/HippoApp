@@ -130,7 +130,8 @@ export default {
   data() {
     const self = this;
     return {
-      thisAWS: {id:'', date:'', speaker:'', abstract:'', title:'', html:''},
+      thisAWS: {id:'', date:'', speaker:'', abstract:'', title:'', html:''
+        , is_presynopsis_seminar:'NO'},
       allaws: {},
       popupTitle: 'Review request',
       openAssignPopup: false,
@@ -182,6 +183,7 @@ export default {
         .then( function(x) {
           self.thisAWS = JSON.parse(x.data).data;
           self.thisAWS.abstract = '';
+          console.log('thisAWS', self.thisAWS);
           self.openEditPopup = true;
         });
     },
