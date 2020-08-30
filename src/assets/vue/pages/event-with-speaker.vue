@@ -108,6 +108,15 @@
   </f7-popup>
 
   <f7-block>
+
+    <div v-if="thisEvent.type==='PRESYNOPSIS THESIS SEMINAR'" >
+      <em class="text-color-blue" style="font-size:large">
+        TIFR requires the title of your <tt>PRESYNOPSIS
+        THESIS SEMINAR</tt> is to be same as the title of your thesis. In case
+        of any doubt, please contact Academic office.
+      </em>
+    </div>
+
     <!-- SPEAKER -->
     <f7-list media-list>
       <f7-list-item title="Step 1: Speaker informaton" group-title>
