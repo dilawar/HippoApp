@@ -15,7 +15,7 @@ init:
 	cordova platform add browser || echo "Failed to add browser"
 	cordova plugin add cordova-plugin-inappbrowser || echo "A"
 	cordova plugin add cordova-plugin-file
-	cordova plugin add cordova-plugin-browsersync || echo "B"
+	#cordova plugin add cordova-plugin-browsersync || echo "B"
 	#cordova plugin add https://github.com/dilawar/cordova-plugin-background-geolocation --save 
 	cordova plugin add cordova-plugin-local-notification --save || echo "D"
 	cordova plugin add cordova-plugin-dialogs --save || echo "E"
