@@ -57,10 +57,10 @@
 
       <f7-block-title medium>Annual Work Seminar</f7-block-title>
 
-      <f7-block-title>
+      <div>
         If you need to change any of the following entries, please contact the
         Academic Office.
-      </f7-block-title>
+      </div>
 
       <f7-list accodion-list no-hairlines media-list>
         <f7-list-item accordion-item 
