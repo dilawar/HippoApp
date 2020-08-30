@@ -17,6 +17,10 @@ Vue.use(Chartkick.use(Highcharts))
 import { VueEditor, Quill } from 'vue2-editor';
 Vue.component('vue-editor', VueEditor);
 
+// Vue html to pdf
+import VueHtmlToPaper from 'vue-html-to-paper';
+Vue.use(VueHtmlToPaper);
+
 // Autocomplete
 import Autocomplete from 'vuejs-auto-complete';
 Vue.component('v-autocomplete', Autocomplete);

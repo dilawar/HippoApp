@@ -84,10 +84,6 @@
             <div slot="text" v-html="upcomingTrips"></div>
           </f7-list-item>
 
-          <f7-list-item link="/covid/" title="COVID19" panel-close>
-            <f7-icon slot="media" icon="fa fa-disease fa-2x"></f7-icon>
-          </f7-list-item>
-
         </f7-list>
       </f7-col>
     </f7-row>
