@@ -89,7 +89,7 @@
     "cordova-support-android-plugin": "1.0.1",
     "cordova-support-google-services": "1.3.2",
     "csp-parse": "0.0.2",
-    "electron": "^1.1.1",
+    "electron": "^7.2.4",
     "elementtree": "^0.1.7",
     "fibers": "^4.0.3",
     "filesaver": "0.0.13",
