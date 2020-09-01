@@ -313,24 +313,21 @@
         <div slot="header">
           {{course.venue}}  
           | {{humanReadableDate(course.start_date)}} 
-            to {{humanReadableDate(course.end_date)}} 
+          to {{humanReadableDate(course.end_date)}} 
           | {{course.course_id}}
         </div>
         <div slot="after">{{course.slot}}</div>
         <div slot="title"> {{course.name}} </div>
         <div slot="footer" class="text-color-red"> {{course.note}} </div>
         <f7-accordion-content>
-          <f7-block inset style="background-color:peachpuff">
-            <f7-row>
-              <f7-col>
-                Max Registrations: 
-                {{course.max_registration===-1?'Not limited':course.max_registration}}
-              </f7-col>
-              <f7-col>
-                Audit Allowed? {{course.is_audit_allowed}}
-              </f7-col>
-            </f7-row>
-
+          <f7-block inset style="background-color:Ivory;padding:5px">
+            <div>
+              Max Registrations: 
+              {{course.max_registration===-1?'No limit':course.max_registration}}
+            </div> 
+            <div>
+              Audit Allowed? {{course.is_audit_allowed}}
+            </div>
             <f7-row>
               <f7-col>
                 <f7-link v-if="course.url" external target="_system" :href="course.url">{{course.url}}</f7-link>
@@ -338,20 +335,20 @@
             </f7-row>
             <f7-row>
               <f7-col width=50 medium=30 style="padding-top:5px">
-                <f7-button small raised
+                <f7-button small 
                   :href="'/coursefeedback/'+course.year+'/'+course.semester+'/'+course.course_id+'/'"
                   icon="far fa-comment-dots">
                   {{course.numfeedback}} Feedbacks
                 </f7-button>
               </f7-col>
               <f7-col width=50 medium=30 style="padding-top:5px">
-                <f7-button small raised 
+                <f7-button small 
                   :href="'/updatecourse/'+course.id+'/'" icon="fa fa-users">
                   Registrations
                 </f7-button>
               </f7-col>
               <f7-col width=50 medium=30 style="padding-top:5px">
-                <f7-button small fill @click="showCurrentCourse(course)" icon="fa fa-edit">
+                <f7-button small @click="showCurrentCourse(course)" icon="fa fa-edit">
                   Edit
                 </f7-button>
               </f7-col>

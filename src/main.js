@@ -297,6 +297,21 @@ Vue.mixin({
         dlink.click();
         dlink.remove();
       },
+      saveBlob: function(filename, blob) {
+        const self = this;
+        let mimeType = "text/plain";
+        let dlink = document.createElement('a');
+        dlink.target = "_blank";
+        dlink.download = filename;
+        dlink.href = window.URL.createObjectURL(blob);
+        dlink.onclick = function(e) {
+          setTimeout( () => { 
+            window.URL.revokeObjectURL(self.href);
+          }, 1000);
+        };
+        dlink.click();
+        dlink.remove();
+      },
       saveStore: function(key, data) {
          const self=this;
          self.$localStorage.set(key, JSON.stringify(data));
