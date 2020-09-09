@@ -397,6 +397,8 @@ Vue.mixin({
       },
       searchPeopleURI: function(q, what) {
          const self = this;
+         // remove '@' if someone try to insert email.
+         q = q.split('@')[0];
          return self.getAPIUrl() + '/search/'+what+'/'+encodeURIComponent(q);
       },
       fetchNotifications: function() {
