@@ -37,6 +37,10 @@ import Email from './assets/vue/pages/email.vue';
 // covid
 import Covid from './assets/vue/pages/covid.vue';
 
+// Phtopgraphy club
+import PhotographyClub from './assets/vue/pages/photographyclub.vue';
+import AdminPhotographyClub from './assets/vue/pages/admin_photographyclub.vue';
+
 // Common profile page.
 import ProfilePage from './assets/vue/pages/profile.vue';
 
@@ -266,5 +270,13 @@ export default [
    {
       path: '/covid',
       component: Covid
+   },
+   {
+      path: '/photographyclub',
+      component: PhotographyClub
+   },
+   {
+      path: '/admin_photographyclub',
+      component: AdminPhotographyClub
    },
 ]

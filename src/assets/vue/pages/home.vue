@@ -84,6 +84,13 @@
             <div slot="text" v-html="upcomingTrips"></div>
           </f7-list-item>
 
+          <f7-list-item link="/photographyclub/" title="Photography Club" 
+            panel-close>
+            <f7-icon slot="media" icon="fa fa-camera fa-2x"></f7-icon>
+            <div slot="text" v-html="pcTheme"></div>
+          </f7-list-item>
+
+
         </f7-list>
       </f7-col>
     </f7-row>
@@ -222,6 +229,7 @@ export default {
       profile: { },
       upcomingTrips: '',
       rolesCSV: 'USER',
+      pcTheme: '',
       charts: {},
     };
   },
