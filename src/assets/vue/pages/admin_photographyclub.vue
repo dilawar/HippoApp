@@ -71,7 +71,7 @@
             </f7-button>
           </f7-col>
           <f7-col>
-            <f7-button raised @click="submitCompetition()" >
+            <f7-button raised @click="submitEntry()" >
               Submit
             </f7-button>
           </f7-col>
@@ -142,25 +142,26 @@ export default {
       const self = this;
       const app = self.$f7;
 
-      self.postWithPromise('/photographyclub/list').then( function(x) {
+      self.postWithPromise('/photographyclub/event/list').then( function(x) {
         self.entries = JSON.parse(x.data).data;
       });
     },
     isPBAdmin: function() {
       return true;
     },
-    submitCompetition: function() {
+    submitEntry: function() {
       const self = this;
       const app = self.$f7;
       app.preloader.show();
-      console.log('This entry', self.thisEntry);
-      self.promiseWithAuth('/photographyclub/event/new', self.thisEntry)
+      // console.log('This entry', self.thisEntry);
+      var endpoint = self.thisEntry.is_new ? 'add' : 'update';
+      self.promiseWithAuth('/photographyclub/event/'+endpoint, self.thisEntry)
         .then( function(x) {
-          let res = JSON.parse(x.data);
+          let res = JSON.parse(x.data).data;
           if(res.success) 
-            self.notify("Success", "Added new entry");
+            self.notify("Success", "Successfully " + endpoint + 'ed entry.');
           else
-            self.notify("Failed", "Failed to add new entry: " + res.msg);
+            self.notify("Failed", "Failed to " + endpoint + " entry: " + res.msg);
           app.preloader.hide();
           self.fetchEvents();
         });
