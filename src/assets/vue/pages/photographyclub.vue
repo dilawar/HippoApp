@@ -53,7 +53,9 @@
     <f7-photo-browser :photos="photos" ref="photobrowser">
     </f7-photo-browser>
 
+
     <f7-block v-for="activeEvent, key in activeEvents" :key="key" inset>
+
       <f7-block-title medium>
         {{activeEvent.theme}}
       </f7-block-title>
@@ -61,6 +63,26 @@
       <f7-block-header>
         <div v-html="activeEvent.description"></div>
       </f7-block-header>
+
+      <f7-swiper>
+        <f7-swiper-slide v-for="entry, key in entries" :key="key">
+          <f7-card media-card>
+            <f7-card-header v-html="entry.login">
+            </f7-card-header>
+            <f7-card-content :padding="false">
+              <div v-html="entry.caption"></div>
+              <img :src="entry.url" width="100%" />
+            </f7-card-content>
+            <f7-card-footer>
+              <f7-row>
+                <f7-col>
+                  Rate
+                </f7-col>
+              </f7-row>
+            </f7-card-footer>
+          </f7-card>
+        </f7-swiper-slide>
+      </f7-swiper>
 
       <f7-button raised @click="showEntries(activeEvent)">Show entries</f7-button>
 
@@ -138,7 +160,6 @@ export default {
       caption: '',
       dropzoneOptions: {
         url: self.$store.state.api + '/upload/image/photographyclub',
-        thumbnailWidth: 300,
         maxFilesize: 10,  // MB
         acceptedFiles: "image/*",
         addRemoveLinks: true,
@@ -153,6 +174,7 @@ export default {
 
     self.postWithPromise('/photographyclub/event/active').then(function(x) {
       self.activeEvents = JSON.parse(x.data).data;
+      self.showEntries(self.activeEvents[0]);
     });
 
     self.postWithPromise('/photographyclub/event/upcoming').then(function(x) {
@@ -178,11 +200,12 @@ export default {
           self.entries = JSON.parse(x.data).data;
           for(let key in self.entries) {
             let entry = self.entries[key];
-            self.photos.push({url: entry.url, caption: entry.caption});
+            self.photos.push({url: entry.url,
+              caption: entry.caption + " (" + entry.login + ")"});
           }
-          console.log('photos', self.photos);
+          //console.log('photos', self.photos);
           app.preloader.hide();
-          self.$refs.photobrowser.open();
+          //self.$refs.photobrowser.open();
         });
       setTimeout(() => app.preloader.hide());
     },
