@@ -27,14 +27,14 @@
             @texteditor:change="value => thisEntry.description = value">
           </f7-list-input>
 
-          <f7-list-input label="Competition start date"
+          <f7-list-input label="Submission start date"
             type="date"
             required
             :value="thisEntry.start_date"
             @change="thisEntry.start_date = $event.target.value">
           </f7-list-input>
 
-          <f7-list-input label="Comptetition end date"
+          <f7-list-input label="Submission end date"
             type="date"
             required
             :value="thisEntry.end_date"
