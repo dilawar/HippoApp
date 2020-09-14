@@ -84,7 +84,9 @@
             <div slot="text" v-html="upcomingTrips"></div>
           </f7-list-item>
 
-          <f7-list-item link="/photographyclub/" title="Photography Club" 
+          <f7-list-item link="/photographyclub/" 
+            title="Photography Competition" 
+            v-if="isUserAuthenticated()"
             panel-close>
             <f7-icon slot="media" icon="fa fa-camera fa-2x"></f7-icon>
             <div slot="text" v-html="pcTheme"></div>

@@ -153,15 +153,18 @@ export default {
       const self = this;
       const app = self.$f7;
       app.preloader.show();
-      // console.log('This entry', self.thisEntry);
+      console.log('This entry', self.thisEntry);
       var endpoint = self.thisEntry.is_new ? 'add' : 'update';
       self.promiseWithAuth('/photographyclub/event/'+endpoint, self.thisEntry)
         .then( function(x) {
           let res = JSON.parse(x.data).data;
-          if(res.success) 
+          if(res.success) {
             self.notify("Success", "Successfully " + endpoint + 'ed entry.');
+            self.popupEvent = false;
+          }
           else
-            self.notify("Failed", "Failed to " + endpoint + " entry: " + res.msg);
+            self.notify("Failed", "Failed to " + endpoint + " entry: " +
+              res.msg, 10000);
           app.preloader.hide();
           self.fetchEvents();
         });

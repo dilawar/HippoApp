@@ -1,6 +1,10 @@
 // Import Vue
 import Vue from 'vue';
 
+import VueLodash from 'vue-lodash'
+import lodash from 'lodash'
+Vue.use(VueLodash, { lodash: lodash })
+
 // Import css from dropzone.
 import Dropzone from "vue2-dropzone";
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
