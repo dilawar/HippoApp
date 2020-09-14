@@ -67,45 +67,22 @@
       <div v-html="activeEvent.description"></div>
     </f7-block-header>
 
-    <f7-swiper navigation>
+    <f7-swiper scrollbar>
       <f7-swiper-slide v-for="entry, key in entries" :key="key">
-        <f7-card no-shadow style="background-color:ivory">
-          <f7-card-header>
+
+        <f7-card no-shadow>
+          <f7-card-content style="padding-bottom:10px;">
             <div>
               <em style="font-size:large" v-html="entry.caption"></em>
               <small style="color:gray"> u/{{entry.login}}
                 {{toNow(entry.last_modified_on)}} ago.</small>
             </div>
-          </f7-card-header>
-          <f7-card-content :padding="false">
-            <template v-if="isVotingPhase(activeEvent)">
-              <span v-if="entry.id in thisEventRatings">
-                Avg rating 
-                <strong> {{lodash.mean(thisEventRatings[entry.id])}} </strong>
-                ({{thisEventRatings[entry.id].length}} votes) 
-              </span>
-
-              <v-star-rating 
-                v-if="entry.login !== whoAmI()"
-                style="padding-right:10px"
-                class="float-right"
-                :increment="0.5" 
-                :star-size="25"
-                :rating="(whoAmI() in thisEventRatings)? thisEventRatings[whoAmI()][entry.id]:0"
-                @rating-selected="(rating) => setRating(rating, entry, activeEvent)">
-              </v-star-rating>
-            </template>
-            <template v-else>
-              <div>
-                Voting phase {{activeEvent.voting_start_date}} to {{activeEvent.voting_end_date}}.
-              </div>
-            </template>
-
-            <img :src="entry.url" width="100%" style="padding-top:5px"/>
+            <img :src="entry.url" width="100%" style="padding-top:10px"/>
             <f7-row>
-              <f7-col v-if="isPBAdmin() || entry.login === whoAmI()" 
-                :disabled="isVotingPhase(activeEvent)">
-                <f7-button color=red @click="removeEntry(entry, activeEvent)">
+              <f7-col v-if="isPBAdmin() || entry.login === whoAmI()">
+                <!-- Can't remove when voting phase is on -->
+                <f7-button color=red @click="removeEntry(entry, activeEvent)"
+                  :disabled="isVotingPhase(activeEvent)">
                   Remove 
                 </f7-button>
               </f7-col>
@@ -117,7 +94,33 @@
               </f7-col>
             </f7-row>
           </f7-card-content>
+          <f7-card-footer v-if="isVotingPhase(activeEvent)">
+            <span v-if="entry.id in thisEventRatings">
+              Avg rating 
+              <strong> {{lodash.mean(thisEventRatings[entry.id])}} </strong>
+              ({{thisEventRatings[entry.id].length}} votes) 
+            </span>
+            <span v-else></span>
+            <div>
+              <v-star-rating 
+                v-if="entry.login !== whoAmI()"
+                style="padding-right:10px"
+                class="float-right"
+                :increment="0.5" 
+                :star-size="25"
+                :rating="(whoAmI() in thisEventRatings)? thisEventRatings[whoAmI()][entry.id]:0"
+                @rating-selected="(rating) => setRating(rating, entry, activeEvent)">
+              </v-star-rating>
+              <v-star-rating v-else read-only>
+              </v-star-rating>
+            </div>
+          </f7-card-footer>
+          <f7-card-footer v-else>
+            Voting phase {{activeEvent.voting_start_date}} to {{activeEvent.voting_end_date}}.
+          </f7-card-footer>
+
         </f7-card>
+
       </f7-swiper-slide>
     </f7-swiper>
   </f7-block>
@@ -128,11 +131,12 @@
   </f7-block>
 
   <!-- Upcoming -->
-  <f7-block-title small>
-    Upcoming competitions
-  </f7-block-title>
   <f7-block>
-    <f7-list media-list>
+    <f7-block-title medium>
+      Upcoming competitions
+    </f7-block-title>
+
+    <f7-list media-list no-hairlines>
       <f7-list-item v-for="event, key in upcomingEvents" :key="key"
         :title="event.theme">
         <div slot="header">
@@ -145,11 +149,11 @@
     </f7-list>
   </f7-block>
 
-  <f7-block-title small>
-    Finished competitions
-  </f7-block-title>
   <f7-block>
-    <f7-list media-list>
+    <f7-block-title medium>
+      Finished competitions
+    </f7-block-title>
+    <f7-list media-list no-hairlines>
       <f7-list-item v-for="event, key in completedEvents" :key="key"
         :title="event.theme">
         <div slot="header">
@@ -159,6 +163,7 @@
         </div>
         <div slot="text" v-html="event.description"></div>
       </f7-list-item>
+      <f7-list-item></f7-list-item>
     </f7-list>
   </f7-block>
 
@@ -261,6 +266,7 @@ export default {
         self.notify("Failed", res.msg)
       else {
         self.notify("Success", "Successfully uploaded.")
+        self.fetchComptEntries(self.thisEvent);
         self.popupOpened = false;
       }
     },
@@ -351,11 +357,13 @@ export default {
     },
     isVotingPhase: function(ev) {
       const self = this;
-      console.log('voting period', ev.voting_start_date, ev.voting_end_date);
+      // console.log('voting period', ev.voting_start_date, ev.voting_end_date);
+      let res = false;
       if( self.today() >= self.dbDate(ev.voting_start_date) && 
         self.today() <= self.dbDate(ev.voting_end_date))
-        return true;
-      return false;
+        res = true;
+      // console.log('res', res);
+      return res;
     },
   },
 };
