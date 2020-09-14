@@ -214,7 +214,8 @@ export default {
   },
   methods: { 
     isPBAdmin: function() {
-      return true;
+      const self = this;
+      return (self.whoAmI() === 'photography') || ('ADMIN' in self.getRoles());
     },
     fetchComptEntries: function(ev) {
       const self = this;
