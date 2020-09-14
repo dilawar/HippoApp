@@ -54,8 +54,8 @@
   </f7-popup>
 
   <!-- This completition -->
-  <f7-block inset>
-    <f7-block-title medium>
+  <f7-block inset v-if="activeEvent">
+    <f7-block-title medium v-if="activeEvent">
       {{activeEvent.theme}}
       <f7-button small class="float-right"
         :disabled="today() > dbDate(activeEvent.end_date)"
@@ -63,7 +63,6 @@
         Upload entry
       </f7-button>
     </f7-block-title>
-
     <f7-block-header strong>
       <div v-html="activeEvent.description"></div>
     </f7-block-header>
@@ -121,6 +120,11 @@
         </f7-card>
       </f7-swiper-slide>
     </f7-swiper>
+  </f7-block>
+  <f7-block v-else>
+    <f7-block-title medium>
+      Currently there is no active competition.
+    </f7-block-title>
   </f7-block>
 
   <!-- Upcoming -->
