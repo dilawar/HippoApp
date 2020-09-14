@@ -153,7 +153,7 @@ export default {
       const self = this;
       const app = self.$f7;
       app.preloader.show();
-      console.log('This entry', self.thisEntry);
+      /* console.log('This entry', self.thisEntry); */
       var endpoint = self.thisEntry.is_new ? 'add' : 'update';
       self.promiseWithAuth('/photographyclub/event/'+endpoint, self.thisEntry)
         .then( function(x) {
