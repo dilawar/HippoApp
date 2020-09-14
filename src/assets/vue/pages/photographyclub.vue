@@ -54,13 +54,13 @@
   </f7-popup>
 
   <!-- This completition -->
-  <f7-block inset v-if="activeEvent">
+  <f7-block inset v-if="activeEvent.theme">
     <f7-block-title medium v-if="activeEvent">
       {{activeEvent.theme}}
       <f7-button small class="float-right"
         :disabled="today() > dbDate(activeEvent.end_date)"
         icon="fa fa-upload" @click="uploadMyEntry(activeEvent)">
-        Upload entry
+        Upload Entry
       </f7-button>
     </f7-block-title>
     <f7-block-header strong>
