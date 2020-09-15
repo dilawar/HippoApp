@@ -223,11 +223,13 @@ export default {
   mounted: async function() {
     const self = this;
     const app = self.$f7;
+    app.preloader.show();
 
     self.postWithPromise('/photographyclub/event/active').then(function(x) {
       self.activeEvent = JSON.parse(x.data).data;
       self.fetchComptEntries(self.activeEvent);
       self.fetchRatings(self.activeEvent);
+      app.preloader.hide();
     });
 
     self.postWithPromise('/photographyclub/event/upcoming').then(function(x) {
@@ -237,7 +239,7 @@ export default {
     self.postWithPromise('/photographyclub/event/completed').then(function(x) {
       self.completedEvents = JSON.parse(x.data).data;
     });
-
+    setTimeout(() => app.preloader.hide(), 20000);
   },
   methods: { 
     isPBAdmin: function() {
