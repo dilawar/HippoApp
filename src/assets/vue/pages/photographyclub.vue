@@ -121,12 +121,10 @@
               </v-star-rating>
             </div>
           </f7-card-footer>
-          <f7-card-footer v-else>
-            Voting phase {{activeEvent.voting_start_date}} to {{activeEvent.voting_end_date}}.
+          <f7-card-footer v-else> 
+            Voting is not allowed yet. 
           </f7-card-footer>
-
         </f7-card>
-
       </f7-swiper-slide>
     </f7-swiper>
 
