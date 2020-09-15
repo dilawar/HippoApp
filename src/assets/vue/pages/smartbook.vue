@@ -134,9 +134,10 @@ export default {
     isTalkOrSeminar: function() {
       const self = this;
       var ans = false;
-      if(self.eventType.includes("TALK"))
-        ans = true;
-      else if(self.eventType.includes("SEMINAR"))
+      if(self.eventType.includes("TALK") || 
+        self.eventType.includes("SEMINAR") ||
+        self.eventType.includes("PUBLIC")
+      )
         ans = true;
       if(ans)
         self.sendEmailToAcademic = true;
