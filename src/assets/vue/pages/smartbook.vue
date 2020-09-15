@@ -27,9 +27,9 @@
           @change="changeSendEmailToAcademic"
           title="Send email(s) to Academic community">
           <div slot="text">
-            <strong>If cheched,</strong>, Hippo will send email
+            <strong>If cheched,</strong> Hippo will send email
             to academic mailing list on the day of the event. Also the event
-            will appear on the NCBS's Public Calendar.
+            will appear on the calendar.
           </div>
         </f7-list-item>
       </f7-list>
@@ -134,9 +134,10 @@ export default {
     isTalkOrSeminar: function() {
       const self = this;
       var ans = false;
-      if(self.eventType.includes("TALK"))
-        ans = true;
-      else if(self.eventType.includes("SEMINAR"))
+      if(self.eventType.includes("TALK") || 
+        self.eventType.includes("SEMINAR") ||
+        self.eventType.includes("PUBLIC")
+      )
         ans = true;
       if(ans)
         self.sendEmailToAcademic = true;
