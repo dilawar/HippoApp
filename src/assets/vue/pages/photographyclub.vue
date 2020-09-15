@@ -1,8 +1,9 @@
 <template>
 <f7-page page-content>
-  <f7-navbar title="NCBS Photography Club" back-link="Back">
+  <f7-navbar :title="activeEvent ? activeEvent.theme : 'Photography Club'" 
+    back-link="Back">
     <f7-nav-right v-if="isPBAdmin()">
-      <f7-link href="/admin_photographyclub">admin</f7-link>
+      <f7-link  href="/admin_photographyclub">admin</f7-link>
     </f7-nav-right>
   </f7-navbar>
 
@@ -19,9 +20,12 @@
         <f7-list media-list no-hairlines>
           <f7-list-item v-if="popupAction==='Submit'">
             <div slot="footer"> 
-              Last date {{thisEvent.start_date | date }}, 
-              Voting phase: {{thisEvent.voting_start_date | date }} 
-              to {{thisEvent.voting_end_date | date}}
+              <strong>Upload one file at a time. Max 3 uploads per user.</strong>
+              <em>
+                Last date {{thisEvent.start_date | date }}, 
+                Voting phase: {{thisEvent.voting_start_date | date }} 
+                to {{thisEvent.voting_end_date | date}}. 
+              </em>
             </div>
             <vue-dropzone 
               id="photographyclub" 
@@ -35,11 +39,13 @@
           </f7-list-item>
           <f7-list-input 
             label="Caption"
+            required
             type="textarea"
             :value="thisEntry.caption"
             @change="thisEntry.caption=$event.target.value">
           </f7-list-input>
           <f7-list-input label="Any other comment (not displayed)"
+            resizable
             type="textarea"
             :value="thisEntry.comment"
             @change="thisEntry.comment=$event.target.value">
@@ -55,22 +61,19 @@
   </f7-popup>
 
   <!-- This completition -->
-  <f7-block inset v-if="activeEvent.theme">
-    <f7-block-title medium v-if="activeEvent">
-      {{activeEvent.theme}}
-      <f7-button 
-        :v-if="activeEvent.theme && inBetweenDates(dbDate(activeEvent.start_date), dbDate(activeEvent.end_date))"
-        class="float-right" 
-        icon="fa fa-upload" 
-        @click="uploadMyEntry(activeEvent)">
-        Upload 
-      </f7-button>
-    </f7-block-title>
+  <f7-block-header v-html="activeEvent?activeEvent.description:''">
+  </f7-block-header>
 
+  <!-- Extended FAB Center Bottom (Red) -->
+  <f7-fab position="right-top" slot="fixed" 
+    tooltip="Upload your entry"
+    @click="uploadMyEntry(activeEvent)"
+    :v-if="activeEvent && inBetweenDates(dbDate(activeEvent.start_date), dbDate(activeEvent.end_date))"
+  >
+    <f7-icon icon="fa fa-upload"></f7-icon>
+  </f7-fab>
 
-    <f7-block-header>
-      <span v-html="activeEvent.description"></span>
-    </f7-block-header>
+  <f7-block v-if="activeEvent">
 
     <f7-swiper navigation>
       <f7-swiper-slide v-for="entry, key in entries" :key="key">
@@ -85,14 +88,13 @@
             <div>
               <v-star-rating 
                 v-if="entry.login !== whoAmI()"
-                style="padding-right:10px"
-                class="float-right"
                 :increment="0.5" 
-                :star-size="25"
+                :fixed-points="1"
+                :star-size="30"
                 :rating="(whoAmI() in thisEventRatings)? thisEventRatings[whoAmI()][entry.id]:0"
                 @rating-selected="(rating) => setRating(rating, entry, activeEvent)">
               </v-star-rating>
-              <v-star-rating v-else read-only>
+              <v-star-rating v-else :star-size="30" read-only>
               </v-star-rating>
             </div>
           </f7-card-footer>
@@ -105,7 +107,8 @@
               <small style="color:gray"> u/{{entry.login}}
                 {{toNow(entry.last_modified_on)}} ago.</small>
             </div>
-            <img :src="entry.url" width="100%" style="padding-top:10px"/>
+            <img :src="entry.url" 
+              style="padding-top:10px;width:auto;height:auto;max-width:100%;max-height:600px;"/>
             <f7-row>
               <f7-col v-if="isPBAdmin() || entry.login === whoAmI()">
                 <!-- Can't remove when voting phase is on but admin can delete
@@ -202,7 +205,7 @@ export default {
       entries: [],
       myentries: [],
       photos: [],
-      activeEvent: [],
+      activeEvent: null,
       upcomingEvents: [],
       completedEvents: [],
       thisEntry : {comment:'', caption:'', note:''},
@@ -271,6 +274,12 @@ export default {
     },
     uploadMyEntry: function(myevent) {
       const self = this;
+      const app = self.$f7;
+      console.log('xxx', myevent);
+      if(! myevent) {
+        app.dialog.alert("No competition found!");
+        return;
+      }
       self.thisEvent = myevent;
       self.popupOpened = true;
     },
