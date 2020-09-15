@@ -1,7 +1,7 @@
 <template>
 <f7-page page-content>
   <f7-navbar title="NCBS Photography Club" back-link="Back">
-    <f7-nav-right>
+    <f7-nav-right v-if="isPBAdmin()">
       <f7-link href="/admin_photographyclub">admin</f7-link>
     </f7-nav-right>
   </f7-navbar>
@@ -29,6 +29,7 @@
               v-on:vdropzone-sending="(img, xhr, formdata) =>
               onImageSending(img, xhr, formdata, thisEvent.id)"
               v-on:vdropzone-success="onUploadSuccess"
+              v-on:vdropzone-error="onUploadError"
               :options="dropzoneOptions">
             </vue-dropzone>
           </f7-list-item>
@@ -57,21 +58,24 @@
   <f7-block inset v-if="activeEvent.theme">
     <f7-block-title medium v-if="activeEvent">
       {{activeEvent.theme}}
-      <f7-button small class="float-right"
-        :disabled="today() > dbDate(activeEvent.end_date)"
-        icon="fa fa-upload" @click="uploadMyEntry(activeEvent)">
-        Upload Entry
+      <f7-button 
+        :v-if="activeEvent.theme && inBetweenDates(dbDate(activeEvent.start_date), dbDate(activeEvent.end_date))"
+        class="float-right" 
+        icon="fa fa-upload" 
+        @click="uploadMyEntry(activeEvent)">
+        Upload 
       </f7-button>
     </f7-block-title>
-    <f7-block-header strong>
-      <div v-html="activeEvent.description"></div>
+
+
+    <f7-block-header>
+      <span v-html="activeEvent.description"></span>
     </f7-block-header>
 
-    <f7-swiper scrollbar>
+    <f7-swiper navigation>
       <f7-swiper-slide v-for="entry, key in entries" :key="key">
-
         <f7-card no-shadow>
-          <f7-card-content style="padding-bottom:10px;">
+          <f7-card-content :padding="false">
             <div>
               <em style="font-size:large" v-html="entry.caption"></em>
               <small style="color:gray"> u/{{entry.login}}
@@ -81,13 +85,15 @@
             <f7-row>
               <f7-col v-if="isPBAdmin() || entry.login === whoAmI()">
                 <!-- Can't remove when voting phase is on -->
-                <f7-button color=red @click="removeEntry(entry, activeEvent)"
+                <f7-button small 
+                  color=red @click="removeEntry(entry, activeEvent)"
                   :disabled="isVotingPhase(activeEvent)">
                   Remove 
                 </f7-button>
               </f7-col>
               <f7-col v-if="entry.login === whoAmI()">
-                <f7-button @click="updateMetadata(entry, activeEvent)" 
+                <f7-button small 
+                  @click="updateMetadata(entry, activeEvent)" 
                   :disabled="isVotingPhase(activeEvent)">
                   Change Caption
                 </f7-button>
@@ -123,6 +129,15 @@
 
       </f7-swiper-slide>
     </f7-swiper>
+
+    <f7-block-footer>
+      <strong>Upload phase:</strong>
+      {{activeEvent.start_date | date}} to {{activeEvent.end_date | date}}
+      <br>
+      <strong>Voting Phase:</strong> {{activeEvent.voting_start_date | date}} to
+      {{activeEvent.voting_end_date | date}}
+    </f7-block-footer>
+
   </f7-block>
   <f7-block v-else>
     <f7-block-title medium>
@@ -132,7 +147,7 @@
 
   <!-- Upcoming -->
   <f7-block>
-    <f7-block-title medium>
+    <f7-block-title>
       Upcoming competitions
     </f7-block-title>
 
@@ -150,7 +165,7 @@
   </f7-block>
 
   <f7-block>
-    <f7-block-title medium>
+    <f7-block-title>
       Finished competitions
     </f7-block-title>
     <f7-list media-list no-hairlines>
@@ -195,6 +210,7 @@ export default {
       dropzoneOptions: {
         url: self.$store.state.api + '/upload/image/photographyclub',
         maxFilesize: 10,  // MB
+        maxFiles: 1,
         acceptedFiles: "image/*",
         addRemoveLinks: true,
         autoProcessQueue: false, // do not upload automatically.
@@ -224,7 +240,7 @@ export default {
   methods: { 
     isPBAdmin: function() {
       const self = this;
-      return (self.whoAmI() === 'photography') || ('ADMIN' in self.getRoles());
+      return self.hasRole('PHOTOGRAPHY_CLUB_ADMIN');
     },
     fetchComptEntries: function(ev) {
       const self = this;
@@ -259,16 +275,22 @@ export default {
       self.thisEvent = myevent;
       self.popupOpened = true;
     },
-    onUploadSuccess: function(file, response) {
+    onUploadSuccess: function(file, res) {
       const self = this;
-      let res = response.data;
-      if(! res.success)
+      console.log(res);
+      if(! res.success) {
         self.notify("Failed", res.msg)
-      else {
+        self.$refs.photographyDZ.removeAllFiles();
+      } else {
         self.notify("Success", "Successfully uploaded.")
         self.fetchComptEntries(self.thisEvent);
         self.popupOpened = false;
       }
+    },
+    onUploadError: function(file, res) {
+      const self = this;
+      self.notify("Failed", res.data.msg, 10000);
+      self.$refs.photographyDZ.removeAllFiles();
     },
     executePopupAction: function() {
       const self = this;

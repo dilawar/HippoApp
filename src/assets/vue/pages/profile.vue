@@ -107,9 +107,10 @@ export default {
   mounted()
   {
     const self = this;
-    if(self.login !== self.whoAmI())
-      self.isAdmin = true;
 
+    // Only when I am not modifying my own profile.
+    if(self.hasRole('ADMIN'))
+      self.isAdmin = true;
     self.fetchProfile();
     self.fetchImage();
   },
@@ -136,10 +137,9 @@ export default {
         return;
       }
 
-      endpoint = self.isAdmin ? '/people/profile/roles/'+self.login : '/me/roles';
+      endpoint = '/people/profile/roles/'+self.login;
       self.postWithPromise(endpoint).then(function(x) {
         self.roles = JSON.parse(x.data).data;
-        console.log('roles', self.roles);
       });
 
       endpoint = self.isAdmin ? '/people/profile/editables':'/me/profile/editables';
@@ -188,7 +188,7 @@ export default {
       const app = self.$f7;
 
       // I can update my profile. Only admin can update other profiles.
-      let endpoint = self.isAdmin? '/admin/logins/update' : '/me/profile/update';
+      let endpoint = self.isAdmin ? '/admin/logins/update' : '/me/profile/update';
 
       self.profile.roles = self.roles.roles.join(',');
       self.promiseWithAuth(endpoint, self.profile)
@@ -203,7 +203,6 @@ export default {
         });
     },
     updateRoles: function(role) {
-      console.log("change", role);
       if(role === 'USER')
         return;
 
@@ -212,6 +211,7 @@ export default {
         self.roles.roles = self.roles.roles.filter(x => x !== role);
       else
         self.roles.roles.push(role);
+      console.log("change", self.roles);
     },
   },
 }
