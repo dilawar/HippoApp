@@ -108,15 +108,17 @@
             <img :src="entry.url" width="100%" style="padding-top:10px"/>
             <f7-row>
               <f7-col v-if="isPBAdmin() || entry.login === whoAmI()">
-                <!-- Can't remove when voting phase is on -->
-                <f7-button small 
+                <!-- Can't remove when voting phase is on but admin can delete
+                a pic anytime. 
+                -->
+                <f7-button  
                   color=red @click="removeEntry(entry, activeEvent)"
-                  :disabled="isVotingPhase(activeEvent)">
+                  :disabled="isVotingPhase(activeEvent) && (! isPBAdmin())">
                   Remove 
                 </f7-button>
               </f7-col>
               <f7-col v-if="entry.login === whoAmI()">
-                <f7-button small 
+                <f7-button  
                   @click="updateMetadata(entry, activeEvent)" 
                   :disabled="isVotingPhase(activeEvent)">
                   Change Caption
