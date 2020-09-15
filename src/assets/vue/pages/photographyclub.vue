@@ -75,7 +75,7 @@
 
   <f7-block v-if="activeEvent">
 
-    <f7-swiper navigation>
+    <f7-swiper pagination scrollbar :params="{keyboard:true}">
       <f7-swiper-slide v-for="entry, key in entries" :key="key">
         <f7-card no-shadow>
           <f7-card-footer v-if="isVotingPhase(activeEvent)">
@@ -101,14 +101,14 @@
           <f7-card-footer v-else> 
             Voting is not allowed yet. 
           </f7-card-footer>
-          <f7-card-content :padding="false">
+          <f7-card-content :padding="false" style="max-height:630px">
             <div>
               <em style="font-size:large" v-html="entry.caption"></em>
               <small style="color:gray"> u/{{entry.login}}
                 {{toNow(entry.last_modified_on)}} ago.</small>
+              <img :src="entry.url" 
+                style="display:flex;justify-content:center;align-items:center;margin:auto;width:auto;height:auto;max-width:100%;max-height:600px;"/>
             </div>
-            <img :src="entry.url" 
-              style="padding-top:10px;width:auto;height:auto;max-width:100%;max-height:600px;"/>
             <f7-row>
               <f7-col v-if="isPBAdmin() || entry.login === whoAmI()">
                 <!-- Can't remove when voting phase is on but admin can delete
