@@ -75,7 +75,7 @@
 
   <f7-block v-if="activeEvent">
 
-    <f7-swiper pagination scrollbar :params="{keyboard:true}">
+    <f7-swiper navigation pagination :params="{keyboard:true}">
       <f7-swiper-slide v-for="entry, key in entries" :key="key">
         <f7-card no-shadow>
           <f7-card-footer v-if="isVotingPhase(activeEvent)">
@@ -115,9 +115,6 @@
             </div>
             <f7-row>
               <f7-col v-if="isPBAdmin() || entry.login === whoAmI()">
-                <!-- Can't remove when voting phase is on but admin can delete
-                a pic anytime. 
-                -->
                 <f7-button  
                   color=red @click="removeEntry(entry, activeEvent)"
                   :disabled="isVotingPhase(activeEvent) && (! isPBAdmin())">
@@ -136,6 +133,7 @@
         </f7-card>
       </f7-swiper-slide>
     </f7-swiper>
+
 
     <f7-block-footer>
       <strong>Upload phase:</strong>
@@ -198,7 +196,6 @@ import StarRating from 'vue-star-rating'
 Vue.component('v-star-rating', StarRating)
 
 export default {
-
   data() {
     const self = this;
     return {
@@ -263,7 +260,7 @@ export default {
             let entry = self.entries[key];
             if(entry.login == self.whoAmI())
               self.myentries.push(entry);
-            self.photos.push({url: entry.url,
+            self.photos.push({url: entry.url, src: entry.url,
               caption: entry.caption + " (" + entry.login + ")"});
           }
           app.preloader.hide();
