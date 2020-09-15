@@ -141,7 +141,6 @@
   </f7-block>
   <f7-block v-else>
     <f7-block-title medium>
-      Currently there is no active competition.
     </f7-block-title>
   </f7-block>
 
