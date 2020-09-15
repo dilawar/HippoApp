@@ -104,8 +104,12 @@
           <f7-card-content :padding="false">
             <div>
               <em style="font-size:large" v-html="entry.caption"></em>
-              <small style="color:gray"> u/{{entry.login}}
-                {{toNow(entry.last_modified_on)}} ago.</small>
+              
+              <small v-if="today()>dbDate(activeEvent.voting_end_date)"> 
+                u/{{entry.login}}
+                {{toNow(entry.last_modified_on)}} ago.
+              </small>
+
               <img :src="entry.url" 
                 style="display:flex;justify-content:center;align-items:center;margin:auto;width:auto;height:auto;max-width:100%;max-height:600px;"/>
             </div>
