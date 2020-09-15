@@ -278,12 +278,13 @@ export default {
     onUploadSuccess: function(file, res) {
       const self = this;
       console.log(res);
-      if(! res.success) {
-        self.notify("Failed", res.msg)
+      if(! res.data.success) {
+        self.notify("Failed", res.data.msg)
         self.$refs.photographyDZ.removeAllFiles();
       } else {
         self.notify("Success", "Successfully uploaded.")
         self.fetchComptEntries(self.thisEvent);
+        self.$refs.photographyDZ.removeAllFiles();
         self.popupOpened = false;
       }
     },
