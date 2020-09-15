@@ -109,7 +109,7 @@ export default {
     const self = this;
 
     // Only when I am not modifying my own profile.
-    if('ADMIN' in self.getRoles())
+    if(self.hasRole('ADMIN'))
       self.isAdmin = true;
     self.fetchProfile();
     self.fetchImage();

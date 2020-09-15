@@ -122,6 +122,12 @@ Vue.mixin({
       dbDate: function( date ) {
          return moment(date).format("YYYY-MM-DD");
       },
+      inBetweenDates: function(date1, date2, today=null) {
+         const self = this;
+         if(! today)
+            today = self.today();
+         return (today >= date1 && today <= date2);
+      },
       osmUrl: function(lat, lon, text) {
          let href = "https://www.openstreetmap.org/?lat="+lat+"&lon="+lon+"&zoom=14&layers=M";
          return '<a target="_system" external href="' + href + '">' + text + '</a>';
@@ -383,6 +389,13 @@ Vue.mixin({
       getRoles: function() {
          const self = this;
          return self.$store.getters.roles;
+      },
+      hasRole: function(role) {
+         const self = this;
+         const roles = self.getRoles();
+         if( ! roles)
+            return false;
+         return roles.includes(role);
       },
       filterSchema: function(schema, toremove) 
       {
