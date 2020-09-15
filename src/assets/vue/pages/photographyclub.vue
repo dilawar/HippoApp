@@ -101,7 +101,7 @@
           <f7-card-footer v-else> 
             Voting is not allowed yet. 
           </f7-card-footer>
-          <f7-card-content :padding="false" style="max-height:630px">
+          <f7-card-content :padding="false">
             <div>
               <em style="font-size:large" v-html="entry.caption"></em>
               <small style="color:gray"> u/{{entry.login}}
