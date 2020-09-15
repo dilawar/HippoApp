@@ -75,6 +75,30 @@
     <f7-swiper navigation>
       <f7-swiper-slide v-for="entry, key in entries" :key="key">
         <f7-card no-shadow>
+          <f7-card-footer v-if="isVotingPhase(activeEvent)">
+            <span v-if="entry.id in thisEventRatings">
+              Avg rating 
+              <strong> {{lodash.mean(thisEventRatings[entry.id])}} </strong>
+              ({{thisEventRatings[entry.id].length}} votes) 
+            </span>
+            <span v-else></span>
+            <div>
+              <v-star-rating 
+                v-if="entry.login !== whoAmI()"
+                style="padding-right:10px"
+                class="float-right"
+                :increment="0.5" 
+                :star-size="25"
+                :rating="(whoAmI() in thisEventRatings)? thisEventRatings[whoAmI()][entry.id]:0"
+                @rating-selected="(rating) => setRating(rating, entry, activeEvent)">
+              </v-star-rating>
+              <v-star-rating v-else read-only>
+              </v-star-rating>
+            </div>
+          </f7-card-footer>
+          <f7-card-footer v-else> 
+            Voting is not allowed yet. 
+          </f7-card-footer>
           <f7-card-content :padding="false">
             <div>
               <em style="font-size:large" v-html="entry.caption"></em>
@@ -100,30 +124,6 @@
               </f7-col>
             </f7-row>
           </f7-card-content>
-          <f7-card-footer v-if="isVotingPhase(activeEvent)">
-            <span v-if="entry.id in thisEventRatings">
-              Avg rating 
-              <strong> {{lodash.mean(thisEventRatings[entry.id])}} </strong>
-              ({{thisEventRatings[entry.id].length}} votes) 
-            </span>
-            <span v-else></span>
-            <div>
-              <v-star-rating 
-                v-if="entry.login !== whoAmI()"
-                style="padding-right:10px"
-                class="float-right"
-                :increment="0.5" 
-                :star-size="25"
-                :rating="(whoAmI() in thisEventRatings)? thisEventRatings[whoAmI()][entry.id]:0"
-                @rating-selected="(rating) => setRating(rating, entry, activeEvent)">
-              </v-star-rating>
-              <v-star-rating v-else read-only>
-              </v-star-rating>
-            </div>
-          </f7-card-footer>
-          <f7-card-footer v-else> 
-            Voting is not allowed yet. 
-          </f7-card-footer>
         </f7-card>
       </f7-swiper-slide>
     </f7-swiper>
