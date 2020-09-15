@@ -585,7 +585,7 @@ export default {
       self.routeAction(route, 'add');
     },
     routeToHtml: function(route) {
-      return route.drop_point + ' → ' + route.pickup_point;
+      return route.pickup_point + ' → ' + route.drop_point;
     },
   },
 };
