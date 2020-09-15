@@ -118,6 +118,7 @@
     "q": "^1.5.1",
     "sass": "^1.26.10",
     "tableexport": "^5.2.0",
+    "v-img": "^0.2.0",
     "vue": "^2.6.12",
     "vue-chartkick": "^0.6.1",
     "vue-light-timeline": "^1.0.3",

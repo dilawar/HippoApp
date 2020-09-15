@@ -110,7 +110,7 @@
                 {{toNow(entry.last_modified_on)}} ago.
               </small>
 
-              <img :src="entry.url" 
+              <img v-img:gallary :src="entry.url" 
                 style="display:flex;justify-content:center;align-items:center;margin:auto;width:auto;height:auto;max-width:100%;max-height:600px;"/>
             </div>
             <f7-row>
@@ -194,6 +194,9 @@ import moment from 'moment';
 import Vue from 'vue'
 import StarRating from 'vue-star-rating'
 Vue.component('v-star-rating', StarRating)
+
+import VueImg from 'v-img';
+Vue.use(VueImg);
 
 export default {
   data() {
