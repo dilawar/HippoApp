@@ -124,9 +124,11 @@ Vue.mixin({
       },
       inBetweenDates: function(date1, date2, today=null) {
          const self = this;
-         if(! today)
-            today = self.today();
-         return (today >= date1 && today <= date2);
+         if(today === null)
+            today = moment();
+         const inb = (today >= moment(date1) && today <= moment(date2));
+         console.log('inbetwee', inb);
+         return inb;
       },
       osmUrl: function(lat, lon, text) {
          let href = "https://www.openstreetmap.org/?lat="+lat+"&lon="+lon+"&zoom=14&layers=M";
@@ -204,6 +206,9 @@ Vue.mixin({
       },
       str2Moment: function(str, fmt) {
          return moment(str, fmt);
+      },
+      dbDate2Moment: function(str) {
+         return moment(str, 'YYYY-MM-DD');
       },
       addToCalendar: function(ev) {
          createCalendar(ev);

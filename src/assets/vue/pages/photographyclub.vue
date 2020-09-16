@@ -67,9 +67,7 @@
   <!-- Extended FAB Center Bottom (Red) -->
   <f7-fab position="right-top" slot="fixed" 
     tooltip="Upload your entry"
-    @click="uploadMyEntry(activeEvent)"
-    :v-if="activeEvent && inBetweenDates(dbDate(activeEvent.start_date), dbDate(activeEvent.end_date))"
-  >
+    @click="uploadMyEntry(activeEvent)">
     <f7-icon icon="fa fa-upload"></f7-icon>
   </f7-fab>
 
@@ -281,11 +279,28 @@ export default {
     uploadMyEntry: function(myevent) {
       const self = this;
       const app = self.$f7;
-      console.log('xxx', myevent);
+
       if(! myevent) {
         app.dialog.alert("No competition found!");
-        return;
+        return false;
       }
+
+      const now = moment();
+      const sdate = moment(myevent.start_date);
+      const edate = moment(myevent.end_date);
+
+      if(now < sdate) {
+        app.dialog.alert("Upload phase will start on " + myevent.start_date,
+          "Sorry!");
+        return false;
+      }
+
+      if(now > edate) {
+        app.dialog.alert("Upload phase is over. Please come back to vote!",
+          "Sorry!");
+        return false;
+      }
+
       self.thisEvent = myevent;
       self.popupOpened = true;
     },
