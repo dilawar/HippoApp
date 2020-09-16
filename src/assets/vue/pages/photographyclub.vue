@@ -304,9 +304,9 @@ export default {
       self.thisEvent = myevent;
       self.popupOpened = true;
     },
-    onUploadSuccess: function(file, res) {
+    onUploadSuccess: function(file, res, xhr) {
       const self = this;
-      console.log(res);
+      console.log('success', res);
       if(! res.data.success) {
         self.notify("Failed", res.data.msg)
         self.$refs.photographyDZ.removeAllFiles();
@@ -317,9 +317,11 @@ export default {
         self.popupOpened = false;
       }
     },
-    onUploadError: function(file, res) {
+    onUploadError: function(file, res, xhr) {
       const self = this;
-      self.notify("Failed", res.data.msg, 10000);
+      const app = self.$f7;
+      /* console.log('failed', res); */
+      app.dialog.alert(res.data.msg, "Failure");
       self.$refs.photographyDZ.removeAllFiles();
     },
     executePopupAction: function() {
