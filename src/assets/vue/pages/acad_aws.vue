@@ -109,19 +109,17 @@
         <f7-block>
           <f7-list no-hairlines media-list>
 
-            <f7-list-input :value="thisAWS.date" label="Date" readonly
-              inline-label>
+            <f7-list-input :value="thisAWS.date" label="Date" readonly>
             </f7-list-input>
 
             <f7-list-input @change="thisAWS.venue=$event.target.value"
-              :default="thisAWS.venue" type="select" label="Venue"
-              inline-label>
+              :default="thisAWS.venue" type="select" label="Venue">
               <option v-for="(venue, key) in venues" :selected="venue.id===thisAWS.venue">
                 {{key}}
               </option>
             </f7-list-input>
 
-            <f7-list-input :input="false" label="Chair" inline-label>
+            <f7-list-input :input="false" label="Chair">
               <v-autocomplete  slot="input"
                 input-class="form-control"
                 ref="refAWSChair"
@@ -136,14 +134,22 @@
               </v-autocomplete>
             </f7-list-input>
 
-            <f7-list-input label="Has chair confirmed?" inline-label
+            <f7-list-input label="Has chair confirmed?"
               :value="thisAWS.has_chair_confirmed" readonly>
             </f7-list-input>
 
-            <f7-list-input type="url" 
-              label="VC URL"  inline-label
+            <f7-list-input 
+              type="url"
+              validate
+              label="VC URL" 
               :value="thisAWS.vc_url"
               @change="thisAWS.vc_url=$event.target.value">
+            </f7-list-input>
+
+            <f7-list-input 
+              label="VC Extra (e.g. passcode)" 
+              :value="thisAWS.vc_extra"
+              @change="thisAWS.vc_extra=$event.target.value">
             </f7-list-input>
 
             <f7-list-item v-if="thisAWS.chair && thisAWS.has_chair_confirmed === 'NO'">
@@ -192,7 +198,7 @@
           <span v-if="date in holidays" 
             class="bg-color-red" style="padding:2px">
             <strong> This is a holiday: {{holidays[date].description}}/ </strong> </span>
-          {{humanReadableDate(date)}}, {{getAWSVenue(AWSes)}} ,{{getAWSUrl(AWSes)}}
+          {{humanReadableDate(date)}}, {{getAWSVenue(AWSes)}}, {{getAWSUrl(AWSes)}}
         </div>
         <div slot="after" v-if="AWSes.length<3">
           Some slots missing.
@@ -325,7 +331,10 @@ export default {
   data() {
     const self = this;
     return {
-      thisAWS: {date:'', speaker:'', venue:'', title:'', abstract:'', chair:'', vc_url:""},
+      thisAWS: {date:'', speaker:''
+        , venue:'', title:'', abstract:''
+        , chair:'', vc_url:"", vc_extra: '' 
+      },
       venues: [],
       upcomingAWS: [],
       popupTitle: 'Review request',
@@ -590,7 +599,13 @@ export default {
         });
     },
     getAWSUrl: function(awses) {
-      return awses[0]? awses[0].vc_url:'';
+      let txt = "";
+      if(awses[0].vc_url) {
+        txt += awses[0].vc_url;
+        if(awses[0].vc_extra) 
+          txt += " (" + awses[0].vc_extra + ")"
+      }
+      return txt;
     },
     getAWSVenue: function(awses) {
       return awses[0] ? awses[0].venue : 'NA';
