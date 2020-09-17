@@ -16,7 +16,7 @@
         <f7-accordion-content>
           <f7-block style="padding:20px;background-color:ivory" inset>
             <div v-html="talk.title" style="font-weight:bold"></div>
-            <f7-link v-if="talk.vc_url" external target="_system" href="talk.vc_url">
+            <f7-link v-if="talk.vc_url" external target="_system" :ghref="talk.vc_url">
               {{talk.vc_url}}
             </f7-link>
             <div v-html="talk.description"></div>

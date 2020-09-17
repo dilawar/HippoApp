@@ -1,6 +1,6 @@
 <template>
   <f7-page> 
-  <f7-navbar title="Creating a booking" back-link="Back"></f7-navbar>
+  <f7-navbar title="Booking a venue" back-link="Back"></f7-navbar>
 
   <!-- VENUE POPUP -->
   <f7-popup :opened="popupVenueSelect" @popup:close="popupVenueSelect=false">
@@ -21,8 +21,8 @@
       <f7-block>
         <f7-list media-list>
           <f7-list-item v-for="(venue, key) in venues" 
-                        :key="key"
-                        @click="onVenueSelected(venue)">
+            :key="key"
+            @click="onVenueSelected(venue)">
             <div slot="header" class="text-color-red">
               {{venue.note_to_user}}
             </div>
@@ -34,11 +34,7 @@
             <div slot="text">
               Capacity:{{venue.strength}}, Projector {{venue.has_projector}}
             </div>
-            <!-- <div slot="media"> -->
-              <!-- <f7-icon v-if="venue.has_projector === 'YES'"  -->
-                       <!-- icon="fa fa-video"> -->
-              <!-- </f7-icon> -->
-            </div>
+          </div>
           </f7-list-item>
         </f7-list>
       </f7-block>
@@ -136,29 +132,31 @@
 
   <!-- BOOKING INTERFACE -->
   <f7-block>
+
     <f7-list media-list no-hairlines>
       <!-- NOT READONLY -->
       <f7-list-group v-if="! thisEvent.readonly" media-list>
+
         <f7-list-input
-                     @input="thisBooking.title = $event.target.value"
-                     label="Title" 
-                     placeholder="At least 6 chars"
-                     type="textarea" resizable required 
-                     :value="thisBooking.title">
+          @input="thisBooking.title = $event.target.value"
+          label="Title" 
+          placeholder="At least 6 chars"
+          type="textarea" resizable required 
+          :value="thisBooking.title">
         </f7-list-input>
 
         <f7-list-input label="Description (optional)"
-                       :value="thisBooking.description"
-                       :textEditorParams="{mode: 'keyboard-toolbar'}"
-                       @texteditor:change="(v)=>thisBooking.description=v"
-                       type="texteditor">
+          :value="thisBooking.description"
+          :textEditorParams="{mode: 'keyboard-toolbar'}"
+          @texteditor:change="(v)=>thisBooking.description=v"
+          type="texteditor">
         </f7-list-input>
 
         <!--
         <f7-list-input :input="false" label="Description (optional)">
           <vue-editor ref="description" 
-                      slot="input"
-                      v-model="thisBooking.description">
+            slot="input"
+            v-model="thisBooking.description">
           </vue-editor>
         </f7-list-input>
         -->
@@ -175,10 +173,10 @@
         </f7-list-item>
 
         <f7-list-input label="Description" 
-                       type="texteditor"
-                       :textEditorParams="{mode:'popover', buttons:[]}"
-                       readonly
-                       :value="thisEvent.description">
+          type="texteditor"
+          :textEditorParams="{mode:'popover', buttons:[]}"
+          readonly
+          :value="thisEvent.description">
         </f7-list-input>
       </f7-list-group>
 
@@ -186,49 +184,64 @@
         <!-- VENUE AND TIME -->
         <f7-list-input label="Start Date/Time" :input="false">
           <date-picker slot="input" 
-                       v-model="thisBooking.startDateTime"
-                       placeholder="Select Datetime"
-                       type="datetime" 
-                       lang="en"
-                       format="YYYY-MM-DD hh:mm a" 
-                       :minute-step="15">
+            v-model="thisBooking.startDateTime"
+            placeholder="Select Datetime"
+            type="datetime" 
+            lang="en"
+            format="YYYY-MM-DD hh:mm a" 
+            :minute-step="15">
           </date-picker>
         </f7-list-input>
 
         <f7-list-input label="End Time" :input="false">
           <date-picker slot="input" 
-                       v-model="thisBooking.endTime"
-                       placeholder="End time"
-                       type="time" 
-                       lang="en"
-                       format="hh:mm a" 
-                       :minute-step="15">
+            v-model="thisBooking.endTime"
+            placeholder="End time"
+            type="time" 
+            lang="en"
+            format="hh:mm a" 
+            :minute-step="15">
           </date-picker>
         </f7-list-input>
 
         <!-- FIND A VENUE -->
         <f7-list-item v-if="thisBooking.venue"
-                      header="Selected venue" 
-                      :title="thisBooking.venue"
-                      @click="popupVenueSelect=true">
+          header="Selected venue" 
+          :title="thisBooking.venue"
+          @click="popupVenueSelect=true">
         </f7-list-item>
 
-        <f7-list-input v-if="thisBooking.venue === 'Remote VC'"
-                       label="Remote VC URL"
-                       type="url"
-                       validate
-                       @input="thisBooking.vc_url = $event.target.value"
-                       :value="thisBooking.vc_url">
-          </f7-list-input>
-
         <f7-list-item v-else>
-          <f7-button small raised fill
-                     slot="after" 
-                     :disabled="thisBooking.title.length < 4"
-                     @click="openVenueSelectPopup()">
+          <f7-button raised fill
+            slot="after" 
+            :disabled="thisBooking.title.length < 4"
+            @click="openVenueSelectPopup()">
             Find a venue
           </f7-button>
         </f7-list-item>
+
+        <!-- remote url -->
+        <f7-row no-gap>
+          <f7-col width=70 no-gap>
+            <f7-list-input 
+              :required="thisBooking.venue === 'Remote VC'"
+              label="Remote VC URL (Zoom/Meet/Jitsi etc.)"
+              type="url"
+              validate
+              @input="thisBooking.vc_url = $event.target.value"
+              :value="thisBooking.vc_url">
+            </f7-list-input>
+          </f7-col>
+          <f7-col width=30 no-gap>
+            <f7-list-input 
+              label="extra (e.g.passcode)"
+              type="text"
+              @input="thisBooking.vc_extra = $event.target.value"
+              :value="thisBooking.vc_extra">
+            </f7-list-input>
+          </f7-col>
+        </f7-row>
+
       </f7-list-group>
 
 
@@ -237,7 +250,6 @@
         
         <f7-list-item checkbox 
           title="Add to NCBS Calendar?"
-          text="Check if you want this to appear on NCBS public calendar."
           :checked="thisBooking.is_public_event==='YES'"
           @change="thisBooking.is_public_event=$event.target.checked?'YES':'NO'">
         </f7-list-item>
@@ -263,6 +275,7 @@
             {{thisBooking.dates.join(', ')}}
           </div>
         </f7-list-item>
+        <f7-list-item></f7-list-item>
       </f7-list-group>
 
     </f7-list>
@@ -306,6 +319,7 @@ export default {
         , is_public_event: "NO"
         , repeatPat: { days:[], weeks:['All'], months:0}
         , vc_url: ''
+        , vc_extra: ''
       },
     };
   },

@@ -64,7 +64,7 @@
               @click="removeBooking()" v-if="thisTalk.booking_status!=='UNSCHEDULED'">
               Remove Booking
             </f7-button>
-            <f7-button raised small class="float-right" slot="after"
+            <f7-button raised class="float-right" slot="after"
               :href="'/bookevent/talks.'+thisTalk.id+'/'+thisTalk.class+'/'"
               v-else>
               Book a venue
@@ -74,12 +74,12 @@
           <f7-list-item>
             <f7-row>
               <f7-col>
-                <f7-button @click="removeTalk()" small fill popup-close color="red" raised>
+                <f7-button @click="removeTalk()" fill popup-close color="red" raised>
                   Remove Talk
                 </f7-button>
               </f7-col>
               <f7-col>
-                <f7-button @click="updateTalk()" small popup-close raised>
+                <f7-button @click="updateTalk()" popup-close raised>
                   Update Talk
                 </f7-button>
               </f7-col>

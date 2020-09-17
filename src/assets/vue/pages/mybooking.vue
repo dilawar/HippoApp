@@ -1,4 +1,5 @@
 <template>
+
   <f7-page>
   <f7-navbar title="My Bookings" back-link="Back">
   </f7-navbar>
@@ -22,8 +23,11 @@
             <f7-list no-hairlines media-list>
               <f7-list-item v-for="(val, index) in requests" 
                 :key="val.gid+'.'+val.rid" 
-                :header="val.vc_url"
                 :title="humanReadableDateTime(val.date,val.start_time)+' ('+val.venue+')'">
+                <div slot="header">
+                  <f7-link external :href="val.vc_url">{{val.vc_url}}</f7-link>
+                  <span v-if="val.vc_extra"> ({{val.vc_extra}})</span>
+                </div>
                 <f7-button small raised color="red"
                   tooltip="Delete this booking"
                   icon="fa fa-trash fa-fw" slot="after"
@@ -41,7 +45,7 @@
                   <f7-col>
                     <f7-button raised small icon="fa fa-edit"
                       @click="popupEditRequest(requests[0], true)">
-                      Edit All
+                      Edit <span v-if="requests.length > 1">all</span>
                     </f7-button>
                   </f7-col>
                 </f7-row>
@@ -188,6 +192,11 @@
             validate
             :value="thisBooking.vc_url"
             @input="thisBooking.vc_url=$event.target.value">
+          </f7-list-input>
+
+          <f7-list-input label="VC Extra (passcode etc.)" 
+            :value="thisBooking.vc_extra"
+            @input="thisBooking.vc_extra=$event.target.value">
           </f7-list-input>
 
           <f7-list-input label="Add to NCBS Calendar" 

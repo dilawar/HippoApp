@@ -28,7 +28,9 @@
             {{request.start_time | clockTime}} to 
             {{request.end_time | clockTime }}
           </div>
-          <div slot="subtitle"> {{request.class}}, {{request.venue}} </div>
+          <div slot="subtitle"> 
+            {{request.class}}, {{request.venue}} 
+          </div>
         </f7-list-item>
 
       </f7-list>
@@ -45,21 +47,27 @@
         </f7-navbar>
         <f7-block>
           <!-- POPUP ACTION -->
-          <f7-card>
+          <f7-card no-shadow>
             <f7-card-header>
               {{thisRequest.title}} 
               <span style="font-size:small; float:right">Created by {{thisRequest.created_by}} </span>
             </f7-card-header>
             <f7-card-content>
               <span v-html="thisRequest.description"></span>
+
+              <f7-block-footer>
+                {{thisRequest.date | date}}, 
+                <strong>{{thisRequest.start_time | clockTime}}</strong> to
+                <strong>{{thisRequest.end_time | clockTime }}</strong>
+                <br />
+                {{thisRequest.venue}}
+                <f7-link external v-if="thisRequest.vc_url" 
+                  :url="thisRequest.vc_url">{{thisRequest.vc_url}}</f7-link>
+                <span v-if="thisRequest.vc_extra"> ({{thisRequest.vc_extra}})</span>
+
+              </f7-block-footer>
+
             </f7-card-content>
-            <f7-card-footer>
-              {{thisRequest.date | date}}, 
-              {{thisRequest.start_time | clockTime}} to 
-              {{thisRequest.end_time | clockTime }}
-              <br />
-              {{thisRequest.venue}}
-            </f7-card-footer>
           </f7-card>
 
           <f7-list media-list no-hairlines>
