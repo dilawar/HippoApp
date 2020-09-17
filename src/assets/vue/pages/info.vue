@@ -8,20 +8,30 @@
       <f7-block-title medium> Upcoming Talks</f7-block-title>
       <f7-list accordion-list media-list no-hairlines>
         <f7-list-item v-for="talk, key in talks" 
-          :header="talk.date +' | ' + talk.start_time + ' | ' + talk.venue"
-          :title="talk.speaker"
-          :text="talk.title" 
+          :subtitle="talk.speaker"
+          :title="talk.title" 
           :key="key" 
           accordion-item>
-        <f7-accordion-content>
-          <f7-block style="padding:20px;background-color:ivory" inset>
-            <div v-html="talk.title" style="font-weight:bold"></div>
-            <f7-link v-if="talk.vc_url" external target="_system" :ghref="talk.vc_url">
-              {{talk.vc_url}}
-            </f7-link>
-            <div v-html="talk.description"></div>
-          </f7-block>
-        </f7-accordion-content>
+          <div slot="header">
+            {{talk.date}} | {{talk.start_time}} | {{talk.venue}}
+            <template v-if="talk.vc_url">
+              <f7-link external target="_system" :url="talk.vc_url">
+                <f7-icon icon="fa fa-video fa-2x"></f7-icon>
+                Click to join 
+              </f7-link>
+              <span v-if="talk.vc_extra"> ({{talk.vc_extra}})</span>
+            </template>
+          </div>
+
+          <f7-accordion-content>
+            <f7-block style="padding:20px;background-color:ivory" inset>
+              <div v-html="talk.title" style="font-weight:bold"></div>
+              <f7-link v-if="talk.vc_url" external target="_system" :ghref="talk.vc_url">
+                {{talk.vc_url}}
+              </f7-link>
+              <div v-html="talk.description"></div>
+            </f7-block>
+          </f7-accordion-content>
       </f7-list-item>
     </f7-list>
   </f7-block>
@@ -34,10 +44,14 @@
       </f7-list-item>
 
       <f7-list-item v-if="awss[0].vc_url || awss[0].chair">
-        <f7-icon icon="fa fa-chair" slot="after"> {{awss[0].chair}}</f7-icon>
-        <f7-link slot="title" external target="_system" :href="awss[0].vc_url">
-          {{awss[0].vc_url}}
-        </f7-link>
+        <f7-icon icon="fa fa-chair" slot="header"> {{awss[0].chair}}</f7-icon>
+        <template v-if="awss[0].vc_url">
+          <f7-link slot="title" external target="_system" :url="awss[0].vc_url">
+            <f7-icon icon="fa fa-video"></f7-icon>
+            Click to join 
+          </f7-link>
+          <span v-if="awss[0].vc_extra"> ({{awss[0].vc_extra}})</span>
+        </template>
       </f7-list-item>
 
       <f7-list-item v-for="aws, key in awss" :key="key" 
@@ -59,15 +73,25 @@
     <f7-block-title>Journal Clubs</f7-block-title>
     <f7-list accordion-list media-list no-hairlines>
       <f7-list-item v-for="jc, key in jcs" :key="key" 
-        :header="jc.jc_id + ' | ' + humanReadableDateTime(jc.date, jc.time) + ' | ' + jc.venue" 
         accordion-item>
-        <div slot="text"> {{jc.by}} <{{jc.presenter}}> </div>
+        <div slot="header">
+          {{jc.jc_id}} | {{humanReadableDateTime(jc.date, jc.time)}} | {{jc.venue}}
+          <template v-if="jc.vc_url"> | 
+            <f7-link external target="_system" :url="jc.vc_url">
+              <f7-icon icon="fa fa-video fa-2x"></f7-icon>
+              Click to join 
+            </f7-link>
+            <span v-if="jc.vc_extra"> ({{jc.vc_extra}})</span>
+          </template>
+        </div>
         <div slot="title" v-html="jc.title"></div>
+        <div slot="footer"> {{jc.by}} <{{jc.presenter}}> </div>
         <f7-accordion-content>
           <f7-block inset style="padding:10px; background-color:ivory">
             <f7-link exteral target="_system"href="jc.vc_url" v-if="jc.vc_url">
-              {{jc.vc_url}}
+              {{jc.vc_url}} 
             </f7-link>
+            <span v-if="jc.vc_extra">({{jc.vc_extra}})</span>
             <div v-html="jc.description"></div>
           </f7-block>
         </f7-accordion-content>
@@ -177,7 +201,7 @@ export default {
       self.title = 'Upcoming AWS';
       self.postWithPromise('/info/upcomingaws').then(function(x) {
         self.awses = JSON.parse(x.data).data;
-        console.log('awses', self.awses);
+        // console.log('awses', self.awses);
       });
     } 
     else if(self.what == 'jcs') {
@@ -212,7 +236,7 @@ export default {
       const self = this;
       const app = self.$f7;
       app.preloader.show();
-      console.log("Fetching students ", cid);
+      // console.log("Fetching students ", cid);
       self.registrations = [];
       self.emails = [];
       self.postWithPromise('courses/registration/'+btoa(cid))
@@ -232,7 +256,7 @@ export default {
       app.preloader.show();
       self.promiseWithAuth('charts/all').then( function(x) {
         self.charts = JSON.parse(x.data).data;
-        console.log("Total charts: ", self.charts.length );
+        // console.log("Total charts: ", self.charts.length );
         app.preloader.hide();
       });
       setTimeout(()=> app.preloader.hide(), 2000);

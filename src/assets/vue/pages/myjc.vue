@@ -7,17 +7,17 @@
         <f7-row>
           <f7-col width=33 medium=20 v-for="jc, key in alljcs" :key="key">
             <f7-button icon="fa fa-toggle-on fa-fw" 
-                       tooltip="Subscribed."
-                       @click="unsubscribeMeFromJC(jc.id)"
-                       small 
-                       v-if="Object.keys(myjcs).includes(jc.id)">
+              tooltip="Subscribed."
+              @click="unsubscribeMeFromJC(jc.id)"
+              small 
+              v-if="Object.keys(myjcs).includes(jc.id)">
               {{jc.id}}
             </f7-button>
             <f7-button icon="fa fa-toggle-off fa-fw" 
-                       tooltip="Unsubscribed."
-                       @click="subscribeMeToJC(jc.id)"
-                       small 
-                       v-else>
+              tooltip="Unsubscribed."
+              @click="subscribeMeToJC(jc.id)"
+              small 
+              v-else>
               {{jc.id}}
             </f7-button>
           </f7-col>
@@ -56,12 +56,13 @@
           <div slot="footer"> 
             By {{jc.presenter}}, Acknowleged: {{jc.acknowledged}}
           </div>
+
           <div slot="header"> 
-            {{humanReadableDateTime(jc.date,jc.time)}} | {{jc.venue}} 
-            <span v-if="jc.vc_url" class="float-right"> 
+            {{humanReadableDateTime(jc.date,jc.time)}} | {{jc.venue}}
+            <span v-if="jc.vc_url"> |
               <f7-link no-link-class external target="_system" icon="fa fa-video" 
                 :href="jc.vc_url">
-                {{jc.vc_url}}
+                {{jc.vc_url}} <span v-if="jc.vc_extra"> ({{jc.vc_extra}})</span>
               </f7-link>
             </span>
           </div>
@@ -77,17 +78,18 @@
               <div v-html="jc.description"></div>
 
               <f7-block-footer>
-                <f7-row padding>
-                  <f7-col v-if="isPresenterMe(jc.presenter) && jc.acknowledged==='NO'">
+
+                <f7-row no-gap>
+                  <f7-col small="50" width=33 v-if="isPresenterMe(jc.presenter) && jc.acknowledged==='NO'">
                     <f7-button small @click="acknowledgeJC(jc.id)">Acknowledge</f7-button>
                   </f7-col>
-                  <f7-col v-if="amIJCAdmin(jc.jc_id)">
+                  <f7-col small="50" width=33 v-if="amIJCAdmin(jc.jc_id)">
                     <f7-button :href="'/email/jc/'+jc.id" icon="fa fa-email">Email</f7-button>
                   </f7-col>
-                  <f7-col v-if="amIJCAdmin(jc.jc_id)">
+                  <f7-col small="50" width=33 v-if="amIJCAdmin(jc.jc_id)">
                     <f7-button color="red" @click="removeJC(jc.id)">Remove</f7-button>
                   </f7-col>
-                  <f7-col v-if="isPresenterMe(jc.presenter) || amIJCAdmin(jc.jc_id)">
+                  <f7-col small="50" width=33 v-if="isPresenterMe(jc.presenter) || amIJCAdmin(jc.jc_id)">
                     <f7-button @click="editJC(jc)">Edit</f7-button>
                   </f7-col>
                 </f7-row>
@@ -126,6 +128,11 @@
                 :value="thisJC.vc_url"
                 type="url" validate
                 @input="thisJC.vc_url = $event.target.value">
+              </f7-list-input>
+
+              <f7-list-input label="VC Extra (passcode etc)."
+                :value="thisJC.vc_extra"
+                @input="thisJC.vc_extra = $event.target.value">
               </f7-list-input>
 
               <f7-list-input label="Paper URL" 
@@ -313,6 +320,7 @@ export default {
         , description: '' 
         , url: ''
         , vc_url: ''
+        , vc_extra: ''
         , paperurl: ''
         , date: ''
         , time: ''
