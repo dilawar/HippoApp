@@ -289,13 +289,13 @@ export default {
       const sdate = moment(myevent.start_date);
       const edate = moment(myevent.end_date);
 
-      if(now < sdate) {
+      if(now.date() < sdate.date()) {
         app.dialog.alert("Upload phase will start on " + myevent.start_date,
           "Sorry!");
         return false;
       }
 
-      if(now > edate) {
+      if(now.date() > edate.date() ) {
         app.dialog.alert("Upload phase is over. Please come back to vote!",
           "Sorry!");
         return false;
