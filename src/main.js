@@ -534,6 +534,9 @@ Vue.mixin({
       'date2' : function(time) {
          return moment(time, 'YYYY-MM-DD').format('(ddd) MMM DD, YYYY');
       },
+      'date3' : function(time) {
+         return moment(time, 'YYYY-MM-DD').format('MMM DD, YYYY');
+      },
       'name' : function(login) {
          if(login.middle_name === 'NA')
             login.middle_name = '';

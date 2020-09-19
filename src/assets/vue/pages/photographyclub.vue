@@ -7,6 +7,7 @@
     </f7-nav-right>
   </f7-navbar>
 
+
   <f7-popup :opened="popupOpened" @popup:closed="popupOpened = false">
     <f7-page>
       <f7-navbar :title="popupAction + ' entry'">
@@ -59,6 +60,10 @@
       </f7-block>
     </f7-page>
   </f7-popup>
+
+  <!-- for readonly photo only -->
+  <f7-photo-browser type="page" ref="photobrStandalone" :photos="photosReadonly">
+  </f7-photo-browser>
 
   <!-- This completition -->
   <f7-block-header v-html="activeEvent?activeEvent.description:''">
@@ -167,21 +172,25 @@
   </f7-block>
 
   <f7-block>
+
     <f7-block-title>
       Finished competitions
     </f7-block-title>
-    <f7-list media-list no-hairlines>
+
+    <f7-list no-hairlines media-list>
       <f7-list-item v-for="event, key in completedEvents" :key="key"
+        @click="showReadonlyPics(event)"
         :title="event.theme">
         <div slot="header">
           {{event.start_date | date}} to {{event.end_date | date}},
           <strong> Voting Phase: </strong>
-          {{event.voting_start_date | date}} to {{event.voting_end_date | date}}
+          {{event.voting_start_date | date3}} to {{event.voting_end_date | date3}}
         </div>
         <div slot="text" v-html="event.description"></div>
       </f7-list-item>
       <f7-list-item></f7-list-item>
     </f7-list>
+
   </f7-block>
 
 </f7-page>
@@ -207,6 +216,7 @@ export default {
       entries: [],
       myentries: [],
       photos: [],
+      photosReadonly: [],
       activeEvent: null,
       upcomingEvents: [],
       completedEvents: [],
@@ -234,13 +244,18 @@ export default {
       app.preloader.hide();
     });
 
+    app.preloader.show();
     self.postWithPromise('/photographyclub/event/upcoming').then(function(x) {
       self.upcomingEvents = JSON.parse(x.data).data;
+      app.preloader.hide();
     });
 
+    app.preloader.show();
     self.postWithPromise('/photographyclub/event/completed').then(function(x) {
       self.completedEvents = JSON.parse(x.data).data;
+      app.preloader.hide();
     });
+
     setTimeout(() => app.preloader.hide(), 20000);
   },
   methods: { 
@@ -418,6 +433,29 @@ export default {
         res = true;
       // console.log('res', res);
       return res;
+    },
+    showReadonlyPics: function(ev) {
+      const self = this;
+      const app = self.$f7;
+
+      self.photosReadonly = [];
+
+      app.preloader.show();
+      self.postWithPromise('/photographyclub/entry/getall/' + ev.id)
+        .then(function(x) {
+          const entries = JSON.parse(x.data).data;
+          for(let key in entries) {
+            let entry = entries[key];
+            self.photosReadonly.push({url: entry.url, src: entry.url,
+              caption: entry.caption + " (by " + entry.login + ")"});
+          }
+
+          app.preloader.hide();
+
+          // open the photobrowser
+          self.$refs.photobrStandalone.open();
+        });
+      setTimeout(() => app.preloader.hide());
     },
   },
 };
