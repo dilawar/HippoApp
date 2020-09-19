@@ -1,13 +1,14 @@
 <template>
 <f7-page page-content>
-  <f7-navbar :title="activeEvent ? activeEvent.theme : 'Photography Club'" 
+  <f7-navbar title="Photography Club"
     back-link="Back">
     <f7-nav-right v-if="isPBAdmin()">
       <f7-link  href="/admin_photographyclub">admin</f7-link>
     </f7-nav-right>
   </f7-navbar>
 
-  <f7-popup :opened="popupOpened" @popup:closed="popupOpened = false">
+
+  <f7-popup tablet-fullscreen :opened="popupOpened" @popup:closed="popupOpened = false">
     <f7-page>
       <f7-navbar :title="popupAction + ' entry'">
         <f7-nav-right>
@@ -20,7 +21,7 @@
         <f7-list media-list no-hairlines>
           <f7-list-item v-if="popupAction==='Submit'">
             <div slot="footer"> 
-              <strong>Upload one file at a time. Max 3 uploads per user.</strong>
+              <strong>Add/drop only one file.</strong>
               <em>
                 Last date {{thisEvent.start_date | date }}, 
                 Voting phase: {{thisEvent.voting_start_date | date }} 
@@ -33,12 +34,13 @@
               v-on:vdropzone-sending="(img, xhr, formdata) =>
               onImageSending(img, xhr, formdata, thisEvent.id)"
               v-on:vdropzone-success="onUploadSuccess"
+              v-on:vdropzone-file-added="onFileAdded"
               v-on:vdropzone-error="onUploadError"
               :options="dropzoneOptions">
             </vue-dropzone>
           </f7-list-item>
           <f7-list-input 
-            label="Caption"
+            label="Caption (required)"
             required
             type="textarea"
             :value="thisEntry.caption"
@@ -60,18 +62,34 @@
     </f7-page>
   </f7-popup>
 
+  <!-- for readonly photo only -->
+  <f7-photo-browser ref="photobrStandalone" :photos="photosReadonly">
+  </f7-photo-browser>
+
   <!-- This completition -->
-  <f7-block-header v-html="activeEvent?activeEvent.description:''">
-  </f7-block-header>
+  <template v-if="activeEvent && activeEvent.theme">
 
-  <!-- Extended FAB Center Bottom (Red) -->
-  <f7-fab position="right-top" slot="fixed" 
-    tooltip="Upload your entry"
-    @click="uploadMyEntry(activeEvent)">
-    <f7-icon icon="fa fa-upload"></f7-icon>
-  </f7-fab>
+    <f7-block-title large>
+      {{activeEvent.theme}}
+    </f7-block-title>
 
-  <f7-block v-if="activeEvent">
+    <f7-block-header v-html="activeEvent.description">
+    </f7-block-header>
+
+    <!-- Extended FAB Center Bottom (Red) -->
+    <f7-fab position="right-top" slot="fixed" 
+      tooltip="Upload your entry"
+      @click="uploadMyEntry(activeEvent)">
+      <f7-icon icon="fa fa-upload"></f7-icon>
+    </f7-fab>
+
+    <!-- Active event -->
+    <f7-block strong inset v-if="entries.length === 0">
+      <f7-icon icon="far fa-sad-tear fa-3x"></f7-icon>
+      <div>
+        No entry has been uploaded yet!
+      </div>
+    </f7-block>
 
     <f7-swiper navigation pagination :params="{keyboard:true}">
       <f7-swiper-slide v-for="entry, key in entries" :key="key">
@@ -79,7 +97,7 @@
           <f7-card-footer v-if="isVotingPhase(activeEvent)">
             <span v-if="entry.id in thisEventRatings">
               Avg rating 
-              <strong> {{lodash.mean(thisEventRatings[entry.id])}} </strong>
+              <strong> {{meanArray(thisEventRatings[entry.id])}} </strong>
               ({{thisEventRatings[entry.id].length}} votes) 
             </span>
             <span v-else></span>
@@ -97,12 +115,12 @@
             </div>
           </f7-card-footer>
           <f7-card-footer v-else> 
-            Voting is not allowed yet. 
+            Voting will start on {{activeEvent.voting_start_date | date2}}. 
           </f7-card-footer>
           <f7-card-content :padding="false">
             <div>
               <em style="font-size:large" v-html="entry.caption"></em>
-              
+
               <small v-if="today()>dbDate(activeEvent.voting_end_date)"> 
                 u/{{entry.login}}
                 {{toNow(entry.last_modified_on)}} ago.
@@ -132,57 +150,50 @@
       </f7-swiper-slide>
     </f7-swiper>
 
-
     <f7-block-footer>
-      <strong>Upload phase:</strong>
-      {{activeEvent.start_date | date}} to {{activeEvent.end_date | date}}
+      <strong>Last date to upload:</strong> 
+      {{activeEvent.end_date | date2}}
       <br>
-      <strong>Voting Phase:</strong> {{activeEvent.voting_start_date | date}} to
-      {{activeEvent.voting_end_date | date}}
+      <strong>Voting</strong> starts in {{toNow(activeEvent.voting_start_date)}},
+      and ends on {{activeEvent.voting_end_date | date}}
     </f7-block-footer>
 
-  </f7-block>
-  <f7-block v-else>
-    <f7-block-title medium>
-    </f7-block-title>
-  </f7-block>
+  </template>
 
   <!-- Upcoming -->
-  <f7-block>
-    <f7-block-title>
+  <f7-block v-if="upcomingEvents" inset>
+    <f7-block-title small>
       Upcoming competitions
     </f7-block-title>
 
     <f7-list media-list no-hairlines>
-      <f7-list-item v-for="event, key in upcomingEvents" :key="key"
-        :title="event.theme">
-        <div slot="header">
-          {{event.start_date | date}} to {{event.end_date | date}},
-          <strong> Voting Phase: </strong>
-          {{event.voting_start_date | date}} to {{event.voting_end_date | date}}
-        </div>
-        <div slot="text" v-html="event.description"></div>
+      <f7-list-item v-for="event, key in upcomingEvents" :key="key">
+        <div slot="title"> {{event.theme}} </div>
+        <div slot="header"> Starting in {{toNow(event.start_date)}} </div>
       </f7-list-item>
+      <f7-list-item></f7-list-item>
     </f7-list>
   </f7-block>
 
-  <f7-block>
+  <f7-block inset>
     <f7-block-title>
       Finished competitions
     </f7-block-title>
-    <f7-list media-list no-hairlines>
+    <f7-list no-hairlines media-list>
       <f7-list-item v-for="event, key in completedEvents" :key="key"
+        @click="showReadonlyPics(event)"
         :title="event.theme">
         <div slot="header">
           {{event.start_date | date}} to {{event.end_date | date}},
           <strong> Voting Phase: </strong>
-          {{event.voting_start_date | date}} to {{event.voting_end_date | date}}
+          {{event.voting_start_date | date3}} to {{event.voting_end_date | date3}}
         </div>
         <div slot="text" v-html="event.description"></div>
       </f7-list-item>
       <f7-list-item></f7-list-item>
     </f7-list>
   </f7-block>
+
 
 </f7-page>
 </template>
@@ -207,7 +218,7 @@ export default {
       entries: [],
       myentries: [],
       photos: [],
-      activeEvent: null,
+      activeEvent: [],
       upcomingEvents: [],
       completedEvents: [],
       thisEntry : {comment:'', caption:'', note:''},
@@ -216,10 +227,14 @@ export default {
         maxFilesize: 10,  // MB
         maxFiles: 1,
         acceptedFiles: "image/*",
-        addRemoveLinks: true,
+        // addRemoveLinks: true,
         autoProcessQueue: false, // do not upload automatically.
         headers: self.apiPostData(),
       },
+      // Following two are readonly only.
+      photosReadonly: [],
+      ratingsReadonly: {},
+
     };
   },
   mounted: async function() {
@@ -229,18 +244,24 @@ export default {
 
     self.postWithPromise('/photographyclub/event/active').then(function(x) {
       self.activeEvent = JSON.parse(x.data).data;
+      /* console.log('ActiveEvent', self.activeEvent); */
       self.fetchComptEntries(self.activeEvent);
       self.fetchRatings(self.activeEvent);
       app.preloader.hide();
     });
 
+    app.preloader.show();
     self.postWithPromise('/photographyclub/event/upcoming').then(function(x) {
       self.upcomingEvents = JSON.parse(x.data).data;
+      app.preloader.hide();
     });
 
+    app.preloader.show();
     self.postWithPromise('/photographyclub/event/completed').then(function(x) {
       self.completedEvents = JSON.parse(x.data).data;
+      app.preloader.hide();
     });
+
     setTimeout(() => app.preloader.hide(), 20000);
   },
   methods: { 
@@ -321,8 +342,18 @@ export default {
       const self = this;
       const app = self.$f7;
       /* console.log('failed', res); */
-      app.dialog.alert(res.data.msg, "Failure");
+      if(res && res.hasOwnProperty('data')) {
+        app.dialog.alert(res.data.msg, "Failure");
+      }
+      else {
+        // probably more than one file.
+        app.dialog.alert("One file at a time. You have to upload again, Sorry!"
+          , "Error!");
+      }
       self.$refs.photographyDZ.removeAllFiles();
+    },
+    onFileAdded: function(file) {
+      console.log('file', file);
     },
     executePopupAction: function() {
       const self = this;
@@ -418,6 +449,38 @@ export default {
         res = true;
       // console.log('res', res);
       return res;
+    },
+    showReadonlyPics: function(ev) {
+      const self = this;
+      const app = self.$f7;
+
+      self.photosReadonly = [];
+
+      app.preloader.show();
+      self.postWithPromise('/photographyclub/entry/getall/' + ev.id)
+        .then(function(x) {
+          const entries = JSON.parse(x.data).data;
+          self.postWithPromise('/photographyclub/rating/getall/' + ev.id)
+            .then(function(x) {
+              self.ratingsReadonly = JSON.parse(x.data).data;
+
+              for(let key in entries) {
+                const entry = entries[key];
+                const r = (entry.id in self.ratingsReadonly) ? self.ratingsReadonly[entry.id]:null;
+                let cap = entry.caption + ", by " + entry.login;
+                if(r) 
+                  cap += ", " + meanArray(r) + "★ ("+ r.length + " votes)";
+
+                // console.log('xxx', cap, entry.url);
+                self.photosReadonly.push({url: entry.url, src: entry.url,
+                  caption: cap});
+              }
+              // open the photobrowser
+              self.$refs.photobrStandalone.open();
+            });
+          app.preloader.hide();
+        });
+      setTimeout(() => app.preloader.hide(), 20000);
     },
   },
 };
