@@ -1,10 +1,6 @@
 // Import Vue
 import Vue from 'vue';
 
-import VueLodash from 'vue-lodash'
-import lodash from 'lodash'
-Vue.use(VueLodash, { lodash: lodash })
-
 // Import css from dropzone.
 import Dropzone from "vue2-dropzone";
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
@@ -200,6 +196,12 @@ Vue.mixin({
       },
       datetime2Moment: function(timestamp) {
          return moment(timestamp, 'YYYY-MM-DD HH:mm:ss');
+      },
+      meanArray: function(arr) {
+         let sum = 0.0;
+         for(let x in arr)
+            sum += x;
+         return sum / arr.length;
       },
       toDate: function(dateStr) {
          return moment(dateStr).toDate();

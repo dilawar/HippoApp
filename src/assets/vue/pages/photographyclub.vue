@@ -62,7 +62,7 @@
   </f7-popup>
 
   <!-- for readonly photo only -->
-  <f7-photo-browser type="page" ref="photobrStandalone" :photos="photosReadonly">
+  <f7-photo-browser ref="photobrStandalone" :photos="photosReadonly">
   </f7-photo-browser>
 
   <!-- This completition -->
@@ -84,7 +84,7 @@
           <f7-card-footer v-if="isVotingPhase(activeEvent)">
             <span v-if="entry.id in thisEventRatings">
               Avg rating 
-              <strong> {{lodash.mean(thisEventRatings[entry.id])}} </strong>
+              <strong> {{meanArray(thisEventRatings[entry.id])}} </strong>
               ({{thisEventRatings[entry.id].length}} votes) 
             </span>
             <span v-else></span>
@@ -177,6 +177,10 @@
       Finished competitions
     </f7-block-title>
 
+    <f7-block-header>
+      Click on the entry to see photographs.
+    </f7-block-header>
+
     <f7-list no-hairlines media-list>
       <f7-list-item v-for="event, key in completedEvents" :key="key"
         @click="showReadonlyPics(event)"
@@ -216,7 +220,6 @@ export default {
       entries: [],
       myentries: [],
       photos: [],
-      photosReadonly: [],
       activeEvent: null,
       upcomingEvents: [],
       completedEvents: [],
@@ -230,6 +233,10 @@ export default {
         autoProcessQueue: false, // do not upload automatically.
         headers: self.apiPostData(),
       },
+      // Following two are readonly only.
+      photosReadonly: [],
+      ratingsReadonly: {},
+
     };
   },
   mounted: async function() {
@@ -444,18 +451,27 @@ export default {
       self.postWithPromise('/photographyclub/entry/getall/' + ev.id)
         .then(function(x) {
           const entries = JSON.parse(x.data).data;
-          for(let key in entries) {
-            let entry = entries[key];
-            self.photosReadonly.push({url: entry.url, src: entry.url,
-              caption: entry.caption + " (by " + entry.login + ")"});
-          }
+          self.postWithPromise('/photographyclub/rating/getall/' + ev.id)
+            .then(function(x) {
+              self.ratingsReadonly = JSON.parse(x.data).data;
 
+              for(let key in entries) {
+                const entry = entries[key];
+                const r = (entry.id in self.ratingsReadonly) ? self.ratingsReadonly[entry.id]:null;
+                let cap = entry.caption + ", by " + entry.login;
+                if(r) 
+                  cap += ", " + meanArray(r) + "★ ("+ r.length + " votes)";
+
+                console.log('xxx', cap, entry.url);
+                self.photosReadonly.push({url: entry.url, src: entry.url,
+                  caption: cap});
+              }
+              // open the photobrowser
+              self.$refs.photobrStandalone.open();
+            });
           app.preloader.hide();
-
-          // open the photobrowser
-          self.$refs.photobrStandalone.open();
         });
-      setTimeout(() => app.preloader.hide());
+      setTimeout(() => app.preloader.hide(), 20000);
     },
   },
 };
