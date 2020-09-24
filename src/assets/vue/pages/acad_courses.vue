@@ -424,8 +424,11 @@ export default {
       popupAssignSlot: false,
       thisCourse : { 'name':''
         ,'course_id':'', 'id' : ''
-        , 'start_date':'', 'end_date':'', 'venue':''
-        , 'slot':'', 'allow_deregistration_until':''
+        , 'start_date': null
+        , 'end_date': null
+        , 'venue':''
+        , 'slot':''
+        , 'allow_deregistration_until':null
         , 'ignore_tiles': ''
         , 'is_audit_allowed': 'YES', 'max_registration': -1
         , 'is_new' : true
@@ -566,17 +569,6 @@ export default {
             console.log(i, self.thisCourseMetadata['instructor_'+i]);
             break;
           }
-          //app.dialog.preloader();
-          //var cid = btoa(self.thisCourseMetadata.id);
-          //self.promiseWithAuth('course/metadata/update/'+cid, self.thisCourseMetadata)
-          //  .then(function(x) {
-          //    self.postWithPromise('course/metadata/get/'+cid)
-          //      .then(function(x) {
-          //        self.thisCourseMetadata = JSON.parse(x.data).data;
-          //        app.dialog.close();
-          //      });
-          //  });
-          //setTimeout( () => app.dialog.close(), 1000);
         },
       },
     });
@@ -625,15 +617,6 @@ export default {
       //var cid = btoa(self.thisCourseMetadata.id);
       //app.dialog.preloader();
       self.thisCourseMetadata['instructor_'+whichInstructor] = '';
-      //self.promiseWithAuth('course/metadata/update/'+cid, self.thisCourseMetadata)
-      //  .then(function(x) {
-      //    self.postWithPromise('course/metadata/get/'+cid)
-      //      .then(function(x) {
-      //        self.thisCourseMetadata = JSON.parse(x.data).data;
-      //        app.dialog.close();
-      //      });
-      //  });
-      //setTimeout( () => app.dialog.close(), 1000);
     },
     addNewCourseMetadata: function() {
       const self = this;
