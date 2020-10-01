@@ -189,7 +189,7 @@
           icon="fab fa-readme"
           class="col-30 medium-25"
           external target="_system"
-          href="https://ncbs-hippo.readthedocs.io/en/latest/">
+          href="https://dilawar.github.io/HippoApp/">
           Docs
         </f7-link> |
         <f7-link external target="_system"
