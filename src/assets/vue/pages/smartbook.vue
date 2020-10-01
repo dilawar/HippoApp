@@ -5,7 +5,7 @@
       <f7-link external target="_system"
         slot="right"
         icon="far fa-question-circle"
-        href="https://ncbs-hippo.readthedocs.io/en/latest/user_manual/#how-to-create-a-general-booking-request"
+        href="https://diilawar.github.io/hippoapp#How%20do%20I%20create%20a%20booking%20request%3F"
       >
         <tt>DOCS</tt>
       </f7-link>
