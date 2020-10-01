@@ -56,7 +56,7 @@ upload :
 
 tiddly:
 	tiddlywiki wiki --build index
-	cp wiki/output/index.html docs/index.html
+	mv wiki/output/index.html docs/index.html
 
 
 .PHONY:  tiddly upload run apk browser
