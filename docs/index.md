@@ -1,11 +1,12 @@
-Welcome to the documentation of [NCBS Hippo](https://ncbs.res.in/hippo).
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/tv9pOi6doHM" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
+Welcome to the documentation of [NCBS Hippo](https://ncbs.res.in/hippo). Hippo
+is used for creating bookings, scheduling events, talks and annual work
+seminars, and manage course registrations.
 
 - If you are an user, checkout the [User Manual](user_manual)
 - If you are an admin, checkout the [Admin Manuals](admin_manual)
 - If you are a developer or maintainer, checkout [developer documents](developer)
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/tv9pOi6doHM" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 
 !!! info "Android App"

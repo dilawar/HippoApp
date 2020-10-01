@@ -1,18 +1,14 @@
-# Login 
-
 Use your NCBS, InStem, or CCAMP login id and associated password. Hippo accepts
-both `intranet` and `webmail` accounts. If you are using `webmail` credentials,
-the login will be slower. We recommend that you use your
+both `intranet` and `webmail` accounts. We recommend that you use your
 [intranet](http://intranet.ncbs.res.in/user){target=blank} credentials.
 
 !!! info "First time login"
 
     <iframe width="560" height="315" src="https://www.youtube.com/embed/6iyZKCvX2lU" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-    Kindly review/edit your details. If you are suppose to give Annual
-    Work Seminar (==AWS==), you must double check all entries. In case of
-    discrepency, write to [Academic Office](mailto:acadoffice@ncbs.res.in).
-
+Kindly review/edit your details. If you are suppose to give Annual Work Seminar
+(==AWS==), you must double check all entries. In case of discrepancy, write to
+[Academic Office](mailto:acadoffice@ncbs.res.in).
 
 
 # FAQ 
@@ -93,3 +89,14 @@ together. You can also update all entries together. There is no provision of
 changing the description of only one entry.
 
 ![](images/faq_update_delete_recurrent.png){width=300}
+
+## How do I register for this semester courses?
+
+Go to ==:fa-bars: (top left) --> My Courses==. 
+
+The list of currently running courses are displayed on the top. Each course has
+a slot (see [slot table](https://ncbs.res.in/hippo/v1/courses/)). Click on the
+course to see details, and option to audio/credit or to drop the course.
+
+In case, there is any change in course schedule, you will be notified by the
+Academic Office via email.
