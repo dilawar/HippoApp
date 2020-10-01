@@ -1,6 +1,6 @@
 created: 20201001103157299
 creator: dilawar
-modified: 20201001175701495
+modified: 20201001181200675
 modifier: dilawar
 tags: TableOfContents
 title: Getting started
@@ -12,8 +12,6 @@ Welcome to NCBS Hippo (https://ncbs.res.in/hippo).
 <<list-links "[tag[manual]]">>
 
 
-!!! About 
-
 Hippo is primarily used for 
 
 * creating bookings
@@ -21,8 +19,8 @@ Hippo is primarily used for
 * course registrations 
 * scheduling [[Annual Work Seminars|AWS]]. 
 
-Hippo is available in [[Google playstore|Hippo android app]]. There is currently no plan for an iOS app.
+Hippo is also available in [[Google playstore|Hippo android app]]. There is no plan for an iOS app.
 
-The old Hippo can be found at https://ncbs.res.in/hippo/v1 which is very much functional but is not developed anymore. Any new feature ''will not'' be implemented in this version.
+''Looking for Old Hippo'': It can be found at https://ncbs.res.in/hippo/v1/. No new feature will be added to this version. Both new and old Hippo uses the same database so it is safe to use either of them.
 
-The main developer of Hippo is [[Dilawar Singh]]. Also read [[a brief history of Hippo]].
+[[Development]]
