@@ -53,3 +53,17 @@ run:
 
 upload :
 	cordova run android
+
+tiddly:
+	tiddlywiki wiki --rendertiddlers '[!is[system]]' \
+	    $:/core/templates/static.tiddler.html static text/plain
+	tiddlywiki wiki --rendertiddler \
+	    $:/core/templates/static.template.html static.html text/plain
+	tiddlywiki wiki --rendertiddler \
+	    $:/core/templates/static.template.css static/static.css text/plain
+	tiddlywiki wiki --rendertiddler \
+	    $:/core/templates/alltiddlers.template.css wiki.html text/plain
+
+
+
+.PHONY:  tiddly upload run apk browser

@@ -1,17 +1,15 @@
 created: 20201001104054695
 creator: dilawar
-modified: 20201001162658133
+modified: 20201001164529706
 modifier: dilawar
 tags: TableOfContents manual
 title: User manual
 tmap.id: 66be7a45-dc24-497d-87ca-9d28751f344f
 type: text/vnd.tiddlywiki
 
-[[Getting started]]
+[[Getting started]] | [[First time login]]
 
-[[First time login]]
-
-! FAQ 
+!!! Frequently Asked Questions 
 
 <<list-links "[tag[faq]]">>
 
