@@ -1,0 +1,10 @@
+created: 20201001150537758
+dependents: 
+description: Tools for exploring the internals of TiddlyWiki
+list: readme
+modified: 20201001150537758
+name: Internals
+plugin-type: plugin
+title: $:/plugins/tiddlywiki/internals
+type: application/json
+version: 5.1.22

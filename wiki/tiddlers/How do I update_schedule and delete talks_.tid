@@ -1,0 +1,19 @@
+created: 20201001134411083
+creator: dilawar
+modified: 20201001150646432
+modifier: dilawar
+tags: faq [[user manual]]
+title: How do I update/schedule and delete talks?
+tmap.id: baeb55b9-82de-4e9b-bf29-bd08a7380097
+type: text/vnd.tiddlywiki
+
+Go to ==:fa-bars: (top left) --> My Bookings==. You will find all your bookings
+including upcoming talks and other bookings both confirmed and pending
+approval. Click a list item, to edit/update and even delete it.  
+
+
+For the recurrent booking, you can chose to delete one or whole group
+together. You can also update all entries together. There is no provision of
+changing the description of only one entry.
+
+![](images/faq_update_delete_recurrent.png)

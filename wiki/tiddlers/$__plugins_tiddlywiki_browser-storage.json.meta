@@ -1,0 +1,10 @@
+created: 20201001150537733
+dependents: 
+description: Local storage in the browser
+list: readme settings
+modified: 20201001150537733
+name: Browser Storage
+plugin-type: plugin
+title: $:/plugins/tiddlywiki/browser-storage
+type: application/json
+version: 5.1.22

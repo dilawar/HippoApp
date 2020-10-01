@@ -1,0 +1,20 @@
+created: 20201001160538187
+modified: 20201001162314373
+tags: faq [[user manual]]
+title: How does Hippo compute AWS schedule?
+tmap.id: 042c1c41-55ef-422a-84df-e500fd4c6008
+type: text/vnd.tiddlywiki
+
+The AWS schedule is computed using [[network flow|https://en.wikipedia.org/wiki/Max-flow_min-cut_theorem]] based optimization. 
+
+For each available slot, we draw an edge from every speaker to it and put a cost on this edge. The cost is minimum when AWS is 1 year away and linearly increases with increasing number of days. Lets say that the potential slot is x days away from the last AWS date. The cost is minimum if x is 365 days; and it increases with (x-365). For x < 365, cost is very high to make sure AWS is 'almost never' scheduled before a year.
+
+Now the problem is to select edges such that this cost is minimized i.e. all speakers give their AWS exactly 1 year after the joining or after their last AWS date. This is the general idea. The real situation more complicated that this. Following policy is enforced.
+
+All ~PhD, Int ~PhD, PostDoc are eligible for AWS. Everyone gets same weight-age no matter where they are registered.  Int ~PhD gets their fist AWS after 15 months, M.Sc. by research after 18 months (and only 1 ), and everyone else gets it after 12 months.  First 2 AWS are given most weight-age i.e. they are most likely to come after an ideal gap of 12-13 months. Later AWS will be come at progressively slower rate (since we have more speakers than slots).  No speaker is likely to get more than 5 AWS.  The AWS admin can override any of the above and schedule AWS in any arbitrary manner.
+
+Providing technical details of implementation is beyond the scope of this note. However following image shows the cost function. The different curve represents the cost function of speaker with different number of given AWS.
+
+[img[compute_cost.py.png]]
+
+You can read the implementation [[here|https://github.com/dilawar/hippo/blob/master/scripts/schedule_aws.py]].
