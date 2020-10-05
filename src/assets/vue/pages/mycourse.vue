@@ -102,7 +102,8 @@
 
 
      <!-- Running courses -->
-     <f7-block-title medium>Running Courses.</f7-block-title>
+     <f7-block-title medium>Running courses</f7-block-title>
+
      <f7-block-header>
        Click on the list item to <tt>AUDIT</tt>, <tt>CREDIT</tt> or to
        <tt>DROP</tt> a course.
@@ -132,6 +133,9 @@
               <div>
                  <p><strong>Instructor(s)</strong></p>
                  <p v-html="getMetadata(course.course_id, 'instructors', 'html')"></p>
+              </div>
+              <div v-if="course.is_audit_allowed==='NO'">
+                <strong>No <tt>AUDIT</tt> allowed.</strong>
               </div>
 
               <f7-row>
@@ -232,6 +236,8 @@ export default {
         let k1 = self.metadata[cid][key1];
         if(key2 && key2 in k1)
           return k1[key2];
+        else
+          return k1;
       }
       return '';
     },
@@ -305,7 +311,7 @@ export default {
       if(! self.courses)
         return;
 
-      let res = self.courses.filter(x => 
+      let res = Object.values(self.courses).filter(x => 
         cid == (x.course_id+"-"+x.semester+"-"+x.year)
       );
 
