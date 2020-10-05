@@ -121,9 +121,11 @@
             <div>
               <em style="font-size:large" v-html="entry.caption"></em>
 
-              <small v-if="today()>dbDate(activeEvent.voting_end_date)"> 
+              <small v-if="today()>dbDate(activeEvent.judge_voting_end_date)"> 
                 u/{{entry.login}}
                 {{toNow(entry.last_modified_on)}} ago.
+              </small>
+              <small v-else>
               </small>
 
               <img v-img:gallary :src="entry.url" 
@@ -151,17 +153,17 @@
     </f7-swiper>
 
     <f7-block-footer>
-      <strong>Last date to upload:</strong> 
+      <strong>Last submission date:</strong> 
       {{activeEvent.end_date | date2}}
       <br>
-      <strong>Voting</strong> starts in {{toNow(activeEvent.voting_start_date)}},
-      and ends on {{activeEvent.voting_end_date | date}}
+      Voting starts in {{toNow(activeEvent.voting_start_date)}},
+      from {{activeEvent.voting_start_date | date}} to {{activeEvent.voting_end_date | date}}
     </f7-block-footer>
 
   </template>
 
   <!-- Upcoming -->
-  <f7-block v-if="upcomingEvents" inset>
+  <f7-block v-if="Object.keys(upcomingEvents).length > 0" inset>
     <f7-block-title small>
       Upcoming competitions
     </f7-block-title>
@@ -175,7 +177,7 @@
     </f7-list>
   </f7-block>
 
-  <f7-block inset>
+  <f7-block inset v-if="Object.keys(completedEvents).length > 0">
     <f7-block-title>
       Finished competitions
     </f7-block-title>
