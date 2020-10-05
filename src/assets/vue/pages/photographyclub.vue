@@ -272,6 +272,11 @@ export default {
       return self.hasRole('PHOTOGRAPHY_CLUB_ADMIN');
     },
     fetchComptEntries: function(ev) {
+      if(! ev)
+        return;
+      if(! ('id' in ev))
+        return;
+
       const self = this;
       const app = self.$f7;
       app.preloader.show();
