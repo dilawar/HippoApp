@@ -1,4 +1,4 @@
-KEYSTORE:=$(HOME)/Work/APPS/KeyStore/dilawar.jks
+KEYSTORE:=$(HOME)/Work/Apps/KeyStore/dilawar.jks
 
 all : browser
 
@@ -32,7 +32,7 @@ init:
 	npm install
 
 browser:
-	cordova build --release browser && rsync -azv www/ /var/www/html/hippo/
+	cordova build browser --release && rsync -azv www/ /var/www/html/hippo/
 	cd /var/www/html/hippo/v1 && git pull origin master 
 	# sudo chown -R apache:root /var/www/html/hippo/ 
 
