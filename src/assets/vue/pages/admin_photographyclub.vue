@@ -55,6 +55,12 @@
             @change="thisEntry.voting_end_date = $event.target.value">
           </f7-list-input>
 
+          <f7-list-input label="Voting end date (for judges)"
+            type="date"
+            :value="thisEntry.judge_voting_end_date"
+            @change="thisEntry.judge_voting_end_date = $event.target.value">
+          </f7-list-input>
+
           <f7-list-input label="Any note for the participant"
             type="texteditor"
             resizable
@@ -127,6 +133,7 @@ export default {
         end_date: '',
         voting_start_date: '',
         voting_end_date: '',
+        judge_voting_end_date: '',
         comment: '',
         is_new: true,
       },
