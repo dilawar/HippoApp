@@ -361,7 +361,7 @@
 
 <!-- All courses -->
 <f7-block strong>
-  <f7-block-title> 
+  <f7-block-title medium> 
     All Courses 
     <div style="font-size:small" class="float-right">
       <f7-button fill small @click="addNewCourseMetadataPopup()">
@@ -449,10 +449,10 @@ export default {
       handler : function(val, oldval) {
         const self = this;
         const app = self.$f7;
-        var keys = ['venue', 'start_date', 'end_date'];
+        var keys = ['start_date', 'end_date'];
         for(const key of keys) {
           if(! val[key]) {
-            console.log(key, val[key]);
+            // console.log(key, val[key]);
             self.thisCourseStatus =  key + ' is not assigned';
             return true;
           }
