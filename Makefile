@@ -32,7 +32,8 @@ init:
 	npm install
 
 browser:
-	cordova build browser --release && rsync -azv www/ /var/www/html/hippo/
+	cordova build browser --release -- --webpack.mode=production
+	rsync -azv www/ /var/www/html/hippo/
 	cd /var/www/html/hippo/v1 && git pull origin master 
 	# sudo chown -R apache:root /var/www/html/hippo/ 
 
@@ -45,7 +46,8 @@ apk:
 	    -- --keystore=$(KEYSTORE) \
 	    --storePassword=$(KEYSTORE_PASSWORD) \
 	    --alias=dilawar \
-	    --password=$(KEYSTORE_PASSWORD)
+	    --password=$(KEYSTORE_PASSWORD) \
+	    --webpack.mode=production
 	find platforms -name "*.apk" | xargs -I f du -h f
 
 run:
