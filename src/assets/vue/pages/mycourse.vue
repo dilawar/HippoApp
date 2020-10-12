@@ -285,12 +285,14 @@ export default {
       app.preloader.show();
       self.postWithPromise("/courses/register/"+btoa(course.id)+"/"+regType)
         .then(function(x) {
-          let res = JSON.parse(x.data).data;
+          /* console.log('xxx', x.data); */
+          const res = JSON.
+            parse(x.data).data;
           if(res.success) 
           {
             self.fetchCoursesPromise().then(function(x) {
               // Subscribe to notification.
-              if(regType==='DROP')
+              if(regType!=='DROP')
                 self.subscribeFCM(course.id);
               else
                 self.unsubscribeFCM(course.id);
