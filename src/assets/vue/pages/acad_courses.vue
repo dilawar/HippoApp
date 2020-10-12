@@ -289,8 +289,8 @@
       </f7-list>
     </f7-block>
 
-    <f7-block-title medium>
-      Running courses ({{thisYear}}/{{thisSemester}})
+    <f7-block-title>
+      Running courses in {{thisYear}}/{{thisSemester}}
     </f7-block-title>
     <f7-block-header>
       <f7-row>
@@ -304,7 +304,8 @@
           Download Course list
         </f7-button>
       </f7-row>
-      Click on the course to update, see registrations and course specific feedback.
+      Click on the course entry below to update, see registrations and 
+      see the course specific feedback.
     </f7-block-header>
 
     <!-- list view -->

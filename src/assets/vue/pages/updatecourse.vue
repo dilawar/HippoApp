@@ -51,7 +51,7 @@
         <f7-list-item v-for="(st,key) in registrations"
           :key="key"
           :title="st.name + ' <' + st.email + '>'"
-          :after="st.type"
+          :after="st.type+(st.status!=='VALID'?'/'+st.status:'')"
           @click="onRegSelect(st)"
           :footer="'Registered on: '+dbDateTime(st.registered_on)">
           <div slot="media" v-if="st.grade">{{st.grade}}</div>
