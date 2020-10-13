@@ -1,0 +1,15 @@
+created: 20201001181206341
+modified: 20201001181439384
+tags: note development
+title: Development
+tmap.id: 93b34bd2-f9d9-4b04-b9ed-399f8d6ef800
+type: text/vnd.tiddlywiki
+
+The main developer of Hippo is [[Dilawar Singh]]. Also read [[a brief history of Hippo]].
+
+* Frontend: https://github.com/dilawar/HippoApp 
+* Backend: https://github.com/dilawar/hippo (and also the legacy version).
+
+Open a ticket in either of these repository. For more information, contact [[Dilawar Singh]].
+
+

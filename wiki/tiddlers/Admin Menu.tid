@@ -1,0 +1,10 @@
+created: 20201013083359938
+modified: 20201013095102429
+tags: note
+title: Admin Menu
+type: text/vnd.tiddlywiki
+
+* On the top-left, the blue hamburger menu <i class="fas fa-bars fa-2x" style="color:blue"/> is the user menu. Every user should see this.
+* On the top-right, the red hamburger menu <i class="fas fa-bars fa-2x" style="color:red"/> is the admin  menu. Only users with admin privileges, should see it.
+
+[img[meus.png]]

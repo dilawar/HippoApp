@@ -3,13 +3,52 @@
     <f7-navbar title="Manage Registration/Grade" back-link="Back">
     </f7-navbar>
 
+    <!-- external student register -->
+    <f7-popup :opened="externalRegPopup" @popup:closed="externalRegPopup = false">
+      <f7-page>
+        <f7-navbar title="External student">
+          <f7-nav-right>
+            <f7-link popup-close>Cancel</f7-link>
+           </f7-nav-right>
+        </f7-navbar>
+    
+        <f7-block>
+          <f7-list media-list>
+            <f7-list-input type="email" required label="Email"
+              :value="thisRegistration.email"
+              @change="thisRegistration.email = $event.target.value">
+            </f7-list-input>
+            <f7-list-input type="text" required label="Name"
+              :value="thisRegistration.name"
+              @change="thisRegistration.name = $event.target.value">
+            </f7-list-input>
+            <f7-list-input type="text" label="Institute"
+              :value="thisRegistration.institute"
+              @change="thisRegistration.institute = $event.target.value">
+            </f7-list-input>
+            <f7-list-input type="select" required 
+              @select="thisRegistration.type=$event.type.value"
+              label="Registration type">
+              <option value="CREDIT">Credit</option>
+              <option value="AUDIT">Audit</option>
+            </f7-list-input>
+            <f7-list-item>
+              <f7-button raised fill @click="changeRegistration()">
+                Register External
+              </f7-button>
+            </f7-list-item>
+          </f7-list>
+        </f7-block>
+      </f7-page>
+    </f7-popup>
+
     <!-- ASSIGN NEW STUDENT -->
     <f7-block strong>
-
       <f7-row >
         <f7-col width="40">
           <f7-input>
-            <v-autocomplete  placeholder="Student login"
+            <v-autocomplete 
+              placeholder="Student login/email"
               results-property="email"
               results-display="name"
               results-value="login"
@@ -21,8 +60,7 @@
           </f7-input>
         </f7-col>
         <f7-col width="25">
-          <f7-input label="Type" 
-            type="select"
+          <f7-input type="select"
             @input="thisRegistration.type=$event.target.value"
             :value="thisRegistration.type">
             <option value="CREDIT" selected>CREDIT</option>
@@ -30,16 +68,21 @@
           </f7-input>
         </f7-col>
         <f7-col width="25">
-          <f7-button raised @click="addRegistration()"
+          <f7-button raised @click="addRegistration()" 
             :disabled="thisRegistration.student_id.length<2">
             Register
           </f7-button>
         </f7-col>
       </f7-row>
+      <f7-row>
+        <f7-button small noraise @click="addRegistrationExternal()">
+          Register External Student
+        </f7-button> 
+      </f7-row>
 
       <!-- Registrations -->
       <f7-block-title> 
-        {{thisCourseId}} (total {{registrations.length}} registrations)
+        {{thisCourseId}} (total {{Object.keys(registrations).length}} registrations)
         <br />
         Click on the row to change registration or to assign grade.
       </f7-block-title>
@@ -50,7 +93,7 @@
         </f7-list-item>
         <f7-list-item v-for="(st,key) in registrations"
           :key="key"
-          :title="st.name + ' <' + st.email + '>'"
+          :title="(st.name?st.name:'')+ ' <' + st.email + '>'"
           :after="st.type+(st.status!=='VALID'?'/'+st.status:'')"
           @click="onRegSelect(st)"
           :footer="'Registered on: '+dbDateTime(st.registered_on)">
@@ -137,10 +180,13 @@
     data() {
       const self = this;
       return {
+        externalRegPopup: false,
         thisCourseId: self.$f7route.params.courseid,
         thisCourseMetadata: {},
         registrations: {},
-        thisRegistration: {student_id:'', type:'CREDIT', grade:''},
+        thisRegistration: {student_id:'', type:'CREDIT', grade:''
+          , is_external: false, name: '', email: '', institute: ''
+        },
         thisData: {},
         openPopup: false,
         availableGrades: ['A+','A', 'B+', 'B', 'C+', 'C', 'F', 'X'],
@@ -172,6 +218,7 @@
         self.postWithPromise('courses/registration/'+btoa(self.thisCourseId))
           .then( function(x) {
             self.registrations = JSON.parse(x.data).data;
+            console.log('Total registrations:', Object.keys(self.registrations).length);
             app.dialog.close();
           });
         setTimeout(() => app.dialog.close(), 5000);
@@ -205,6 +252,7 @@
               app.notification.create({title:"Failed", subtitle:res.msg
                 , closeOnClick: true, closeTimeout: 10000}).open();
           });
+        self.externalRegPopup = false;
         self.openPopup = false;
       },
       addRegistration: function()
@@ -216,6 +264,18 @@
         self.thisRegistration.year = course[2];
         self.thisRegistration.semester = course[1];
         self.changeRegistration();
+      },
+      addRegistrationExternal: function()
+      {
+        const self = this;
+        const app = self.$f7;
+        let course = self.thisCourseId.split('-');
+        self.thisRegistration.course_id = course[0];
+        self.thisRegistration.year = course[2];
+        self.thisRegistration.semester = course[1];
+        self.thisRegistration.is_external = true;
+        /* self.changeRegistration(); */
+        self.externalRegPopup = true;
       },
       assignGrade: function()
       {

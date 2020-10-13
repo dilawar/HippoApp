@@ -1,0 +1,12 @@
+created: 20201013101214656
+modified: 20201013101747405
+tags: acad_faq
+title: How do I enroll student in a course?
+type: text/vnd.tiddlywiki
+
+# From [[Admin Menu]] (<i class="fas fa-bars fa-1x" style="color:red"/>), click on ''Courses''. 
+# Click on the name of the course and then click on button <button disabled>REGISTRATIONS</button> as shown below: [img width="90%" [Screenshot_2020-10-13 Hippo.png]]
+
+# Type in the student login/email in the search box, Hippo will search and autocomplete. Select the name of the student from the auto-complete list. Select <tt>CREDIT</tt> or <tt>AUDIT</tt> and press <button disabled style="color:blue">REGISTER</button> 
+
+To register external student who can not login to hippo, see [[How do I enroll external students?]]
