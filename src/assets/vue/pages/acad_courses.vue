@@ -336,20 +336,20 @@
             </f7-row>
             <f7-row>
               <f7-col width=50 medium=30 style="padding-top:5px">
-                <f7-button small 
+                <f7-button raised
                   :href="'/coursefeedback/'+course.year+'/'+course.semester+'/'+course.course_id+'/'"
                   icon="far fa-comment-dots">
                   {{course.numfeedback}} Feedbacks
                 </f7-button>
               </f7-col>
               <f7-col width=50 medium=30 style="padding-top:5px">
-                <f7-button small 
+                <f7-button raised 
                   :href="'/updatecourse/'+course.id+'/'" icon="fa fa-users">
                   Registrations
                 </f7-button>
               </f7-col>
               <f7-col width=50 medium=30 style="padding-top:5px">
-                <f7-button small @click="showCurrentCourse(course)" icon="fa fa-edit">
+                <f7-button raised @click="showCurrentCourse(course)" icon="fa fa-edit">
                   Edit
                 </f7-button>
               </f7-col>

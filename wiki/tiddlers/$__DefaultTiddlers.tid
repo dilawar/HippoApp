@@ -1,6 +1,9 @@
 created: 20201001102852110
-modified: 20201001150537684
+creator: Dilawar Singh
+modified: 20201013084803579
+modifier: Dilawar Singh
 title: $:/DefaultTiddlers
 type: text/vnd.tiddlywiki
 
-[list[$:/StoryList]]
+[[Getting started]]
+[[User manual]]
