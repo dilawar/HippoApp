@@ -1,0 +1,9 @@
+created: 20201013083143441
+modified: 20201013085532719
+tags: manual TableOfContents
+title: Academic admin manual
+type: text/vnd.tiddlywiki
+
+If you are an academic admin, you will see a red [[Admin Menu]] on the top-right. 
+
+<<list-links "[tag[acad_faq]]">>
