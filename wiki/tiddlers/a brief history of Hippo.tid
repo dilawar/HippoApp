@@ -1,0 +1,15 @@
+created: 20201013114127190
+modified: 20201013124508075
+tags: note author development history
+title: a brief history of Hippo
+type: text/vnd.tiddlywiki
+
+[[Rashi Tiwari|https://www.linkedin.com/in/rashi-tiwari-63545658]], who worked at the [[Deans Office]] was frustated with old booking system called [[BookMyVenue]]. One has to email bookmyvenue@ncbs.res.in at least a day advance for creating a booking. For Rashi, it was just too much redundant work. Too many emails to and for. It was extremely inefficient. I am pretty sure that [[Anjali Jaiman|https://www.linkedin.com/in/anjali-jaiman-10096188/]] also has something to do with it. Rashi approached IT section (ticket no #110949) for a better system. I am not sure what happened there but it did not progress much. Probably IT section did not like implementing anything from scratch and the existing system lacked the functionility Rashi wanted (especially calendar integration). 
+
+I readily agreed to help her out when she pitched this idea to me in late December 2016.  Without asking any authority. I had already built a similar system in IIT Bombay called EE Minion but that did not last long because one faculty member didn't like using websites. That was a bit of painful experience when I had to shut down EE Minion. I thought it was a pretty cool solution. Anyway, It too me more than 3 months to write the first functional website. It was officially launched on March 17, 2017 (see [[Rashi's email|https://dilawars.me/paste/paste.php?id=4]].
+
+Since then, I have been rewritten Hippo at least 3 times. And have been maintaining ever since. As of Oct 2020, it has more than 22,000 lines of code written by a single person! Along the way, I added many features to it: AWS management, course registration, photography clubs, inventory, canteen menu, transportation etc. Not all the features are used, especially those which requires involvement of someone from the admin office.
+
+There are two major versions of Hippo. The old version which is written mainly in PHP is still functional but now rather used as a service API. The new Hippo (over 17,000 lines of code), written mainly in Javascript/HTML using [[Framework-vue|https://framework7.io]]. Collectively both versions contain over 40,000 lines of code written by a single person in 4 languages! I am really proud of it. Hippo has been pretty stable from the day one. It had bugs, a couple of them surfaced only after 2 years of its use. Hippo was never down for more than an hour.  
+
+It took a significant time from my Ph.D. but I never felt it as a waste of time. Nor I felt that I would have been more creating if I never worked in Hippo. Once or twice I had to take a couple of months out of my Ph.D. schedule to work full time on it. My thesis advisor was cool about it for which I am thankful.
