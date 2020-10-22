@@ -8,7 +8,7 @@
         <f7-view name="right" url="/adminpanel/" ></f7-view>
       </f7-panel>
 
-      <f7-view main url="/" :pushState="false">
+      <f7-view main url="/" v-bind="viewParams">
         <f7-toolbar bottom tabber labels style="font-size:x-small">
 
           <f7-link text="Back" icon="fa fa-step-backward fa-2x" back>
@@ -114,6 +114,10 @@ export default {
           // Don't show tabber at the end, it hides some entries otherwise.
           showOnPageScrollEnd: false,
         },
+      },
+      viewParams : {
+        pushState: true,
+        pushStateRoot: document.location.pathname.split('index.html')[0],
       },
       infoPopup: false,
       calendarPopup: false,

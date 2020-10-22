@@ -33,7 +33,7 @@ init:
 
 browser:
 	cordova build browser --release -- --webpack.mode=production
-	rsync -azv www/ /var/www/html/hippo/
+	rsync -azv www/ /var/www/html/hippo/ 
 	cd /var/www/html/hippo/v1 && git pull origin master 
 	# sudo chown -R apache:root /var/www/html/hippo/ 
 
