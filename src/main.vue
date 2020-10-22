@@ -129,6 +129,7 @@ export default {
   mounted: function() {
     const self = this;
     console.log('Roles are', self.roles);
+    console.log('viewparams', self.viewParams);
   },
   methods: {
     fetchRoles: function() {
