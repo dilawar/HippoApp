@@ -150,7 +150,7 @@ export default {
       const self = this;
       console.log('Refreshing page');
       self.postWithPromise('/me/roles').then( function(x) {
-        self.roles = JSON.parse(x.data).data.roles.split(',');
+        self.roles = JSON.parse(x.data).data;
       });
     },
   },
