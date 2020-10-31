@@ -138,17 +138,37 @@
                          type="texteditor">
           </f7-list-input>
 
+          <f7-list-input label="Coordinator (email)"
+            :value="thisTalk.coordinator"
+            @change="thisTalk.coordinator=$event.target.value"
+            type="email">
+          </f7-list-input>
+
+          <f7-list-input label="Host (email)"
+            :value="thisTalk.host"
+            @change="thisTalk.host=$event.target.value"
+            type="email">
+          </f7-list-input>
+
+          <f7-list-input label="Host extra (email)"
+            :value="thisTalk.host_extra"
+            @change="thisTalk.host_extra=$event.target.value"
+            type="email">
+          </f7-list-input>
+
+          <f7-list-item>
+              <f7-col>
+                <f7-button popup-close>Back</f7-button>
+              </f7-col>
+              <f7-col>
+                <f7-button raised fill @click="updateThisTalk()">
+                  Update This Talk
+                </f7-button>
+              </f7-col>
+          </f7-list-item>
+
         </f7-list>
-        <f7-row>
-          <f7-col>
-            <f7-button popup-close raised color=red>Back</f7-button>
-          </f7-col>
-          <f7-col>
-            <f7-button raised fill @click="updateThisTalk()">
-              Update This Talk
-            </f7-button>
-          </f7-col>
-        </f7-row>
+
         <f7-block-footer>
         </f7-block-footer>
       </f7-page>
