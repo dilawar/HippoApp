@@ -298,15 +298,17 @@ export default {
     {
       const self = this;
       const app = self.$f7;
+      var res = null;
+
       app.dialog.preloader("Loging in ...");
       app.request.promise.post( self.$store.state.api+"/authenticate"
         , {login:self.username.toLowerCase(), password: btoa(self.password)})
         .then(function(x) {
           try {
-            var res = JSON.parse(x.data);
+            res = JSON.parse(x.data);
           } catch (e) {
             /* handle error */
-            self.notify('Invalid response from server'
+            self.notify('Invalid response from server: ' + e.message
               , 'Is your username/password correct?'
               , 10000);
             app.dialog.close();
@@ -338,11 +340,8 @@ export default {
     fetchRoles: function() {
       const self = this;
       self.promiseWithAuth('me/roles').then( function(x) {
-        var res = JSON.parse(x.data);
-        if(res.data.roles) {
-          self.rolesCSV = res.data.roles;
-          self.$store.commit('ROLES', res.data.roles.split(','));
-        }
+        self.rolesCSV = JSON.parse(x.data).data;
+        self.$store.commit('ROLES', self.rolesCSV);
       });
     },
     fetchFlashCards: function() {
