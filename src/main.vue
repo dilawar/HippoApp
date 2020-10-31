@@ -4,7 +4,7 @@
     <f7-panel left>
         <f7-view name="left" url="/userpanel/" ></f7-view>
       </f7-panel>
-      <f7-panel right @panel:open="fetchRoles()">
+      <f7-panel right>
         <f7-view name="right" url="/adminpanel/" ></f7-view>
       </f7-panel>
 
@@ -127,23 +127,6 @@ export default {
     console.log('Roles are', self.roles);
   },
   methods: {
-    fetchRoles: function() {
-      const self = this;
-      const app = self.$f7;
-      console.log("Right panel is open. Fetching roles.");
-      if(self.fetchedRoles)
-        return;
-      app.preloader.show();
-      self.postWithPromise('me/roles').then( function(x) {
-        const res = JSON.parse(x.data).data.roles;
-        self.$store.commit("ROLES", res.split(','));
-        app.dialog.close();
-        self.fetchedRoles = true;
-        app.preloader.hide();
-        return true;
-      });
-      setTimeout(() => app.preloader.hide(), 1000);
-    },
   },
 }
 </script>
