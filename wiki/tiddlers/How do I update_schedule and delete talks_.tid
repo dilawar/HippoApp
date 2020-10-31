@@ -1,6 +1,6 @@
 created: 20201001134411083
 creator: dilawar
-modified: 20201001150646432
+modified: 20201013113423918
 modifier: dilawar
 tags: faq [[user manual]]
 title: How do I update/schedule and delete talks?
@@ -12,8 +12,9 @@ including upcoming talks and other bookings both confirmed and pending
 approval. Click a list item, to edit/update and even delete it.  
 
 
-For the recurrent booking, you can chose to delete one or whole group
+For the recurrent booking, you can choose to delete one or whole group
 together. You can also update all entries together. There is no provision of
 changing the description of only one entry.
 
-![](images/faq_update_delete_recurrent.png)
+
+[img[faq_update_delete_recurrent.png]]

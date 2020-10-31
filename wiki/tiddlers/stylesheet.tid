@@ -1,0 +1,12 @@
+created: 20201013113036772
+modified: 20201013113937214
+tags: $:/tags/Stylesheet
+title: stylesheet
+type: text/plain
+
+img {
+   margin: 2%;
+   padding: 2%;
+   box-shadow: 3px 3px;
+   border: 1px gray solid;
+}

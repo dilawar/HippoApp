@@ -1,5 +1,5 @@
 created: 20201013084856882
-modified: 20201013101231413
+modified: 20201013113602205
 tags: acad_faq
 title: How do I enroll external students?
 type: text/vnd.tiddlywiki
@@ -9,8 +9,8 @@ This note is for external students who can not log in to Hippo. For internal stu
 You need to know their ''name'' and ''email'' address.
 
 # From [[Admin Menu]] (<i class="fas fa-bars fa-1x" style="color:red"/>), click on ''Courses''. 
-# Click on the name of the course and then click on button <button disabled>REGISTRATIONS</button> as shown below: [img width="90%" [Screenshot_2020-10-13 Hippo.png]]
+# Click on the name of the course and then click on button <button disabled>REGISTRATIONS</button> as shown below: [img [Screenshot_2020-10-13 Hippo.png]]
 
-# Click on <a style="color:blue" disabled>REGISTER EXTERNAL STUDENT</a> link below student search box. [img width="80%" [Screenshot_2020-10-13 Hippo.png]]
+# Click on <a style="color:blue" disabled>REGISTER EXTERNAL STUDENT</a> link below student search box. [img [Screenshot_2020-10-13 Hippo.png]]
 
 # It will open a popup, fill in <tt>EMAIL</tt>, <tt>NAME</tt> and <tt>INSTITUTE</tt> and submit the entry. The student will recieve an email.
