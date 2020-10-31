@@ -23,7 +23,7 @@
             <div slot="footer"> 
               <strong>Add/drop only one file.</strong>
               <em>
-                Last date {{thisEvent.start_date | date }}, 
+                Last date {{thisEvent.start_date | date}}, 
                 Voting phase: {{thisEvent.voting_start_date | date }} 
                 to {{thisEvent.voting_end_date | date}}. 
               </em>
@@ -69,11 +69,14 @@
   <!-- This completition -->
   <template v-if="activeEvent && activeEvent.theme">
 
-    <f7-block-title large>
+    <f7-block-title medium>
       {{activeEvent.theme}}
     </f7-block-title>
 
-    <f7-block-header v-html="activeEvent.description">
+    <f7-block-header>
+      <div v-html="activeEvent.description"> </div>
+      Note to participants: 
+      <span class="text-color-blue" v-html="activeEvent.comment"></span>
     </f7-block-header>
 
     <!-- Extended FAB Center Bottom (Red) -->

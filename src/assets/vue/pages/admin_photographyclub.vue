@@ -4,7 +4,7 @@
 
   <f7-popup :opened="popupEvent">
     <f7-page>
-      <f7-navbar title="Add/Update event">
+      <f7-navbar title="Add/Update photography event">
         <f7-nav-right>
           <f7-link @click="popupEvent=false">Close</f7-link>
         </f7-nav-right>

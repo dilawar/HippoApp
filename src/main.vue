@@ -11,7 +11,7 @@
       <!-- 
       Enable URL (pushStateRoot) only when using browser.
       -->
-      <f7-view main url="/" v-bind="isMobileApp()?{}:viewParams">
+      <f7-view main url="/" v-bind="viewParams">
         <f7-toolbar bottom tabber labels style="font-size:x-small">
 
           <f7-link text="Back" icon="fa fa-step-backward fa-2x" back>
@@ -118,10 +118,7 @@ export default {
           showOnPageScrollEnd: false,
         },
       },
-      viewParams : {
-        pushState: true,
-        pushStateRoot: document.location.pathname.split('index.html')[0],
-      },
+      viewParams : {},
       infoPopup: false,
       calendarPopup: false,
       canteenPopup: false,
@@ -132,6 +129,10 @@ export default {
   mounted: function() {
     const self = this;
     console.log('Roles are', self.roles);
+    if(device.platform == 'browser')
+      self.viewParams = {pushState: true,
+        pushStateRoot: document.location.pathname.split('index.html')[0],
+      };
     console.log('viewparams', self.viewParams);
   },
   methods: {
