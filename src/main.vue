@@ -115,8 +115,8 @@ export default {
           showOnPageScrollEnd: false,
         },
       },
-      viewParams : device.platform === 'browser' ? {pushState: true,
-        pushStateRoot: document.location.pathname.split('index.html')[0]} : {},
+      viewParams :{pushState: true, pushStateRoot:
+        document.location.pathname.split('index.html')[0]},
       infoPopup: false,
       calendarPopup: false,
       canteenPopup: false,
@@ -128,6 +128,11 @@ export default {
     const self = this;
     console.log('Roles are', self.roles);
     console.log('platform is', device.platform);
+    if(device.platform === 'browser')
+      self.viewParams = 
+        {pushState: true,
+        pushStateRoot: document.location.pathname.split('index.html')[0],
+      };
     console.log('viewparams', self.viewParams);
   },
   methods: {
