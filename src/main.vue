@@ -8,9 +8,7 @@
         <f7-view name="right" url="/adminpanel/" ></f7-view>
       </f7-panel>
 
-      <!-- 
-      Enable URL (pushStateRoot) only when using browser.
-      -->
+      <!-- Enable URL (pushStateRoot) only when using browser.  -->
       <f7-view main url="/" v-bind="viewParams">
         <f7-toolbar bottom tabber labels style="font-size:x-small">
 
@@ -111,14 +109,14 @@ export default {
         theme,
         routes,
         id: 'com.dilawar.hippo',
-        isBottom: true,
         toolbar: {
           hideOnPageScroll: true,
           // Don't show tabber at the end, it hides some entries otherwise.
           showOnPageScrollEnd: false,
         },
       },
-      viewParams : {},
+      viewParams : device.platform === 'browser' ? {pushState: true,
+        pushStateRoot: document.location.pathname.split('index.html')[0]} : {},
       infoPopup: false,
       calendarPopup: false,
       canteenPopup: false,
@@ -129,10 +127,7 @@ export default {
   mounted: function() {
     const self = this;
     console.log('Roles are', self.roles);
-    if(device.platform == 'browser')
-      self.viewParams = {pushState: true,
-        pushStateRoot: document.location.pathname.split('index.html')[0],
-      };
+    console.log('platform is', device.platform);
     console.log('viewparams', self.viewParams);
   },
   methods: {

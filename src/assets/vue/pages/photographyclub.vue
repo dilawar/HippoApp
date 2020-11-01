@@ -69,15 +69,19 @@
   <!-- This completition -->
   <template v-if="activeEvent && activeEvent.theme">
 
+    <f7-block-footer>
+      <span class="text-color-gray" 
+        v-html="activeEvent.comment" 
+        v-linkified>
+      </span>
+    </f7-block-footer>
+
     <f7-block-title medium>
       {{activeEvent.theme}}
     </f7-block-title>
 
-    <f7-block-header>
-      <div v-html="activeEvent.description"> </div>
-      Note to participants: 
-      <span class="text-color-blue" v-html="activeEvent.comment"></span>
-    </f7-block-header>
+    <f7-block inset strong v-html="activeEvent.description" v-linkified> 
+    </f7-block>
 
     <!-- Extended FAB Center Bottom (Red) -->
     <f7-fab position="right-top" slot="fixed" 
