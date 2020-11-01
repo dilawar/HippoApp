@@ -122,6 +122,7 @@
     "vue": "^2.6.12",
     "vue-chartkick": "^0.6.1",
     "vue-light-timeline": "^1.0.3",
+    "vue-linkify": "^1.0.1",
     "vue-localstorage": "^0.6.2",
     "vue-lodash": "^2.1.2",
     "vue-persistent-state": "^0.2.1",

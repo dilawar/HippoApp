@@ -13,6 +13,10 @@ import Chartkick from 'vue-chartkick';
 import Highcharts from 'highcharts';
 Vue.use(Chartkick.use(Highcharts))
 
+// linkify
+import linkify from 'vue-linkify';
+Vue.directive('linkified', linkify);
+
 // Editor
 import { VueEditor, Quill } from 'vue2-editor';
 Vue.component('vue-editor', VueEditor);
