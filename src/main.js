@@ -611,6 +611,8 @@ export default new Vue({
 
       onDeviceReady : function(x) {
          const self = this;
+         self.platform = device.platform;
+
          // Notifications 
          cordova.plugins.notification.local.on("click", function(not) {
             // On click show notification page.
