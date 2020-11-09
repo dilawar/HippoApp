@@ -7,7 +7,6 @@
     </f7-nav-right>
   </f7-navbar>
 
-
   <f7-popup tablet-fullscreen :opened="popupOpened" @popup:closed="popupOpened = false">
     <f7-page>
       <f7-navbar :title="popupAction + ' entry'">
@@ -80,7 +79,7 @@
       {{activeEvent.theme}}
     </f7-block-title>
 
-    <f7-block inset strong v-html="activeEvent.description" v-linkified> 
+    <f7-block v-html="activeEvent.description" v-linkified> 
     </f7-block>
 
     <!-- Extended FAB Center Bottom (Red) -->
@@ -91,7 +90,7 @@
     </f7-fab>
 
     <!-- Active event -->
-    <f7-block strong inset v-if="entries.length === 0">
+    <f7-block strong v-if="entries.length === 0">
       <f7-icon icon="far fa-sad-tear fa-3x"></f7-icon>
       <div>
         No entry has been uploaded yet!

@@ -1,5 +1,5 @@
 <template>
-  <f7-page class="with_photography_club hide-native-scrollbar">
+  <f7-page class="with_photography_club">
     <f7-navbar>
       <!-- LEFT PANEL -->
       <f7-nav-left>
@@ -7,7 +7,6 @@
           icon="fa fa-bars fw">
         </f7-link>
       </f7-nav-left>
-
       <f7-nav-title>
         <div style="vertical-align:bottom">
           <img src="static/logo.png" height="25px" alt="logo" />
@@ -17,7 +16,7 @@
               v-if="! isMobileApp()"
               target="_system" external
               href="https://ncbs.res.in/hippo/v1/welcome">
-              Old Hippo</f7-link>
+              Old Hippo</f7-link>/
             <f7-link no-link-class v-if="! isMobileApp()"
               target="_system" external
               icon="fab fa-android"
@@ -45,8 +44,8 @@
     </f7-navbar>
 
     <f7-row>
-      <f7-col width="40" medium="40" large="60"></f7-col>
-      <f7-col width="60" medium="60" large="40">
+      <f7-col small=40 medium=60></f7-col>
+      <f7-col small=60 medium=40>
         <f7-list no-hairlines>
           <f7-list-item v-if="isUserAuthenticated()"
             link="/smartbook/" 
@@ -92,130 +91,128 @@
             <div slot="text" v-html="pcTheme"></div>
           </f7-list-item>
 
-
         </f7-list>
       </f7-col>
     </f7-row>
 
-      <f7-row v-if="! isUserAuthenticated()" style="margin-right:5px" class="pull-right">
-        <f7-col>
-        </f7-col>
-        <f7-col>
-          <div>
-            <font v-if="isHippoAlive">Hippo is Alive. You may login.</font>
-            <font v-else>
-              <f7-preloader color="blue"></f7-preloader> Pinging Hippo ...
-            </font>
-          </div>
-          <f7-button fill :disabled="! isHippoAlive" login-screen-open=".hippo-login-screen">
-            {{isHippoAlive?'Login':'Pinging Hippo server...'}}
-          </f7-button>
-        </f7-col>
-      </f7-row>
-
-      <!-- FAB Right Bottom (Orange) -->
-      <f7-fab position="right-bottom" slot="fixed" v-if="isUserAuthenticated()">
-        <f7-icon icon="fa fa-info fa-2x" 
-          tooltip="See AWS, JC, Courses and other public info">
-        </f7-icon>
-        <f7-icon ios="f7:xmark" aurora="f7:xmark" md="material:close"></f7-icon>
-        <f7-fab-buttons position="top">
-          <f7-fab-button href="/info/talks" label="Talks">1</f7-fab-button>
-          <f7-fab-button href="/info/upcomingawses" label="Upcoming AWS">2</f7-fab-button>
-          <f7-fab-button href="/info/jcs" label="JC">3</f7-fab-button>
-          <f7-fab-button href="/info/courses" label="Courses">4</f7-fab-button>
-          <f7-fab-button href="/info/statistics" label="Statistics">5</f7-fab-button>
-        </f7-fab-buttons>
-      </f7-fab>
-
-      <!-- flash cards -->
-      <f7-block inset style="background:rgba(255,255,255,0.9); margin-top:25%">
-        <f7-swiper navigation 
-          :params="{slidesPerView: 'auto', loop: true, autoplay:{delay:1500, disableOnInteraction:true}}">
-          <f7-swiper-slide v-for="(card,key) in flashCards" :key="key">
-            <div style="padding:3% 10% 3% 10%; text-align:center">
-              {{humanReadableDateTime(card.date, card.time)}} | <span v-html="card.venue"></span>
-              <div v-html="card.title">
-              </div>
-            </div>
-          </f7-swiper-slide>
-        </f7-swiper>
-      </f7-block>
-
-      <!-- LOGIN SCREEN  -->
-      <f7-login-screen class="hippo-login-screen">
-        <f7-page login-screen>
-          <f7-login-screen-title>Login</f7-login-screen-title>
-          <f7-list form>
-            <f7-list-input
-              label="Username"
-              type="text"
-              placeholder="Your username"
-              :value="username"
-              @input="username = $event.target.value">
-            </f7-list-input>
-            <f7-list-input
-              label="Password"
-              type="password"
-              placeholder="Your password"
-              :value="password"
-              @input="password = $event.target.value">
-            </f7-list-input>
-
-            <f7-row>
-              <f7-col width="45">
-                <f7-button login-screen-close raised login-screen-close>Cancel</f7-button>
-              </f7-col>
-              <f7-col width="45">
-                <f7-button @click="signIn()" raised login-screen-close>Sign In</f7-button>
-              </f7-col>
-            </f7-row>
-
-          </f7-list>
-
-          <f7-block-footer>
-            Use your NCBS/InSTEM/Others credentials. Verify
-            that you can login to <a _target="blank" href="https://ncbs.res.in/hippo">
-              Hippo Website</a>.
-          </f7-block-footer>
-        </f7-page>
-      </f7-login-screen>
-
-
-      <!-- footer -->
-      <f7-block-footer class="main-footer">
-        <!-- top row -->
-        <f7-link external 
-          icon="fab fa-readme"
-          class="col-30 medium-25"
-          external target="_system"
-          href="https://dilawar.github.io/HippoApp/">
-          Docs
-        </f7-link> |
-        <f7-link external target="_system"
-          icon="fab fa-github fa-fw"
-          class="col-30 medium-25"
-          href="https://github.com/dilawar/hippo/">
-          Code Repository
-        </f7-link> |
-        <f7-link external 
-          class="col-30 medium-25"
-          href="https://ncbs.res.in" 
-          target="_system">
-          NCBS Bangalore
-        </f7-link>
-        <!-- bottom row -->
-        <div margin-bottom:30px>
-          Code licensed under <f7-link>GNU GPLv3</f7-link>, 
-          &copy 2018-2020 
-          <f7-link external target="_system" href="https://github.com/dilawar">
-            Dilawar Singh
-          </f7-link>
-          Server is provided by NCBS IT Dept.  
-          Logo &copy Nuno Jesus.
+    <f7-row v-if="! isUserAuthenticated()" class="pull-right">
+      <f7-col>
+      </f7-col>
+      <f7-col>
+        <div>
+          <font v-if="isHippoAlive">Hippo is Alive. You may login.</font>
+          <font v-else>
+            <f7-preloader color="blue"></f7-preloader> Pinging Hippo ...
+          </font>
         </div>
-      </f7-block-footer>
+        <f7-button fill :disabled="! isHippoAlive" login-screen-open=".hippo-login-screen">
+          {{isHippoAlive?'Login':'Pinging Hippo server...'}}
+        </f7-button>
+      </f7-col>
+    </f7-row>
 
+    <!-- FAB Right Bottom (Orange) -->
+    <f7-fab position="right-bottom" slot="fixed" v-if="isUserAuthenticated()">
+      <f7-icon icon="fa fa-info fa-2x" 
+        tooltip="See AWS, JC, Courses and other public info">
+      </f7-icon>
+      <f7-icon ios="f7:xmark" aurora="f7:xmark" md="material:close"></f7-icon>
+      <f7-fab-buttons position="top">
+        <f7-fab-button href="/info/talks" label="Talks">1</f7-fab-button>
+        <f7-fab-button href="/info/upcomingawses" label="Upcoming AWS">2</f7-fab-button>
+        <f7-fab-button href="/info/jcs" label="JC">3</f7-fab-button>
+        <f7-fab-button href="/info/courses" label="Courses">4</f7-fab-button>
+        <f7-fab-button href="/info/statistics" label="Statistics">5</f7-fab-button>
+      </f7-fab-buttons>
+    </f7-fab>
+
+    <!-- flash cards -->
+    <f7-block style="background:rgba(255,255,255,0.9); margin-top:20%; margin-bottom:10px">
+      <f7-swiper navigation 
+        :params="{slidesPerView: 'auto', loop: true, autoplay:{delay:1500, disableOnInteraction:true}}">
+        <f7-swiper-slide v-for="(card,key) in flashCards" :key="key">
+          <div style="padding:3% 10% 3% 10%; text-align:center">
+            {{humanReadableDateTime(card.date, card.time)}} | <span v-html="card.venue"></span>
+            <div v-html="card.title">
+            </div>
+          </div>
+        </f7-swiper-slide>
+      </f7-swiper>
+    </f7-block>
+
+    <!-- LOGIN SCREEN  -->
+    <f7-login-screen class="hippo-login-screen">
+      <f7-page login-screen>
+        <f7-login-screen-title>Login</f7-login-screen-title>
+        <f7-list form>
+          <f7-list-input
+            label="Username"
+            type="text"
+            placeholder="Your username"
+            :value="username"
+            @input="username = $event.target.value">
+          </f7-list-input>
+          <f7-list-input
+            label="Password"
+            type="password"
+            placeholder="Your password"
+            :value="password"
+            @input="password = $event.target.value">
+          </f7-list-input>
+
+          <f7-row>
+            <f7-col width="45">
+              <f7-button login-screen-close raised login-screen-close>Cancel</f7-button>
+            </f7-col>
+            <f7-col width="45">
+              <f7-button @click="signIn()" raised login-screen-close>Sign In</f7-button>
+            </f7-col>
+          </f7-row>
+
+        </f7-list>
+
+        <f7-block-footer>
+          Use your NCBS/InSTEM/Others credentials. Verify
+          that you can login to <a _target="blank" href="https://ncbs.res.in/hippo">
+            Hippo Website</a>.
+        </f7-block-footer>
+      </f7-page>
+    </f7-login-screen>
+
+
+    <!-- footer -->
+    <f7-block-footer class="main-footer">
+      <!-- top row -->
+      <f7-link external 
+        icon="fab fa-readme"
+        class="col-30 medium-25"
+        external target="_system"
+        href="https://dilawar.github.io/HippoApp/">
+        Docs
+      </f7-link> |
+      <f7-link external target="_system"
+        icon="fab fa-github fa-fw"
+        class="col-30 medium-25"
+        href="https://github.com/dilawar/hippo/">
+        Code Repository
+      </f7-link> |
+      <f7-link external 
+        class="col-30 medium-25"
+        href="https://ncbs.res.in" 
+        target="_system">
+        NCBS Bangalore
+      </f7-link>
+      <!-- bottom row -->
+      <div margin-bottom:30px>
+        Code licensed under <f7-link>GNU GPLv3</f7-link>, 
+        &copy 2018-2020 
+        <f7-link external target="_system" href="https://github.com/dilawar">
+          Dilawar Singh
+        </f7-link>
+        Server is provided by NCBS IT Dept.  
+        Logo &copy Nuno Jesus.
+      </div>
+    </f7-block-footer>
 
   </f7-page>
 </template>
