@@ -25,6 +25,10 @@ Vue.component('vue-editor', VueEditor);
 import Autocomplete from 'vuejs-auto-complete';
 Vue.component('v-autocomplete', Autocomplete);
 
+// Analytics
+import VueGtag from 'vue-tag';
+Vue.use(VueGtag, {config : { id : 'G-RLF9RVR5T6'}});
+
 // OSM and leaflet.
 import {LMap, LTileLayer, LMarker, LPolyline, LPopup, LTooltip, LCircle, LControlLayers} from 'vue2-leaflet';
 

@@ -118,6 +118,7 @@
     "v-img": "^0.2.0",
     "vue": "^2.6.12",
     "vue-chartkick": "^0.6.1",
+    "vue-gtag": "^1.10.0",
     "vue-light-timeline": "^1.0.3",
     "vue-linkify": "^1.0.1",
     "vue-localstorage": "^0.6.2",
