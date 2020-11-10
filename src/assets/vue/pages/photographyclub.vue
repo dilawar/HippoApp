@@ -68,18 +68,21 @@
   <!-- This completition -->
   <template v-if="activeEvent && activeEvent.theme">
 
-    <f7-block-footer>
+    <f7-block-header>
       <span class="text-color-gray" 
         v-html="activeEvent.comment" 
-        v-linkified>
+        v-linkified:options="{className: 'external', target: '_system'}"
+      >
       </span>
-    </f7-block-footer>
+    </f7-block-header>
 
     <f7-block-title medium>
       {{activeEvent.theme}}
     </f7-block-title>
 
-    <f7-block v-html="activeEvent.description" v-linkified> 
+    <f7-block v-html="activeEvent.description" 
+      v-linkified:options="{className: 'external', target: '_system'}"
+    >
     </f7-block>
 
     <!-- Extended FAB Center Bottom (Red) -->
@@ -97,6 +100,7 @@
       </div>
     </f7-block>
 
+    <template v-if="entries.length > 0">
     <f7-swiper navigation pagination :params="{keyboard:true}">
       <f7-swiper-slide v-for="entry, key in entries" :key="key">
         <f7-card no-shadow>
@@ -157,6 +161,7 @@
         </f7-card>
       </f7-swiper-slide>
     </f7-swiper>
+    </template>
 
     <f7-block-footer>
       <strong>Last submission date:</strong> 

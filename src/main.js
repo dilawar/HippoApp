@@ -26,7 +26,7 @@ import Autocomplete from 'vuejs-auto-complete';
 Vue.component('v-autocomplete', Autocomplete);
 
 // Analytics
-import VueGtag from 'vue-tag';
+import VueGtag from 'vue-gtag';
 Vue.use(VueGtag, {config : { id : 'G-RLF9RVR5T6'}});
 
 // OSM and leaflet.
@@ -656,4 +656,4 @@ export default new Vue({
       },
    },
 });
-
+g
