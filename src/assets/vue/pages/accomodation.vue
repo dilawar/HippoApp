@@ -1,36 +1,32 @@
 <template>
-  <f7-page>
+  <f7-page page-content >
     <f7-navbar title="Accomodation" back-link="Back">
       <f7-nav-right>
         <f7-link class="searchbar-enable" 
-          data-searchbar=".searchbar-acc" 
-          icon-ios="f7:search" 
-          icon-aurora="f7:search" 
-          icon-md="material:search">
+                 data-searchbar=".searchbar-acc" 
+                 icon-ios="f7:search" 
+                 icon-aurora="f7:search" 
+                 icon-md="material:search"
         </f7-link>
       </f7-nav-right>
       <f7-searchbar class="searchbar-acc"
-        expandable
-        search-in=".item-title,.item-subtitle,.item-footer,.acc-content,.accordian-item-content"
-        search-container=".search-list-acc">
+                    expandable
+                    search-in=".item-title,.item-subtitle,.item-footer,.acc-content,.accordian-item-content"
+                    search-container=".search-list-acc">
       </f7-searchbar>
     </f7-navbar>
 
    <!-- List of accomodations -->
    <f7-block>
     <f7-photo-browser ref="standalone"></f7-photo-browser>
-    <f7-row>
-
+    <f7-row noGap>
       <f7-card v-for="(acc, key) in accomodations.list" 
-        class="col-100 medium-50 large-50" 
-        :key="key"
-        no-shadow outline
-        v-if="acc.status==='AVAILABLE'">
+               class="col-100 medium-45" :key="key"
+               v-if="acc.status=='AVAILABLE'">
         <!-- header -->
         <f7-card-header :style="`background-color:${stringToColour(acc.status)}`">
           <div>
-            <strong> <tt>{{acc.type}}</tt> </strong> 
-            available from {{humanReadableDate(acc.available_from)}}
+            <tt>{{acc.type}}</tt> Available from {{humanReadableDate(acc.available_from)}}
             <br />
             <span style="font-size:x-small;">
               <f7-icon icon="fa fa-bell"></f7-icon>
@@ -43,16 +39,14 @@
         </f7-card-header>
 
         <!-- Card content -->
-        <f7-card-content>
-          <f7-list no-hairlines media-list>
-            <template v-for="(val, key) in acc">
-              <f7-list-item v-if="showKeys.includes(key)">
-                <span slot="header">{{formatKey(key)}}</span>
-                <span slot="text" v-linkified v-html="$options.filters.phone(val)">
-                </span>
-              </f7-list-item>
-            </template>
-          </f7-list>
+        <f7-card-content v-linkified:options="{class:'external', target:'_system'}">
+          <div v-for="(val, key) in acc">
+            <span v-if="showKeys.includes(key)">
+              <span>{{formatKey(key)}}</span>
+              <span style="margin-right:2ex;" v-html="$options.filters.phone(val)"></span>
+              <br />
+            </span>
+          </div>
         </f7-card-content>
 
         <!-- Card footer -->
@@ -94,7 +88,7 @@
 
         <!-- Card content -->
         <f7-card-content>
-          <div v-html="acc.address" v-linkified> </div>
+          <div v-html="acc.address"> </div>
           <span v-for="(val, key) in acc">
             <span v-if="showKeys.includes(key)">
               <span style="font-size:70%">{{formatKey(key)}}</span>
@@ -125,13 +119,15 @@
     </f7-row>
    </f7-block>
 
-   <!-- FAB to create accomodation -->
-   <f7-fab v-if="isUserAuthenticated()"
-     position="right-bottom" 
-     @click="popupOpened=true"
-     color="green">
+  <!-- FAB to create accomodation -->
+  <f7-fab v-if="isUserAuthenticated()"
+          position="right-top" 
+          slot="fixed" 
+          @click="popupOpened=true"
+          color="green"
+          >
      <f7-icon ios="f7:add" aurora="f7:add" md="material:add"></f7-icon>
-   </f7-fab>
+  </f7-fab>
 
   <f7-popup :opened="commentPopupOpened" @popup:closed="commentPopupOpened = false">
      <f7-page>

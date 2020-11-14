@@ -43,57 +43,53 @@
       </f7-nav-right>
     </f7-navbar>
 
-    <f7-row>
-      <f7-col small=40 medium=60></f7-col>
-      <f7-col small=60 medium=40>
-        <f7-list no-hairlines>
-          <f7-list-item v-if="isUserAuthenticated()"
-            link="/smartbook/" 
-            title="Booking" 
-            tooltip="Create a new booking"
-            panel-close>
-            <f7-icon slot="media" icon="fa fa-plus fa-2x"></f7-icon>
-          </f7-list-item>
+    <f7-list style="min-width:300px; width:50%; margin-right:5px; margin-top:5px;" 
+      class="display-flex">
+      <f7-list-item v-if="isUserAuthenticated()"
+        link="/smartbook/" 
+        title="Booking" 
+        tooltip="Create a new booking"
+        panel-close>
+        <f7-icon slot="media" icon="fa fa-plus fa-2x"></f7-icon>
+      </f7-list-item>
 
-          <f7-list-item v-if="isUserAuthenticated()"
-            link="/inventory/" 
-            title="Inventory" 
-            tooltip="Search and borrow"
-            panel-close>
-            <f7-icon slot="media" icon="fa fa-archive fa-2x"></f7-icon>
-          </f7-list-item>
+      <f7-list-item v-if="isUserAuthenticated()"
+        link="/inventory/" 
+        title="Inventory" 
+        tooltip="Search and borrow"
+        panel-close>
+        <f7-icon slot="media" icon="fa fa-archive fa-2x"></f7-icon>
+      </f7-list-item>
 
-          <f7-list-item link="/accomodation/" 
-            title="Accomodations" 
-            tooltip="Browse/create TO-LET listing"
-            panel-close>
-            <f7-icon slot="media" icon="fa fa-home fa-2x"></f7-icon>
+      <f7-list-item link="/accomodation/" 
+        title="Accomodations" 
+        tooltip="Browse/create TO-LET listing"
+        panel-close>
+        <f7-icon slot="media" icon="fa fa-home fa-2x"></f7-icon>
 
-          </f7-list-item>
+      </f7-list-item>
 
-          <f7-list-item link="/noticeboards/all" 
-            title="Notice Board" 
-            tooltip="Because you hate spamming mailing list"
-            panel-close>
-            <f7-icon slot="media" icon="fa fa-bullhorn fa-2x"></f7-icon>
-          </f7-list-item>
+      <f7-list-item link="/noticeboards/all" 
+        title="Notice Board" 
+        tooltip="Because you hate spamming mailing list"
+        panel-close>
+        <f7-icon slot="media" icon="fa fa-bullhorn fa-2x"></f7-icon>
+      </f7-list-item>
 
-          <f7-list-item link="/transport/" title="Transport" panel-close>
-            <f7-icon slot="media" icon="fa fa-bus fa-2x"></f7-icon>
-            <div slot="text" v-html="upcomingTrips"></div>
-          </f7-list-item>
+      <f7-list-item link="/transport/" title="Transport" panel-close>
+        <f7-icon slot="media" icon="fa fa-bus fa-2x"></f7-icon>
+        <div slot="text" v-html="upcomingTrips"></div>
+      </f7-list-item>
 
-          <f7-list-item link="/photographyclub/" 
-            title="Photography Competition" 
-            v-if="isUserAuthenticated()"
-            panel-close>
-            <f7-icon slot="media" icon="fa fa-camera fa-2x"></f7-icon>
-            <div slot="text" v-html="pcTheme"></div>
-          </f7-list-item>
+      <f7-list-item link="/photographyclub/" 
+        title="Photography Competition" 
+        v-if="isUserAuthenticated()"
+        panel-close>
+        <f7-icon slot="media" icon="fa fa-camera fa-2x"></f7-icon>
+        <div slot="text" v-html="pcTheme"></div>
+      </f7-list-item>
 
-        </f7-list>
-      </f7-col>
-    </f7-row>
+    </f7-list>
 
     <f7-row v-if="! isUserAuthenticated()" class="pull-right">
       <f7-col>
