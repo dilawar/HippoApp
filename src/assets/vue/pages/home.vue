@@ -333,7 +333,8 @@ export default {
     fetchRoles: function() {
       const self = this;
       self.promiseWithAuth('me/roles').then( function(x) {
-        self.rolesCSV = JSON.parse(x.data).data;
+        let roles = JSON.parse(x.data).data;
+        self.rolesCSV = roles.join(',');
         self.$store.commit('ROLES', self.rolesCSV);
       });
     },
