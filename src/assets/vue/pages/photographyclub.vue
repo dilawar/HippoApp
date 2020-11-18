@@ -7,7 +7,6 @@
     </f7-nav-right>
   </f7-navbar>
 
-
   <f7-popup tablet-fullscreen :opened="popupOpened" @popup:closed="popupOpened = false">
     <f7-page>
       <f7-navbar :title="popupAction + ' entry'">
@@ -69,18 +68,21 @@
   <!-- This completition -->
   <template v-if="activeEvent && activeEvent.theme">
 
-    <f7-block-footer>
+    <f7-block-header>
       <span class="text-color-gray" 
         v-html="activeEvent.comment" 
-        v-linkified>
+        v-linkified:options="{className: 'external', target: '_system'}"
+      >
       </span>
-    </f7-block-footer>
+    </f7-block-header>
 
     <f7-block-title medium>
       {{activeEvent.theme}}
     </f7-block-title>
 
-    <f7-block inset strong v-html="activeEvent.description" v-linkified> 
+    <f7-block v-html="activeEvent.description" 
+      v-linkified:options="{className: 'external', target: '_system'}"
+    >
     </f7-block>
 
     <!-- Extended FAB Center Bottom (Red) -->
@@ -91,13 +93,14 @@
     </f7-fab>
 
     <!-- Active event -->
-    <f7-block strong inset v-if="entries.length === 0">
+    <f7-block strong v-if="entries.length === 0">
       <f7-icon icon="far fa-sad-tear fa-3x"></f7-icon>
       <div>
         No entry has been uploaded yet!
       </div>
     </f7-block>
 
+    <template v-if="entries.length > 0">
     <f7-swiper navigation pagination :params="{keyboard:true}">
       <f7-swiper-slide v-for="entry, key in entries" :key="key">
         <f7-card no-shadow>
@@ -158,6 +161,7 @@
         </f7-card>
       </f7-swiper-slide>
     </f7-swiper>
+    </template>
 
     <f7-block-footer>
       <strong>Last submission date:</strong> 

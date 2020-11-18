@@ -1,5 +1,5 @@
 <template>
-  <f7-page page-content ptr @ptr:refresh="fetchAccomodations">
+  <f7-page page-content >
     <f7-navbar title="Accomodation" back-link="Back">
       <f7-nav-right>
         <f7-link class="searchbar-enable" 
@@ -29,7 +29,7 @@
             <tt>{{acc.type}}</tt> Available from {{humanReadableDate(acc.available_from)}}
             <br />
             <span style="font-size:x-small;">
-              <f7-icon icon="fa fa-bell-o fa-fw"></f7-icon>
+              <f7-icon icon="fa fa-bell"></f7-icon>
               Posted by: {{acc.created_by}}, {{str2Moment(acc.created_on).fromNow()}}
               <span v-if="acc.last_modified_on">
                 (modified {{str2Moment(acc.last_modified_on, 'YYYY-MM-DD HH:mm:ss').fromNow()}})
@@ -39,10 +39,10 @@
         </f7-card-header>
 
         <!-- Card content -->
-        <f7-card-content>
+        <f7-card-content v-linkified:options="{class:'external', target:'_system'}">
           <div v-for="(val, key) in acc">
             <span v-if="showKeys.includes(key)">
-              <span style="font-size:70%">{{formatKey(key)}}</span>
+              <span>{{formatKey(key)}}</span>
               <span style="margin-right:2ex;" v-html="$options.filters.phone(val)"></span>
               <br />
             </span>
@@ -52,7 +52,9 @@
         <!-- Card footer -->
         <f7-card-footer style="font-size:small;padding:0px">
           <f7-button small @click="updateAction(acc)" >Update </f7-button>
+          <!--
           <f7-button small :href="'/osm/accomodation/'+acc.id+'/'">Locate</f7-button>
+          -->
           <f7-button small 
                      v-if="isUserAuthenticated()" 
                      @click="addComment(acc)"

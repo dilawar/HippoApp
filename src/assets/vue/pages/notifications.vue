@@ -1,5 +1,5 @@
 <template>
-   <f7-page ptr @ptr:refresh="refreshNotification">
+  <f7-page ptr @ptr:refresh="refreshNotification">
     <f7-navbar title="Notifications" back-link="Back">
     </f7-navbar>
     <span style="font-size:small;float:right;">Swipe left/right to do more.</span>
@@ -8,62 +8,60 @@
       <f7-row>
         <f7-col noGap width="25" v-for="(tag, key) in boards" :key="key">
           <f7-link @click="unsubscribeForum(tag)"
-                                 icon="far fa-bell" 
-                                 v-if="subscriptions.includes(tag)">
+            icon="far fa-bell" 
+            v-if="subscriptions.includes(tag)">
             {{tag}}
           </f7-link>
           <f7-link @click="subscribeForum(tag)"
-                                 icon="far fa-bell-slash" 
-                                 v-else>
+            icon="far fa-bell-slash" 
+            v-else>
             {{tag}}
           </f7-link>
         </f7-col>
       </f7-row>
     </f7-block-header>
 
-    <!-- <f7-block-title>Unread notifications</f7-block-title> -->
-    <f7-block style="background-color:red">
+    <f7-block>
+      <f7-block-title>Unread notifications</f7-block-title>
       <f7-list media-list>
         <f7-list-item v-for="(item, key) in notifications.filter(x=>x.is_read==false)"
-                      :key="'U'+key"
-                      :title="item.title"
-                      :text="item.text"
-                      swipeout
-                      >
-                      <div slot="footer"> Recieved {{toNow(item.created_on)}} ago.</div>
-                      <f7-swipeout-actions left>
-                        <f7-swipeout-button close 
-                                            @click="markNotificationRead(item.id)">
-                          Mark Read
-                        </f7-swipeout-button>
-                      </f7-swipeout-actions>
+          :key="'U'+key"
+          :title="item.title"
+          :text="item.text"
+          swipeout>
+          <div slot="footer"> Recieved {{toNow(item.created_on)}} ago.</div>
+          <f7-swipeout-actions left>
+            <f7-swipeout-button close 
+              @click="markNotificationRead(item.id)">
+              Mark Read
+            </f7-swipeout-button>
+          </f7-swipeout-actions>
         </f7-list-item>
       </f7-list>
     </f7-block>
 
-   <f7-block>
-
-   <f7-block-title medium>Notifications</f7-block-title>
-   <f7-list media-list>
-      <!-- Read items. -->
-      <f7-list-item v-for="(item, key) in notifications.filter(x=>x.is_read==true)"
-               :key="'R'+key"
-               :text="item.text"
-               swipeout
-      >
-         <div slot="footer"> Recieved {{toNow(item.created_on)}} ago.</div>
-         <div slot="title" style="font-color:gray"> {{item.title}} </div>
-         <f7-swipeout-actions left>
+    <f7-block>
+      <f7-block-title>Notifications</f7-block-title>
+      <f7-list media-list>
+        <!-- Read items. -->
+        <f7-list-item v-for="(item, key) in notifications.filter(x=>x.is_read==true)"
+          :key="'R'+key"
+          :text="item.text"
+          swipeout
+        >
+          <div slot="footer"> Recieved {{toNow(item.created_on)}} ago.</div>
+          <div slot="title" style="font-color:gray"> {{item.title}} </div>
+          <f7-swipeout-actions left>
             <f7-swipeout-button close
-               @click="markNotificationUnread(item.id)">
-               Mark Unread
+              @click="markNotificationUnread(item.id)">
+              Mark Unread
             </f7-swipeout-button>
-         </f7-swipeout-actions>
-      </f7-list-item>
-    </f7-list>
+          </f7-swipeout-actions>
+        </f7-list-item>
+      </f7-list>
     </f7-block>
-  </f7-page>
 
+  </f7-page>
 </template>
 
 <script>
@@ -84,7 +82,7 @@ export default {
     self.refreshForum();
   },
   methods: { 
-    refreshNotification: function(e, done) {
+    refreshNotification: function(done) {
       const self = this;
       setTimeout( () => {
         self.fetchNotifications();
