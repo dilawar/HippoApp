@@ -30,8 +30,7 @@
             <vue-dropzone 
               id="photographyclub" 
               ref="photographyDZ"
-              v-on:vdropzone-sending="(img, xhr, formdata) =>
-              onImageSending(img, xhr, formdata, thisEvent.id)"
+              v-on:vdropzone-sending="(img, xhr, formdata) => onImageSending(img, xhr, formdata, thisEvent.id)"
               v-on:vdropzone-success="onUploadSuccess"
               v-on:vdropzone-file-added="onFileAdded"
               v-on:vdropzone-error="onUploadError"
@@ -364,8 +363,10 @@ export default {
         app.dialog.alert(res.data.msg, "Failure");
       }
       else {
-        // probably more than one file.
-        app.dialog.alert("One file at a time. You have to upload again, Sorry!"
+        // probably more than one file. Or some other error.
+        console.log(res);
+        console.log(xhr);
+        app.dialog.alert("Upload failed due to some error (max size 5MB). Please notify the admin. Sorry!"
           , "Error!");
       }
       self.$refs.photographyDZ.removeAllFiles();
