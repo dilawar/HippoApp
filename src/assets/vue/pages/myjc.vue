@@ -1,5 +1,5 @@
 <template>
-   <f7-page page-content ptr @ptr:refresh="refreshJC">
+   <f7-page page-content>
       <f7-navbar title="Journal Clubs" back-link="Back"></f7-navbar>
 
       <!-- List of JCs -->
@@ -69,27 +69,25 @@
           <div slot="title"> {{jc.title}} </div>
 
           <f7-accordion-content>
-            <f7-block inset style="background-color:peachpuff">
+            <f7-block inset>
               <f7-block-header>
                 {{jc.title}}
-
               </f7-block-header>
 
               <div v-html="jc.description"></div>
 
               <f7-block-footer>
-
                 <f7-row no-gap>
-                  <f7-col small="50" width=33 v-if="isPresenterMe(jc.presenter) && jc.acknowledged==='NO'">
-                    <f7-button small @click="acknowledgeJC(jc.id)">Acknowledge</f7-button>
+                  <f7-col small="50" width=25 v-if="isPresenterMe(jc.presenter) && jc.acknowledged==='NO'">
+                    <f7-button @click="acknowledgeJC(jc.id)">Acknowledge</f7-button>
                   </f7-col>
-                  <f7-col small="50" width=33 v-if="amIJCAdmin(jc.jc_id)">
+                  <f7-col small="50" width=25 v-if="amIJCAdmin(jc.jc_id)">
                     <f7-button :href="'/email/jc/'+jc.id" icon="fa fa-email">Email</f7-button>
                   </f7-col>
-                  <f7-col small="50" width=33 v-if="amIJCAdmin(jc.jc_id)">
+                  <f7-col small="50" width=25 v-if="amIJCAdmin(jc.jc_id)">
                     <f7-button color="red" @click="removeJC(jc.id)">Remove</f7-button>
                   </f7-col>
-                  <f7-col small="50" width=33 v-if="isPresenterMe(jc.presenter) || amIJCAdmin(jc.jc_id)">
+                  <f7-col small="50" width=25 v-if="isPresenterMe(jc.presenter) || amIJCAdmin(jc.jc_id)">
                     <f7-button @click="editJC(jc)">Edit</f7-button>
                   </f7-col>
                 </f7-row>
@@ -401,11 +399,6 @@ export default {
           if(! self.subscriptions.hasOwnProperty(jcid))
             self.fetchSubscriptions(jcid);
         });
-    },
-    refreshJC: function(e, done) {
-      const self = this;
-      setTimeout(() => self.fetchJC(), 1000);
-      done();
     },
     isMyJC: function(jc) {
       const self = this;
