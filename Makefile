@@ -50,6 +50,17 @@ apk:
 	    --webpack.mode=production
 	find platforms -name "*.apk" | xargs -I f du -h f
 
+aab: 
+	mkdir -p www
+	cordova build android --release \
+	    -- --keystore=$(KEYSTORE) \
+	    --storePassword=$(KEYSTORE_PASSWORD) \
+	    --alias=dilawar \
+	    --password=$(KEYSTORE_PASSWORD) \
+	    --packageType=bundle \
+	    --webpack.mode=production
+	find platforms -name "*.aab" | xargs -I f du -h f
+
 run:
 	cordova run browser -- --live-reload 
 
