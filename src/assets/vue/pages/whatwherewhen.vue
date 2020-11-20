@@ -70,7 +70,10 @@
         v-for="(item, key) in items" :key="key">
         <div slot="header" v-html="genWhereline(item)"></div>
         <div slot="media">
-          <small> {{humanReadableDate(item.date, false)}} </small>
+          <f7-link icon="far fa-calendar fa-2x" 
+            external target="_system"
+            :href="getAPIUrl()+'/pub/ical/'+item.gid+'/'+(item.eid?item.eid:item.rid)">
+          </f7-link>
         </div>
         <div slot="text" class="text-color-black">
           <strong>{{item.title}}</strong>
@@ -263,7 +266,7 @@ export default {
     genWhereline: function(ev) 
     {
       const self = this;
-      let content =  `<span style="color:green">${ev.venue}</span> `+
+      let content = self.humanReadableDate(ev.date) + `, <span style="color:green">${ev.venue}</span> `+
         `<span style="color:gray;">${ev.class} ${status}</span>`;
 
       let fromNow = self.str2Moment(ev.date + ' ' + ev.start_time
