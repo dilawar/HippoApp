@@ -42,8 +42,11 @@
         <f7-card-content v-linkified:options="{class:'external', target:'_system'}">
           <div v-for="(val, key) in acc">
             <span v-if="showKeys.includes(key)">
-              <span>{{formatKey(key)}}</span>
-              <span style="margin-right:2ex;" v-html="$options.filters.phone(val)"></span>
+              <span style="font-size:x-small; text-color:gray">
+                {{formatKey(key)}}
+              </span>
+              <span style="margin-right:2ex;" v-html="$options.filters.phone(val)">
+              </span>
               <br />
             </span>
           </div>
@@ -91,11 +94,9 @@
           <div v-html="acc.address"> </div>
           <span v-for="(val, key) in acc">
             <span v-if="showKeys.includes(key)">
-              <span style="font-size:70%">{{formatKey(key)}}</span>
-              <!-- filter does not work with v-html. moutache doesn't
-                render html. Hence this hack: see
-                https://github.com/vuejs/vue/issues/4352
-              -->
+              <span style="font:x-small; text-color:gray;">
+                {{formatKey(key)}}
+              </span>
               <span style="margin-right:2ex;" v-html="val"></span>
               <br />
             </span>
@@ -121,7 +122,7 @@
 
   <!-- FAB to create accomodation -->
   <f7-fab v-if="isUserAuthenticated()"
-          position="right-top" 
+          position="right-bottom" 
           slot="fixed" 
           @click="popupOpened=true"
           color="green"

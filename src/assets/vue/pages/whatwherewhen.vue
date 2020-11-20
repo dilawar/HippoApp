@@ -60,7 +60,8 @@
 
   <f7-block>
     <f7-block-header>
-      <f7-link external target="_system" :href="calendarLink" icon="far fa-calendar"> 
+      <f7-link external target="_system" :href="calendarLink" 
+        icon="far fa-calendar-plus"> 
         Google Calendar
       </f7-link>
     </f7-block-header>
@@ -120,13 +121,18 @@ export default {
   },
   mounted: function() {
     const self = this;
+    const app = self.$f7;
     self.initVenuesAndClasses();
+
     // Fetch calendar link.
+    app.preloader.show();
     self.promiseWithAuth('config/calendar_url')
       .then( function(x) {
         self.calendarLink = JSON.parse(x.data).data.value;
+        app.preloader.hide();
       });
     self.fetchEvents();
+    setTimeout(() => app.preloader.hide(), 10000);
   },
   methods: { 
     initVenuesAndClasses: function( ) {

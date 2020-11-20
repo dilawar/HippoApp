@@ -60,29 +60,20 @@
     </f7-page>
   </f7-popup>
 
-  <!-- for readonly photo only -->
-  <f7-photo-browser ref="photobrStandalone" :photos="photosReadonly">
-  </f7-photo-browser>
-
   <!-- This completition -->
-  <template v-if="activeEvent && activeEvent.theme">
+  <f7-block v-if="activeEvent && activeEvent.theme">
 
-    <f7-block-header>
-      <span class="text-color-gray" 
-        v-html="activeEvent.comment" 
-        v-linkified:options="{className: 'external', target: '_system'}"
-      >
-      </span>
-    </f7-block-header>
+    <!-- for readonly photo only -->
+    <f7-photo-browser ref="photobrStandalone" :photos="photosReadonly">
+    </f7-photo-browser>
 
-    <f7-block-title medium>
-      {{activeEvent.theme}}
+    <f7-block-title class="margin text-align-center">
+      <strong> {{activeEvent.theme}} </strong>
     </f7-block-title>
 
-    <f7-block v-html="activeEvent.description" 
-      v-linkified:options="{className: 'external', target: '_system'}"
-    >
-    </f7-block>
+    <div v-html="activeEvent.description" 
+      v-linkified:options="{className: 'external', target: '_system'}">
+    </div>
 
     <!-- Extended FAB Center Bottom (Red) -->
     <f7-fab position="right-top" slot="fixed" 
@@ -99,68 +90,75 @@
       </div>
     </f7-block>
 
-    <template v-if="entries.length > 0">
-    <f7-swiper navigation pagination :params="{keyboard:true}">
-      <f7-swiper-slide v-for="entry, key in entries" :key="key">
-        <f7-card no-shadow>
-          <f7-card-footer v-if="isVotingPhase(activeEvent)">
-            <span v-if="entry.id in thisEventRatings">
-              Avg rating 
-              <strong> {{meanArray(thisEventRatings[entry.id])}} </strong>
-              ({{thisEventRatings[entry.id].length}} votes) 
-            </span>
-            <span v-else></span>
-            <div>
-              <v-star-rating 
-                v-if="entry.login !== whoAmI()"
-                :increment="0.5" 
-                :fixed-points="1"
-                :star-size="30"
-                :rating="(whoAmI() in thisEventRatings)? thisEventRatings[whoAmI()][entry.id]:0"
-                @rating-selected="(rating) => setRating(rating, entry, activeEvent)">
-              </v-star-rating>
-              <v-star-rating v-else :star-size="30" read-only>
-              </v-star-rating>
-            </div>
-          </f7-card-footer>
-          <f7-card-footer v-else> 
-            Voting will start on {{activeEvent.voting_start_date | date2}}. 
-          </f7-card-footer>
-          <f7-card-content :padding="false">
-            <div>
-              <em style="font-size:large" v-html="entry.caption"></em>
+    <f7-block v-if="entries.length > 0">
+      <f7-swiper navigation pagination :params="{keyboard:true}">
+        <f7-swiper-slide v-for="entry, key in entries" :key="key">
+          <f7-card no-shadow>
+            <f7-card-footer v-if="isVotingPhase(activeEvent)">
+              <span v-if="entry.id in thisEventRatings">
+                Avg rating 
+                <strong> {{meanArray(thisEventRatings[entry.id])}} </strong>
+                ({{thisEventRatings[entry.id].length}} votes) 
+              </span>
+              <span v-else></span>
+              <div>
+                <v-star-rating 
+                  v-if="entry.login !== whoAmI()"
+                  :increment="0.5" 
+                  :fixed-points="1"
+                  :star-size="30"
+                  :rating="(whoAmI() in thisEventRatings)? thisEventRatings[whoAmI()][entry.id]:0"
+                  @rating-selected="(rating) => setRating(rating, entry, activeEvent)">
+                </v-star-rating>
+                <v-star-rating v-else :star-size="30" read-only>
+                </v-star-rating>
+              </div>
+            </f7-card-footer>
+            <f7-card-footer v-else> 
+              Voting will start on {{activeEvent.voting_start_date | date2}}. 
+            </f7-card-footer>
+            <f7-card-content :padding="false">
+              <div>
+                <em style="font-size:large" v-html="entry.caption"></em>
 
-              <small v-if="today()>dbDate(activeEvent.judge_voting_end_date)"> 
-                u/{{entry.login}}
-                {{toNow(entry.last_modified_on)}} ago.
-              </small>
-              <small v-else>
-              </small>
+                <small v-if="today()>dbDate(activeEvent.judge_voting_end_date)"> 
+                  u/{{entry.login}}
+                  {{toNow(entry.last_modified_on)}} ago.
+                </small>
+                <small v-else>
+                </small>
 
-              <img v-img:gallary :src="entry.url" 
-                style="display:flex;justify-content:center;align-items:center;margin:auto;width:auto;height:auto;max-width:100%;max-height:600px;"/>
-            </div>
-            <f7-row>
-              <f7-col v-if="isPBAdmin() || entry.login === whoAmI()">
-                <f7-button  
-                  color=red @click="removeEntry(entry, activeEvent)"
-                  :disabled="isVotingPhase(activeEvent) && (! isPBAdmin())">
-                  Remove 
-                </f7-button>
-              </f7-col>
-              <f7-col v-if="entry.login === whoAmI()">
-                <f7-button  
-                  @click="updateMetadata(entry, activeEvent)" 
-                  :disabled="isVotingPhase(activeEvent)">
-                  Change Caption
-                </f7-button>
-              </f7-col>
-            </f7-row>
-          </f7-card-content>
-        </f7-card>
-      </f7-swiper-slide>
-    </f7-swiper>
-    </template>
+                <img v-img:gallary :src="entry.url" 
+                  style="display:flex;justify-content:center;align-items:center;margin:auto;width:auto;height:auto;max-width:100%;max-height:600px;"/>
+              </div>
+              <f7-row>
+                <f7-col v-if="isPBAdmin() || entry.login === whoAmI()">
+                  <f7-button  
+                    color=red @click="removeEntry(entry, activeEvent)"
+                    :disabled="isVotingPhase(activeEvent) && (! isPBAdmin())">
+                    Remove 
+                  </f7-button>
+                </f7-col>
+                <f7-col v-if="entry.login === whoAmI()">
+                  <f7-button  
+                    @click="updateMetadata(entry, activeEvent)" 
+                    :disabled="isVotingPhase(activeEvent)">
+                    Change Caption
+                  </f7-button>
+                </f7-col>
+              </f7-row>
+            </f7-card-content>
+          </f7-card>
+        </f7-swiper-slide>
+      </f7-swiper>
+    </f7-block>
+
+    <f7-block-header>
+      <span class="text-color-gray" 
+        v-html="activeEvent.comment" 
+        v-linkified:options="{className: 'external', target: '_system'}">
+      </span>
+    </f7-block-header>
 
     <f7-block-footer>
       <strong>Last submission date:</strong> 
@@ -170,7 +168,7 @@
       from {{activeEvent.voting_start_date | date}} to {{activeEvent.voting_end_date | date}}
     </f7-block-footer>
 
-  </template>
+  </f7-block>
 
   <!-- Upcoming -->
   <f7-block v-if="Object.keys(upcomingEvents).length > 0" inset>
@@ -227,7 +225,7 @@ export default {
       thisEventRatings: {},
       popupOpened: false,
       popupAction: 'Submit',
-      entries: [],
+      entries: [{}], // put a dummy entry.
       myentries: [],
       photos: [],
       activeEvent: [],
@@ -295,6 +293,12 @@ export default {
       self.postWithPromise('/photographyclub/entry/getall/' + ev.id)
         .then(function(x) {
           self.entries = JSON.parse(x.data).data;
+
+          // Good enough for this.
+          self.entries.sort( () => 0.5 - Math.random() );
+
+          //shuffle(self.entries);
+
           for(let key in self.entries) {
             let entry = self.entries[key];
             if(entry.login == self.whoAmI())
