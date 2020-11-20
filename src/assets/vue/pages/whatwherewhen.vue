@@ -72,7 +72,7 @@
         <div slot="media">
           <f7-link icon="far fa-calendar fa-2x" 
             external target="_system"
-            :href="getAPIUrl()+'/pub/ical/'+item.gid+'/'+(item.eid?item.eid:item.rid)">
+            :href="$store.state.icalurl+'/'+item.gid+'/'+(item.eid?item.eid:item.rid)">
           </f7-link>
         </div>
         <div slot="text" class="text-color-black">
