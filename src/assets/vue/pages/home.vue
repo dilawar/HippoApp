@@ -6,26 +6,10 @@
         <f7-link v-if="isUserAuthenticated()" panel-open="left" 
           icon="fa fa-bars fw">
         </f7-link>
+        <img src="static/logo.png" height="25px" class="float-left">
+          NCBS Hippo
+        </img>
       </f7-nav-left>
-      <f7-nav-title>
-        <div style="vertical-align:bottom">
-          <img src="static/logo.png" height="25px" alt="logo" />
-          <span style="display:inline-block; font-size:30px">Hippo</span>
-          <span style="font-size:small;padding-left:10px">
-            <f7-link no-link-class 
-              v-if="! isMobileApp()"
-              target="_system" external
-              href="https://ncbs.res.in/hippo/v1/welcome">
-              Old Hippo</f7-link>/
-            <f7-link no-link-class v-if="! isMobileApp()"
-              target="_system" external
-              icon="fab fa-android"
-              href="https://play.google.com/store/apps/details?id=com.dilawar.hippo">
-              App
-            </f7-link>
-          </span>
-        </div>
-      </f7-nav-title>
 
       <!-- RIGHT nav -->
       <f7-nav-right>
@@ -123,11 +107,13 @@
     </f7-fab>
 
     <!-- flash cards -->
-    <f7-block style="background:rgba(255,255,255,0.9); margin-top:20%; margin-bottom:10px">
+    <f7-block inset 
+      style="position: absolute; bottom:10%; align:center; margin:auto;
+      background-color:rgba(255,255,255,0.75)">
       <f7-swiper navigation 
         :params="{slidesPerView: 'auto', loop: true, autoplay:{delay:1500, disableOnInteraction:true}}">
         <f7-swiper-slide v-for="(card,key) in flashCards" :key="key">
-          <div style="padding:3% 10% 3% 10%; text-align:center">
+          <div style="padding:1% 10% 1% 10%; text-align:center">
             {{humanReadableDateTime(card.date, card.time)}} | <span v-html="card.venue"></span>
             <div v-html="card.title">
             </div>
