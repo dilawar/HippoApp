@@ -10,7 +10,9 @@ export default new Vuex.Store({
       user: localStorage.getItem('HIPPO-LOGIN'),
       alreadyLoggedIn: false,
       // api : 'https://ncbs.res.in/hippo/v1/api',
+      // icalurl : 'https://ncbs.res.in/hippo/v1/pub/ical/
       api : 'http://172.16.223.30/hippo/v1/api',
+      icalurl : 'http://172.16.223.30/hippo/v1/pub/ical/',
       apikey : localStorage.getItem('HIPPO-API-KEY'),
       apiKeyGMap: '',
       tobook: null,
