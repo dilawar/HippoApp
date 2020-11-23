@@ -61,7 +61,7 @@
   </f7-popup>
 
   <!-- This completition -->
-  <f7-block v-if="activeEvent && activeEvent.theme">
+  <template v-if="activeEvent && activeEvent.theme">
 
     <!-- for readonly photo only -->
     <f7-photo-browser ref="photobrStandalone" :photos="photosReadonly">
@@ -94,7 +94,7 @@
     </f7-block>
 
     <f7-block v-if="entries.length > 0">
-      <f7-swiper navigation pagination :params="{keyboard:true}">
+      <f7-swiper pagination :params="{keyboard:true}">
         <f7-swiper-slide v-for="entry, key in entries" :key="key">
           <f7-card no-shadow>
             <f7-card-footer v-if="isVotingPhase(activeEvent)">
@@ -109,7 +109,7 @@
                   v-if="entry.login !== whoAmI()"
                   :increment="0.5" 
                   :fixed-points="1"
-                  :star-size="30"
+                  :star-size="25"
                   :rating="(whoAmI() in thisEventRatings)? thisEventRatings[whoAmI()][entry.id]:0"
                   @rating-selected="(rating) => setRating(rating, entry, activeEvent)">
                 </v-star-rating>
@@ -122,7 +122,8 @@
             </f7-card-footer>
             <f7-card-content :padding="false">
               <div>
-                <em style="font-size:large" v-html="entry.caption"></em>
+
+                <em class="text-align-center text-color-black" v-html="entry.caption"></em>
 
                 <small v-if="today()>dbDate(activeEvent.judge_voting_end_date)"> 
                   u/{{entry.login}}
@@ -132,24 +133,24 @@
                 </small>
 
                 <img v-img:gallary :src="entry.url" 
-                  style="display:flex;justify-content:center;align-items:center;margin:auto;width:auto;height:auto;max-width:100%;max-height:600px;"/>
+                  style="display:flex;justify-content:center;align-items:center;margin:auto;width:auto;height:auto;max-width:100%;"/>
+                <f7-row>
+                  <f7-col v-if="isPBAdmin() || entry.login === whoAmI()">
+                    <f7-button small
+                      color=red @click="removeEntry(entry, activeEvent)"
+                      :disabled="isVotingPhase(activeEvent) && (! isPBAdmin())">
+                      Remove 
+                    </f7-button>
+                  </f7-col>
+                  <f7-col v-if="entry.login === whoAmI()">
+                    <f7-button small
+                      @click="updateMetadata(entry, activeEvent)" 
+                      :disabled="isVotingPhase(activeEvent)">
+                      Change Caption
+                    </f7-button>
+                  </f7-col>
+                </f7-row>
               </div>
-              <f7-row>
-                <f7-col v-if="isPBAdmin() || entry.login === whoAmI()">
-                  <f7-button  
-                    color=red @click="removeEntry(entry, activeEvent)"
-                    :disabled="isVotingPhase(activeEvent) && (! isPBAdmin())">
-                    Remove 
-                  </f7-button>
-                </f7-col>
-                <f7-col v-if="entry.login === whoAmI()">
-                  <f7-button  
-                    @click="updateMetadata(entry, activeEvent)" 
-                    :disabled="isVotingPhase(activeEvent)">
-                    Change Caption
-                  </f7-button>
-                </f7-col>
-              </f7-row>
             </f7-card-content>
           </f7-card>
         </f7-swiper-slide>
@@ -171,7 +172,7 @@
       from {{activeEvent.voting_start_date | date}} to {{activeEvent.voting_end_date | date}}
     </f7-block-footer>
 
-  </f7-block>
+  </template>
 
   <!-- Upcoming -->
   <f7-block v-if="Object.keys(upcomingEvents).length > 0" inset>

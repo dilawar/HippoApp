@@ -205,12 +205,12 @@ Vue.mixin({
       datetime2Moment: function(timestamp) {
          return moment(timestamp, 'YYYY-MM-DD HH:mm:ss');
       },
-      meanArray: function(arr) {
-         let sum = 0.0;
-         for(let x in arr)
-            sum += x;
-         return sum / arr.length;
-      },
+     meanArray: function(arr) {
+       var s = 0.0;
+       for(const x in arr)
+         s += arr[x];
+       return s / arr.length;
+     },
       toDate: function(dateStr) {
          return moment(dateStr).toDate();
       },
