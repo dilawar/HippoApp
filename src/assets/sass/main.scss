@@ -183,10 +183,10 @@ canvas.chartjs-render-monitor {
 }
 
 .flash-card {
-    display: flex;
     background: rgba(255,255,255,0.5) !important;
-    position: absolute;
-    bottom: 110px;
+    margin-top: 30% !important;
+    position: relative;
+    text-align: center;
     padding: 5px;
     font-size: small;
 }
