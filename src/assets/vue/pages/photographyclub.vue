@@ -67,20 +67,23 @@
     <f7-photo-browser ref="photobrStandalone" :photos="photosReadonly">
     </f7-photo-browser>
 
-    <f7-block-title class="margin text-align-center">
-      <strong> {{activeEvent.theme}} </strong>
-    </f7-block-title>
-
-    <div v-html="activeEvent.description" 
-      v-linkified:options="{className: 'external', target: '_system'}">
-    </div>
-
     <!-- Extended FAB Center Bottom (Red) -->
     <f7-fab position="right-top" slot="fixed" 
       tooltip="Upload your entry"
       @click="uploadMyEntry(activeEvent)">
       <f7-icon icon="fa fa-upload"></f7-icon>
     </f7-fab>
+
+    <f7-block>
+      <f7-block-title class="margin text-align-center">
+        <strong> {{activeEvent.theme}} </strong>
+      </f7-block-title>
+
+      <div v-html="activeEvent.description" 
+        v-linkified:options="{className: 'external', target: '_system'}">
+      </div>
+    </f7-block>
+
 
     <!-- Active event -->
     <f7-block strong v-if="entries.length === 0">
