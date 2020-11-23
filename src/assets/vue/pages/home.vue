@@ -107,20 +107,16 @@
     </f7-fab>
 
     <!-- flash cards -->
-    <f7-block inset 
-      style="position: absolute; bottom:10%; align:center; margin:auto;
-      background-color:rgba(255,255,255,0.75)">
-      <f7-swiper navigation 
+    <div class="flash-card">
+      <f7-swiper pagination 
         :params="{slidesPerView: 'auto', loop: true, autoplay:{delay:1500, disableOnInteraction:true}}">
-        <f7-swiper-slide v-for="(card,key) in flashCards" :key="key">
-          <div style="padding:1% 10% 1% 10%; text-align:center">
-            {{humanReadableDateTime(card.date, card.time)}} | <span v-html="card.venue"></span>
-            <div v-html="card.title">
-            </div>
-          </div>
+        <f7-swiper-slide v-for="(card,key) in flashCards" :key="key" >
+          (in {{toNow(card.date, card.time)}})
+          <strong v-html="card.title"></strong> 
+          <em v-html="card.venue"></em>
         </f7-swiper-slide>
       </f7-swiper>
-    </f7-block>
+    </div>
 
     <!-- LOGIN SCREEN  -->
     <f7-login-screen class="hippo-login-screen">
@@ -160,7 +156,6 @@
         </f7-block-footer>
       </f7-page>
     </f7-login-screen>
-
 
     <!-- footer -->
     <f7-block-footer class="main-footer">

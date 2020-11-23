@@ -1,10 +1,12 @@
 <template>
-  <f7-page ptr @ptr:refresh="refreshNotification">
+  <!-- <f7-page ptr @ptr:refresh="refreshNotification"> -->
+  <f7-page>
     <f7-navbar title="Notifications" back-link="Back">
     </f7-navbar>
-    <span style="font-size:small;float:right;">Swipe left/right to do more.</span>
 
     <f7-block-header>
+      <span class="float-right">Swipe left/right to do more.</span>
+      <br>
       <f7-row>
         <f7-col noGap width="25" v-for="(tag, key) in boards" :key="key">
           <f7-link @click="unsubscribeForum(tag)"
