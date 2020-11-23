@@ -118,7 +118,13 @@
               </div>
             </f7-card-footer>
             <f7-card-footer v-else> 
-              Voting will start on {{activeEvent.voting_start_date | date2}}. 
+              <span v-if="dbDate(activeEvent.voting_end_date) < today()">
+                Voting phase ended on {{activeEvent.voting_end_date | date2 }}
+                (started {{activeEvent.voting_start_date | date2}}).
+              </span>
+              <span v-else>
+                Voting starts on {{activeEvent.voting_start_date | date2}}.
+              </span>
             </f7-card-footer>
             <f7-card-content :padding="false">
               <div>
@@ -471,10 +477,9 @@ export default {
       const self = this;
       // console.log('voting period', ev.voting_start_date, ev.voting_end_date);
       let res = false;
-      if( self.today() >= self.dbDate(ev.voting_start_date) && 
-        self.today() <= self.dbDate(ev.voting_end_date))
+      if( self.today() >= self.dbDate(ev.voting_start_date) && self.today() <= self.dbDate(ev.voting_end_date))
         res = true;
-      // console.log('res', res);
+      console.log('res', res);
       return res;
     },
     showReadonlyPics: function(ev) {
