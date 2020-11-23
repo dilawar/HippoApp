@@ -171,14 +171,16 @@ Vue.mixin({
       },
       toNow: function(date, time){
          let b = moment(date + ' ' + time, 'YYYY-MM-DD HH:mm:ss');
-         let a = moment();
-         return b.toNow(a, true);
+         return b.toNow(true);
       },
       toNowDatetime: function(datetime){
          let b = moment(datetime, 'YYYY-MM-DD HH:mm:ss');
-         let a = moment();
-         return b.toNow(a, true);
+         return b.toNow(true);
       },
+     wrtNow: function(date, time) {
+         let b = moment(date + ' ' + time, 'YYYY-MM-DD HH:mm:ss');
+         return b.from(moment());
+     },
       dbTime: function(date, addminutes=0) {
          return moment(date, "HH:mm").add(addminutes, 'm').format("HH:mm");
       },
