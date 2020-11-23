@@ -1,7 +1,5 @@
 <template>
-  <f7-page page-content 
-    ptr @ptr:refresh="refreshFetchEvents"
-    @page:beforein="pageBeforeIn"
+  <f7-page page-content @page:beforein="pageBeforeIn"
     @page:afterin="pageAfterIn"
     infinite
     :infinite-preloader="showPreloader" 
@@ -265,19 +263,14 @@ export default {
         ' to ' + moment(ev.end_time, 'HH:mm:ss').format('h:mm A')
       return whereWhere;
     },
-    fromNow: function(ev) {
-      const self = this;
-      return self.str2Moment(ev.date + ' ' + ev.start_time, 'YYYY-MM-DD HH:mm:ss').fromNow();
-    },
     genWhereline: function(ev) 
     {
       const self = this;
       let content = self.humanReadableDate(ev.date) + `, <span style="color:green">${ev.venue}</span> `+
         `<span style="color:gray;">${ev.class} ${status}</span>`;
 
-      let fromNow = self.str2Moment(ev.date + ' ' + ev.start_time
-        , 'YYYY-MM-DD HH:mm:ss').fromNow();
-      content = '<span style="float:right;padding-right:3%"> '+fromNow+'</span>' + content;
+      content = '<span style="float:right;padding-right:3%">' + 
+        self.wrtNow(ev.date, ev.start_Time)+'</span>' + content;
       return content;
     },
   },
