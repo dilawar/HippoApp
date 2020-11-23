@@ -117,7 +117,7 @@
                 </v-star-rating>
               </div>
             </f7-card-footer>
-            <f7-card-footer v-else> 
+            <f7-card-footer v-else style="font-size:x-small"> 
               <span v-if="dbDate(activeEvent.voting_end_date) < today()">
                 Voting phase ended on {{activeEvent.voting_end_date | date2 }}
                 (started {{activeEvent.voting_start_date | date2}}).
