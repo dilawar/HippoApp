@@ -111,7 +111,7 @@
       <f7-swiper pagination 
         :params="{slidesPerView: 'auto', loop: true, autoplay:{delay:1500, disableOnInteraction:true}}">
         <f7-swiper-slide v-for="(card,key) in flashCards" :key="key" >
-          (in {{toNow(card.date, card.time)}})
+          ({{wrtNow(card.date, card.time)}})
           <strong v-html="card.title"></strong> 
           <em v-html="card.venue"></em>
         </f7-swiper-slide>
