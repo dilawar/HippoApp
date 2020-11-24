@@ -13,6 +13,12 @@
           :disable-button="!$theme.aurora">
         </f7-searchbar>
       </f7-subnavbar>
+      <f7-nav-right>
+        <f7-link external target="_system" :href="calendarLink" class="float-right" 
+          icon="far fa-calendar-plus"> 
+          Calendar
+        </f7-link>
+      </f7-nav-right>
     </f7-navbar>
 
   <!-- Filter by venue should be a floating button. -->
@@ -58,10 +64,6 @@
 
   <f7-block>
     <f7-block-header>
-      <f7-link external target="_system" :href="calendarLink" 
-        icon="far fa-calendar-plus"> 
-        Google Calendar
-      </f7-link>
     </f7-block-header>
 
     <f7-list accordion-list media-list no-hairlines class="search-list">
@@ -270,7 +272,7 @@ export default {
         `<span style="color:gray;">${ev.class} ${status}</span>`;
 
       content = '<span style="float:right;padding-right:3%">' + 
-        self.wrtNow(ev.date, ev.start_Time)+'</span>' + content;
+        self.wrtNow(ev.date, ev.start_time)+'</span>' + content;
       return content;
     },
   },
