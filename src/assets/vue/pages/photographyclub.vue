@@ -60,12 +60,13 @@
     </f7-page>
   </f7-popup>
 
+  <!-- for readonly photo only -->
+  <f7-photo-browser ref="photobrStandalone" :photos="photosReadonly">
+  </f7-photo-browser>
+
+
   <!-- This completition -->
   <template v-if="activeEvent && activeEvent.theme">
-
-    <!-- for readonly photo only -->
-    <f7-photo-browser ref="photobrStandalone" :photos="photosReadonly">
-    </f7-photo-browser>
 
     <!-- Extended FAB Center Bottom (Red) -->
     <f7-fab position="right-top" slot="fixed" 
@@ -195,7 +196,7 @@
     </f7-list>
   </f7-block>
 
-  <f7-block inset v-if="Object.keys(completedEvents).length > 0">
+  <f7-block  v-if="Object.keys(completedEvents).length > 0">
     <f7-block-title>
       Finished competitions
     </f7-block-title>
@@ -213,7 +214,6 @@
       <f7-list-item></f7-list-item>
     </f7-list>
   </f7-block>
-
 
 </f7-page>
 </template>
@@ -501,7 +501,7 @@ export default {
                 const r = (entry.id in self.ratingsReadonly) ? self.ratingsReadonly[entry.id]:null;
                 let cap = entry.caption + ", by " + entry.login;
                 if(r) 
-                  cap += ", " + meanArray(r) + "★ ("+ r.length + " votes)";
+                  cap += ", " + self.meanArray(r) + "★ ("+ r.length + " votes)";
 
                 // console.log('xxx', cap, entry.url);
                 self.photosReadonly.push({url: entry.url, src: entry.url,
