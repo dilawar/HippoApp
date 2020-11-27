@@ -94,7 +94,7 @@
     </f7-block>
 
     <f7-block v-if="entries.length > 0">
-      <f7-swiper pagination :params="{keyboard:true}">
+      <f7-swiper pagination :navigation="! isMobileApp()" :params="{keyboard:true}">
         <f7-swiper-slide v-for="entry, key in entries" :key="key">
           <f7-card no-shadow>
             <f7-card-footer v-if="isVotingPhase(activeEvent)">
@@ -138,7 +138,8 @@
                 <small v-else>
                 </small>
 
-                <img v-img:gallary :src="entry.url" 
+                <img v-img="{group:'gallary', title:entry.caption}"
+                  :src=entry.url
                   style="display:flex;justify-content:center;align-items:center;margin:auto;width:auto;height:auto;max-width:100%;"/>
                 <f7-row>
                   <f7-col v-if="isPBAdmin() || entry.login === whoAmI()">
@@ -174,8 +175,7 @@
       <strong>Last submission date:</strong> 
       {{activeEvent.end_date | date2}}
       <br>
-      Voting starts in {{toNow(activeEvent.voting_start_date)}},
-      from {{activeEvent.voting_start_date | date}} to {{activeEvent.voting_end_date | date}}
+      Voting phase: From {{activeEvent.voting_start_date | date}} to {{activeEvent.voting_end_date | date}}
     </f7-block-footer>
 
   </template>
@@ -241,7 +241,7 @@ export default {
       activeEvent: [],
       upcomingEvents: [],
       completedEvents: [],
-      thisEntry : {comment:'', caption:'', note:''},
+      thisEntry : {comment:'', caption:'', note:'', title:''},
       dropzoneOptions: {
         url: self.$store.state.api + '/upload/image/photographyclub',
         maxFilesize: 10,  // MB
@@ -306,8 +306,6 @@ export default {
 
           // Good enough for this.
           self.entries.sort( () => 0.5 - Math.random() );
-
-          //shuffle(self.entries);
 
           for(let key in self.entries) {
             let entry = self.entries[key];
@@ -505,7 +503,7 @@ export default {
 
                 // console.log('xxx', cap, entry.url);
                 self.photosReadonly.push({url: entry.url, src: entry.url,
-                  caption: cap});
+                  caption: cap, title: cap});
               }
               // open the photobrowser
               self.$refs.photobrStandalone.open();
