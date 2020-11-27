@@ -399,11 +399,13 @@ export default {
           let res = JSON.parse(x.data).data;
           if('id' in res)
           {
+            self.notify("Success!", "Successfully saved your talk.", 3000);
             self.thisEvent.isRegistered = true;
             self.thisEvent.id = res.id;
           }
-          else
-            navigator.notification.alert('I could not register your talk!', null);
+          else {
+            self.notify("Failed to save your talk!", res.msg, 5000);
+          }
           app.dialog.close();
         });
       setTimeout(() => app.dialog.close(), 500);
