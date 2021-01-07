@@ -27,7 +27,10 @@
       </f7-nav-right>
     </f7-navbar>
 
-    <f7-row class="justify-center">
+    <f7-row no-gap 
+            no-margin
+            class="justify-center" 
+            style="padding:0px;background:white">
       <f7-col>
         <f7-button href="/info/talks" label="Talks">Talks</f7-button>
       </f7-col>
