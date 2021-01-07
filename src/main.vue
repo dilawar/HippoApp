@@ -15,6 +15,13 @@
         <f7-link text="Back" icon="fa fa-step-backward fa-2x" back>
         </f7-link>
 
+        <f7-link external 
+          icon="fab fa-readme"
+          external target="_system"
+          href="https://dilawar.github.io/HippoApp/">
+          Docs
+        </f7-link>
+
         <f7-link v-if="isUserAuthenticated()" text="People"
           href="/search/" icon="fa fa-search fa-fw">
         </f7-link>

@@ -1,6 +1,6 @@
 <template>
   <f7-page infinite @infinite="loadMore">
-    <f7-navbar title="Confirmed Bookings..." back-link="Back">
+    <f7-navbar title="Confirmed Bookings" back-link="Back">
       <f7-subnavbar :inner="false">
         <f7-searchbar
           search-container=".event-list"
@@ -10,6 +10,35 @@
     </f7-navbar>
 
     <f7-block>
+
+      <f7-block-header>
+        <f7-list no-hairlines media-list>
+          <f7-list-input :input="false">
+            <v-autocomplete slot="input"
+                            ref="refEventSpeaker"
+                            input-class="form-control"
+                            placeholder="Search for old bookings..."
+                            results-property="gid"
+                            :results-display="(res) => res.date + ', ' + res.title"
+                            :request-headers="apiPostData()"
+                            method="post"
+                            @selected="onEventSelected"
+                            @results="foundEvents"
+                            :source="(q)=>searchEventURI(q)">
+            </v-autocomplete>
+          </f7-list-input>
+          <template v-if="oldEvent !== null && oldEvent.gid">
+            <f7-list-item :title="oldEvent.title"
+                    :footer="'gid=' + oldEvent.gid + ', eid=' + oldEvent.eid"
+                    :header="oldEvent.date + ', start time: ' + oldEvent.start_time + ', ' + oldEvent.venue">
+              <f7-link slot="after" @click="deleteEvent(oldEvent, 'INVALID')">
+                Delete
+              </f7-link>
+            </f7-list-item>
+          </template>
+        </f7-list>
+      </f7-block-header>
+
       <f7-list media-list accordion-list class="event-list">
         <f7-list-item v-for="(event, key) in events" :key="key"
           accordion-item
@@ -148,6 +177,7 @@
       return {
         eventsGrouped: [],
         events: [],
+        oldEvent: {gid: '', eid:'', title:''},
         thisEvent: [],
         theseEvents: [],
         eventPopup: false,
@@ -196,7 +226,7 @@
             var moreE = JSON.parse(x.data).data;
             if(moreE.length == 0) {
               self.allowInfinite = false;
-              self.notfify("Notice", "No new data returned from server");
+              app.toast.create({ text: "No new data returned from server"}).open();
             }
             else {
               for(var o in moreE)
@@ -246,11 +276,13 @@
           });
         setTimeout(()=>app.preloader.hide(), 1000);
       },
-      deleteEvent: function(event) 
+      deleteEvent: function(event, st='CANCELLED') 
       {
         const self = this;
+        const app = self.$f7;
+
         console.log('Deleting event: ', event);
-        event['status'] = 'CANCELLED';
+        event['status'] = st;
         self.updateEvent(event);
       },
       fetchRoles: function() {
@@ -274,6 +306,14 @@
                 self.fetchUpcomingEvents();
               });
           }, '');
+      },
+      foundEvents: function() {
+        console.log("Found events.");
+      },
+      onEventSelected: function(ev) {
+        const self = this;
+        self.oldEvent = ev.selectedObject;
+        console.log("Selected event", self.oldEvent);
       },
     },
   }

@@ -160,13 +160,6 @@
     <!-- footer -->
     <f7-block-footer class="main-footer">
       <!-- top row -->
-      <f7-link external 
-        icon="fab fa-readme"
-        class="col-30 medium-25"
-        external target="_system"
-        href="https://dilawar.github.io/HippoApp/">
-        Docs
-      </f7-link> |
       <f7-link external target="_system"
         icon="fab fa-github fa-fw"
         class="col-30 medium-25"
