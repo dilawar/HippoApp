@@ -1,5 +1,5 @@
 <template>
-  <f7-page page-content ptr @ptr:refresh="fetchData">
+  <f7-page page-content>
     <f7-navbar :title="title" back-link="Back">
     </f7-navbar>
 
@@ -101,9 +101,11 @@
 
   <!-- Courses -->
   <f7-block v-if="what === 'courses'">
-    <f7-block-title>
+
+    <f7-block-header>
       Click on a course to see registrations and more details.
-    </f7-block-title>
+    </f7-block-header>
+
     <f7-list accordion-list media-list no-hairlines>
       <f7-list-item v-for="course, key in courses" 
         :title="course.name"
