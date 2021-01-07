@@ -73,6 +73,13 @@
         <div slot="text" v-html="pcTheme"></div>
       </f7-list-item>
 
+      <f7-list-item link="/info/courses/" 
+        title="Running courses" 
+        panel-close>
+        <f7-icon slot="media" icon="fa fa-book-open fa-2x"></f7-icon>
+        <div slot="text" v-html="pcTheme"></div>
+      </f7-list-item>
+
     </f7-list>
 
     <f7-row v-if="! isUserAuthenticated()" class="pull-right">
