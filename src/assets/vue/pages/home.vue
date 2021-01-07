@@ -27,6 +27,25 @@
       </f7-nav-right>
     </f7-navbar>
 
+    <f7-row class="justify-center">
+      <f7-col>
+        <f7-button href="/info/talks" label="Talks">Talks</f7-button>
+      </f7-col>
+      <f7-col>
+        <f7-button href="/info/upcomingawses" label="Upcoming AWS">AWS</f7-button>
+      </f7-col>
+      <f7-col>
+        <f7-button href="/info/jcs" label="JC">JC</f7-button>
+      </f7-col>
+      <f7-col>
+        <f7-button href="/info/courses" label="Courses">Courses</f7-button>
+      </f7-col>
+      <f7-col>
+        <f7-button href="/info/statistics" label="Statistics">Statistics</f7-button>
+      </f7-col>
+    </f7-row>
+
+
     <f7-list style="min-width:300px; width:50%; margin-right:5px; margin-top:5px;" 
       class="display-flex">
       <f7-list-item v-if="isUserAuthenticated()"
@@ -73,13 +92,6 @@
         <div slot="text" v-html="pcTheme"></div>
       </f7-list-item>
 
-      <f7-list-item link="/info/courses/" 
-        title="Running courses" 
-        panel-close>
-        <f7-icon slot="media" icon="fa fa-book-open fa-2x"></f7-icon>
-        <div slot="text" v-html="pcTheme"></div>
-      </f7-list-item>
-
     </f7-list>
 
     <f7-row v-if="! isUserAuthenticated()" class="pull-right">
@@ -97,21 +109,6 @@
         </f7-button>
       </f7-col>
     </f7-row>
-
-    <!-- FAB Right Bottom (Orange) -->
-    <f7-fab position="right-bottom" slot="fixed" v-if="isUserAuthenticated()">
-      <f7-icon icon="fa fa-info fa-2x" 
-        tooltip="See AWS, JC, Courses and other public info">
-      </f7-icon>
-      <f7-icon ios="f7:xmark" aurora="f7:xmark" md="material:close"></f7-icon>
-      <f7-fab-buttons position="top">
-        <f7-fab-button href="/info/talks" label="Talks">1</f7-fab-button>
-        <f7-fab-button href="/info/upcomingawses" label="Upcoming AWS">2</f7-fab-button>
-        <f7-fab-button href="/info/jcs" label="JC">3</f7-fab-button>
-        <f7-fab-button href="/info/courses" label="Courses">4</f7-fab-button>
-        <f7-fab-button href="/info/statistics" label="Statistics">5</f7-fab-button>
-      </f7-fab-buttons>
-    </f7-fab>
 
     <!-- flash cards -->
     <div class="flash-card">
