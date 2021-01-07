@@ -435,6 +435,10 @@ Vue.mixin({
          q = q.split('@')[0];
          return self.getAPIUrl() + '/search/'+what+'/'+encodeURIComponent(q);
       },
+      searchEventURI: function(q) {
+         const self = this;
+         return self.getAPIUrl() + '/search/event/'+q;
+      },
       fetchNotifications: function() {
          const self = this;
          if(! self.isUserAuthenticated())
