@@ -1,5 +1,5 @@
 <template>
-  <f7-page page-content ptr @ptr:refresh="fetchProfile">
+  <f7-page>
     <f7-navbar title="Profile" back-link="Back"></f7-navbar>
 
     <f7-block inset>
@@ -7,9 +7,6 @@
         <div v-if="profile.eligible_for_aws==='NO'">
           This profile is not <tt>ELIGIBLE FOR AWS</tt>. If this is a mistake, please
           write to Academic office.
-        </div>
-        <div>
-          <img data-src="thisProfile.photo" class="lazy">
         </div>
       </f7-block-header>
       <f7-row>
@@ -121,13 +118,16 @@ export default {
       app.preloader.show();
 
       // Bug. Hack
-      if(self.login && (self.login === 'undefined' || self.login === 'null'))
+      if((! self.login) && (self.login === 'undefined' || self.login === 'null'))
         self.login = self.whoAmI();
+
+    console.log("Profile is set to ", self.login);
 
       let endpoint = '';
 
       if(self.login) {
         endpoint = self.isAdmin ? '/people/profile/get/'+self.login:'/me/profile';
+        console.log('endpoint is set to ', endpoint);
         self.postWithPromise(endpoint).then(function(x) {
             self.profile = JSON.parse(x.data).data;
           });
@@ -137,11 +137,13 @@ export default {
         return;
       }
 
+      // Get the roles of this profile.
       endpoint = '/people/profile/roles/'+self.login;
       self.postWithPromise(endpoint).then(function(x) {
         self.roles = JSON.parse(x.data).data;
       });
 
+      // get the list of fields which can be edited by the user or admin.
       endpoint = self.isAdmin ? '/people/profile/editables':'/me/profile/editables';
       self.postWithPromise(endpoint).then(function(x) {
           self.editables = JSON.parse(x.data).data;
@@ -152,8 +154,10 @@ export default {
     fetchImage: function() {
       const self = this;
       const app = self.$f7;
-      if(! self.login)
+      if(! self.login) {
+      console.log("No profile set.");
         return;
+        }
 
       self.$refs.profilePic.removeAllFiles();
       app.preloader.show();
@@ -179,8 +183,9 @@ export default {
       // login is the profile for which we are changing picture. Only admin is
       // allowed to do that. API won't allow if you don't have admin
       // privileges.
-      self.dropzoneOptions.headers.login = self.profile.login;
+      console.log("Uploading files for ", self.login);
 
+      self.dropzoneOptions.headers.login = self.login;
       self.$refs.profilePic.processQueue();
     },
     updateProfile: function() {
@@ -189,6 +194,7 @@ export default {
 
       // I can update my profile. Only admin can update other profiles.
       let endpoint = self.isAdmin ? '/admin/logins/update' : '/me/profile/update';
+      console.log('Upload endpoint ', endpoint);
 
       self.profile.roles = self.roles.roles.join(',');
       self.promiseWithAuth(endpoint, self.profile)
