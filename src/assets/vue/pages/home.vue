@@ -27,10 +27,7 @@
       </f7-nav-right>
     </f7-navbar>
 
-    <f7-row no-gap 
-            no-margin
-            class="justify-center" 
-            style="padding:0px;background:white">
+    <f7-row no-gap no-margin>
       <f7-col>
         <f7-button href="/info/talks" label="Talks">Talks</f7-button>
       </f7-col>
@@ -87,6 +84,7 @@
         <div slot="text" v-html="upcomingTrips"></div>
       </f7-list-item>
 
+<!--
       <f7-list-item link="/photographyclub/" 
         title="Photography Competition" 
         v-if="isUserAuthenticated()"
@@ -94,6 +92,7 @@
         <f7-icon slot="media" icon="fa fa-camera fa-2x"></f7-icon>
         <div slot="text" v-html="pcTheme"></div>
       </f7-list-item>
+-->
 
     </f7-list>
 
