@@ -27,27 +27,26 @@
       </f7-nav-right>
     </f7-navbar>
 
-    <f7-row no-gap no-margin>
+    <f7-row no-gap style="margin-top:5px; text-align:center;">
       <f7-col>
-        <f7-button href="/info/talks" label="Talks">Talks</f7-button>
+        <f7-link href="/info/talks" label="Talks">Talks</f7-link>
       </f7-col>
       <f7-col>
-        <f7-button href="/info/upcomingawses" label="Upcoming AWS">AWS</f7-button>
+        <f7-link href="/info/upcomingawses" label="Upcoming AWS">AWS</f7-link>
       </f7-col>
       <f7-col>
-        <f7-button href="/info/jcs" label="JC">JC</f7-button>
+        <f7-link href="/info/jcs" label="JC">JC</f7-link>
       </f7-col>
       <f7-col>
-        <f7-button href="/info/courses" label="Courses">Courses</f7-button>
+        <f7-link href="/info/courses" label="Courses">Courses</f7-link>
       </f7-col>
       <f7-col>
-        <f7-button href="/info/statistics" label="Statistics">Statistics</f7-button>
+        <f7-link href="/info/statistics" label="Statistics">Statistics</f7-link>
       </f7-col>
     </f7-row>
 
 
-    <f7-list style="min-width:300px; width:50%; margin-right:5px; margin-top:5px;" 
-      class="display-flex">
+    <f7-list no-hairlines style="width:50%; margin-left:50%">
       <f7-list-item v-if="isUserAuthenticated()"
         link="/smartbook/" 
         title="Booking" 
@@ -114,7 +113,7 @@
 
     <!-- flash cards -->
     <div class="flash-card">
-      <f7-swiper pagination 
+      <f7-swiper pagination navigation
         :params="{slidesPerView: 'auto', loop: true, autoplay:{delay:1500, disableOnInteraction:true}}">
         <f7-swiper-slide v-for="(card,key) in flashCards" :key="key" >
           ({{wrtNow(card.date, card.time)}})

@@ -64,6 +64,8 @@
         <f7-accordion-content>
           <div v-html="aws.abstract"></div>
         </f7-accordion-content>
+        <div slot="media">
+        </div>
       </f7-list-item>
     </f7-list>
   </f7-block>
