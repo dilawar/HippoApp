@@ -88,18 +88,28 @@
       </f7-list>
 
       <div v-if="parseInt(thisAWS.id) > 0">
-        <f7-row class="bg-color-yellow margin-vertical">
-          <f7-col col-100 v-html="thisAWS.html"></f7-col>
+        <f7-row class="margin-vertical">
+          <div v-html="thisAWS.html"></div>
         </f7-row>
         <f7-row>
           <f7-col col-50 medium-50>
-            <f7-button raised fill color=red 
+            <f7-button color=red 
                        v-if="thisAWS.status!=='DELETED'" 
                        @click="deleteThisAWS(thisAWS.id)">
               Delete
             </f7-button>
-            <f7-button raised fill color=red v-else @click="deleteThisAWS(thisAWS.id)">
+            <!--
+            <f7-button fill color=red v-else @click="deleteThisAWS(thisAWS.id)">
               Delete
+            </f7-button>
+            -->
+          </f7-col>
+          <f7-col>
+            <f7-button external 
+                     target="_system"
+                     icon="fas fa-file-download"
+                     :href="$store.state.api + '/download/aws/' + thisAWS.date + '/' + thisAWS.speaker">
+                     PDF
             </f7-button>
           </f7-col>
           <f7-col col-50 medium-50>
