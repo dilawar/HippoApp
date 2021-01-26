@@ -8,8 +8,6 @@ Vue.component('vue-dropzone', Dropzone);
 
 // Vue charts.
 import Chartkick from 'vue-chartkick';
-//import Chart from 'chart.js'
-//Vue.use(Chartkick.use(Chart));
 import Highcharts from 'highcharts';
 Vue.use(Chartkick.use(Highcharts))
 
@@ -92,11 +90,14 @@ import store from './assets/vuex/storage.js'
 
 // Local file-storage
 import VueLocalStorage from 'vue-localstorage';
+Vue.use(VueLocalStorage)
 
 // Different F7-Vue plugin initialization with f7 v3.0
 Framework7.use(Framework7Vue)
 
-Vue.use(VueLocalStorage)
+// Vue screen size.
+import VueScreenSize from 'vue-screen-size';
+Vue.use(VueScreenSize);
 
 // Papa
 import Papa from 'papaparse';

@@ -1,6 +1,5 @@
 <template>
-  <f7-page ptr ptr:refresh="refreshPage">
-
+  <f7-page>
     <f7-navbar title="Upcoming AWS" back-link="Back">
     </f7-navbar>
 
