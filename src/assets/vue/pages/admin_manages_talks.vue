@@ -8,23 +8,43 @@
       </f7-subnavbar>
     </f7-navbar>
 
+    <f7-block>
+      <f7-list no-hairlines>
+        <f7-list-input :input="false">
+          <v-autocomplete  ref="refSearchOldTalks"
+                           slot="input"
+                           placeholder="Search old talks..."
+                           results-property="id"
+                           results-display="title"
+                           @selected="onTalkSelected"
+                           :request-headers="apiPostData()"
+                           :source="(q)=>searchPeopleURI(q, 'talks')"
+                           method="post">
+          </v-autocomplete>
+        </f7-list-input>
+      </f7-list>
+
+      <f7-card v-if="selectedTalk !== null">
+        <f7-card-header>
+          {{selectedTalk.title}} by {{selectedTalk.speaker}}
+          <div> 
+            <f7-button icon="fa fa-trash" @click="selectedTalk=null"></f7-button>
+          </div>
+        </f7-card-header>
+        <f7-card-content>
+          <f7-button external 
+                     target="_system"
+                     raised
+                     :href="$store.state.api + '/download/talk/' + selectedTalk.date + '/' + selectedTalk.id">
+            PDF
+          </f7-button>
+          <div v-html="selectedTalk.description">
+          </div>
+        </f7-card-content>
+      </f7-card>
+    </f7-block>
 
     <f7-list media-list class="event-list" no-hairlines>
-
-      <f7-list-input :input="false" label="Not implemented fully">
-        <!-- FIXME -->
-        <v-autocomplete  ref="refSearchOldTalks"
-          slot="input"
-          input-class="item-input"
-          placeholder="Search old talk..."
-          results-property="id"
-          results-display="title"
-          :request-headers="apiPostData()"
-          :source="(q)=>searchPeopleURI(q, 'talks')">
-          method="post">
-        </v-autocomplete>
-      </f7-list-input>
-
       <f7-list-item v-for="(talk, key) in talks" @click="updateTalkPopup(talk)" :key="key">
         <div slot="title" style="font-size:small">
           {{talk.class}} by {{talk.speaker}}
@@ -187,6 +207,7 @@ export default {
       thisTalk: {class:'UNKNOWN'},
       thisEvent: {},
       popupTalkEdit: false,
+      selectedTalk: null,
     };
   },
   mounted()
@@ -271,6 +292,10 @@ export default {
             self.fetchTalks();
           });
       });
+    },
+    onTalkSelected: function(res) {
+      const self = this;
+      self.selectedTalk = res.selectedObject;
     },
   },
 }
