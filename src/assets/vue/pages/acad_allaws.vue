@@ -1,5 +1,5 @@
 <template>
-  <f7-page ptr ptr:refresh="refreshPage">
+  <f7-page>
 
     <f7-navbar title="Annual Work Seminars" back-link="Back">
     </f7-navbar>
@@ -70,9 +70,6 @@
 
     <!-- Main page -->
     <f7-block>
-      <f7-block-title>
-        Annual Work Seminar
-      </f7-block-title>
       <f7-list no-hairlines>
         <f7-list-input :input="false">
           <v-autocomplete ref="refAWS" slot="input"
@@ -114,7 +111,7 @@
 
     <!-- Roster -->
     <f7-block style="margin-top:20vh">
-      <f7-block-title> AWS Roster </f7-block-title>
+      <f7-block-title medium> AWS Roster </f7-block-title>
       <f7-button raised href="/acadadmin/awsroster/">
         Open Roster
       </f7-button>
