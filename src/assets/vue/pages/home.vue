@@ -11,6 +11,19 @@
         </img>
       </f7-nav-left>
 
+      <!-- when not a mobile app, create a tabber -->
+      <f7-nav-title v-if="$vssWidth >= 750"
+                    style="font-size:medium"
+                    >
+        <f7-row>
+          <f7-link href="/info/talks">Talks</f7-link>
+          <f7-link href="/info/upcomingawses">AWS</f7-link>
+          <f7-link href="/info/jcs">JC</f7-link>
+          <f7-link href="/info/courses">Courses</f7-link>
+          <f7-link href="/info/statistics">Statistics</f7-link>
+        </f7-row>
+      </f7-nav-title>
+
       <!-- RIGHT nav -->
       <f7-nav-right>
         <f7-link v-if="isUserAuthenticated()"
@@ -27,7 +40,7 @@
       </f7-nav-right>
     </f7-navbar>
 
-    <f7-toolbar top tabber>
+    <f7-toolbar top tabber v-if="$vssWidth < 750">
       <f7-link href="/info/talks" label="Talks">Talks</f7-link>
       <f7-link href="/info/upcomingawses" label="Upcoming AWS">AWS</f7-link>
       <f7-link href="/info/jcs" label="JC">JC</f7-link>

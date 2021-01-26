@@ -1,5 +1,5 @@
 <template>
-  <f7-page page-content>
+  <f7-page>
     <f7-navbar :title="title" back-link="Back">
     </f7-navbar>
 
@@ -16,7 +16,7 @@
             {{talk.date}} | {{talk.start_time}} | {{talk.venue}}
             <template v-if="talk.vc_url">
               <f7-link external target="_system" :url="talk.vc_url">
-                <f7-icon icon="fa fa-video fa-2x"></f7-icon>
+                <f7-icon icon="fa fa-video"></f7-icon>
                 Click to join 
               </f7-link>
               <span v-if="talk.vc_extra"> ({{talk.vc_extra}})</span>
@@ -30,6 +30,16 @@
                 {{talk.vc_url}}
               </f7-link>
               <div v-html="talk.description"></div>
+
+              <div>
+                <f7-link external
+                         _system
+                         text="Download PDF"
+                         target="_system"
+                         icon="fa fa-download"
+                         :href="$store.state.api+'/download/talk/'+talk.date+'/'+talk.id">
+                </f7-link>
+              </div>
             </f7-block>
           </f7-accordion-content>
       </f7-list-item>
@@ -40,7 +50,7 @@
   <f7-block v-if="what === 'upcomingawses'">
     <f7-list v-for="awss, date in awses" :key="date" accordion-list media-list>
       <f7-list-item group-title :title="humanReadableDateTime(date,awss[0].time) 
-        + ' | ' + awss[0].venue">
+                                         + ' | ' + awss[0].venue">
       </f7-list-item>
 
       <f7-list-item v-if="awss[0].vc_url || awss[0].chair">
@@ -55,19 +65,29 @@
       </f7-list-item>
 
       <f7-list-item v-for="aws, key in awss" :key="key" 
-        :text='aws.title'
-        :header="aws.supervisor_1"
-        :footer="aws.is_presynopsis_seminar==='YES'?'Presynopsis':''"
-        :after="aws.acknowledged === 'YES'?'':'Not acknowledged'"
-        accordion-item 
-        :title="aws.by">
+                    :text="(aws.title && aws.title.length > 5) ? aws.title : 'Not yet disclosed.'"
+                    :header="aws.supervisor_1"
+                    :footer="aws.is_presynopsis_seminar==='YES'?'Presynopsis':''"
+                    :after="aws.acknowledged === 'YES'?'':'Not acknowledged'"
+                    accordion-item 
+                    :title="aws.by">
         <f7-accordion-content>
           <div v-html="aws.abstract"></div>
+          <div>
+            <f7-link external
+                     _system
+                     text="Download PDF"
+                     target="_system"
+                     icon="fa fa-download"
+                     :href="$store.state.api+'/download/aws/'+aws.date+'/'+aws.speaker">
+            </f7-link>
+          </div>
         </f7-accordion-content>
         <div slot="media">
         </div>
       </f7-list-item>
     </f7-list>
+
   </f7-block>
 
   <!-- JCS -->
