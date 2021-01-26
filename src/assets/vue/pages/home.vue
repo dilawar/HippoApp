@@ -4,96 +4,92 @@
       <!-- LEFT PANEL -->
       <f7-nav-left>
         <f7-link v-if="isUserAuthenticated()" panel-open="left" 
-          icon="fa fa-bars fw">
+                                              icon="fa fa-bars fw">
         </f7-link>
         <img src="static/logo.png" height="25px" class="float-left">
-          NCBS Hippo
+        NCBS Hippo
         </img>
       </f7-nav-left>
 
       <!-- RIGHT nav -->
       <f7-nav-right>
         <f7-link v-if="isUserAuthenticated()"
-          icon="fas fa-sign-out-alt" @click="signOut" 
-          panel-close
-          header="Logout"
-          slot="media">
+                 icon="fas fa-sign-out-alt" @click="signOut" 
+                 panel-close
+                 header="Logout"
+                 slot="media">
         </f7-link>
         <f7-link v-if="rolesCSV.includes('ADMIN')" 
-          panel-open="right" 
-          icon="fa fa-bars fa-fw"
-          color="red">
+                 panel-open="right" 
+                 icon="fa fa-bars fa-fw"
+                 color="red">
         </f7-link>
       </f7-nav-right>
     </f7-navbar>
 
-    <f7-row no-gap style="margin-top:5px; text-align:center;">
-      <f7-col>
-        <f7-link href="/info/talks" label="Talks">Talks</f7-link>
+    <f7-toolbar top tabber>
+      <f7-link href="/info/talks" label="Talks">Talks</f7-link>
+      <f7-link href="/info/upcomingawses" label="Upcoming AWS">AWS</f7-link>
+      <f7-link href="/info/jcs" label="JC">JC</f7-link>
+      <f7-link href="/info/courses" label="Courses">Courses</f7-link>
+      <f7-link href="/info/statistics" label="Statistics">Statistics</f7-link>
+    </f7-toolbar>
+
+
+    <f7-row>
+      <f7-col medium=50 small=30>
       </f7-col>
-      <f7-col>
-        <f7-link href="/info/upcomingawses" label="Upcoming AWS">AWS</f7-link>
-      </f7-col>
-      <f7-col>
-        <f7-link href="/info/jcs" label="JC">JC</f7-link>
-      </f7-col>
-      <f7-col>
-        <f7-link href="/info/courses" label="Courses">Courses</f7-link>
-      </f7-col>
-      <f7-col>
-        <f7-link href="/info/statistics" label="Statistics">Statistics</f7-link>
+      <f7-col medium=50 small=70>
+        <f7-list>
+          <f7-list-item v-if="isUserAuthenticated()"
+                        link="/smartbook/" 
+                        title="Booking" 
+                        tooltip="Create a new booking"
+                        panel-close>
+            <f7-icon slot="media" icon="fa fa-plus fa-2x"></f7-icon>
+          </f7-list-item>
+
+          <f7-list-item v-if="isUserAuthenticated()"
+                        link="/inventory/" 
+                        title="Inventory" 
+                        tooltip="Search and borrow"
+                        panel-close>
+            <f7-icon slot="media" icon="fa fa-archive fa-2x"></f7-icon>
+          </f7-list-item>
+
+          <f7-list-item link="/accomodation/" 
+                        title="Accomodations" 
+                        tooltip="Browse/create TO-LET listing"
+                        panel-close>
+            <f7-icon slot="media" icon="fa fa-home fa-2x"></f7-icon>
+
+          </f7-list-item>
+
+          <f7-list-item link="/noticeboards/all" 
+                        title="Notice Board" 
+                        tooltip="Because you hate spamming mailing list"
+                        panel-close>
+            <f7-icon slot="media" icon="fa fa-bullhorn fa-2x"></f7-icon>
+          </f7-list-item>
+
+          <f7-list-item link="/transport/" title="Transport" panel-close>
+            <f7-icon slot="media" icon="fa fa-bus fa-2x"></f7-icon>
+            <div slot="text" v-html="upcomingTrips"></div>
+          </f7-list-item>
+
+          <!--
+            <f7-list-item link="/photographyclub/" 
+            title="Photography Competition" 
+            v-if="isUserAuthenticated()"
+            panel-close>
+            <f7-icon slot="media" icon="fa fa-camera fa-2x"></f7-icon>
+            <div slot="text" v-html="pcTheme"></div>
+            </f7-list-item>
+          -->
+
+        </f7-list>
       </f7-col>
     </f7-row>
-
-
-    <f7-list no-hairlines style="width:50%; margin-left:50%">
-      <f7-list-item v-if="isUserAuthenticated()"
-        link="/smartbook/" 
-        title="Booking" 
-        tooltip="Create a new booking"
-        panel-close>
-        <f7-icon slot="media" icon="fa fa-plus fa-2x"></f7-icon>
-      </f7-list-item>
-
-      <f7-list-item v-if="isUserAuthenticated()"
-        link="/inventory/" 
-        title="Inventory" 
-        tooltip="Search and borrow"
-        panel-close>
-        <f7-icon slot="media" icon="fa fa-archive fa-2x"></f7-icon>
-      </f7-list-item>
-
-      <f7-list-item link="/accomodation/" 
-        title="Accomodations" 
-        tooltip="Browse/create TO-LET listing"
-        panel-close>
-        <f7-icon slot="media" icon="fa fa-home fa-2x"></f7-icon>
-
-      </f7-list-item>
-
-      <f7-list-item link="/noticeboards/all" 
-        title="Notice Board" 
-        tooltip="Because you hate spamming mailing list"
-        panel-close>
-        <f7-icon slot="media" icon="fa fa-bullhorn fa-2x"></f7-icon>
-      </f7-list-item>
-
-      <f7-list-item link="/transport/" title="Transport" panel-close>
-        <f7-icon slot="media" icon="fa fa-bus fa-2x"></f7-icon>
-        <div slot="text" v-html="upcomingTrips"></div>
-      </f7-list-item>
-
-<!--
-      <f7-list-item link="/photographyclub/" 
-        title="Photography Competition" 
-        v-if="isUserAuthenticated()"
-        panel-close>
-        <f7-icon slot="media" icon="fa fa-camera fa-2x"></f7-icon>
-        <div slot="text" v-html="pcTheme"></div>
-      </f7-list-item>
--->
-
-    </f7-list>
 
     <f7-row v-if="! isUserAuthenticated()" class="pull-right">
       <f7-col>
