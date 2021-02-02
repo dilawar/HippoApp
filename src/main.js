@@ -1,3 +1,8 @@
+// Import Framework7
+import Framework7 from 'framework7';
+import Framework7Vue from 'framework7-vue';
+Framework7.use(Framework7Vue)
+
 // Import Vue
 import Vue from 'vue';
 
@@ -57,20 +62,6 @@ import { OpenStreetMapProvider, GoogleProvider } from 'leaflet-geosearch';
 // Moment 
 import moment from 'moment';
 
-// Import Framework7
-import Framework7 from 'framework7/framework7.esm.bundle.js';
-
-// Import Framework7 Vue
-import Framework7Vue from 'framework7-vue/framework7-vue.esm.bundle.js';
-
-// Import F7 Style
-import Framework7CSS from 'framework7/css/framework7.bundle.css'
-
-// Import F7 iOS Icons
-import Framework7Icons from 'framework7-icons/css/framework7-icons.css'
-
-// Import Material Icons
-import MaterialIcons from 'material-design-icons/iconfont/material-icons.css'
 
 // Import Fontawesome Theme Styles
 // import FontAwesome from 'font-awesome/css/font-awesome.css'
@@ -92,8 +83,6 @@ import store from './assets/vuex/storage.js'
 import VueLocalStorage from 'vue-localstorage';
 Vue.use(VueLocalStorage)
 
-// Different F7-Vue plugin initialization with f7 v3.0
-Framework7.use(Framework7Vue)
 
 // Vue screen size.
 import VueScreenSize from 'vue-screen-size';
