@@ -79,8 +79,9 @@ import FontAwesome from '@fortawesome/fontawesome-free/css/all.min.css'
 // Import App Custom Styles
 import AppStyles from './assets/sass/main.scss'
 
-import DatePicker from 'vue2-datepicker'
-Vue.use(DatePicker)
+import VueCtkDateTimePicker from 'vue-ctk-date-time-picker';
+import 'vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css';
+Vue.component('date-picker', VueCtkDateTimePicker);
 
 // Import App Component
 import app from './main.vue'

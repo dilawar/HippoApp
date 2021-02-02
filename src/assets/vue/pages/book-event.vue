@@ -185,22 +185,21 @@
         <f7-list-input label="Start Date/Time" :input="false">
           <date-picker slot="input" 
             v-model="thisBooking.startDateTime"
-            placeholder="Select Datetime"
-            type="datetime" 
-            lang="en"
-            format="YYYY-MM-DD hh:mm a" 
-            :minute-step="15">
+            :no-label=true
+            :no-header=true
+            :minute-interval="15"
+            >
           </date-picker>
         </f7-list-input>
 
         <f7-list-input label="End Time" :input="false">
           <date-picker slot="input" 
             v-model="thisBooking.endTime"
-            placeholder="End time"
-            type="time" 
-            lang="en"
-            format="hh:mm a" 
-            :minute-step="15">
+            :only-time="true"
+            :no-label=true
+            :no-header=true
+            :minute-interval="15"
+            >
           </date-picker>
         </f7-list-input>
 
