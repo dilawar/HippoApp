@@ -200,7 +200,8 @@
             :no-label=true
             :no-header=true
             :minute-interval="15"
-            :format="$store.state.ISO_8601_FMT"
+            output-format="HH:mm"
+            format="$store.state.ISO_8601_FMT"
             >
           </date-picker>
         </f7-list-input>
