@@ -13,6 +13,7 @@ export default new Vuex.Store({
       //icalurl : 'https://ncbs.res.in/hippo/v1/pub/ical/',
       api : 'http://172.16.223.30/hippo/v1/api',
       icalurl : 'http://172.16.223.30/hippo/v1/pub/ical/',
+      ISO_8601_FMT: 'YYYY-MM-DDTHH:mm:ss.ssZ',
       apikey : localStorage.getItem('HIPPO-API-KEY'),
       apiKeyGMap: '',
       tobook: null,

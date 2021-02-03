@@ -188,6 +188,7 @@
             :no-label=true
             :no-header=true
             :minute-interval="15"
+            :format="$store.state.ISO_8601_FMT"
             >
           </date-picker>
         </f7-list-input>
@@ -199,6 +200,7 @@
             :no-label=true
             :no-header=true
             :minute-interval="15"
+            :format="$store.state.ISO_8601_FMT"
             >
           </date-picker>
         </f7-list-input>
@@ -325,6 +327,7 @@ export default {
   watch: {
     'thisBooking.startDateTime': function(val, old) {
       const self = this;
+      console.log('this booking datetime', val, old);
       self.thisBooking.endTime = moment(val).add(1, 'hours');
       self.thisBooking.venue = '';
     },

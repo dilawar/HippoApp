@@ -187,21 +187,15 @@
                 </v-autocomplete>
               </f7-list-input>
 
-              <f7-list-item>
-                <date-picker lang="en" 
-                  placeholder="Date"
-                  value-type="format"
-                  type="date"
-                  format="YYYY-MM-DD" 
-                  v-model="thisJC.date"
-                >
+              <f7-list-input :input="false" label="Datetime">
+                <date-picker slot="input"
+                             :no-header="true"
+                             :no-label="true"
+                             :format="$store.state.ISO_8601_FMT"
+                             :minute-interval="15"
+                             v-model="thisJC.datetime"
+                             >
                 </date-picker>
-              </f7-list-item>
-
-              <f7-list-input label="Time"
-                type="time"
-                :value="thisJC.time"
-                @input="thisJC.time = $event.target.value">
               </f7-list-input>
 
               <f7-list-input label="Venue" type="select" 
@@ -296,13 +290,15 @@
 </template>
 
 <script>
+import moment from 'moment';
+
 export default {
   data()
   {
     const self = this;
     return {
       jcs: {},
-      venues: [],
+      venues: self.fetchVenues(),
       myjcs: {},
       alljcs: [],
       popupOpened: false,
@@ -322,6 +318,7 @@ export default {
         , paperurl: ''
         , date: ''
         , time: ''
+        , datetime: moment()
         , venue: ''
         , info: {venue: '', time:''}  // Store default parameters and other info.
       },
@@ -330,10 +327,10 @@ export default {
   mounted()
   {
     const self = this;
-    if(! self.venues)
+    if(! self.venues) {
       self.fetchVenues();
-    else
       self.venues = self.loadStore('venues');
+    }
     self.fetchJC(true);
   },
   methods: {
@@ -487,6 +484,13 @@ export default {
     },
     assignPresenter: function() {
       const self = this;
+
+      // convert datetime to date and time.
+      self.thisJC.date = moment(self.thisJC.datetime).format('YYYY-MM-DD');
+      self.thisJC.time = moment(self.thisJC.datetime).format('HH:mm');
+
+      console.log('this jc', self.thisJC);
+
       // console.log('Submitting', self.thisJC);
       self.promiseWithAuth('/jcadmin/assign', self.thisJC)
         .then(function(x) {

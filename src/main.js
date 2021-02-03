@@ -294,7 +294,7 @@ Vue.mixin({
       fetchAndStore: function(endpoint, key) {
          const self = this;
          const app = self.$f7;
-         if(! isUserAuthenticated())
+         if(! self.isUserAuthenticated())
          {
             self.$localStorage.set(key, '{}');
             return '';
