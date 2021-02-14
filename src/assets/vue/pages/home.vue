@@ -146,7 +146,7 @@
           </f7-list-input>
           <f7-list-input
             label="Password"
-            type="password"
+            type=s"password"
             placeholder="Your password"
             :value="password"
             @input="password = $event.target.value">
