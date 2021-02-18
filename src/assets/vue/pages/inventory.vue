@@ -1,5 +1,5 @@
 <template>
-   <f7-page ptr @ptr:refresh="fetchInventory">
+   <f7-page @ptr:refresh="fetchInventory">
     <f7-navbar title="Inventories" back-link="Back">
       <f7-subnavbar :inner="false">
          <f7-searchbar

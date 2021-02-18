@@ -136,7 +136,9 @@
     <f7-login-screen class="hippo-login-screen">
       <f7-page login-screen>
         <f7-login-screen-title>Login</f7-login-screen-title>
+
         <f7-list form>
+
           <f7-list-input
             label="Username"
             type="text"
@@ -144,6 +146,7 @@
             :value="username"
             @input="username = $event.target.value">
           </f7-list-input>
+
           <f7-list-input
             label="Password"
             type="password"

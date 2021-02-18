@@ -180,18 +180,19 @@ canvas.chartjs-render-monitor {
 }
 
 .flash-card {
-    background: rgba(255,255,255,0.5) !important;
+    background: rgba(255,255,255,0.75) !important;
     margin-top: 30% !important;
     position: relative;
     text-align: center;
-    padding: 5px;
-    font-size: small;
+    font-size: large;
 }
 
 .main-footer {
     position: absolute;
     bottom: 30px;
     padding: 10px;
+    // color: rgba(00,10,200,1) !important;
+    color: gray;
     text-align: left;
     font-size: x-small;
     //background: rgba(255,255,255,1);

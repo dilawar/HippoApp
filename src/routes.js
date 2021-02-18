@@ -11,7 +11,6 @@ import PanelRightPage from './assets/vue/pages/panel-right.vue';
 import WhatWhereWhenPage from './assets/vue/pages/whatwherewhen.vue';
 import FormPage from './assets/vue/pages/form.vue';
 
-import BookingPage from './assets/vue/pages/booking.vue';
 import SmartBookingPage from './assets/vue/pages/smartbook.vue';
 import RegisterEventWithSpeaker from './assets/vue/pages/event-with-speaker.vue';
 
@@ -190,10 +189,6 @@ export default [
    {
       path: '/whatwherewhen/',
       component: WhatWhereWhenPage
-   },
-   {
-      path: '/booking/',
-      component: BookingPage
    },
    {
       path: '/smartbook/',
