@@ -79,8 +79,8 @@ import FontAwesome from '@fortawesome/fontawesome-free/css/all.min.css'
 // Import App Custom Styles
 import AppStyles from './assets/sass/main.scss'
 
-import DatePicker from 'vue2-datepicker'
-Vue.use(DatePicker)
+import DatePicker from 'vue2-datepicker';
+Vue.component('date-picker', DatePicker);
 
 // Import App Component
 import app from './main.vue'
@@ -126,6 +126,12 @@ Vue.mixin({
    methods : {
       dbDate: function( date ) {
          return moment(date).format("YYYY-MM-DD");
+      },
+      dbTime: function(date, addminutes=0) {
+         return moment(date).add(addminutes, 'm').format("HH:mm");
+      },
+      dbDateTime: function(date) {
+         return moment(date).format('YYYY-MM-DD HH:mm');
       },
       inBetweenDates: function(date1, date2, today=null) {
          const self = this;
@@ -182,9 +188,6 @@ Vue.mixin({
          let b = moment(date + ' ' + time, 'YYYY-MM-DD HH:mm:ss');
          return b.from(moment());
      },
-      dbTime: function(date, addminutes=0) {
-         return moment(date, "HH:mm").add(addminutes, 'm').format("HH:mm");
-      },
       humanReadableTime: function( time ) {
          return moment(time, "HH:mm:ss").format("hh:mm A");
       },
@@ -201,9 +204,6 @@ Vue.mixin({
       },
       anchor: function(url) {
          return "<a href='" + url + "'>"+url+"</a>";
-      },
-      dbDateTime: function(date) {
-         return moment(date).format('YYYY-MM-DD HH:mm');
       },
       datetime2Moment: function(timestamp) {
          return moment(timestamp, 'YYYY-MM-DD HH:mm:ss');
@@ -293,7 +293,7 @@ Vue.mixin({
       fetchAndStore: function(endpoint, key) {
          const self = this;
          const app = self.$f7;
-         if(! isUserAuthenticated())
+         if(! self.isUserAuthenticated())
          {
             self.$localStorage.set(key, '{}');
             return '';
