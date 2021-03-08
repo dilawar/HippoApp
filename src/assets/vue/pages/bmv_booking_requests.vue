@@ -45,7 +45,9 @@
             <f7-link popup-close>Close</f7-link>
           </f7-nav-right>
         </f7-navbar>
+
         <f7-block>
+
           <!-- POPUP ACTION -->
           <f7-card no-shadow>
             <f7-card-header>
@@ -62,7 +64,7 @@
                 <br />
                 {{thisRequest.venue}}
                 <f7-link external v-if="thisRequest.vc_url" 
-                  :url="thisRequest.vc_url">{{thisRequest.vc_url}}</f7-link>
+                                  :url="thisRequest.vc_url">{{thisRequest.vc_url}}</f7-link>
                 <span v-if="thisRequest.vc_extra"> ({{thisRequest.vc_extra}})</span>
 
               </f7-block-footer>
@@ -70,20 +72,27 @@
             </f7-card-content>
           </f7-card>
 
-          <f7-list media-list no-hairlines>
-            <f7-list-item v-if="thisRequest.clashes && thisRequest.clashes.length > 0">
+          <f7-list  v-if="thisRequestClashes.length > 0">
+            <f7-list-item>
               <div slot="text">
                 <strong>
                   This booking request is not clean. It might clash with
                   following JC/Labmeets in future. Please make sure that this is not the
-                  face.
-                  <f7-col v-for="(clash, key) in thisRequest.clashes" :key="key">
-                    {{clash.title}}
-                  </f7-col>
+                  case.
                 </strong>
               </div>
             </f7-list-item>
-            <f7-list-item v-else title="STATUS">
+
+            <f7-list-item v-for="(clash, key) in thisRequestClashes" :key="key">
+              <div slot="title">
+                {{clash.title}}
+              </div>
+            </f7-list-item>
+          </f7-list>
+
+
+        <f7-list media-list>
+            <f7-list-item title="STATUS">
               <div slot="text">
                 Hurray! This request looks clean.
               </div>
@@ -122,7 +131,8 @@
       const self = this;
       return {
         requests: [],
-        thisRequest: { clashes: [] },
+        thisRequest: { },
+        thisRequestClashes : [],
         reviewPopup: false,
         popupTitle: 'Review request',
       };
@@ -152,7 +162,7 @@
       {
         const self = this;
         self.thisRequest = request;
-        self.thisRequest.clashes = [];
+        self.thisRequestClashes = [];
         setTimeout(() => self.checkRequest(request), 100);
         self.reviewPopup = true;
       },
@@ -161,7 +171,8 @@
         const self = this;
         self.promiseWithAuth('bmvadmin/request/clash', request)
           .then(function(x) {
-            self.thisRequest.clashes = JSON.parse(x.data).data;
+            self.thisRequestClashes = JSON.parse(x.data).data.clashes;
+            console.log('clashes', self.thisRequestClashes);
           });
       },
       onReject: function() {
@@ -200,7 +211,7 @@
           .then( function(x) {
             let res = JSON.parse(x.data).data;
             if(res.success) {
-                console.log("Successfully approved.");
+              console.log("Successfully approved.");
               self.notify("Success", "Successfully approved request : " + self.thisRequest.title);
               self.fetchPendingRequests();
             }
