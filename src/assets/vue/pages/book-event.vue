@@ -309,7 +309,7 @@ export default {
         , readonly: false    // when external id is set, make is readonly
       },
       thisBooking: {
-        startDateTime: moment().add(1, 'minutes')
+        startDateTime: moment().add(15, 'minutes')
         , endTime: moment().add(1, 'hours')
         , external_id: self.externalId
         , title: ''
@@ -326,12 +326,16 @@ export default {
   watch: {
     'thisBooking.startDateTime': function(val, old) {
       const self = this;
-      self.thisBooking.endTime = moment(val).add(1, 'hours');
+      self.thisBooking.endTime = moment(val).add(1, 'h');
       self.thisBooking.venue = '';
+      // console.log(110, self.thisBooking.startDateTime);
+      // console.log(110, self.thisBooking.endTime);
     },
     'thisBooking.endTime': function(val, old) {
       const self = this;
       self.thisBooking.venue = '';
+      // console.log(111, self.thisBooking.startDateTime);
+      // console.log(111, self.thisBooking.endTime);
     },
   },
   mounted: function() {

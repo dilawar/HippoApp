@@ -194,10 +194,18 @@
       },
       onApprove: function() {
         const self = this;
+        const app = self.$f7;
+
         self.promiseWithAuth('bmvadmin/request/approve', self.thisRequest)
           .then( function(x) {
-            console.log("Approving request ...");
-            self.fetchPendingRequests();
+            let res = JSON.parse(x.data).data;
+            if(res.success) {
+                console.log("Successfully approved.");
+              self.notify("Success", "Successfully approved request : " + self.thisRequest.title);
+              self.fetchPendingRequests();
+            }
+            else
+              self.notify("Failure", "Failed to approve: <br>" + res.msg);
           });
         self.reviewPopup = false;
       },
