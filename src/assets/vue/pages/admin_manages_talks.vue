@@ -35,7 +35,7 @@
           <f7-button external 
                      target="_system"
                      raised
-                     :href="$store.state.api + '/download/talk/' + selectedTalk.date + '/' + selectedTalk.id">
+                     :href="$store.state.api + '/download/talk/0/' + selectedTalk.id">
             PDF
           </f7-button>
           <div v-html="selectedTalk.description">
