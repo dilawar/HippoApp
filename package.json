@@ -103,7 +103,7 @@
     "leaflet-hotline": "^0.4.0",
     "leaflet-search": "^2.9.9",
     "leaflet.locatecontrol": "^0.72.2",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "loglevel": "^1.7.1",
     "material-design-icons": "^3.0.1",
     "moment": "^2.29.1",
