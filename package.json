@@ -138,7 +138,7 @@
     "vuejs-auto-complete": "^0.9.0",
     "vuex": "^3.6.2",
     "web": "0.0.2",
-    "xlsx": "^0.16.9"
+    "xlsx": "^0.17.0"
   },
   "displayName": "Hippo",
   "cordova": {
