@@ -1,0 +1,29 @@
+FROM beevelop/cordova:v2021.04.1
+MAINTAINER Dilawar Singh <dilawar.s.rajput@gmail.com>
+ARG UNAME=hippo
+ARG UID=1000
+ARG GID=1000
+RUN groupadd -g $GID -o $UNAME
+RUN useradd -m -u $UID -g $GID -o -s /bin/bash $UNAME
+RUN apt update && apt install -y build-essential
+
+USER $UNAME
+WORKDIR /app
+RUN cordova telemetry on
+RUN ls -ltra /app
+
+# RUN cordova platform add android
+# RUN cordova platform add browser
+# RUN cordova plugin add cordova-plugin-inappbrowser || echo "A"
+# RUN cordova plugin add cordova-plugin-file
+# RUN cordova plugin add cordova-plugin-local-notification --save || echo "D"
+# RUN cordova plugin add cordova-plugin-dialogs --save || echo "E"
+# RUN cordova plugin add cordova-plugin-firebase-messaging --save
+# RUN cordova plugin add cordova-support-google-services --save
+# RUN cordova plugin add cordova-plugin-whitelist --save
+# RUN cordova plugin add cordova-plugin-androidx || echo "F"
+# RUN cordova plugin add cordova-plugin-androidx || echo "F"
+# RUN cordova plugin add cordova-plugin-androidx-adapter || echo "F"
+# RUN cordova plugin add cordova-android-play-services-gradle-release || echo "F"
+# RUN cordova plugin add cordova-android-firebase-gradle-release || echo "F"
+# RUN cordova plugin add cordova-plugin-splashscreen || echo "SplashScreen failed"

@@ -1,48 +1,64 @@
 KEYSTORE:=$(HOME)/Work/Apps/KeyStore/dilawar.jks
 
-all : browser
+UID=$(shell id -u)
+GID=$(shell id -g)
+
+IMAGENAME="dilawars/hippoapp"
+
+IMAGE:=docker run -it \
+	   -v /tmp/.X11-unix:/tmp/.X11-unix \
+	   -v $(PWD):/app \
+	   --network="host" \
+	   -p 8000:8000 \
+	   -u $(UID):$(GID) $(IMAGENAME)
+
+CORDOVA:=$(IMAGE) cordova
+NPM:=$(IMAGE) npm
+
+all : build_image browser
+
+build_image: Dockerfile.cordova
+	docker build -t $(IMAGENAME) --build-arg UID=$(UID) --build-arg GID=$(GID) \
+		-f $< .
 
 create:
-	cordova create . com.dilawar.hippo Hippo \
-	    --template cordova-template-framework7-vue-webpack
+	$(CORDOVA) create . com.dilawar.hippo Hippo \
+	    --template $(CORDOVA)-template-framework7-vue-webpack
 
 init_android:
-	cordova platform add android  || echo "Failed to add android platform"
+	$(CORDOVA) platform add android  || echo "Failed to add android platform"
 	make init
 
 init:
 	mkdir -p www
-	cordova platform add browser || echo "Failed to add browser"
-	cordova plugin add cordova-plugin-inappbrowser || echo "A"
-	cordova plugin add cordova-plugin-file
-	#cordova plugin add cordova-plugin-browsersync || echo "B"
-	#cordova plugin add https://github.com/dilawar/cordova-plugin-background-geolocation --save 
-	cordova plugin add cordova-plugin-local-notification --save || echo "D"
-	cordova plugin add cordova-plugin-dialogs --save || echo "E"
-	cordova plugin add cordova-plugin-firebase-messaging --save 
-	cordova plugin add cordova-support-google-services --save 
-	cordova plugin add cordova-plugin-whitelist --save
-	# https://github.com/arnesson/cordova-plugin-firebase/issues/1083#issuecomment-503650114 
-	cordova plugin add cordova-plugin-androidx || echo "F"
-	cordova plugin add cordova-plugin-androidx || echo "F"
-	cordova plugin add cordova-plugin-androidx-adapter || echo "F"
-	cordova plugin add cordova-android-play-services-gradle-release || echo "F"
-	cordova plugin add cordova-android-firebase-gradle-release || echo "F"
-	cordova plugin add cordova-plugin-splashscreen || echo "SplashScreen failed"
-	npm install
+	$(CORDOVA) platform add browser || echo "Failed to add browser"
+	$(CORDOVA) plugin add $(CORDOVA)-plugin-inappbrowser
+	$(CORDOVA) plugin add $(CORDOVA)-plugin-file
+	$(CORDOVA) plugin add $(CORDOVA)-plugin-local-notification --save
+	$(CORDOVA) plugin add $(CORDOVA)-plugin-dialogs --save
+	$(CORDOVA) plugin add $(CORDOVA)-plugin-firebase-messaging --save
+	$(CORDOVA) plugin add $(CORDOVA)-support-google-services --save
+	$(CORDOVA) plugin add $(CORDOVA)-plugin-whitelist --save
+	$(CORDOVA) plugin add $(CORDOVA)-plugin-androidx
+	$(CORDOVA) plugin add $(CORDOVA)-plugin-androidx
+	$(CORDOVA) plugin add $(CORDOVA)-plugin-androidx-adapter
+	$(CORDOVA) plugin add $(CORDOVA)-android-play-services-gradle-release
+	$(CORDOVA) plugin add $(CORDOVA)-android-firebase-gradle-release
+	$(CORDOVA) plugin add $(CORDOVA)-plugin-splashscreen
+	$(NPM) install
 
 browser:
-	cordova build browser --release -- --webpack.mode=production
-	rsync -azv www/ /var/www/html/hippo/ 
-	cd /var/www/html/hippo/v1 && git pull origin master 
-	# sudo chown -R apache:root /var/www/html/hippo/ 
+	$(CORDOVA) build browser --release -- --webpack.mode=production
+	rsync -azv www/ /var/www/html/hippo/
+	cd /var/www/html/hippo/v1 && git pull origin master
+	# sudo chown -R apache:root /var/www/html/hippo/
 
-build : 
-	@cordova run android 
+build :
+	@$(CORDOVA) run android
 
-apk: 
+apk:
 	mkdir -p www
-	cordova build android --release \
+	$(CORDOVA) build android --release \
 	    -- --keystore=$(KEYSTORE) \
 	    --storePassword=$(KEYSTORE_PASSWORD) \
 	    --alias=dilawar \
@@ -50,9 +66,9 @@ apk:
 	    --webpack.mode=production
 	find platforms -name "*.apk" | xargs -I f du -h f
 
-aab: 
+aab:
 	mkdir -p www
-	cordova build android --release \
+	$(CORDOVA) build android --release \
 	    -- --keystore=$(KEYSTORE) \
 	    --storePassword=$(KEYSTORE_PASSWORD) \
 	    --alias=dilawar \
@@ -62,10 +78,10 @@ aab:
 	find platforms -name "*.aab" | xargs -I f du -h f
 
 run:
-	cordova run browser -- --live-reload 
+	$(CORDOVA) run browser -- --live-reload
 
 upload :
-	cordova run android
+	$(CORDOVA) run android
 
 tiddly:
 	tiddlywiki wiki --build index

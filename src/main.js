@@ -52,9 +52,9 @@ Icon.Default.mergeOptions({
 });
 
 // GoogleMap services.
-import { OpenStreetMapProvider, GoogleProvider } from 'leaflet-geosearch'; 
+import { OpenStreetMapProvider, GoogleProvider } from 'leaflet-geosearch';
 
-// Moment 
+// Moment
 import moment from 'moment';
 
 // Import Framework7
@@ -108,7 +108,7 @@ Vue.mixin({
       return {
          googleMapProvider: new GoogleProvider({
             params: {
-               key: this.loadStoreStr('GOOGLE-MAP-API-KEY'), 
+               key: this.loadStoreStr('GOOGLE-MAP-API-KEY'),
                client: 'HippoAndroidApp',
             },
          }),
@@ -116,10 +116,10 @@ Vue.mixin({
             "async": true,
             "crossDomain": true,
             "method": "GET",
-            "url": "https://us1.locationiq.com/v1/search.php?key=0d166e7f031bfd" 
+            "url": "https://us1.locationiq.com/v1/search.php?key=0d166e7f031bfd"
             + "&countrycodes=in&matchlevel=city&format=json",
          },
-         locationIQSearchURL: "https://us1.locationiq.com/v1/autocomplete.php?key=0d166e7f031bfd" 
+         locationIQSearchURL: "https://us1.locationiq.com/v1/autocomplete.php?key=0d166e7f031bfd"
          + "&countrycodes=in&matchlevel=city&format=json",
       };
    },
@@ -234,7 +234,7 @@ Vue.mixin({
             hash = str.charCodeAt(i) + ((hash << 5) - hash);
          }
          var colour = '#'+trans;
-         for (var i = 0; i < 3; i++) 
+         for (var i = 0; i < 3; i++)
          {
             var value = (hash >> (i * 8)) & 0xFF;
             colour += ('00' + value.toString(16)).substr(-2);
@@ -244,7 +244,7 @@ Vue.mixin({
       apiPostData: function() {
          const self = this;
          return {
-            'HIPPO-API-KEY': self.$localStorage.get('HIPPO-API-KEY'), 
+            'HIPPO-API-KEY': self.$localStorage.get('HIPPO-API-KEY'),
             'HIPPO-LOGIN': self.$store.getters.login
          };
       },
@@ -265,7 +265,7 @@ Vue.mixin({
          let user = self.$localStorage.get('HIPPO-LOGIN');
          if(user)
             return user.toLowerCase();
-         else 
+         else
             return 'Guest';
       },
       formatKey: function(key) {
@@ -318,7 +318,7 @@ Vue.mixin({
         dlink.download = filename;
         dlink.href = window.URL.createObjectURL(blob);
         dlink.onclick = function(e) {
-          setTimeout( () => { 
+          setTimeout( () => {
             window.URL.revokeObjectURL(self.href);
           }, 1000);
         };
@@ -333,7 +333,7 @@ Vue.mixin({
         dlink.download = filename;
         dlink.href = window.URL.createObjectURL(blob);
         dlink.onclick = function(e) {
-          setTimeout( () => { 
+          setTimeout( () => {
             window.URL.revokeObjectURL(self.href);
           }, 1000);
         };
@@ -357,8 +357,8 @@ Vue.mixin({
       },
       isMobileApp: function() {
          // From  https://stackoverflow.com/a/13252184/1805129
-         return (window.cordova || window.PhoneGap || window.phonegap) 
-            && /^file:\/{3}[^\/]/i.test(window.location.href) 
+         return (window.cordova || window.PhoneGap || window.phonegap)
+            && /^file:\/{3}[^\/]/i.test(window.location.href)
             && /ios|iphone|ipod|ipad|android/i.test(navigator.userAgent);
       },
       sendRequest: function(endpoint, post) {
@@ -415,7 +415,7 @@ Vue.mixin({
             return false;
          return roles.includes(role);
       },
-      filterSchema: function(schema, toremove) 
+      filterSchema: function(schema, toremove)
       {
          toremove = toremove.split(',');
          return schema.filter(obj => ! toremove.find(k => k == obj.Field));
@@ -474,15 +474,15 @@ Vue.mixin({
                arr.splice(ax, 1);
             }
          }
-         return arr; 
-      },  
+         return arr;
+      },
       sortDays: function(a, b) {
          const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
          a = days.indexOf(a);
          b = days.indexOf(b);
          return a < b ? 0 : 1;
       },
-      notify: function(header, msg, timeout=3000) 
+      notify: function(header, msg, timeout=3000)
       {
          const app = this.$f7;
          var t = timeout + msg.split(" ").length / 3 * 1000; // 3 words per sec.
@@ -584,8 +584,8 @@ export default new Vue({
       document.addEventListener("offline", self.onOffline, false);
       document.addEventListener("online", self.onOnline, false);
    },
-   methods: 
-   { 
+   methods:
+   {
       onOnline: function(e) {
 
       },
@@ -604,19 +604,19 @@ export default new Vue({
          console.log( 'back button');
          var leftp = app.panel.left && app.panel.left.opened;
          var rightp = app.panel.right && app.panel.right.opened;
-         if ( leftp || rightp ) 
+         if ( leftp || rightp )
          {
             app.panel.close();
             return false;
-         } 
-         else if (app.views.main.router.url == '/') 
+         }
+         else if (app.views.main.router.url == '/')
          {
             app.dialog.confirm('Are you sure?', 'Exit Hippo?'
                , function() { navigator.app.exitApp();}
                , function() { }
             );
-         } 
-         else 
+         }
+         else
             app.views.main.router.back();
       },
 
@@ -624,7 +624,7 @@ export default new Vue({
          const self = this;
          self.platform = device.platform;
 
-         // Notifications 
+         // Notifications
          cordova.plugins.notification.local.on("click", function(not) {
             // On click show notification page.
             self.$f7router.navigate('/notifications');

@@ -15,7 +15,7 @@
         <f7-link text="Back" icon="fa fa-step-backward fa-2x" back>
         </f7-link>
 
-        <f7-link external 
+        <f7-link external
           icon="fab fa-readme"
           external target="_system"
           href="https://dilawar.github.io/HippoApp/">
@@ -33,9 +33,9 @@
         </f7-link>
 
         <f7-link icon-only  v-if="isUserAuthenticated()"
-          href="/whatwherewhen/" text="Bookings" icon="fa fa-calendar fa-2x"> 
+          href="/whatwherewhen/" text="Bookings" icon="fa fa-calendar fa-2x">
         </f7-link>
-        <f7-link icon-only v-else 
+        <f7-link icon-only v-else
           href="/events/" text="Events" icon="far fa-calendar fa-2x">
         </f7-link>
       </f7-toolbar>
@@ -57,8 +57,8 @@
             <f7-link external target="_system" href="https://github.com/dilawar/HippoApp">
               Github</f7-link> and is released under GNU GPLv3 License.
 
-            <p><strong>Contribution:</strong> 
-              <f7-link external target="_system" 
+            <p><strong>Contribution:</strong>
+              <f7-link external target="_system"
                 href="https://github.com/dilawar/HippoApp/blob/master/CONTRIBUTION.md"
               >Read this.  </f7-link>
             </p>
@@ -70,16 +70,16 @@
             NCBS IT section provided server for backend services.
           </p>
 
-          <small> <p> &copy; Dilawar Singh 
+          <small> <p> &copy; Dilawar Singh
               (github: <f7-link external href="https://github.com/dilawar">@dilawar</f7-link>):
               2019-present. </p>
           </small>
 
           <h3>Disclaimer</h3>
 
-          This is <strong>NOT</strong> an official NCBS app. 
-          Developer(s) is/are not repsonsible for any discrepencies 
-          which may arise over the course of time. You may please report 
+          This is <strong>NOT</strong> an official NCBS app.
+          Developer(s) is/are not repsonsible for any discrepencies
+          which may arise over the course of time. You may please report
           discrepency by writing to developers/maintainers.
 
         </f7-block>

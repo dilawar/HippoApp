@@ -3,7 +3,7 @@
     <f7-navbar>
       <!-- LEFT PANEL -->
       <f7-nav-left>
-        <f7-link v-if="isUserAuthenticated()" panel-open="left" 
+        <f7-link v-if="isUserAuthenticated()" panel-open="left"
                                               icon="fa fa-bars fw">
         </f7-link>
         <img src="static/logo.png" height="25px" class="float-left">
@@ -27,13 +27,13 @@
       <!-- RIGHT nav -->
       <f7-nav-right>
         <f7-link v-if="isUserAuthenticated()"
-                 icon="fas fa-sign-out-alt" @click="signOut" 
+                 icon="fas fa-sign-out-alt" @click="signOut"
                  panel-close
                  header="Logout"
                  slot="media">
         </f7-link>
-        <f7-link v-if="rolesCSV.includes('ADMIN')" 
-                 panel-open="right" 
+        <f7-link v-if="rolesCSV.includes('ADMIN')"
+                 panel-open="right"
                  icon="fa fa-bars fa-fw"
                  color="red">
         </f7-link>
@@ -55,31 +55,31 @@
       <f7-col medium=50 small=70>
         <f7-list>
           <f7-list-item v-if="isUserAuthenticated()"
-                        link="/smartbook/" 
-                        title="Booking" 
+                        link="/smartbook/"
+                        title="Booking"
                         tooltip="Create a new booking"
                         panel-close>
             <f7-icon slot="media" icon="fa fa-plus fa-2x"></f7-icon>
           </f7-list-item>
 
           <f7-list-item v-if="isUserAuthenticated()"
-                        link="/inventory/" 
-                        title="Inventory" 
+                        link="/inventory/"
+                        title="Inventory"
                         tooltip="Search and borrow"
                         panel-close>
             <f7-icon slot="media" icon="fa fa-archive fa-2x"></f7-icon>
           </f7-list-item>
 
-          <f7-list-item link="/accomodation/" 
-                        title="Accomodations" 
+          <f7-list-item link="/accomodation/"
+                        title="Accomodations"
                         tooltip="Browse/create TO-LET listing"
                         panel-close>
             <f7-icon slot="media" icon="fa fa-home fa-2x"></f7-icon>
 
           </f7-list-item>
 
-          <f7-list-item link="/noticeboards/all" 
-                        title="Notice Board" 
+          <f7-list-item link="/noticeboards/all"
+                        title="Notice Board"
                         tooltip="Because you hate spamming mailing list"
                         panel-close>
             <f7-icon slot="media" icon="fa fa-bullhorn fa-2x"></f7-icon>
@@ -91,8 +91,8 @@
           </f7-list-item>
 
           <!--
-            <f7-list-item link="/photographyclub/" 
-            title="Photography Competition" 
+            <f7-list-item link="/photographyclub/"
+            title="Photography Competition"
             v-if="isUserAuthenticated()"
             panel-close>
             <f7-icon slot="media" icon="fa fa-camera fa-2x"></f7-icon>
@@ -126,7 +126,7 @@
         :params="{slidesPerView: 'auto', loop: true, autoplay:{delay:1500, disableOnInteraction:true}}">
         <f7-swiper-slide v-for="(card,key) in flashCards" :key="key" >
           ({{wrtNow(card.date, card.time)}})
-          <strong v-html="card.title"></strong> 
+          <strong v-html="card.title"></strong>
           <em v-html="card.venue"></em>
         </f7-swiper-slide>
       </f7-swiper>
@@ -183,20 +183,20 @@
         href="https://github.com/dilawar/hippo/">
         Code Repository
       </f7-link> |
-      <f7-link external 
+      <f7-link external
         class="col-30 medium-25"
-        href="https://ncbs.res.in" 
+        href="https://ncbs.res.in"
         target="_system">
         NCBS Bangalore
       </f7-link>
       <!-- bottom row -->
       <div margin-bottom:30px>
-        Code licensed under <f7-link>GNU GPLv3</f7-link>, 
-        &copy 2018-2020 
+        Code licensed under <f7-link>GNU GPLv3</f7-link>,
+        &copy 2018-2020
         <f7-link external target="_system" href="https://github.com/dilawar">
           Dilawar Singh
         </f7-link>
-        Server is provided by NCBS IT Dept.  
+        Server is provided by NCBS IT Dept.
         Logo &copy Nuno Jesus.
       </div>
     </f7-block-footer>
@@ -242,7 +242,7 @@ export default {
         data.forEach( (val, key) => {
           self.upcomingTrips += '🚐  '
             + val.vehicle + ': ' + val.pickup_point + ' to '
-            + val.drop_point + ', ' + self.humanReadableTime(val.trip_start_time) 
+            + val.drop_point + ', ' + self.humanReadableTime(val.trip_start_time)
             + '. . . . ';
         });
         self.upcomingTrips += '</marquee></div>';
