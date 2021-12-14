@@ -5,14 +5,16 @@
 }
 
 body {
-    background: url(https://ncbs.res.in/hippo/v1/info/photography_club) no-repeat center center fixed;
-    background-size:cover;
+    // background: url(https://ncbs.res.in/hippo/v1/info/photography_club) no-repeat center center fixed;
+    // background-size:cover;
+    max-width: 800px;
+    margin: auto;
 }
 
-.with_photography_club {
-    background: url(https://ncbs.res.in/hippo/v1/info/photography_club) no-repeat center center fixed;
-    background-size:cover;
-}
+// .with_photography_club {
+//     background: url(https://ncbs.res.in/hippo/v1/info/photography_club) no-repeat center center fixed;
+//     background-size:cover;
+// }
 
 .page-content > div {
     max-width: 900px;
@@ -26,7 +28,7 @@ input {
     user-select: element !important;
 }
 
-.tab-link 
+.tab-link
 {
     &.active:not(.offline),
     &.active:not(.online) {
@@ -180,11 +182,8 @@ canvas.chartjs-render-monitor {
 }
 
 .flash-card {
-    background: rgba(255,255,255,0.75) !important;
     margin-top: 30% !important;
-    position: relative;
     text-align: center;
-    font-size: large;
 }
 
 .main-footer {

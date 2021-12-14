@@ -124,10 +124,13 @@
     <div class="flash-card">
       <f7-swiper pagination navigation
         :params="{slidesPerView: 'auto', loop: true, autoplay:{delay:1500, disableOnInteraction:true}}">
-        <f7-swiper-slide v-for="(card,key) in flashCards" :key="key" >
-          ({{wrtNow(card.date, card.time)}})
-          <strong v-html="card.title"></strong>
-          <em v-html="card.venue"></em>
+        <f7-swiper-slide v-for="(card,key) in flashCards" :key="key">
+          <div style="padding:0px 20px 0px 20px;">
+            {{wrtNow(card.date, card.time)}}
+            @<em v-html="card.venue"></em>
+            <br>
+            <strong v-html="card.title"></strong>
+          </div>
         </f7-swiper-slide>
       </f7-swiper>
     </div>
