@@ -49,9 +49,8 @@ init:
 
 browser:
 	$(CORDOVA) build browser --release -- --webpack.mode=production
-	rsync -azv www/ /var/www/html/hippo/
-	cd /var/www/html/hippo/v1 && git pull origin master
-	# sudo chown -R apache:root /var/www/html/hippo/
+	rsync -azv www/ hippo@172.16.223.76:/var/www/html/hippo/
+	ssh hippo@172.16.223.76 cd /var/www/html/hippo/v1 && git pull origin master
 
 build :
 	@$(CORDOVA) run android
