@@ -7,17 +7,17 @@
     <f7-block v-if="what === 'talks'">
       <f7-block-title medium> Upcoming Talks</f7-block-title>
       <f7-list accordion-list media-list no-hairlines>
-        <f7-list-item v-for="talk, key in talks" 
+        <f7-list-item v-for="talk, key in talks"
           :subtitle="talk.speaker"
-          :title="talk.title" 
-          :key="key" 
+          :title="talk.title"
+          :key="key"
           accordion-item>
           <div slot="header">
             {{talk.date}} | {{talk.start_time}} | {{talk.venue}}
             <template v-if="talk.vc_url">
               <f7-link external target="_system" :url="talk.vc_url">
                 <f7-icon icon="fa fa-video"></f7-icon>
-                Click to join 
+                Click to join
               </f7-link>
               <span v-if="talk.vc_extra"> ({{talk.vc_extra}})</span>
             </template>
@@ -49,7 +49,7 @@
   <!-- AWS -->
   <f7-block v-if="what === 'upcomingawses'">
     <f7-list v-for="awss, date in awses" :key="date" accordion-list media-list>
-      <f7-list-item group-title :title="humanReadableDateTime(date,awss[0].time) 
+      <f7-list-item group-title :title="humanReadableDateTime(date,awss[0].time)
                                          + ' | ' + awss[0].venue">
       </f7-list-item>
 
@@ -58,18 +58,18 @@
         <template v-if="awss[0].vc_url">
           <f7-link slot="title" external target="_system" :url="awss[0].vc_url">
             <f7-icon icon="fa fa-video"></f7-icon>
-            Click to join 
+            Click to join
           </f7-link>
           <span v-if="awss[0].vc_extra"> ({{awss[0].vc_extra}})</span>
         </template>
       </f7-list-item>
 
-      <f7-list-item v-for="aws, key in awss" :key="key" 
+      <f7-list-item v-for="aws, key in awss" :key="key"
                     :text="(aws.title && aws.title.length > 5) ? aws.title : 'Not yet disclosed.'"
                     :header="aws.supervisor_1"
                     :footer="aws.is_presynopsis_seminar==='YES'?'Presynopsis':''"
                     :after="aws.acknowledged === 'YES'?'':'Not acknowledged'"
-                    accordion-item 
+                    accordion-item
                     :title="aws.by">
         <f7-accordion-content>
           <div v-html="aws.abstract"></div>
@@ -94,14 +94,14 @@
   <f7-block v-if="what === 'jcs'">
     <f7-block-title>Journal Clubs</f7-block-title>
     <f7-list accordion-list media-list no-hairlines>
-      <f7-list-item v-for="jc, key in jcs" :key="key" 
+      <f7-list-item v-for="jc, key in jcs" :key="key"
         accordion-item>
         <div slot="header">
           {{jc.jc_id}} | {{humanReadableDateTime(jc.date, jc.time)}} | {{jc.venue}}
-          <template v-if="jc.vc_url"> | 
+          <template v-if="jc.vc_url"> |
             <f7-link external target="_system" :url="jc.vc_url">
               <f7-icon icon="fa fa-video fa-2x"></f7-icon>
-              Click to join 
+              Click to join
             </f7-link>
             <span v-if="jc.vc_extra"> ({{jc.vc_extra}})</span>
           </template>
@@ -111,7 +111,7 @@
         <f7-accordion-content>
           <f7-block inset style="padding:10px; background-color:ivory">
             <f7-link exteral target="_system"href="jc.vc_url" v-if="jc.vc_url">
-              {{jc.vc_url}} 
+              {{jc.vc_url}}
             </f7-link>
             <span v-if="jc.vc_extra">({{jc.vc_extra}})</span>
             <div v-html="jc.description"></div>
@@ -129,7 +129,7 @@
     </f7-block-header>
 
     <f7-list accordion-list media-list no-hairlines>
-      <f7-list-item v-for="course, key in courses" 
+      <f7-list-item v-for="course, key in courses"
         :title="course.name"
         :header="'Slot ' + course.slot + ' | ' + course.start_date + ' to ' + course.end_date + ' | ' + course.venue"
         @accordion:open="fetchStudents(course.id)"
@@ -149,14 +149,14 @@
             <f7-list media-list>
               <f7-list-item group-title title="Registrations">
               </f7-list-item>
-              <f7-list-item v-for="reg, key in registrations" 
+              <f7-list-item v-for="reg, key in registrations"
                 :title="reg.name"
-                :after="reg.type"
+                :after="reg.status == 'VALID'?reg.type: reg.status+'/'+reg.type"
                 :footer="reg.registered_on"
                 :key="key">
               </f7-list-item>
               <f7-list-item>
-                <f7-link external target="_system" slot="after" 
+                <f7-link external target="_system" slot="after"
                   :href="'mailto:'+emails.join(',')">
                   Send Email To All Students
                 </f7-link>
@@ -171,7 +171,7 @@
   <f7-block v-if="what==='statistics'">
     <div v-for="chart, key in charts" :key="key">
       <div style="padding:10% 10% 0 10%">
-        <line-chart v-if="chart.type==='line'" :data="chart.data" 
+        <line-chart v-if="chart.type==='line'" :data="chart.data"
           :library="{maintainAspectRatio:false}"
           :title="chart.title"
           :xtitle="chart.xlabel" :ytitle="chart.ylabel">
@@ -179,11 +179,11 @@
         <pie-chart v-if="chart.type==='pie'" :data="chart.data"
           :title="chart.title" :legend="! isMobileApp()">
         </pie-chart>
-        <bar-chart v-if="chart.type==='bar'" :data="chart.data" 
+        <bar-chart v-if="chart.type==='bar'" :data="chart.data"
           :xtitle="chart.xlabel" :ytitle="chart.ylabel"
           :title="chart.title">
         </bar-chart>
-        <column-chart v-if="chart.type==='column'" :data="chart.data" 
+        <column-chart v-if="chart.type==='column'" :data="chart.data"
           :xtitle="chart.xlabel" :ytitle="chart.ylabel"
           :title="chart.title">
         </column-chart>
@@ -227,7 +227,7 @@ export default {
         self.awses = JSON.parse(x.data).data;
         // console.log('awses', self.awses);
       });
-    } 
+    }
     else if(self.what == 'jcs') {
       self.title = 'Journal Clubs';
       self.postWithPromise('/info/jcs').then(function(x) {
