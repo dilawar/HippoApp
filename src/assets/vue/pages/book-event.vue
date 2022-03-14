@@ -1,5 +1,5 @@
 <template>
-  <f7-page> 
+  <f7-page>
   <f7-navbar title="Booking a venue" back-link="Back"></f7-navbar>
 
   <!-- VENUE POPUP -->
@@ -20,7 +20,7 @@
       <!-- Fetch venues and show the status. -->
       <f7-block>
         <f7-list media-list>
-          <f7-list-item v-for="(venue, key) in venues" 
+          <f7-list-item v-for="(venue, key) in venues"
             :key="key"
             @click="onVenueSelected(venue)">
             <div slot="header" class="text-color-red">
@@ -91,8 +91,8 @@
           <f7-list-item>
             <f7-button small
                        raised
-                       slot="after" 
-                       @click="resolveRepeatPattern()"> 
+                       slot="after"
+                       @click="resolveRepeatPattern()">
               Check my pattern
             </f7-button>
           </f7-list-item>
@@ -114,14 +114,14 @@
       </f7-block>
 
       <f7-block inset>
-        <f7-block-title small>Picked dates. </f7-block-title> 
+        <f7-block-title small>Picked dates. </f7-block-title>
         <f7-list v-if="thisBooking.dates" simple-list>
           <f7-row style="list-style-type:none">
-            <f7-list-item v-for="(day, key) in thisBooking.dates" 
-              class="col-50 medium-33" 
+            <f7-list-item v-for="(day, key) in thisBooking.dates"
+              class="col-50 medium-33"
               :key="key">
               {{day | date2}}
-            </f7-list-item> 
+            </f7-list-item>
           </f7-row>
         </f7-list>
       </f7-block>
@@ -139,9 +139,9 @@
 
         <f7-list-input
           @input="thisBooking.title = $event.target.value"
-          label="Title" 
+          label="Title"
           placeholder="At least 6 chars"
-          type="textarea" resizable required 
+          type="textarea" resizable required
           :value="thisBooking.title">
         </f7-list-input>
 
@@ -154,7 +154,7 @@
 
         <!--
         <f7-list-input :input="false" label="Description (optional)">
-          <vue-editor ref="description" 
+          <vue-editor ref="description"
             slot="input"
             v-model="thisBooking.description">
           </vue-editor>
@@ -172,7 +172,7 @@
           </div>
         </f7-list-item>
 
-        <f7-list-input label="Description" 
+        <f7-list-input label="Description"
           type="texteditor"
           :textEditorParams="{mode:'popover', buttons:[]}"
           readonly
@@ -183,37 +183,37 @@
       <f7-list-group media-list no-hairlines>
         <!-- VENUE AND TIME -->
         <f7-list-input label="Start Date/Time" :input="false">
-          <date-picker slot="input" 
+          <date-picker slot="input"
             v-model="thisBooking.startDateTime"
             placeholder="Select Datetime"
-            type="datetime" 
+            type="datetime"
             lang="en"
-            format="YYYY-MM-DD hh:mm a" 
+            format="YYYY-MM-DD hh:mm a"
             :minute-step="15">
           </date-picker>
         </f7-list-input>
 
         <f7-list-input label="End Time" :input="false">
-          <date-picker slot="input" 
+          <date-picker slot="input"
             v-model="thisBooking.endTime"
             placeholder="End time"
-            type="time" 
+            type="time"
             lang="en"
-            format="hh:mm a" 
+            format="hh:mm a"
             :minute-step="15">
           </date-picker>
         </f7-list-input>
 
         <!-- FIND A VENUE -->
         <f7-list-item v-if="thisBooking.venue"
-          header="Selected venue" 
+          header="Selected venue"
           :title="thisBooking.venue"
           @click="popupVenueSelect=true">
         </f7-list-item>
 
         <f7-list-item v-else>
           <f7-button raised fill
-            slot="after" 
+            slot="after"
             :disabled="thisBooking.title.length < 4"
             @click="openVenueSelectPopup()">
             Find a venue
@@ -223,7 +223,7 @@
         <!-- remote url -->
         <f7-row no-gap>
           <f7-col width=70 no-gap>
-            <f7-list-input 
+            <f7-list-input
               :required="thisBooking.venue === 'Remote VC'"
               label="Remote VC URL (Zoom/Meet/Jitsi etc.)"
               type="url"
@@ -233,7 +233,7 @@
             </f7-list-input>
           </f7-col>
           <f7-col width=30 no-gap>
-            <f7-list-input 
+            <f7-list-input
               label="extra (e.g.passcode)"
               type="text"
               @input="thisBooking.vc_extra = $event.target.value"
@@ -247,8 +247,8 @@
 
       <!-- SUBMIT BUTTON -->
       <f7-list-group media-list>
-        
-        <f7-list-item checkbox 
+
+        <f7-list-item checkbox
           title="Add to NCBS Calendar?"
           :checked="thisBooking.is_public_event==='YES'"
           @change="thisBooking.is_public_event=$event.target.checked?'YES':'NO'">
@@ -256,20 +256,20 @@
 
         <f7-list-item>
           <f7-button raised small fill
-            :disabled="! isBookingValid.status" 
+            :disabled="! isBookingValid.status"
             @click="bookThisEvent()"
             slot="after">
             {{isBookingValid.msg}}
           </f7-button>
           <f7-button small raised
-            slot="header" 
+            slot="header"
             :disabled="! isBookingValid.status"
             style="width:100px"
             @click="popupRepeat=true">
             Add repeat
           </f7-button>
         </f7-list-item>
-        <f7-list-item v-if="thisBooking.dates.length > 0" 
+        <f7-list-item v-if="thisBooking.dates.length > 0"
           header="Selected dates">
           <div slot="footer">
             {{thisBooking.dates.join(', ')}}
@@ -299,7 +299,7 @@ export default {
       evType: self.$f7route.params.evType,
       roles: self.$store.getters.roles,
       thisEvent: {
-         type: '' 
+         type: ''
         , external_id: self.externalId
         , title: ''
         , description: ''
@@ -364,8 +364,8 @@ export default {
             // This is most important.
             self.thisBooking.external_id = self.externalId;
             self.thisBooking['class'] = self.thisEvent.type;
-            self.thisBooking.title = self.thisEvent.type + ' by ' 
-                + self.thisEvent.speaker + " on '" 
+            self.thisBooking.title = self.thisEvent.type + ' by '
+                + self.thisEvent.speaker + " on '"
                 + self.thisEvent.title + "'";
           }
           app.dialog.close();
@@ -421,7 +421,7 @@ export default {
       return {status: true, msg: 'BOOK'};
     },
   },
-  methods: { 
+  methods: {
     searchPeopleURI: function(q, what) {
       const self = this;
       return self.getAPIUrl() + '/search/'+what+'/'+encodeURIComponent(q);
@@ -468,7 +468,7 @@ export default {
       var pat = '';
       if(rp.days.length > 0)
         pat = rp.days.join('/')+','+rp.weeks.join('/')+','+rp.months;
-                           
+
       // Attach the repeat_pat for the API.
       self.thisBooking.repeat_pat = pat;
 
@@ -508,7 +508,7 @@ export default {
         return false;
       return true;
     },
-    openVenueSelectPopup: function() 
+    openVenueSelectPopup: function()
     {
       const self = this;
       const app = self.$f7;
@@ -519,7 +519,7 @@ export default {
 
       if(date in self.holidays) {
         app.dialog.confirm("You are booking on a holiday or a day " +
-          " at which public events are discouraged. <br /> '" + 
+          " at which public events are discouraged. <br /> '" +
           self.holidays[date].description + "'. <br />" +
           "Continue (some type of events will be rejected by Hippo)?"
           , "Public holiday!"
@@ -544,7 +544,7 @@ export default {
         });
       }
     },
-    resolveRepeatPattern: function() 
+    resolveRepeatPattern: function()
     {
       const self = this;
       var rp = self.thisBooking.repeatPat;
@@ -556,6 +556,6 @@ export default {
         });
     },
   },
-}; 
+};
 
 </script>
